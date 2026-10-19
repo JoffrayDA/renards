@@ -42,3 +42,5 @@ Après une modification, pousse les fichiers puis incrémente `CACHE` dans `sw.j
 | `manifest.webmanifest` | Nom, icônes et couleurs de l'app installée |
 | `sw.js` | Cache hors ligne |
 | `icons/`, `img/` | Icônes de l'app et aperçus de l'accueil |
+| `tools/balance-bot.py` | Bot qui vérifie l'équilibrage du Café |
+| `CLAUDE.md` | Contexte du projet pour Claude Code |
