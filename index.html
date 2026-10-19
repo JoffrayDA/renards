@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Renards</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f6ece4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+:root{--bg:#f6ece4;--dot:#efdcd0;--card:#fffaf2;--ink:#5b4250;--soft:#8f7a86;--line:#ead9cc;--coral:#f59a8b;--coral-d:#dc7d6e;
+  --display:"Mochiy Pop One","Arial Rounded MT Bold",sans-serif;--body:"Zen Maru Gothic","Arial Rounded MT Bold",system-ui,sans-serif;color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{background:var(--bg);color:var(--ink);margin:0}
+body{font-family:var(--body);font-weight:500;background-image:radial-gradient(var(--dot) 2px,transparent 2.6px);background-size:26px 26px;min-height:100vh}
+main{max-width:560px;margin:0 auto;padding:28px max(18px,env(safe-area-inset-right,0px)) 40px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;gap:12px}
+.top img{width:56px;height:56px;border-radius:16px}
+h1{font-family:var(--display);font-weight:400;font-size:28px;margin:0;line-height:1.1}
+.top p{margin:2px 0 0;color:var(--soft);font-size:14px}
+a.game{display:block;text-decoration:none;color:inherit;background:var(--card);border:2px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:0 5px 0 var(--line);transition:transform .1s}
+a.game:active{transform:translateY(4px);box-shadow:0 1px 0 var(--line)}
+a.game:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
+a.game img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#e9d8cc}
+.tx{padding:12px 16px 16px;display:flex;align-items:center;gap:12px}
+.tx div{flex:1;min-width:0}
+.tx strong{display:block;font-family:var(--display);font-weight:400;font-size:19px}
+.tx span{display:block;color:var(--soft);font-size:13.5px;line-height:1.4}
+.tag{flex:none;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px}
+.tag.a{background:#ffe2cf;color:#a0583a}.tag.d{background:#d6ead0;color:#4f7148}
+.go{flex:none;width:40px;height:40px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font:900 20px/1 system-ui;box-shadow:0 3px 0 var(--coral-d)}
+footer{color:var(--soft);font-size:12.5px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><img src="icons/icon-192.png" alt=""><div><h1>Renards</h1><p>Deux façons de passer du temps avec eux.</p></div></div>
+  <a class="game" href="cafe.html">
+    <img src="img/cafe.jpg" alt="Aperçu du Café des Renards">
+    <div class="tx"><div><strong>Café des Renards</strong><span>Sers les commandes avant que les clients s'impatientent, décroche tes étoiles et agrandis ton café.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+  </a>
+  <a class="game" href="clairiere.html">
+    <img src="img/clairiere.jpg" alt="Aperçu de la Clairière aux Renards">
+    <div class="tx"><div><strong>Clairière aux Renards</strong><span>Pose des objets, laisse les renards venir sous la pluie, collectionne leurs souvenirs.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+  </a>
+  <footer>Tes parties sont enregistrées sur cet appareil.</footer>
+</main>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+</body>
+</html>
