@@ -417,10 +417,10 @@ const QUESTS=[
   {k:"serve",r:"cafe",n:6,t:"Sers 6 cafés",g:15},{k:"serve",r:"croissant",n:6,t:"Sers 6 croissants",g:15},
   {k:"serve",r:"the",n:6,t:"Sers 6 thés",g:20},{k:"serve",r:"cookie",n:8,t:"Sers 8 cookies",g:25},
   {k:"serve",r:"choco",n:5,t:"Sers 5 chocolats chauds",g:30},{k:"serve",r:"smoothie",n:5,t:"Sers 5 smoothies",g:35},{k:"serve",r:"gateau",n:4,t:"Sers 4 parts de gâteau",g:40},
-  {k:"combo",n:4,t:"Fais un combo ×4",g:20},{k:"combo",n:6,t:"Fais un combo ×6",g:35},
-  {k:"vip",n:1,t:"Sers un client VIP",g:25},{k:"perfect",n:1,t:"Termine une journée sans client fâché",g:30},
+  {k:"combo",n:3,t:"Fais un combo ×3",g:15},{k:"combo",n:5,t:"Fais un combo ×5",g:30},
+  {k:"vip",n:1,t:"Sers un client VIP",g:25},{k:"perfect",n:1,t:"Réussis une journée sans client fâché",g:30},
   {k:"stars3",n:1,t:"Obtiens 3 étoiles sur une journée",g:40},{k:"orders",n:15,t:"Complète 15 commandes",g:20},
-  {k:"big",n:3,t:"Complète 3 commandes de 3 articles",g:25},{k:"fast",n:5,t:"Sers 5 clients en moins de 5 secondes",g:25}
+  {k:"big",n:2,t:"Complète 2 commandes de 3 articles",g:25},{k:"green",n:5,t:"Sers 5 clients quand leur jauge est encore verte",g:20}
 ];
 const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
 const has=k=>(REC[k]&&!REC[k].day)||!!S.own[k];
@@ -459,7 +459,9 @@ const dayOpen=d=>d>=1&&d<=Math.min(S.day,LASTDAY)&&gateOpen(chapOf(d));
 const curDay=()=>{let d=Math.min(S.day,LASTDAY);while(d>1&&!dayOpen(d))d--;return d};
 function checkGuests(){const n=[];for(const c of CHAP)if(!S.guest[c.guest]&&chapStars(c)>=30){S.guest[c.guest]=1;n.push(c)}return n}
 checkGuests();
-function questAvail(q){return q.k==="serve"?has(q.r):q.k==="vip"?S.day>=3:true}
+function questAvail(q){return q.k==="serve"?has(q.r):q.k==="vip"?S.day>=3:q.k==="big"?S.day>=4:true}
+// quêtes d'avant le 21/10/2026 : celles qui n'existent plus sont remplacées, les autres gardent leur avancée
+S.quests=S.quests.filter(q=>QUESTS.some(x=>x.t===q.t)).map(q=>({...QUESTS.find(x=>x.t===q.t),p:Math.min(q.p,QUESTS.find(x=>x.t===q.t).n),done:q.done}));
 function fillQuests(){
   while(S.quests.length<3){
     const used=new Set(S.quests.map(q=>q.t)),opts=QUESTS.filter(q=>questAvail(q)&&!used.has(q.t));
@@ -471,7 +473,7 @@ let G=null,last=0,dirty=true,qDone=[];
 function qEvent(k,v=1,r){
   S.quests.forEach(q=>{if(q.done||q.k!==k||(q.r&&q.r!==r))return;
     if(k==="combo"){q.p=Math.max(q.p,v)}else q.p+=v;
-    if(q.p>=q.n){q.done=1;q.p=q.n;S.coins+=q.g;qDone.push(q);toast(`Quête réussie : ${qText(q)} · +${q.g} pièces`)}});
+    if(q.p>=q.n){q.done=1;q.p=q.n;S.coins+=q.g;qDone.push(q);toast(`Quête réussie : ${qText(q)} · +${q.g} pièces`);if(G&&G.run){const el=$("chips");floatAt(el,`Quête réussie ! +${q.g}`,true)}}});
 }
 
 /* ---------- dessins ---------- */
@@ -532,7 +534,7 @@ Object.assign(ICON,{
   four:`<rect x="4" y="8" width="32" height="27" rx="6" fill="#f6c1cf" ${K}/><rect x="9" y="16" width="22" height="14" rx="4" fill="#ffe3c2" ${K}/><path d="M10 12 h4 M17 12 h4" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><circle cx="30" cy="12" r="1.8" fill="${INK}"/><circle cx="16" cy="22" r="1.6" fill="${INK}"/><circle cx="24" cy="22" r="1.6" fill="${INK}"/><path d="M18.5 25 q1.5 1.5 3 0" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/><circle cx="13" cy="25" r="1.8" fill="#f6a5b4"/><circle cx="27" cy="25" r="1.8" fill="#f6a5b4"/>`
 });
 const icon=(k,sea=SEA)=>`<svg viewBox="0 0 40 40" aria-hidden="true">${ICON[k+"@"+sea]||ICON[k]||""}</svg>`;
-const coinSVG=`<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="#f7d77a" stroke="${INK}" stroke-width="1.8"/><circle cx="13" cy="13" r="7" fill="none" stroke="#d6a93a" stroke-width="1.6"/><path d="M10 15 q3 -6 6 0 M10.5 10.5 l1 -2 M15.5 10.5 l-1 -2" fill="none" stroke="#b07a12" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+const coinSVG=`<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="#f7d77a" stroke="${INK}" stroke-width="1.8"/><circle cx="13" cy="13" r="8.4" fill="none" stroke="#e8b84a" stroke-width="1.3"/><path d="M6.6 9.6 a7.4 7.4 0 0 1 4 -3.6" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".8"/><path d="M13 12.6 c-2.6 0 -4.4 2.2 -4.4 3.9 c0 1.5 1.3 2.1 2.4 1.8 c.8 -.2 1.3 -.5 2 -.5 s1.2 .3 2 .5 c1.1 .3 2.4 -.3 2.4 -1.8 c0 -1.7 -1.8 -3.9 -4.4 -3.9Z" fill="#c98a1e"/><ellipse cx="8.4" cy="11.4" rx="1.5" ry="1.8" fill="#c98a1e" transform="rotate(-20 8.4 11.4)"/><ellipse cx="11.3" cy="8.7" rx="1.5" ry="1.9" fill="#c98a1e" transform="rotate(-6 11.3 8.7)"/><ellipse cx="14.7" cy="8.7" rx="1.5" ry="1.9" fill="#c98a1e" transform="rotate(6 14.7 8.7)"/><ellipse cx="17.6" cy="11.4" rx="1.5" ry="1.8" fill="#c98a1e" transform="rotate(20 17.6 11.4)"/></svg>`;
 const BO=`stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
 /* La salle : une véranda ouverte sur le dehors. On voit la saison derrière les vitres (et la nuit en hiver). */
 const OUT={
@@ -644,7 +646,7 @@ function newDay(d){
   for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:(k==="cafe"?S.own.double:S.own.machines)?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0};
+  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;
 }
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
@@ -701,7 +703,7 @@ function complete(c){
   let tot=base+tip+cb;if(c.vip){tot*=2;G.vipServed++;qEvent("vip")}
   G.earned+=tot;S.coins+=tot;S.total+=tot;G.served++;S.served++;
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
-  if(G.t-c.born<5+ (c.order.length-1)*2)qEvent("fast");
+  if(frac>=.6)qEvent("green");
   c.state="happy";c.leave=.9;
   const el=custEl(c);if(el){burst(el);floatAt(el,`+${tot}`,true);if(cb)setTimeout(()=>floatAt(el,`Combo ×${G.combo}`),250)}
   dirty=true;
@@ -815,6 +817,7 @@ function endDay(){
   for(const c of CHAP)if(c.gate&&!S.pass[c.id]&&before<c.gate&&starSum()>=c.gate&&gateOpen(c))news.push(itRow(icon("chest"),`La porte de la saison ${c.name} s'ouvre !`,`Tu as réuni ${c.gate} étoiles.`,"background:#e3f2d6"));
   const nc=chapOf(S.day);
   if(st&&S.day===nc.from&&nc.gate&&!gateOpen(nc))news.push(itRow(icon("chest"),`Porte de la saison ${nc.name} : ${starSum()} / ${nc.gate} ★`,`Rejoue des journées pour gagner les étoiles qui manquent.`));
+  const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
@@ -823,12 +826,12 @@ function endDay(){
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
   ${news.join("")}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
-  ${questHTML()}
+  ${questHTML(qShow)}
   <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`,true);
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
 }
-function questHTML(){
-  return `<p class="sub" style="margin:0 0 6px"><b>Quêtes</b></p><div class="col" style="margin-bottom:14px">${S.quests.map(q=>`<div class="it" style="padding:8px 12px"><span class="tx"><strong style="font-size:14px">${qText(q)}</strong><div class="obar" style="margin-top:4px"><i style="width:${q.p/q.n*100}%;background:var(--gold)"></i></div></span><span class="side"><span class="price">${coinSVG}${q.g}</span><span style="font-size:12px;color:var(--ink-soft)">${q.p} / ${q.n}</span></span></div>`).join("")}</div>`;
+function questHTML(list=S.quests){
+  return `<p class="sub" style="margin:0 0 6px"><b>Quêtes</b></p><div class="col" style="margin-bottom:14px">${list.map(q=>`<div class="it" style="padding:8px 12px;${q.done?"background:#e3f2d6":""}"><span class="tx"><strong style="font-size:14px">${qText(q)}</strong><div class="obar" style="margin-top:4px"><i style="width:${q.p/q.n*100}%;background:${q.done?"var(--good)":"var(--gold)"}"></i></div></span><span class="side"><span class="price">${coinSVG}${q.g}</span><span style="font-size:12px;color:var(--ink-soft)">${q.done?"<b style=\"color:#4f9a3e\">Réussie !</b>":`${q.p} / ${q.n}${q.gain>0?` <b style="color:#4f9a3e">+${q.gain}</b>`:""}`}</span></span></div>`).join("")}</div>${list.some(q=>q.done)?`<p class="sub" style="margin:-6px 0 12px;font-size:12px">Les quêtes réussies sont payées et remplacées par de nouvelles.</p>`:""}`;
 }
 
 /* ---------- menus ---------- */
