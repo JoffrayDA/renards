@@ -1,8 +1,8 @@
 {
   "id": "/renards/app",
-  "name": "Renards",
-  "short_name": "Renards",
-  "description": "Le Café des Renards et la Clairière aux Renards.",
+  "name": "Kitsune Café",
+  "short_name": "Kitsune Café",
+  "description": "Un café kawaii tenu par des renards, et une clairière pour souffler.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

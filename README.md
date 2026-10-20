@@ -1,9 +1,9 @@
-# Renards
+# Kitsune Café
 
 Deux petits jeux kawaii avec des renards, jouables dans le navigateur et installables sur téléphone :
 
-- **Café des Renards** (`cafe.html`) : jeu de gestion. Avance sur une carte de 40 journées en 4 saisons, sers les commandes avant que les clients s'impatientent, et vise les 3 étoiles pour ouvrir les portes, gagner des recettes et inviter des renards d'honneur.
-- **Clairière aux Renards** (`clairiere.html`) : jeu détente façon Neko Atsume. Pose des objets, les renards passent même quand l'app est fermée, débloque des zones et collectionne leurs souvenirs.
+- **Kitsune Café** (`cafe.html`) : jeu de gestion dans une véranda qui change avec les saisons. Avance sur une carte de 40 journées en 4 saisons, sers les commandes avant que les clients s'impatientent, et vise les 3 étoiles pour ouvrir les portes, gagner des recettes et inviter des renards d'honneur.
+- **La Clairière** (`clairiere.html`) : jeu détente façon Neko Atsume. Pose des objets, les renards passent même quand l'app est fermée, débloque des zones et collectionne leurs souvenirs.
 
 Tout est en HTML, CSS et JavaScript, sans dépendance ni étape de build. Les parties sont enregistrées dans le navigateur de l'appareil (`localStorage`).
 
@@ -30,15 +30,15 @@ L'app s'ouvre alors en plein écran, avec son icône, et fonctionne hors ligne a
 
 ## Mettre à jour
 
-Après une modification, incrémente d'abord `CACHE` dans `sw.js` (par exemple `renards-v5`), puis fais le commit et le push : sans ça, les téléphones gardent l'ancienne version.
+Après une modification, incrémente d'abord `CACHE` dans `sw.js` (par exemple `renards-v6`), puis fais le commit et le push : sans ça, les téléphones gardent l'ancienne version.
 
 ## Fichiers
 
 | Fichier | Rôle |
 |---|---|
 | `index.html` | Écran d'accueil pour choisir un jeu |
-| `cafe.html` | Café des Renards |
-| `clairiere.html` | Clairière aux Renards |
+| `cafe.html` | Kitsune Café |
+| `clairiere.html` | La Clairière |
 | `manifest.webmanifest` | Nom, icônes et couleurs de l'app installée |
 | `sw.js` | Cache hors ligne |
 | `icons/`, `img/` | Icônes de l'app et aperçus de l'accueil |

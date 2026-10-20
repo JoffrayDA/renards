@@ -1,5 +1,5 @@
 // Cache hors ligne : on sert la version en cache tout de suite, puis on la met à jour en arrière-plan.
-const CACHE = "renards-v4";
+const CACHE = "renards-v5";
 const FILES = ["./", "index.html", "cafe.html", "clairiere.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });

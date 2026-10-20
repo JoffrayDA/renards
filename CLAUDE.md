@@ -1,12 +1,12 @@
-# Renards — contexte du projet
+# Kitsune Café — contexte du projet
 
-Deux jeux kawaii avec des renards, publiés sur GitHub Pages (`https://joffrayda.github.io/renards/`) et installables sur téléphone. Le propriétaire, Joffray, joue lui-même et donne des retours. Il écrit en français et veut des réponses concises.
+**Kitsune Café** (anciennement « Renards », renommé en octobre 2026) : deux jeux kawaii avec des renards, publiés sur GitHub Pages (`https://joffrayda.github.io/renards/`) et installables sur téléphone. Le propriétaire, Joffray, joue lui-même et donne des retours. Il écrit en français et veut des réponses concises.
 
 ## Structure
 
 - `index.html` : accueil, choix entre les deux jeux.
-- `cafe.html` : **Café des Renards**, jeu de gestion actif. C'est le jeu principal.
-- `clairiere.html` : **Clairière aux Renards**, jeu détente façon Neko Atsume.
+- `cafe.html` : **Kitsune Café**, jeu de gestion actif. C'est le jeu principal.
+- `clairiere.html` : **La Clairière**, jeu détente façon Neko Atsume.
 - `manifest.webmanifest`, `sw.js`, `icons/`, `img/` : PWA (installation sur l'écran d'accueil, hors ligne).
 - `tools/balance-bot.py` : bot qui joue au Café pour vérifier l'équilibrage.
 
@@ -24,11 +24,14 @@ Découper les gros fichiers HTML en modules (`js/`, `css/`) est bienvenu si ça 
 - Vue de dessus pour la Clairière, inspirée de Neko Atsume. Joffray a explicitement demandé ce point de vue.
 - Pas d'emoji dans l'interface, pas de personnages ni d'éléments repris de jeux existants : toutes les créatures sont originales.
 
-## Café des Renards (`cafe.html`)
+## Kitsune Café (`cafe.html`)
 
-Progression : une **carte** (écran d'accueil du jeu) de 40 journées en 4 saisons de 10 (`CHAP` : Printemps, Été, Automne, Hiver). On peut rejouer n'importe quelle journée ouverte. 1★ ouvre la journée suivante. Entre deux saisons, une porte demande un total d'étoiles (20, 45, 72). Chaque journée a un coffre qui paie les étoiles nouvellement gagnées (gros bonus à la première ★★★, rien quand on rejoue sans progresser). Les recettes se gagnent sur la carte (`REC[k].day` : thé jour 2, cookie 5, chocolat 7, smoothie 11, gâteau 16). Une saison entière en ★★★ invite son renard d'honneur (Zaza, Flocon, Professeur Noisette, Comète), qui vient ensuite en VIP. La saison change le décor du café (fenêtre, météo).
+Progression : une **carte** (écran d'accueil du jeu) de 40 journées en 4 saisons de 10 (`CHAP` : Printemps, Été, Automne, Hiver). On peut rejouer n'importe quelle journée ouverte. 1★ ouvre la journée suivante. Entre deux saisons, une porte demande un total d'étoiles (20, 45, 72). Chaque journée a un coffre qui paie les étoiles nouvellement gagnées (gros bonus à la première ★★★, rien quand on rejoue sans progresser). Les recettes se gagnent sur la carte (`REC[k].day` : thé jour 2, cookie 5, chocolat 7, smoothie 11, gâteau 16). Une saison entière en ★★★ invite son renard d'honneur (Zaza, Flocon, Professeur Noisette, Comète), qui vient ensuite en VIP. La saison change le décor et la carte du café :
+- La salle est une **véranda** vitrée qui montre le dehors (`outsideSVG`, `roomSVG`, table `OUT`) : pluie de pétales et arc-en-ciel au Printemps, grand soleil et papillons en Été, feuilles qui tombent en Automne, nuit étoilée et neige en Hiver. Le paysage réutilise les dessins de la carte (`DECO`). Les animations sont hors du filtre `#wobble`, sinon le filtre est recalculé à chaque image.
+- Les recettes changent de nom et de dessin selon la saison (`VAR`, `SEA`, `vName`, icônes `ICON["clé@saison"]`) : tartelette myrtille, tartelette fraise, tarte aux pommes, pumpkin pie à la place du croissant, etc. La clé, le prix et la cuisson ne changent pas, donc l'équilibrage et les sauvegardes non plus. Le café reste le même toute l'année.
+- Joffray a aimé et veut garder : la guirlande lumineuse en haut, les petites étagères à livres. Il a trouvé inutile l'ardoise du menu (supprimée).
 
-Boucle d'une journée : N clients. Les boissons se préparent aux stations et se prennent quand elles sont prêtes, les viennoiseries cuisent au four par fournées puis vont en vitrine (elles brûlent si on ne les sort pas à temps). Tout passe par le plateau (3 ou 4 places), puis on touche le client pour le servir. Le client paie prix + pourboire selon la patience restante, avec un bonus de combo si on enchaîne les services rapides.
+Boucle d'une journée : N clients. L'écran de jeu doit tenir sans défiler sur un téléphone : en-tête compact (le bouton retour met en pause), la salle, le plateau, puis deux rangées de tuiles : les boissons, puis le four et une tuile par pâtisserie. Les boissons se préparent et se prennent quand elles sont prêtes. Une tuile de pâtisserie sert aussi de vitrine : on la touche pour en poser une sur le plateau, ou pour lancer une fournée si la vitrine est vide (le petit bouton four en coin en relance une d'avance). On touche le four pour sortir la fournée avant qu'elle brûle. Tout passe par le plateau (3 ou 4 places), puis on touche le client pour le servir. Le client paie prix + pourboire selon la patience restante, avec un bonus de combo si on enchaîne les services rapides.
 
 Depuis la carte, il y a une boutique d'équipement et de déco (16 achats, dont 5 de fin de partie qui n'arrivent qu'avec l'Automne ou l'Hiver). Les achats de déco sont visibles dans la salle. Autres mécaniques : objectif de recette notée de 1 à 3 étoiles (objectif, ×1,35, ×1,7), réessai si l'objectif est raté, coffre surprise, 3 quêtes actives, bonus de connexion quotidien avec série, carnet des clients avec des VIP (prix ×2) à partir du jour 3 : renards « discret », plus les invités d'honneur débloqués.
 
