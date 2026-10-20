@@ -9,6 +9,10 @@ qu'un joueur régulier a normalement pu s'offrir à ce moment-là (voir KIT).
 
 Prérequis : pip install playwright  puis  python -m playwright install chromium
 Usage     : python tools/balance-bot.py [jours...]   (par défaut : une sélection de 1 à 40)
+            python tools/balance-bot.py --calibrer       (propose la table GOALS de cafe.html)
+
+Une journée tire ses commandes avec une graine propre au jour : le même jour se rejoue à l'identique,
+donc une seule partie par vitesse suffit pour le calibrage.
 """
 import sys
 from pathlib import Path
@@ -20,9 +24,9 @@ RUNS = 4
 
 # Une journée jouée par le bot : renvoie [recette, objectif, servis, clients, fâchés].
 BOT = """(args) => {
-  const [day, own, react] = args;
+  const [day, own, react, seed] = args;
   S.own = own; S.coins = 0; S.guest = {}; window.toast = () => {};
-  closeSheet(); newDay(day);
+  closeSheet(); newDay(day); if (seed != null) G.rng = rng(day * 7919 + seed + 1);
   const cfg = G.cfg; let t = 0, next = 0, res = null;
   const origEnd = endDay;
   endDay = () => { res = [G.earned, cfg.goal, G.served, cfg.c, G.lost]; G = null; };
@@ -65,7 +69,12 @@ def own_for(day):
     return own
 
 
-days = [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
+CALIB = "--calibrer" in sys.argv
+PERFECT = 0.25   # réaction du bot « parfait » : ★★★ demande environ 94 % de son score
+STAR3 = 1.8
+GOOD, PASS = 0.8, 1.08   # le bon joueur doit toujours réussir (★), avec un peu de marge
+SEEDS_TRIED = 16
+days = list(range(1, 41)) if CALIB else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
 with sync_playwright() as p:
     browser = p.chromium.launch()
     page = browser.new_page()
@@ -73,6 +82,25 @@ with sync_playwright() as p:
     page.on("pageerror", lambda e: errors.append(str(e)))
     page.goto(PAGE)
     page.wait_for_timeout(500)
+    if CALIB:
+        # Pour chaque jour, on joue plusieurs graines en « parfait ». On lisse la médiane des scores en une courbe
+        # qui ne redescend jamais, puis on garde la graine la plus proche de cette courbe : les journées ne sont
+        # ni chanceuses ni malchanceuses, et les objectifs montent régulièrement.
+        runs = [[(page.evaluate(BOT, [d, own_for(d), PERFECT, k])[0], k) for k in range(SEEDS_TRIED)] for d in days]
+        med = [sorted(x for x, _ in r)[len(r) // 2] for r in runs]
+        smooth = [sum(med[max(0, i - 2):i + 3]) / len(med[max(0, i - 2):i + 3]) for i in range(len(med))]
+        for i in range(1, len(smooth)):
+            smooth[i] = max(smooth[i], smooth[i - 1])
+        seeds, goals = [], []
+        for d, r, t in zip(days, runs, smooth):
+            up = [x for x in r if not goals or round(x[0] / STAR3) >= goals[-1]]   # l'objectif ne redescend pas
+            e, k = min(up or r, key=lambda x: abs(x[0] - t))
+            g = page.evaluate(BOT, [d, own_for(d), GOOD, k])[0]
+            seeds.append(k); goals.append(round(min(e / STAR3, g / PASS)))
+            print(f"jour {d:>2} : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {g}, objectif {goals[-1]}", file=sys.stderr)
+        print("const SEED=[" + ",".join(map(str, seeds)) + "];")
+        print("const GOALS=[" + ",".join(map(str, goals)) + "];")
+        browser.close(); sys.exit()
     print(f"{'jour':>4} {'réaction':>8} {'recette':>8} {'objectif':>8} {'ratio':>6} {'étoiles':>7}  servis  fâchés")
     for day in days:
         for react in (0.45, 0.8):

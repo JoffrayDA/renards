@@ -423,14 +423,14 @@ const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
 const has=k=>(REC[k]&&!REC[k].day)||!!S.own[k];
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-// Difficulté : jusqu'au jour 6 l'objectif suit une formule, ensuite des points réglés au bot (interpolés entre eux).
-// L'écart entre clients ne descend pas sous 3,5 s (3,2 s à partir de l'Automne), sinon un bon joueur ne suit plus.
-const GOALK=[[6,145],[7,160],[8,180],[10,186],[13,197],[17,240],[19,295],[21,300],[25,340],[30,355],[31,365],[35,400],[40,430]];
+// Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
+// « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
+// L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.
+const SEED=[13,6,3,2,13,0,3,7,13,5,11,3,5,9,15,14,14,3,1,12,3,1,13,2,0,8,2,7,6,13,7,7,8,15,2,13,13,0,7,13];
+const GOALS=[37,58,68,85,101,121,133,148,159,173,182,197,208,221,199,224,266,272,291,295,298,306,312,321,331,337,354,358,359,363,376,381,384,388,396,396,403,399,421,431];
 function cfgOf(d){
-  const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3));let goal;
-  if(d<=6)goal=Math.round(c*(4.6+1.25*d));
-  else{let i=0;while(i<GOALK.length-2&&d>GOALK[i+1][0])i++;const [a,ga]=GOALK[i],[b,gb]=GOALK[i+1];goal=Math.round(ga+(gb-ga)*Math.min(1,(d-a)/(b-a)))}
-  return{c,gap:Math.max(d<=20?3.5:3.2,6-d*.27),pat:Math.max(12,21-d*.8),max:d<2?1:d<4?2:3,goal};
+  const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3)),goal=GOALS[d-1];
+  return{c,gap:Math.max(d<=20?4:3.2,6-d*.27),pat:Math.max(14,21-d*.6),max:d<2?1:d<4?2:3,goal};
 }
 const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
 
@@ -637,21 +637,22 @@ function newDay(d){
   const cfg=cfgOf(d),st={};SEA=chapOf(d).id;
   for(const k in REC)if(REC[k].kind==="drink"&&has(k))st[k]=Array.from({length:(k==="cafe"?S.own.double:S.own.machines)?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&has(k))vit[k]=k==="croissant"?2:0;
-  G={run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0};
+  // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
+  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;
 }
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
 function genOrder(){
-  const un=Object.keys(REC).filter(has),m=G.cfg.max,r=Math.random();
+  const un=Object.keys(REC).filter(has),m=G.cfg.max,r=G.rng();
   const n=m===1?1:m===2?(r<.6?1:2):(r<.42?1:r<.78?2:3);
-  return Array.from({length:n},()=>({r:pick(un),done:0}));
+  return Array.from({length:n},()=>({r:un[Math.floor(G.rng()*un.length)],done:0}));
 }
 function spawn(){
   const sp=freeSpot();if(sp<0)return false;
   const here=new Set(G.cust.map(c=>c.fox));
   const vipCh=G.day>=3?(.07*(S.own.coussins?2:1)):0,guests=CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]);
   let f,vip=false;
-  if(Math.random()<vipCh){vip=true;const pool=(guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
+  if(G.rng()<vipCh){vip=true;const pool=(guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
   const pat=G.cfg.pat*patMult()*(vip?1.15:1);
   G.cust.push({id:++uid,fox:f.id,spot:sp,order:genOrder(),pat,patMax:pat,state:"wait",vip,born:G.t});
@@ -661,7 +662,7 @@ function spawn(){
 }
 function update(dt){
   G.t+=dt;
-  if(G.spawned<G.cfg.c&&G.t>=G.next){if(spawn())G.next=G.t+G.cfg.gap*(.7+Math.random()*.6);else G.next=G.t+.5}
+  if(G.spawned<G.cfg.c&&G.t>=G.next){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
   for(const c of G.cust){
     if(c.state==="wait"){c.pat-=dt;if(c.pat<=0){c.state="angry";c.leave=.9;G.lost++;G.combo=0;dirty=true}
       else if(c.pat/c.patMax<.3&&!c.low){c.low=1;dirty=true}}

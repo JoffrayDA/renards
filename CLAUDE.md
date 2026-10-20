@@ -35,18 +35,19 @@ Boucle d'une journée : N clients. L'écran de jeu doit tenir sans défiler sur 
 
 Depuis la carte, il y a une boutique d'équipement et de déco (16 achats, dont 5 de fin de partie qui n'arrivent qu'avec l'Automne ou l'Hiver). Les achats de déco sont visibles dans la salle. Autres mécaniques : objectif de recette notée de 1 à 3 étoiles (objectif, ×1,35, ×1,7), réessai si l'objectif est raté, coffre surprise, 3 quêtes actives, bonus de connexion quotidien avec série, carnet des clients avec des VIP (prix ×2) à partir du jour 3 : renards « discret », plus les invités d'honneur débloqués.
 
-Fonctions clés : `cfgOf(day)` (difficulté, table `GOALK`), `newDay(d)`, `spawn`, `update(dt)`, `complete` (calcul des gains), `tapStation`, `bake`, `unload`, `endDay`, `openMap`/`renderMap`/`mapLayout` (carte), `daySheet`, `shop`. `S.day` est la plus haute journée atteinte, `G.day` la journée en cours. La sauvegarde est en version 2 (`S.ver`), avec migration depuis la v1.
+Fonctions clés : `cfgOf(day)` (difficulté, tables `SEED` et `GOALS`), `newDay(d)`, `spawn`, `update(dt)`, `complete` (calcul des gains), `tapStation`, `bake`, `unload`, `endDay`, `openMap`/`renderMap`/`mapLayout` (carte), `daySheet`, `shop`. `S.day` est la plus haute journée atteinte, `G.day` la journée en cours. La sauvegarde est en version 2 (`S.ver`), avec migration depuis la v1.
 
 ### Équilibrage
 
-Il a été réglé avec `tools/balance-bot.py` : un bot qui prend des décisions parfaites, avec un temps de réaction de 0,45 s (expert) ou 0,8 s (bon joueur). Il possède les recettes de la carte et un kit d'achats réaliste pour chaque jour (`KIT`), et joue chaque journée plusieurs fois pour faire la moyenne. Cibles actuelles :
+Chaque journée est **la même à chaque essai** : commandes, VIP et arrivées sont tirées avec une graine propre au jour (`SEED`), pour que les étoiles mesurent le jeu et pas la chance. Les objectifs (`GOALS`) et les graines sont calculés par `python tools/balance-bot.py --calibrer`, avec un bot aux décisions parfaites et un kit d'achats réaliste pour chaque jour (`KIT`) :
 
-- Jours 1 à 4 : le bon joueur fait environ 1,4 à 1,6 fois l'objectif (2 étoiles). Les 3 étoiles demandent une partie quasi parfaite.
-- Jour 8 : le bon joueur passe tout juste.
-- Jours 10 à 40 : le bon joueur fait 1,0 à 1,3 fois l'objectif, l'expert 1,45 à 1,9.
-- Rejouer avec tout l'équipement : ★★★ facile jusqu'au jour 17 environ ; au-delà, il faut jouer comme l'expert. C'est voulu : les portes se passent en rejouant les premières saisons, et les invités des dernières saisons sont le défi ultime.
+- ★★★ (1,7 × objectif) demande environ 94 % du score du bot « parfait » (réaction 0,25 s), à tous les jours. On garde la graine dont le score parfait est proche d'une courbe lissée, pour que les objectifs montent régulièrement.
+- Le bon joueur (0,8 s) doit toujours réussir (au moins 1,08 × objectif) : l'objectif est plafonné en conséquence.
+- Résultat au premier passage : bon joueur ★★★ aux jours 1-2 (peu de clients, le score dépend surtout des commandes), ★★ aux jours 3-6, puis ★ (×1,1 à 1,4) ; expert (0,45 s) ×1,55 à 2,1.
+- Rejouer avec tout l'équipement : ★★★ facile jusqu'au jour 17 ; au-delà, ★★ à ★★★. Les portes se passent en rejouant, les invités des dernières saisons restent le défi ultime.
+- Retour de Joffray à l'origine de ce réglage : « jour 1 bien joué = 2★, jour 2 en galérant = 3★ ». Avant, le jour 1 plafonnait sous les ★★★ et le jour 2 dépendait des commandes tirées.
 
-Après tout changement de prix, de patience, de pourboire ou d'objectif, relance le bot et vérifie que ces cibles tiennent.
+Après tout changement de prix, de patience, de pourboire, de recettes ou de rythme, relance `--calibrer`, recopie `SEED` et `GOALS` dans `cafe.html`, puis relance le bot pour vérifier ces cibles.
 
 ## Clairière aux Renards (`clairiere.html`)
 
