@@ -93,10 +93,14 @@ with sync_playwright() as p:
             smooth[i] = max(smooth[i], smooth[i - 1])
         seeds, goals = [], []
         for d, r, t in zip(days, runs, smooth):
-            up = [x for x in r if not goals or round(x[0] / STAR3) >= goals[-1]]   # l'objectif ne redescend pas
-            e, k = min(up or r, key=lambda x: abs(x[0] - t))
-            g = page.evaluate(BOT, [d, own_for(d), GOOD, k])[0]
-            seeds.append(k); goals.append(round(min(e / STAR3, g / PASS)))
+            # le bon joueur est joué sur chaque graine : on évite celles où il plafonne l'objectif (creux dans la courbe),
+            # ce qui arrive quand un VIP pressé tombe mal pour lui
+            good = {k: page.evaluate(BOT, [d, own_for(d), GOOD, k])[0] for _, k in r}
+            goal = lambda x: round(min(x[0] / STAR3, good[x[1]] / PASS))
+            up = [x for x in r if not goals or goal(x) >= goals[-1] * .97]   # l'objectif ne redescend presque pas
+            e, k = min(up or r, key=lambda x: abs(x[0] - t) + 4 * max(0, x[0] / STAR3 - good[x[1]] / PASS))
+            g = good[k]
+            seeds.append(k); goals.append(goal((e, k)))
             print(f"jour {d:>2} : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {g}, objectif {goals[-1]}", file=sys.stderr)
         print("const SEED=[" + ",".join(map(str, seeds)) + "];")
         print("const GOALS=[" + ",".join(map(str, goals)) + "];")

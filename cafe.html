@@ -431,8 +431,8 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
 // « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
 // L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.
-const SEED=[13,6,3,2,13,0,3,7,13,5,11,3,5,9,15,14,14,3,1,12,3,1,13,2,0,8,2,7,6,13,7,7,8,15,2,13,13,0,7,13];
-const GOALS=[37,58,68,85,101,121,133,148,159,173,182,197,208,221,199,224,266,272,291,295,298,306,312,321,331,337,354,358,359,363,376,381,384,388,396,396,403,399,421,431];
+const SEED=[13,6,8,15,2,4,4,2,5,14,8,8,6,6,6,15,2,1,8,12,13,6,13,1,0,8,13,9,15,2,7,8,0,3,2,0,5,15,3,7];
+const GOALS=[37,58,69,89,108,124,143,158,167,177,189,202,211,227,247,266,276,320,313,322,328,334,345,342,350,356,367,372,393,406,405,398,408,412,422,443,437,444,456,462];
 function cfgOf(d){
   const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3)),goal=GOALS[d-1];
   return{c,gap:Math.max(d<=20?4:3.2,6-d*.27),pat:Math.max(14,21-d*.6),max:d<2?1:d<4?2:3,goal};
@@ -662,9 +662,11 @@ function spawn(){
   let f,vip=false;
   if(G.rng()<vipCh){vip=true;const pool=(guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
-  const pat=G.cfg.pat*patMult()*(vip?1.15:1);
+  // les VIP paient ×3 mais n'attendent que moitié moins longtemps
+  const pat=G.cfg.pat*patMult()*(vip?.5:1);
   G.cust.push({id:++uid,fox:f.id,spot:sp,order:genOrder(),pat,patMax:pat,state:"wait",vip,born:G.t});
-  if(!S.seen[f.id]){G.newFox.push(f.name);toast(vip?`Client VIP : ${f.name} ! Gros pourboire en vue.`:`Nouveau client : ${f.name} !`)}
+  if(vip)toast(`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
+  if(!S.seen[f.id])G.newFox.push(f.name);
   S.seen[f.id]=(S.seen[f.id]||0)+1;
   G.spawned++;dirty=true;return true;
 }
@@ -700,7 +702,7 @@ function complete(c){
   let tip=Math.round(base*.45*frac*tipMult());
   if(frac>=.5){G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo)}else G.combo=0;
   const cb=G.combo>=3?Math.min(G.combo,6)-1:0;
-  let tot=base+tip+cb;if(c.vip){tot*=2;G.vipServed++;qEvent("vip")}
+  let tot=base+tip+cb;if(c.vip){tot*=3;G.vipServed++;qEvent("vip")}
   G.earned+=tot;S.coins+=tot;S.total+=tot;G.served++;S.served++;
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
   if(frac>=.6)qEvent("green");
@@ -734,7 +736,7 @@ function render(){
   const box=$("custs"),keep=new Set();
   for(const c of G.cust){const f=FOX[c.fox];
     const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(o.r)}</span>`).join("");
-    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}`,inner=`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">VIP</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>${foxSVG(f,{pose:c.state==="happy"?"happy":"sit"})}`;
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}`,inner=`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">VIP ×3</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>${foxSVG(f,{pose:c.state==="happy"?"happy":"sit"})}`;
     let el=custEl(c);
     if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);box.appendChild(el)}
     if(el.dataset.c!==cls){el.className=cls;el.dataset.c=cls}
@@ -813,7 +815,7 @@ function endDay(){
   if(st&&d===S.day)S.day++;
   const rk=Object.keys(REC).find(k=>REC[k].day===d);
   if(st&&rk&&!S.own[rk]){S.own[rk]=1;news.push(itRow(icon(rk),`Nouvelle recette : ${REC[rk].name}`,`Elle arrive sur ta carte dès la prochaine journée. ${REC[rk].desc}`,"background:#e3f2d6"))}
-  for(const c of checkGuests())news.push(itRow(foxSVG(FOX[c.guest],{pose:"happy"}),`${FOX[c.guest].name} rejoint ton café !`,`Saison ${c.name} en ★★★ : ${FOX[c.guest].name} vient désormais en invité d'honneur et paie double.`,"background:#fbf0cc"));
+  for(const c of checkGuests())news.push(itRow(foxSVG(FOX[c.guest],{pose:"happy"}),`${FOX[c.guest].name} rejoint ton café !`,`Saison ${c.name} en ★★★ : ${FOX[c.guest].name} vient désormais en invité d'honneur et paie le triple, mais il est pressé.`,"background:#fbf0cc"));
   for(const c of CHAP)if(c.gate&&!S.pass[c.id]&&before<c.gate&&starSum()>=c.gate&&gateOpen(c))news.push(itRow(icon("chest"),`La porte de la saison ${c.name} s'ouvre !`,`Tu as réuni ${c.gate} étoiles.`,"background:#e3f2d6"));
   const nc=chapOf(S.day);
   if(st&&S.day===nc.from&&nc.gate&&!gateOpen(nc))news.push(itRow(icon("chest"),`Porte de la saison ${nc.name} : ${starSum()} / ${nc.gate} ★`,`Rejoue des journées pour gagner les étoiles qui manquent.`));
@@ -849,7 +851,7 @@ function daySheet(d){
   const rw=[];
   if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,`Réussis cette journée pour l'ajouter à ta carte.`,"background:#e3f2d6"));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★",st?"Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre.":"Chaque étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
-  if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient au café et paie double.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
+  if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient au café et paie le triple, mais il est pressé.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">${c.c} clients attendus${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Patience : ${Math.round(c.pat*patMult())} s.${S.best[d]?` Record : <b>${S.best[d]} pièces</b>.`:""}</p>
   ${d===1&&!S.total?`<div class="tuto"><b>Comment jouer</b><ol><li>Touche <b>Café</b> pour le préparer, puis touche-le à nouveau quand il est prêt : il va sur ton plateau.</li><li>Touche <b>${vName("croissant","printemps")[0]}</b> pour lancer une fournée, puis le <b>four</b> quand elle est cuite, avant qu'elle brûle. Touche-la ensuite pour la poser sur le plateau.</li><li>Touche un <b>client</b> pour lui servir ce qui est sur ton plateau. Plus tu es rapide, plus le pourboire est gros.</li></ol></div>`:""}
@@ -863,7 +865,7 @@ function gateSheet(i){
 }
 function guestSheet(i){
   const c=CHAP[i],f=FOX[c.guest],ok=S.guest[c.guest];
-  openSheet(`<h2>${ok?f.name:"Invité mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invité d'honneur du café : il paie double.`:`Obtiens ★★★ sur les 10 journées du ${c.name} pour l'inviter au café. Pour l'instant : <b>${chapStars(c)} / 30 ★</b>.`}</p>`);
+  openSheet(`<h2>${ok?f.name:"Invité mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invité d'honneur du café : il paie le triple, mais il est pressé.`:`Obtiens ★★★ sur les 10 journées du ${c.name} pour l'inviter au café. Pour l'instant : <b>${chapStars(c)} / 30 ★</b>.`}</p>`);
 }
 function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées. Une quête réussie rapporte des pièces, et une nouvelle la remplace.</p>${questHTML()}`)}
 let shopTab="equip";
