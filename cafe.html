@@ -64,6 +64,7 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .board{position:absolute;left:70.3%;top:11.5%;width:23.4%;height:29%;display:flex;flex-direction:column;gap:1px;padding:1.2% 1.6%;color:#f4f1e6;font-family:var(--display);font-size:clamp(6px,1.2vw,10px);line-height:1.25;pointer-events:none;overflow:hidden}
 .board .bt{text-align:center;color:#ffe9a8;margin-bottom:2px}
 .board div{display:flex;justify-content:space-between;gap:4px;white-space:nowrap}
+.board div span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .notes{position:absolute;left:58%;top:12%;font-family:var(--display);color:var(--ink);font-size:clamp(10px,2vw,16px);animation:note 2.4s ease-in-out infinite;pointer-events:none}
 @keyframes note{0%{opacity:0;transform:translateY(6px)}50%{opacity:1}100%{opacity:0;transform:translateY(-14px) rotate(12deg)}}
 
@@ -100,7 +101,7 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 
 .tray{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:6px 10px;box-shadow:0 3px 0 var(--line)}
 .tl{font-family:var(--display);font-size:13px;color:var(--ink-soft);margin-right:2px}
-.ts{width:46px;height:46px;border-radius:14px;border:2px dashed var(--line);background:var(--card-2);display:grid;place-items:center;padding:4px;flex:none}
+.ts{width:46px;aspect-ratio:1;border-radius:14px;border:2px dashed var(--line);background:var(--card-2);display:grid;place-items:center;padding:4px;flex:0 1 auto;min-width:34px;box-sizing:border-box}
 button.ts{border-style:solid;border-color:var(--ink);background:#fff;cursor:pointer;animation:pop .25s}
 .ts svg{width:100%;height:100%}
 .tray small{margin-left:auto;font-size:12px;color:var(--ink-soft);text-align:right;line-height:1.3}
@@ -181,7 +182,50 @@ button.st:active,.bk:active,.unload:active{transform:translateY(3px);box-shadow:
 .fc em{display:block;font-style:normal;font-weight:500;color:var(--ink-soft);font-size:11px}
 .fc.vipc{background:#fbf0cc}
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:999px;font-weight:700;font-size:13.5px;max-width:min(92vw,440px);text-align:center;z-index:30;box-shadow:0 8px 24px rgba(91,66,80,.25);animation:up .3s ease-out}
-@media (max-width:520px){.kgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.cust{width:20%}.ts{width:40px;height:40px}.tray small{display:none}.st-ic{width:38px;height:38px}}
+.wsnow{position:absolute;pointer-events:none;border-radius:2px;background-image:radial-gradient(#fff 1.7px,transparent 2.3px),radial-gradient(#fff 1.2px,transparent 1.8px);background-size:22px 22px,15px 15px;background-position:0 0,7px 9px;animation:snow 3.2s linear infinite}
+@keyframes snow{to{background-position:0 44px,7px 54px}}
+.wleaf{position:absolute;pointer-events:none;border-radius:2px;background-image:radial-gradient(ellipse 3px 2px,#e8835a 90%,transparent),radial-gradient(ellipse 3px 2px,#f2c060 90%,transparent);background-size:34px 34px,27px 27px;background-position:0 0,9px 10px;animation:leaf 5s linear infinite}
+@keyframes leaf{to{background-position:34px 68px,-18px 64px}}
+
+/* Carte : plein écran par-dessus le café, on monte du jour 1 (en bas) au jour 40 */
+.map{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;background:var(--bg)}
+.mtop{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px));background:var(--card);border-bottom:3px solid var(--line);z-index:2}
+.mtt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+.mtt b{font-family:var(--display);font-weight:400;font-size:18px}
+.mtt span{font-size:12.5px;color:var(--ink-soft);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill.mst{background:#fff4cf;border-color:var(--gold);color:#9a6c0c}
+.mscroll{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background-image:radial-gradient(var(--dot) 2px,transparent 2.6px);background-size:26px 26px}
+.mwrap{position:relative;width:min(100%,520px);margin:0 auto;box-shadow:0 0 0 3px #fff,0 0 30px rgba(91,66,80,.12)}
+.mwrap>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mbar{display:flex;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));background:var(--card);border-top:3px solid var(--line);justify-content:center}
+.mbar .btn{flex:1;max-width:170px;font-family:var(--display);font-weight:400;padding:10px 8px}
+.node{position:absolute;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;border:3.5px solid var(--ink);background:#fff6ec;box-shadow:0 5px 0 var(--ink);cursor:pointer;padding:0;display:grid;place-items:center;z-index:1}
+.node b{font-family:var(--display);font-weight:400;font-size:21px;line-height:1}
+.node:active{transform:translate(-50%,calc(-50% + 3px));box-shadow:0 2px 0 var(--ink)}
+.node.done{background:#ffe3e6}
+.node.gold{background:linear-gradient(#fbe08e,#f2c75c)}
+.node.cur{background:var(--coral);color:#fff;animation:nodep 1.3s ease-in-out infinite}
+.node.cur b{text-shadow:0 2px 0 var(--coral-d)}
+.node.lock{background:#e9e0da;color:#b3a3a8;border-color:#b9aab0;box-shadow:0 5px 0 #b9aab0}
+@keyframes nodep{0%,100%{box-shadow:0 5px 0 var(--ink),0 0 0 0 rgba(245,154,139,.6)}50%{box-shadow:0 5px 0 var(--ink),0 0 0 12px rgba(245,154,139,0)}}
+.nst{position:absolute;left:50%;top:100%;transform:translate(-50%,2px);display:flex;gap:0;font-size:17px;line-height:1;font-style:normal;white-space:nowrap}
+.nst i{font-style:normal;color:#fff;-webkit-text-stroke:1.6px var(--ink);paint-order:stroke fill}
+.nst i:nth-child(2){transform:translateY(4px)}
+.nst i.on{color:var(--gold)}
+.node.lock .nst{display:none}
+.nb{position:absolute;right:-12px;top:-10px;width:28px;height:28px;border-radius:50%;background:#fff;border:2.5px solid var(--ink);padding:2px;display:block}
+.nb svg{display:block;width:100%;height:100%}
+.gbtn{position:absolute;transform:translate(-50%,-50%);width:100px;height:80px;background:none;border:0;cursor:pointer;border-radius:20px}
+.gbtn.want{animation:gwant 1.3s ease-in-out infinite}
+@keyframes gwant{50%{background:rgba(242,199,92,.35)}}
+.mguest{position:absolute;transform:translate(-50%,-80%);width:78px;background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.mguest svg{width:78px;display:block;filter:drop-shadow(0 4px 0 rgba(91,66,80,.15))}
+.mguest em{font-style:normal;font-size:11.5px;font-weight:900;background:#fffaf2;border:2px solid var(--ink);border-radius:99px;padding:0 8px;margin-top:-6px;white-space:nowrap}
+.mguest.ok em{background:var(--gold)}
+.mfox{position:absolute;transform:translate(-50%,-128%);width:58px;pointer-events:none;z-index:2;animation:hop 1s ease-in-out infinite alternate}
+.mfox svg{display:block;width:100%}
+@keyframes hop{to{translate:0 -6px}}
+@media (max-width:520px){.kgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.cust{width:20%}.ts{width:40px}.tray small{display:none}.st-ic{width:38px;height:38px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -199,11 +243,16 @@ button.st:active,.bk:active,.unload:active{transform:translateY(3px);box-shadow:
     <div id="custs"></div>
     <div id="counter"></div>
     <div id="helper"></div>
-    <div id="closed"><div class="closed-in"><span class="sign">Fermé</span><button class="btn big" id="open-menu" type="button">Préparer la journée</button></div></div>
+    <div id="closed"><div class="closed-in"><span class="sign">Fermé</span><button class="btn big" id="open-menu" type="button">Voir la carte</button></div></div>
   </div>
   <div class="tray" id="tray"></div>
   <div class="kgrid" id="kitchen"></div>
   <p class="hint" id="hint"></p>
+</div>
+<div class="map" id="map" hidden>
+  <div class="mtop"><a class="home" href="./" aria-label="Retour à l'accueil"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M13 4l-6 6 6 6" fill="none" stroke="#5b4250" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a><div class="mtt"><b>Carte du café</b><span id="mchap"></span></div><span class="pill mst" id="mstars"></span><div class="coin" title="Pièces"><span id="ic-c2"></span><span id="coins2">0</span></div></div>
+  <div class="mscroll" id="mscroll"><div class="mwrap" id="mwrap"></div></div>
+  <div class="mbar"><button class="btn ghost" data-act="shop" type="button">Boutique</button><button class="btn ghost" data-act="quests" type="button">Quêtes</button><button class="btn ghost" data-act="carnet" type="button">Carnet</button></div>
 </div>
 <div class="sheet" id="sheet" hidden><div class="sheet-in" id="sheet-in"></div></div>
 <div class="toast" id="toast" hidden></div>
@@ -312,14 +361,22 @@ function foxSVG(f,o={}){
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
 const REC={
-  cafe:{name:"Café",price:5,kind:"drink",time:2.4,cost:0,stn:"Machine à café"},
-  croissant:{name:"Croissant",price:4,kind:"bake",time:5,batch:3,cost:0},
-  the:{name:"Thé",price:5,kind:"drink",time:2,cost:40,stn:"Bouilloire",desc:"Une bouilloire rapide. Infusion express."},
-  cookie:{name:"Cookie",price:6,kind:"bake",time:5,batch:4,cost:70,desc:"Au four, par fournées de 4."},
-  choco:{name:"Chocolat chaud",price:8,kind:"drink",time:3,cost:120,stn:"Chocolatière",desc:"Avec une guimauve qui flotte."},
-  smoothie:{name:"Smoothie",price:10,kind:"drink",time:3.4,cost:170,stn:"Blender",desc:"Aux baies des bois, bien mixé."},
-  gateau:{name:"Gâteau aux baies",price:14,kind:"bake",time:7,batch:2,cost:230,desc:"Le plus cher de la carte. Par fournées de 2 parts."}
+  cafe:{name:"Café",price:5,kind:"drink",time:2.4,stn:"Machine à café"},
+  croissant:{name:"Croissant",price:4,kind:"bake",time:5,batch:3},
+  the:{name:"Thé",price:5,kind:"drink",time:2,day:2,stn:"Bouilloire",desc:"Une bouilloire rapide. Infusion express."},
+  cookie:{name:"Cookie",price:6,kind:"bake",time:5,batch:4,day:5,desc:"Au four, par fournées de 4."},
+  choco:{name:"Chocolat chaud",price:8,kind:"drink",time:3,day:7,stn:"Chocolatière",desc:"Avec une guimauve qui flotte."},
+  smoothie:{name:"Smoothie",price:10,kind:"drink",time:3.4,day:11,stn:"Blender",desc:"Aux baies des bois, bien mixé."},
+  gateau:{name:"Gâteau aux baies",price:14,kind:"bake",time:7,batch:2,day:16,desc:"Le plus cher de la carte. Par fournées de 2 parts."}
 };
+/* La carte : 4 saisons de 10 journées. Une porte demande un total d'étoiles, et un invité d'honneur rejoint le café quand toute la saison est en ★★★. */
+const CHAP=[
+  {id:"printemps",name:"Printemps",from:1,to:10,gate:0,guest:"zaza"},
+  {id:"ete",name:"Été",from:11,to:20,gate:20,guest:"flocon"},
+  {id:"automne",name:"Automne",from:21,to:30,gate:45,guest:"noisette"},
+  {id:"hiver",name:"Hiver",from:31,to:40,gate:72,guest:"comete"}
+];
+const LASTDAY=40;
 const UPG={
   equip:[
     {id:"plateau",name:"Grand plateau",desc:"4 places sur le plateau au lieu de 3.",cost:60},
@@ -328,19 +385,24 @@ const UPG={
     {id:"fourpro",name:"Four rapide",desc:"Cuisson 30 % plus rapide, et les fournées brûlent moins vite.",cost:110},
     {id:"barista",name:"Gestes de barista",desc:"Toutes les boissons se préparent 25 % plus vite.",cost:150},
     {id:"comptoir2",name:"Grand comptoir",desc:"Un 4e client peut commander en même temps.",cost:220,req:"comptoir1"},
-    {id:"serveur",name:"Apprenti serveur",desc:"Petit Pois apporte tout seul les viennoiseries de la vitrine aux clients.",cost:320}
+    {id:"serveur",name:"Apprenti serveur",desc:"Petit Pois apporte tout seul les viennoiseries de la vitrine aux clients.",cost:320},
+    {id:"machines",name:"Machines doubles",desc:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",cost:900,from:21},
+    {id:"plateau5",name:"Plateau géant",desc:"5 places sur le plateau.",cost:700,from:21,req:"plateau"},
+    {id:"four2",name:"Four de boulanger",desc:"Chaque fournée donne deux fois plus de viennoiseries.",cost:1400,from:31}
   ],
   deco:[
     {id:"plantes",name:"Plantes vertes",desc:"Les clients patientent 15 % plus longtemps.",cost:50},
     {id:"guirlande",name:"Guirlande lumineuse",desc:"+25 % de pourboires.",cost:90},
     {id:"coussins",name:"Tabourets moelleux",desc:"Les clients VIP viennent deux fois plus souvent.",cost:130},
-    {id:"disque",name:"Tourne-disque",desc:"Musique douce : +10 % de patience et +10 % de pourboires.",cost:170}
+    {id:"disque",name:"Tourne-disque",desc:"Musique douce : +10 % de patience et +10 % de pourboires.",cost:170},
+    {id:"fauteuils",name:"Fauteuils douillets",desc:"Les clients patientent 20 % plus longtemps.",cost:800,from:21},
+    {id:"lanternes",name:"Lanternes de saison",desc:"+25 % de pourboires.",cost:1200,from:31}
   ]
 };
 const ALLUP=[...UPG.equip,...UPG.deco];
 const SPOTX={2:[31,69],3:[20,50,80],4:[14,38,62,86]};
 const REG=[...FOXES.filter(f=>f.rar==="commun"),...FOXES.filter(f=>f.rar==="discret")];
-const VIPS=FOXES.filter(f=>f.rar==="rare"),LEGS=FOXES.filter(f=>f.rar==="legend");
+const VIPS=FOXES.filter(f=>f.rar==="discret");
 const QUESTS=[
   {k:"serve",r:"cafe",n:6,t:"Sers 6 cafés",g:15},{k:"serve",r:"croissant",n:6,t:"Sers 6 croissants",g:15},
   {k:"serve",r:"the",n:6,t:"Sers 6 thés",g:20},{k:"serve",r:"cookie",n:8,t:"Sers 8 cookies",g:25},
@@ -350,18 +412,41 @@ const QUESTS=[
   {k:"stars3",n:1,t:"Obtiens 3 étoiles sur une journée",g:40},{k:"orders",n:15,t:"Complète 15 commandes",g:20},
   {k:"big",n:3,t:"Complète 3 commandes de 3 articles",g:25},{k:"fast",n:5,t:"Sers 5 clients en moins de 5 secondes",g:25}
 ];
-const has=k=>(REC[k]&&REC[k].cost===0)||!!S.own[k];
+const has=k=>(REC[k]&&!REC[k].day)||!!S.own[k];
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-function cfgOf(d){const c=Math.min(6+d,20);return{c,gap:Math.max(2.6,6-d*.3),pat:Math.max(11,21-d*.8),max:d<2?1:d<4?2:3,goal:Math.round(c*(4.6+1.25*Math.min(d,7)+.35*Math.max(0,d-7)))}}
+// Difficulté : jusqu'au jour 6 l'objectif suit une formule, ensuite des points réglés au bot (interpolés entre eux).
+// L'écart entre clients ne descend pas sous 3,5 s (3,2 s à partir de l'Automne), sinon un bon joueur ne suit plus.
+const GOALK=[[6,145],[7,160],[8,180],[10,186],[13,197],[17,240],[19,295],[21,300],[25,340],[30,355],[31,365],[35,400],[40,430]];
+function cfgOf(d){
+  const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3));let goal;
+  if(d<=6)goal=Math.round(c*(4.6+1.25*d));
+  else{let i=0;while(i<GOALK.length-2&&d>GOALK[i+1][0])i++;const [a,ga]=GOALK[i],[b,gb]=GOALK[i+1];goal=Math.round(ga+(gb-ga)*Math.min(1,(d-a)/(b-a)))}
+  return{c,gap:Math.max(d<=20?3.5:3.2,6-d*.27),pat:Math.max(12,21-d*.8),max:d<2?1:d<4?2:3,goal};
+}
 const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
 
 /* ---------- état ---------- */
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
-if(!S||!S.own)S={day:1,coins:0,own:{},seen:{},stars:{},quests:[],qp:{},streak:0,lastDay:"",total:0,served:0};
+if(!S||!S.own)S={day:1,coins:0,own:{},seen:{},stars:{},quests:[],qp:{},streak:0,lastDay:"",total:0,served:0,ver:2,best:{},guest:{},pass:{}};
+if(!S.ver){
+  // v1 -> v2 : les recettes viennent de la carte, et les saisons déjà atteintes restent ouvertes
+  for(const k in REC)if(REC[k].day&&REC[k].day<S.day)S.own[k]=1;
+  S.best={};S.guest={};S.pass={};
+  for(const c of CHAP)if(c.gate&&c.from<=S.day)S.pass[c.id]=1;
+  S.ver=2;
+}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function questAvail(q){return q.k!=="serve"||has(q.r)}
+const chapOf=d=>CHAP.find(c=>d<=c.to)||CHAP[CHAP.length-1];
+const starSum=()=>Object.values(S.stars).reduce((a,b)=>a+b,0);
+const chapStars=c=>{let n=0;for(let d=c.from;d<=c.to;d++)n+=S.stars[d]||0;return n};
+function gateOpen(c){if(!c.gate||S.pass[c.id])return true;if(starSum()>=c.gate){S.pass[c.id]=1;save();return true}return false}
+const dayOpen=d=>d>=1&&d<=Math.min(S.day,LASTDAY)&&gateOpen(chapOf(d));
+const curDay=()=>{let d=Math.min(S.day,LASTDAY);while(d>1&&!dayOpen(d))d--;return d};
+function checkGuests(){const n=[];for(const c of CHAP)if(!S.guest[c.guest]&&chapStars(c)>=30){S.guest[c.guest]=1;n.push(c)}return n}
+checkGuests();
+function questAvail(q){return q.k==="serve"?has(q.r):q.k==="vip"?S.day>=3:true}
 function fillQuests(){
   while(S.quests.length<3){
     const used=new Set(S.quests.map(q=>q.t)),opts=QUESTS.filter(q=>questAvail(q)&&!used.has(q.t));
@@ -400,17 +485,25 @@ const ICON={
   fourpro:`<rect x="5" y="8" width="30" height="26" rx="4" fill="#d8ccd4" ${K}/><rect x="9" y="15" width="22" height="14" rx="2" fill="#f7b48b" ${K}/><path d="M12 4 l2 3 M20 3 l0 4 M28 4 l-2 3" fill="none" stroke="#f47f7f" stroke-width="2.4" stroke-linecap="round"/>`,
   barista:`<path d="M10 34 L14 10 H26 L30 34Z" fill="#fff" ${K}/><path d="M14 10 Q20 2 26 10" fill="none" ${K}/><path d="M16 20 h8 M15 26 h10" fill="none" ${K}/>`,
   serveur:`<circle cx="20" cy="20" r="14" fill="#f6ad74" ${K}/><path d="M12 28 Q20 34 28 28 L28 36 H12Z" fill="#fff" ${K}/><circle cx="15" cy="18" r="1.8" fill="${INK}"/><circle cx="25" cy="18" r="1.8" fill="${INK}"/>`,
+  machines:`<rect x="3" y="12" width="15" height="20" rx="3" fill="#a9d68f" ${K}/><rect x="22" y="12" width="15" height="20" rx="3" fill="#f6a5c8" ${K}/><path d="M7 32 v4 M14 32 v4 M26 32 v4 M33 32 v4" fill="none" ${K}/><circle cx="10.5" cy="20" r="3" fill="#fff" ${K}/><circle cx="29.5" cy="20" r="3" fill="#fff" ${K}/><path d="M2 8 H38" fill="none" ${K}/>`,
+  plateau5:`<ellipse cx="20" cy="27" rx="19" ry="8" fill="#d8ccd4" ${K}/><ellipse cx="20" cy="25" rx="16" ry="6" fill="#fff" ${K}/>${[6,13,20,27,34].map((x,i)=>`<circle cx="${x}" cy="${i%2?21:24}" r="3" fill="${["#f2b45a","#f59a8b","#a9d68f","#f6a5c8","#e0a868"][i]}" stroke="${INK}" stroke-width="1.6"/>`).join("")}`,
+  four2:`<rect x="3" y="8" width="34" height="28" rx="5" fill="#c8946a" ${K}/><path d="M6 20 Q20 4 34 20Z" fill="#e8b07a" ${K}/><rect x="10" y="22" width="20" height="10" rx="3" fill="#f7b48b" ${K}/><path d="M15 6 q-2 -3 0 -5 M25 6 q-2 -3 0 -5" fill="none" stroke="#cdbfc7" stroke-width="2" stroke-linecap="round"/>`,
+  fauteuils:`<rect x="5" y="10" width="30" height="18" rx="8" fill="#f6a5b4" ${K}/><rect x="2" y="18" width="9" height="14" rx="4" fill="#f59a8b" ${K}/><rect x="29" y="18" width="9" height="14" rx="4" fill="#f59a8b" ${K}/><rect x="10" y="22" width="20" height="9" rx="3" fill="#ffd6e0" ${K}/><path d="M9 32 v5 M31 32 v5" fill="none" ${K}/>`,
+  lanternes:`<path d="M20 2 V8" fill="none" ${K}/><ellipse cx="20" cy="21" rx="12" ry="13" fill="#f59a8b" ${K}/><path d="M14 9 Q10 21 14 33 M26 9 Q30 21 26 33 M20 8 V34" fill="none" stroke="${INK}" stroke-width="1.6"/><rect x="15" y="6" width="10" height="4" rx="1" fill="#f2c75c" ${K}/><rect x="15" y="32" width="10" height="4" rx="1" fill="#f2c75c" ${K}/>`,
   chest:`<rect x="4" y="16" width="32" height="20" rx="3" fill="#c8946a" ${K}/><path d="M4 18 Q4 6 20 6 Q36 6 36 18Z" fill="#e0a868" ${K}/><rect x="16" y="15" width="8" height="9" rx="2" fill="#f2c75c" ${K}/><path d="M4 18 H36" fill="none" ${K}/>`
 };
 const icon=k=>`<svg viewBox="0 0 40 40" aria-hidden="true">${ICON[k]||""}</svg>`;
 const coinSVG=`<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="#f7d77a" stroke="${INK}" stroke-width="1.8"/><circle cx="13" cy="13" r="7" fill="none" stroke="#d6a93a" stroke-width="1.6"/><path d="M10 15 q3 -6 6 0 M10.5 10.5 l1 -2 M15.5 10.5 l-1 -2" fill="none" stroke="#b07a12" stroke-width="1.6" stroke-linecap="round"/></svg>`;
 const BO=`stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+const SEASON={printemps:{sky:"#cfe3f0",tree:["#f6c1cf","#a8d39a","#f9d3dc"],fx:"wrain"},ete:{sky:"#9fd3f2",tree:["#93c48a","#7fb873","#a3d293"],fx:""},automne:{sky:"#f6dcbc",tree:["#f2a35c","#e8835a","#f2c060"],fx:"wleaf"},hiver:{sky:"#dde7f1",tree:["#ffffff","#eef3f8","#ffffff"],fx:"wsnow"}};
 function bgSVG(){
+  const SE=SEASON[chapOf(G?G.day:curDay()).id];
   let s=`<rect width="600" height="375" fill="#fbe6d6"/>`;
   for(let y=14;y<240;y+=26)for(let x=(y/26%2)*13;x<600;x+=26)s+=`<circle cx="${x}" cy="${y}" r="2" fill="#f4d3c2"/>`;
   s+=`<rect x="0" y="196" width="600" height="180" fill="#f2c6b2"/><path d="M0 196 H600" stroke="${INK}" stroke-width="3"/>`;
-  s+=`<rect x="34" y="34" width="156" height="124" rx="10" fill="#c8946a" ${BO}/><rect x="44" y="44" width="136" height="104" rx="5" fill="#b9cbe0" ${BO}/>`;
-  s+=`<circle cx="70" cy="146" r="30" fill="#93b69a"/><circle cx="118" cy="150" r="34" fill="#7fa88a"/><circle cx="165" cy="144" r="28" fill="#93b69a"/>`;
+  s+=`<rect x="34" y="34" width="156" height="124" rx="10" fill="#c8946a" ${BO}/><rect x="44" y="44" width="136" height="104" rx="5" fill="${SE.sky}" ${BO}/>`;
+  if(!SE.fx)s+=`<circle cx="150" cy="72" r="15" fill="#ffe07a" stroke="${INK}" stroke-width="2.4"/>`;
+  s+=`<circle cx="70" cy="146" r="30" fill="${SE.tree[0]}"/><circle cx="118" cy="150" r="34" fill="${SE.tree[1]}"/><circle cx="165" cy="144" r="28" fill="${SE.tree[2]}"/>`;
   s+=`<path d="M112 44 V148 M44 96 H180" stroke="#c8946a" stroke-width="7"/><rect x="28" y="156" width="168" height="10" rx="4" fill="#c8946a" ${BO}/>`;
   s+=`<rect x="412" y="32" width="160" height="128" rx="8" fill="#a8785a" ${BO}/><rect x="420" y="40" width="144" height="112" rx="4" fill="#4f6e5e"/>`;
   s+=`<path d="M300 0 V34" stroke="${INK}" stroke-width="2.4"/><path d="M280 50 Q300 26 320 50Z" fill="#f2c75c" ${BO}/><ellipse cx="300" cy="62" rx="40" ry="14" fill="#fff3a8" opacity=".55" filter="url(#soft)"/>`;
@@ -427,7 +520,8 @@ function bgSVG(){
   if(S.own.guirlande){s+=`<path d="M-10 6 Q150 44 300 10 T610 8" fill="none" stroke="${INK}" stroke-width="2"/>`;
     for(let i=0;i<14;i++){const x=10+i*44,t=x<300?x/300:(x-300)/300,y=x<300?6+38*Math.sin(Math.PI*t)*.9+2:10+30*Math.sin(Math.PI*t)*.9;
       const c=["#f2c75c","#f47f9a","#9ec3ef","#8fca7a"][i%4];s+=`<circle cx="${x}" cy="${y+6}" r="10" fill="${c}" opacity=".35" filter="url(#soft)"/><ellipse cx="${x}" cy="${y+6}" rx="4.5" ry="6" fill="${c}" stroke="${INK}" stroke-width="2"/>`}}
-  return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g filter="url(#wobble)">${s}</g></svg><div class="wrain" style="left:7.3%;top:11.7%;width:22.7%;height:27.7%"></div>${S.own.disque?`<span class="notes">♪</span><span class="notes" style="left:61%;animation-delay:1.2s">♫</span>`:""}`;
+  if(S.own.lanternes)[[250,"#f59a8b"],[350,"#f2c75c"],[392,"#c9b8f2"]].forEach(([x,c],i)=>{const y=i===1?44:30;s+=`<path d="M${x} 0 V${y-14}" stroke="${INK}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="22" fill="${c}" opacity=".35" filter="url(#soft)"/><ellipse cx="${x}" cy="${y}" rx="12" ry="14" fill="${c}" ${BO}/><path d="M${x} ${y-14} V${y+14} M${x-6} ${y-12} Q${x-10} ${y} ${x-6} ${y+12} M${x+6} ${y-12} Q${x+10} ${y} ${x+6} ${y+12}" fill="none" stroke="${INK}" stroke-width="1.5"/>`});
+  return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g filter="url(#wobble)">${s}</g></svg>${SE.fx?`<div class="${SE.fx}" style="left:7.3%;top:11.7%;width:22.7%;height:27.7%"></div>`:""}${S.own.disque?`<span class="notes">♪</span><span class="notes" style="left:61%;animation-delay:1.2s">♫</span>`:""}`;
 }
 function counterSVG(){
   let s=`<rect x="-10" y="246" width="620" height="20" rx="8" fill="#c8946a" ${BO}/><rect x="0" y="264" width="600" height="120" fill="#e8b07a" ${BO}/>`;
@@ -435,6 +529,7 @@ function counterSVG(){
   s+=`<rect x="548" y="214" width="44" height="34" rx="5" fill="#f59a8b" ${BO}/><rect x="554" y="220" width="32" height="10" rx="2" fill="#fff5e8" stroke="${INK}" stroke-width="2"/><rect x="560" y="204" width="22" height="12" rx="3" fill="#d8ccd4" stroke="${INK}" stroke-width="2"/>`;
   s+=`<path d="M10 246 Q10 214 30 214 Q50 214 50 246Z" fill="rgba(220,240,255,.75)" ${BO}/><circle cx="30" cy="236" r="9" fill="#f6a5c8" stroke="${INK}" stroke-width="2"/>`;
   if(S.own.coussins)[100,300,500].forEach(x=>s+=`<rect x="${x-4}" y="338" width="8" height="40" fill="#a8785a" ${BO}/><rect x="${x-30}" y="322" width="60" height="18" rx="9" fill="#c9b8f2" ${BO}/><ellipse cx="${x}" cy="322" rx="30" ry="7" fill="#ffc7d8" ${BO}/>`);
+  if(S.own.fauteuils)[[44,1],[556,-1]].forEach(([x,f])=>s+=`<rect x="${x-30}" y="318" width="60" height="40" rx="14" fill="#f6a5b4" ${BO}/><rect x="${x-38}" y="332" width="16" height="34" rx="7" fill="#f59a8b" ${BO}/><rect x="${x+22}" y="332" width="16" height="34" rx="7" fill="#f59a8b" ${BO}/><rect x="${x-22}" y="340" width="44" height="20" rx="6" fill="#ffd6e0" ${BO}/>`);
   return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g filter="url(#wobble)">${s}</g></svg>`;
 }
 function renderDecor(){
@@ -446,16 +541,17 @@ function renderDecor(){
 
 /* ---------- jeu ---------- */
 const spotsN=()=>2+(S.own.comptoir1?1:0)+(S.own.comptoir2?1:0);
-const trayCap=()=>S.own.plateau?4:3;
-const patMult=()=>1+(S.own.plantes?.15:0)+(S.own.disque?.1:0);
-const tipMult=()=>1+(S.own.guirlande?.25:0)+(S.own.disque?.1:0);
+const trayCap=()=>S.own.plateau5?5:S.own.plateau?4:3;
+const patMult=()=>1+(S.own.plantes?.15:0)+(S.own.disque?.1:0)+(S.own.fauteuils?.2:0);
+const tipMult=()=>1+(S.own.guirlande?.25:0)+(S.own.disque?.1:0)+(S.own.lanternes?.25:0);
+const batchOf=k=>REC[k].batch*(S.own.four2?2:1);
 let uid=0;
-function newDay(){
-  const cfg=cfgOf(S.day),st={};
-  for(const k in REC)if(REC[k].kind==="drink"&&has(k))st[k]=Array.from({length:k==="cafe"&&S.own.double?2:1},()=>({t:0,busy:0,ready:0}));
+function newDay(d){
+  const cfg=cfgOf(d),st={};
+  for(const k in REC)if(REC[k].kind==="drink"&&has(k))st[k]=Array.from({length:(k==="cafe"?S.own.double:S.own.machines)?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&has(k))vit[k]=k==="croissant"?2:0;
-  G={run:1,paused:0,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0};
-  $("closed").hidden=true;dirty=true;
+  G={run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0};
+  $("closed").hidden=true;closeMap();renderDecor();dirty=true;
 }
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
 function genOrder(){
@@ -466,10 +562,10 @@ function genOrder(){
 function spawn(){
   const sp=freeSpot();if(sp<0)return false;
   const here=new Set(G.cust.map(c=>c.fox));
-  const vipCh=S.day>=3?(.07*(S.own.coussins?2:1)):0;
+  const vipCh=G.day>=3?(.07*(S.own.coussins?2:1)):0,guests=CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]);
   let f,vip=false;
-  if(Math.random()<vipCh){vip=true;const pool=(S.day>=6&&Math.random()<.18?LEGS:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
-  if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(S.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
+  if(Math.random()<vipCh){vip=true;const pool=(guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
+  if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
   const pat=G.cfg.pat*patMult()*(vip?1.15:1);
   G.cust.push({id:++uid,fox:f.id,spot:sp,order:genOrder(),pat,patMax:pat,state:"wait",vip,born:G.t});
   if(!S.seen[f.id]){G.newFox.push(f.name);toast(vip?`Client VIP : ${f.name} ! Gros pourboire en vue.`:`Nouveau client : ${f.name} !`)}
@@ -524,15 +620,15 @@ function tapStation(k,el){
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
 }
 function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*(S.own.fourpro?.7:1)});dirty=true}
-function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(9,(G.vit[o.r]||0)+REC[o.r].batch);o.state="idle";dirty=true}
+function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(S.own.four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);dirty=true}
 
 /* ---------- rendu ---------- */
 function renderHud(){
-  $("coins").textContent=S.coins;
-  if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${S.day}</span><span class="pill">${"★".repeat(Object.values(S.stars).reduce((a,b)=>a+b,0)>0?1:0)} ${Object.values(S.stars).reduce((a,b)=>a+b,0)} étoiles gagnées</span><span class="pill">${Object.keys(S.seen).length} / ${FOXES.length} clients rencontrés</span>`;return}
+  $("coins").textContent=S.coins;$("coins2").textContent=S.coins;
+  if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${starSum()} étoiles</span><span class="pill">${Object.keys(S.seen).length} / ${FOXES.length} clients rencontrés</span>`;return}
   const g=G.cfg.goal,mx=g*1.7,e=G.earned;
-  $("hud").innerHTML=`<span class="pill day">Jour ${S.day}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map((m,i)=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e} / ${g}</b></div><span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}<button class="pbtn" id="pause" type="button">Pause</button>`;
+  $("hud").innerHTML=`<span class="pill day">Jour ${G.day}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map((m,i)=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e} / ${g}</b></div><span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}<button class="pbtn" id="pause" type="button">Pause</button>`;
 }
 function render(){
   dirty=false;renderHud();
@@ -557,9 +653,9 @@ function renderKitchen(){
     h+=`<button class="st${rd?" has-ready":""}" data-st="${k}" type="button" ${on?"":"disabled"}><span class="st-ic">${icon(k)}</span><b>${REC[k].name}</b><small>${rd?"Prêt ! Touche pour prendre":sl.some(s=>s.busy)?"En préparation…":REC[k].stn}</small><span class="slots">${sl.map((s,i)=>`<span class="sl${s.ready?" ready":""}"><i id="sp-${k}-${i}"></i></span>`).join("")}</span></button>`}
   const bakes=Object.keys(REC).filter(k=>REC[k].kind==="bake"&&has(k)),o=on?G.oven:{state:"idle"};
   h+=`<div class="st wide"><div class="st-head"><b>Four</b><small>${o.state==="bake"?`Cuisson : ${REC[o.r].name.toLowerCase()}s`:o.state==="ready"?"Sors-les avant qu'ils brûlent !":o.state==="burnt"?"":"Lance une fournée"}</small></div>`+
-    (o.state==="ready"?`<button class="unload" data-unload type="button" id="unl">Sortir ${REC[o.r].batch} ${REC[o.r].name.toLowerCase()}${REC[o.r].batch>1?"s":""}</button><span class="obar"><i id="ov-b" style="background:var(--bad)"></i></span>`
+    (o.state==="ready"?`<button class="unload" data-unload type="button" id="unl">Sortir ${batchOf(o.r)} ${REC[o.r].name.toLowerCase()}${batchOf(o.r)>1?"s":""}</button><span class="obar"><i id="ov-b" style="background:var(--bad)"></i></span>`
     :o.state==="burnt"?`<div class="burnt">Brûlé…</div>`
-    :`<div class="brow">${bakes.map(k=>`<button class="bk" data-bake="${k}" type="button" ${on&&o.state==="idle"?"":"disabled"}>${icon(k)}×${REC[k].batch}</button>`).join("")}</div>${o.state==="bake"?`<span class="obar"><i id="ov-p"></i></span>`:""}`)+`</div>`;
+    :`<div class="brow">${bakes.map(k=>`<button class="bk" data-bake="${k}" type="button" ${on&&o.state==="idle"?"":"disabled"}>${icon(k)}×${batchOf(k)}</button>`).join("")}</div>${o.state==="bake"?`<span class="obar"><i id="ov-p"></i></span>`:""}`)+`</div>`;
   h+=`<div class="st wide"><div class="st-head"><b>Vitrine</b><small>Touche pour poser sur le plateau</small></div><div class="brow">${bakes.map(k=>`<button class="bk" data-vit="${k}" type="button" ${on&&G.vit[k]?"":"disabled"}>${icon(k)}×${on?G.vit[k]:0}</button>`).join("")}</div></div>`;
   $("kitchen").innerHTML=h;
 }
@@ -570,7 +666,7 @@ function updateBars(){
   const o=G.oven;if(o.state==="bake"){const e=$("ov-p");if(e)e.style.width=(o.t/o.dur*100)+"%"}
   if(o.state==="ready"){const e=$("ov-b");if(e)e.style.width=(o.burn/o.burnMax*100)+"%";const u=$("unl");if(u)u.classList.toggle("danger",o.burn<2)}
   const gf=$("gfill");if(gf)gf.style.width=Math.min(100,G.earned/(G.cfg.goal*1.7)*100)+"%";
-  if(S.day<=2&&!hintLock)autoHint();
+  if(G.day<=2&&!hintLock)autoHint();
 }
 let hintLock=0;
 function hint(h){$("hint").innerHTML=h;hintLock=1;clearTimeout(hint.t);hint.t=setTimeout(()=>hintLock=0,3500)}
@@ -592,20 +688,32 @@ function autoHint(){
 }
 
 /* ---------- fin de journée ---------- */
+const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
 function endDay(){
-  const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=S.day;
+  const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=G.day,prev=S.stars[d]||0,before=starSum();
   G.run=0;
   if(!G.lost&&st)qEvent("perfect");if(st===3)qEvent("stars3");
-  S.stars[d]=Math.max(S.stars[d]||0,st);
-  let chest=0;if(st){chest=rnd(5,12)*st+(st===3?15:0);S.coins+=chest;S.day++}
+  S.stars[d]=Math.max(prev,st);S.best[d]=Math.max(S.best[d]||0,e);
+  const news=[];
+  // le coffre ne paie que les étoiles nouvellement gagnées : rejouer reste utile sans devenir une ferme à pièces
+  let chest=0;if(st>prev){chest=rnd(5,12)*(st-prev)+(st===3?15+2*d:0);S.coins+=chest}
+  if(st&&d===S.day)S.day++;
+  const rk=Object.keys(REC).find(k=>REC[k].day===d);
+  if(st&&rk&&!S.own[rk]){S.own[rk]=1;news.push(itRow(icon(rk),`Nouvelle recette : ${REC[rk].name}`,`Elle arrive sur ta carte dès la prochaine journée. ${REC[rk].desc}`,"background:#e3f2d6"))}
+  for(const c of checkGuests())news.push(itRow(foxSVG(FOX[c.guest],{pose:"happy"}),`${FOX[c.guest].name} rejoint ton café !`,`Saison ${c.name} en ★★★ : ${FOX[c.guest].name} vient désormais en invité d'honneur et paie double.`,"background:#fbf0cc"));
+  for(const c of CHAP)if(c.gate&&!S.pass[c.id]&&before<c.gate&&starSum()>=c.gate&&gateOpen(c))news.push(itRow(icon("chest"),`La porte de la saison ${c.name} s'ouvre !`,`Tu as réuni ${c.gate} étoiles.`,"background:#e3f2d6"));
+  const nc=chapOf(S.day);
+  if(st&&S.day===nc.from&&nc.gate&&!gateOpen(nc))news.push(itRow(icon("chest"),`Porte de la saison ${nc.name} : ${starSum()} / ${nc.gate} ★`,`Rejoue des journées pour gagner les étoiles qui manquent.`));
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
-  openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}</p>
+  const canNext=st&&d<LASTDAY&&dayOpen(d+1);
+  openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div></div>
-  ${chest?`<div class="it" style="margin-bottom:12px"><span class="ic">${icon("chest")}</span><span class="tx"><strong>Coffre surprise : +${chest} pièces</strong><span>Plus tu as d'étoiles, plus il est généreux.</span></span></div>`:""}
+  ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
+  ${news.join("")}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML()}
-  <div class="col"><button class="btn big wide" data-act="${st?"next":"retry"}" type="button">${st?`Jour ${S.day}`:`Réessayer le jour ${S.day}`}</button><button class="btn ghost wide" data-act="shop" type="button">Boutique · ${S.coins} pièces</button></div>`,true);
+  <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`,true);
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
 }
 function questHTML(){
@@ -613,36 +721,174 @@ function questHTML(){
 }
 
 /* ---------- menus ---------- */
-function openSheet(h,lock){$("sheet-in").innerHTML=h+(lock?"":`<button class="btn ghost wide" data-close type="button" style="margin-top:10px">Fermer</button>`);$("sheet").hidden=false;$("sheet").dataset.lock=lock?1:""}
+function openSheet(h,lock){$("sheet-in").innerHTML=h+(lock?"":`<button class="btn ghost wide" data-close type="button" style="margin-top:10px">Fermer</button>`);$("sheet").hidden=false;$("sheet").dataset.lock=lock?1:"";$("sheet-in").scrollTop=0}
 function closeSheet(){$("sheet").hidden=true}
-function menu(){
-  const c=cfgOf(S.day),g=c.goal;
-  let bonus="";
-  const td=todayStr();
-  if(S.lastDay!==td){const y=new Date(Date.now()-864e5),ys=`${y.getFullYear()}-${y.getMonth()+1}-${y.getDate()}`;
-    S.streak=S.lastDay===ys?S.streak+1:1;S.lastDay=td;const b=10+Math.min(S.streak,7)*5;S.coins+=b;save();
-    bonus=`<div class="it" style="margin-bottom:12px"><span class="ic">${icon("chest")}</span><span class="tx"><strong>Bonus du jour : +${b} pièces</strong><span>${S.streak>1?`${S.streak} jours d'affilée ! Reviens demain pour un bonus plus gros.`:"Reviens demain pour un bonus plus gros."}</span></span></div>`}
-  openSheet(`<h2>Jour ${S.day}</h2><p class="sub">${c.c} clients attendus${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Patience des clients : ${Math.round(c.pat*patMult())} s.</p>${bonus}
-  ${S.day===1&&!S.total?`<div class="tuto"><b>Comment jouer</b><ol><li>Touche <b>Café</b> pour le préparer, puis touche-le à nouveau quand il est prêt : il va sur ton plateau.</li><li>Lance des <b>croissants</b> au four et sors-les avant qu'ils brûlent : ils vont en vitrine.</li><li>Touche un <b>client</b> pour lui servir ce qui est sur ton plateau. Plus tu es rapide, plus le pourboire est gros.</li></ol></div>`:""}
-  <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
-  ${questHTML()}
-  <div class="col"><button class="btn big wide" data-act="start" type="button">Ouvrir le café</button><button class="btn ghost wide" data-act="shop" type="button">Boutique · ${S.coins} pièces</button><button class="btn ghost wide" data-act="carnet" type="button">Carnet des clients</button><a class="btn ghost wide" href="./" style="text-align:center;text-decoration:none;box-sizing:border-box">Retour à l'accueil</a></div>`,true);
-  renderHud();
+function dailyBonus(){
+  const td=todayStr();if(S.lastDay===td)return;
+  const y=new Date(Date.now()-864e5),ys=`${y.getFullYear()}-${y.getMonth()+1}-${y.getDate()}`;
+  S.streak=S.lastDay===ys?S.streak+1:1;S.lastDay=td;const b=10+Math.min(S.streak,7)*5;S.coins+=b;save();renderHud();
+  openSheet(`<h2>Bonus du jour</h2>${itRow(icon("chest"),`+${b} pièces`,S.streak>1?`${S.streak} jours d'affilée ! Reviens demain pour un bonus plus gros.`:"Reviens demain pour un bonus plus gros.")}`);
 }
-let shopTab="rec";
+function daySheet(d){
+  if(!dayOpen(d)){toast(d>S.day?"Réussis la journée précédente pour ouvrir celle-ci.":"La porte de la saison est encore fermée.");return}
+  const c=cfgOf(d),g=c.goal,st=S.stars[d]||0,ch=chapOf(d),rk=Object.keys(REC).find(k=>REC[k].day===d);
+  const rw=[];
+  if(rk&&!S.own[rk])rw.push(itRow(icon(rk),`Recette à gagner : ${REC[rk].name}`,`Réussis cette journée pour l'ajouter à ta carte.`,"background:#e3f2d6"));
+  rw.push(st<3?itRow(icon("chest"),"Coffre ★★★",st?"Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre.":"Chaque étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
+  if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient au café et paie double.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
+  openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
+  <p class="sub">${c.c} clients attendus${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Patience : ${Math.round(c.pat*patMult())} s.${S.best[d]?` Record : <b>${S.best[d]} pièces</b>.`:""}</p>
+  ${d===1&&!S.total?`<div class="tuto"><b>Comment jouer</b><ol><li>Touche <b>Café</b> pour le préparer, puis touche-le à nouveau quand il est prêt : il va sur ton plateau.</li><li>Lance des <b>croissants</b> au four et sors-les avant qu'ils brûlent : ils vont en vitrine.</li><li>Touche un <b>client</b> pour lui servir ce qui est sur ton plateau. Plus tu es rapide, plus le pourboire est gros.</li></ol></div>`:""}
+  <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
+  ${rw.join("")}
+  <div class="col" style="margin-top:6px"><button class="btn big wide" data-play="${d}" type="button">Ouvrir le café</button></div>`);
+}
+function gateSheet(i){
+  const c=CHAP[i],n=starSum();
+  openSheet(`<h2>Porte de la saison ${c.name}</h2><div class="stars" style="font-size:30px">★ ${Math.min(n,c.gate)} / ${c.gate}</div><p class="sub" style="text-align:center">${gateOpen(c)?"La porte est ouverte !":`Il te manque <b>${c.gate-n} étoiles</b>. Rejoue les journées où tu n'as pas ★★★ : avec tes nouvelles recettes et ton équipement, c'est plus facile.`}</p>`);
+}
+function guestSheet(i){
+  const c=CHAP[i],f=FOX[c.guest],ok=S.guest[c.guest];
+  openSheet(`<h2>${ok?f.name:"Invité mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invité d'honneur du café : il paie double.`:`Obtiens ★★★ sur les 10 journées du ${c.name} pour l'inviter au café. Pour l'instant : <b>${chapStars(c)} / 30 ★</b>.`}</p>`);
+}
+function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées. Une quête réussie rapporte des pièces, et une nouvelle la remplace.</p>${questHTML()}`)}
+let shopTab="equip";
 function shop(){
-  const row=(id,name,desc,cost,ok,owned,ic,extra="")=>`<div class="it"><span class="ic">${icon(ic)}</span><span class="tx"><strong>${name}</strong><span>${desc}</span>${extra}</span><span class="side">${owned?`<span class="owned">Acheté</span>`:`<span class="price">${coinSVG}${cost}</span><button class="btn" data-buy="${id}" type="button" ${ok&&S.coins>=cost?"":"disabled"}>Acheter</button>`}</span></div>`;
-  let list="";
-  if(shopTab==="rec")list=Object.entries(REC).filter(([k,r])=>r.cost).map(([k,r])=>row(k,r.name,r.desc,r.cost,true,S.own[k],k,`<span>Vendu ${r.price} pièces · ${r.kind==="drink"?r.stn:"au four"}</span>`)).join("");
-  else list=UPG[shopTab].map(u=>row(u.id,u.name,u.desc+(u.req&&!S.own[u.req]?" (Nécessite « Comptoir agrandi ».)":""),u.cost,!u.req||S.own[u.req],S.own[u.id],u.id)).join("");
-  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b>. Chaque achat change ta façon de jouer : choisis bien.</p><div class="tabs">${[["rec","Recettes"],["equip","Équipement"],["deco","Déco"]].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div><button class="btn big wide" data-act="menu" type="button" style="margin-top:12px">Retour · Jour ${S.day}</button>`,true);
+  const row=(id,name,desc,cost,ok,owned,ic)=>`<div class="it"><span class="ic">${icon(ic)}</span><span class="tx"><strong>${name}</strong><span>${desc}</span></span><span class="side">${owned?`<span class="owned">Acheté</span>`:`<span class="price">${coinSVG}${cost}</span><button class="btn" data-buy="${id}" type="button" ${ok&&S.coins>=cost?"":"disabled"}>Acheter</button>`}</span></div>`;
+  const list=UPG[shopTab].map(u=>{const early=u.from&&S.day<u.from,rq=u.req&&!S.own[u.req];
+    return row(u.id,u.name,u.desc+(early?` (Arrive avec la saison ${chapOf(u.from).name}.)`:rq?` (Nécessite « ${ALLUP.find(x=>x.id===u.req).name} ».)`:""),u.cost,!early&&!rq,S.own[u.id],u.id)}).join("");
+  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"]].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
 }
 function carnet(){
-  const rows=FOXES.map(f=>{const n=S.seen[f.id]||0,v=f.rar==="rare"||f.rar==="legend";
-    return `<div class="fc${v?" vipc":""}">${foxSVG(f,{sil:!n})}${n?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:v?(f.rar==="legend"?"VIP légendaire":"Client VIP"):"Pas encore venu"}</em></div>`}).join("");
-  openSheet(`<h2>Carnet des clients</h2><p class="sub">${Object.keys(S.seen).length} / ${FOXES.length} clients rencontrés. De nouveaux habitués arrivent chaque jour, et les VIP passent à partir du jour 3.</p><div class="fgrid">${rows}</div><button class="btn big wide" data-act="menu" type="button" style="margin-top:12px">Retour</button>`,true);
+  const rows=FOXES.map(f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
+    return `<div class="fc${c?" vipc":""}">${foxSVG(f,{sil:!n})}${n||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur":`★★★ au ${c.name}`):"Pas encore venu"}</em></div>`}).join("");
+  openSheet(`<h2>Carnet des clients</h2><p class="sub">${Object.keys(S.seen).length} / ${FOXES.length} clients rencontrés. Les invités d'honneur viennent quand une saison entière est en ★★★.</p><div class="fgrid">${rows}</div>`);
 }
 function pauseMenu(){if(!G||!G.run)return;G.paused=1;openSheet(`<h2>Pause</h2><p class="sub">Les clients t'attendent sagement.</p><div class="col"><button class="btn big wide" data-act="resume" type="button">Reprendre</button><button class="btn ghost wide" data-act="quit" type="button">Abandonner la journée</button></div>`,true)}
+
+/* ---------- carte ---------- */
+// Coordonnées en unités de carte : 400 de large, u compté depuis le bas (le jour 1 est en bas, on monte comme sur un chemin).
+const MW=400;
+function rng(a){return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const blob=(cs,fill)=>cs.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${INK}" stroke="${INK}" stroke-width="6"/>`).join("")+cs.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"/>`).join("");
+const shadow=(x,y,rx)=>`<ellipse cx="${x}" cy="${y+2}" rx="${rx}" ry="${rx*.28}" fill="rgba(91,66,80,.13)"/>`;
+const tree=(x,y,k,cols,dots)=>shadow(x,y,22*k)+`<rect x="${x-5*k}" y="${y-26*k}" width="${10*k}" height="${28*k}" rx="${3*k}" fill="#b07a5a" ${BO}/>`+blob([[x-14*k,y-30*k,14*k],[x+14*k,y-30*k,14*k],[x,y-44*k,18*k]],cols[0])+`<circle cx="${x-7*k}" cy="${y-49*k}" r="${5*k}" fill="#fff" opacity=".45"/>`+(dots?[[-12,-28],[8,-40],[14,-24],[-4,-38]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${2.6*k}" fill="${dots}"/>`).join(""):"");
+const DECO={
+  printemps:[
+    (x,y,k)=>tree(x,y,k,["#f9c4d2"],"#fff"),
+    (x,y,k)=>shadow(x,y,18*k)+[[-10,"#f6a5b4"],[0,"#f7d77a"],[10,"#c9b8f2"]].map(([a,c])=>`<path d="M${x+a*k} ${y} V${y-18*k}" stroke="#6fae5e" stroke-width="${3*k}"/><path d="M${x+a*k-6*k} ${y-26*k} L${x+a*k-6*k} ${y-16*k} Q${x+a*k} ${y-11*k} ${x+a*k+6*k} ${y-16*k} L${x+a*k+6*k} ${y-26*k} L${x+a*k+3*k} ${y-22*k} L${x+a*k} ${y-27*k} L${x+a*k-3*k} ${y-22*k}Z" fill="${c}" ${BO}/>`).join(""),
+    (x,y,k)=>shadow(x,y,20*k)+blob([[x-11*k,y-10*k,11*k],[x+11*k,y-10*k,11*k],[x,y-18*k,13*k]],"#a8d39a")+[[-10,-12],[6,-20],[12,-8]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${3*k}" fill="#f6a5b4" stroke="${INK}" stroke-width="1.5"/>`).join("")
+  ],
+  ete:[
+    (x,y,k)=>tree(x,y,k,["#8fca7a"],"#e2708e"),
+    (x,y,k)=>shadow(x,y,10*k)+`<path d="M${x} ${y} V${y-30*k}" stroke="#6fae5e" stroke-width="${3.4*k}"/><path d="M${x} ${y-12*k} q${9*k} ${-8*k} ${12*k} ${-2*k} q${-6*k} ${6*k} ${-12*k} ${2*k}Z" fill="#8fca7a" stroke="${INK}" stroke-width="2"/>`+Array.from({length:10},(_,i)=>{const a=i/10*Math.PI*2;return `<ellipse cx="${x+Math.cos(a)*10*k}" cy="${y-38*k+Math.sin(a)*10*k}" rx="${6*k}" ry="${3.6*k}" transform="rotate(${a*57.3} ${x+Math.cos(a)*10*k} ${y-38*k+Math.sin(a)*10*k})" fill="#f7d04e" stroke="${INK}" stroke-width="1.8"/>`}).join("")+`<circle cx="${x}" cy="${y-38*k}" r="${7*k}" fill="#a8785a" ${BO}/>`,
+    (x,y,k)=>`<ellipse cx="${x}" cy="${y-6*k}" rx="${30*k}" ry="${13*k}" fill="#a9d8ef" ${BO}/><ellipse cx="${x-6*k}" cy="${y-9*k}" rx="${12*k}" ry="${4*k}" fill="#fff" opacity=".5"/><path d="M${x+8*k} ${y-4*k} a${7*k} ${4*k} 0 1 1 ${8*k} ${-4*k} l${-6*k} ${2*k}Z" fill="#8fca7a" stroke="${INK}" stroke-width="2"/><circle cx="${x+15*k}" cy="${y-9*k}" r="${2.6*k}" fill="#f6a5b4"/>`
+  ],
+  automne:[
+    (x,y,k)=>tree(x,y,k,["#f2a35c"],"#e8835a"),
+    (x,y,k)=>shadow(x,y,13*k)+`<path d="M${x-6*k} ${y} L${x-5*k} ${y-14*k} H${x+5*k} L${x+6*k} ${y}Z" fill="#fff5e8" ${BO}/><path d="M${x-17*k} ${y-13*k} Q${x} ${y-36*k} ${x+17*k} ${y-13*k}Z" fill="#e8655a" ${BO}/><circle cx="${x-6*k}" cy="${y-20*k}" r="${3*k}" fill="#fff"/><circle cx="${x+6*k}" cy="${y-24*k}" r="${2.4*k}" fill="#fff"/><circle cx="${x+9*k}" cy="${y-16*k}" r="${2*k}" fill="#fff"/>`,
+    (x,y,k)=>shadow(x,y,18*k)+`<path d="M${x} ${y-22*k} q${-2*k} ${-6*k} ${3*k} ${-9*k}" fill="none" stroke="#6fae5e" stroke-width="${3*k}" stroke-linecap="round"/>`+blob([[x-9*k,y-10*k,10*k],[x+9*k,y-10*k,10*k],[x,y-11*k,11*k]],"#f2a35c")+`<path d="M${x} ${y-21*k} V${y-1*k} M${x-9*k} ${y-19*k} Q${x-13*k} ${y-10*k} ${x-8*k} ${y-1*k} M${x+9*k} ${y-19*k} Q${x+13*k} ${y-10*k} ${x+8*k} ${y-1*k}" fill="none" stroke="#d6803e" stroke-width="2"/>`
+  ],
+  hiver:[
+    (x,y,k)=>shadow(x,y,18*k)+`<rect x="${x-4*k}" y="${y-10*k}" width="${8*k}" height="${12*k}" fill="#a8785a" ${BO}/>`+[[0,22,-8],[0,18,-24],[0,13,-38]].map(([a,w,b])=>`<path d="M${x-w*k} ${y+b*k} L${x} ${y+(b-22)*k} L${x+w*k} ${y+b*k}Z" fill="#6fa58a" ${BO}/><path d="M${x-w*.55*k} ${y+(b-10)*k} L${x} ${y+(b-22)*k} L${x+w*.55*k} ${y+(b-10)*k} Q${x} ${y+(b-6)*k} ${x-w*.55*k} ${y+(b-10)*k}Z" fill="#fff" stroke="${INK}" stroke-width="2"/>`).join(""),
+    (x,y,k)=>shadow(x,y,16*k)+blob([[x,y-13*k,14*k]],"#fff")+blob([[x,y-34*k,10*k]],"#fff")+`<circle cx="${x-3.5*k}" cy="${y-36*k}" r="${1.8*k}" fill="${INK}"/><circle cx="${x+3.5*k}" cy="${y-36*k}" r="${1.8*k}" fill="${INK}"/><path d="M${x-1*k} ${y-32*k} l${4*k} ${1.5*k} l${-4*k} ${1.5*k}Z" fill="#f2a35c"/><path d="M${x-10*k} ${y-26*k} Q${x} ${y-21*k} ${x+10*k} ${y-26*k} L${x+12*k} ${y-14*k} L${x+6*k} ${y-14*k} L${x+5*k} ${y-23*k} Q${x} ${y-21*k} ${x-10*k} ${y-23*k}Z" fill="#f59a8b" stroke="${INK}" stroke-width="2"/><circle cx="${x+9*k}" cy="${y-36*k}" r="${2.4*k}" fill="#f6a5b4" opacity=".7"/>`,
+    (x,y,k)=>blob([[x-12*k,y-6*k,10*k],[x+10*k,y-6*k,12*k],[x,y-10*k,11*k]],"#fff")+`<rect x="${x-7*k}" y="${y-28*k}" width="${14*k}" height="${13*k}" rx="${2*k}" fill="#f6a5b4" ${BO}/><path d="M${x} ${y-28*k} V${y-15*k} M${x-7*k} ${y-22*k} H${x+7*k}" stroke="#f2c75c" stroke-width="${2.6*k}"/><path d="M${x} ${y-28*k} q${-6*k} ${-7*k} ${-7*k} 0 q${4*k} ${2*k} ${7*k} 0 q${6*k} ${-7*k} ${7*k} 0 q${-4*k} ${2*k} ${-7*k} 0Z" fill="#f2c75c" stroke="${INK}" stroke-width="1.8"/>`
+  ]
+};
+const LAND={printemps:{bg:"#e2f1d4",mk:"#c7e2b4"},ete:{bg:"#f3efc2",mk:"#dfe0a0"},automne:{bg:"#f8dfc4",mk:"#efc59c"},hiver:{bg:"#e6eff8",mk:"#ffffff"}};
+function mapLayout(){
+  const P=[],gates=[];let u=205;
+  CHAP.forEach((c,i)=>{
+    if(i){gates.push({i,u:u+84});u+=265}
+    for(let d=c.from;d<=c.to;d++){P[d]={d,x:Math.round(200+112*Math.sin((d-1)*.82)),u};if(d<c.to)u+=96}
+  });
+  const H=u+200;
+  gates.forEach(g=>{const c=CHAP[g.i];g.x=(P[c.from-1].x+P[c.from].x)/2});
+  const way=[{x:200,u:70}];
+  CHAP.forEach((c,i)=>{if(i)way.push(gates[i-1]);for(let d=c.from;d<=c.to;d++)way.push(P[d])});
+  way.push({x:P[LASTDAY].x,u:P[LASTDAY].u+120});
+  const bands=CHAP.map((c,i)=>({c,lo:i?gates[i-1].u:0,hi:i<CHAP.length-1?gates[i].u:H}));
+  const guests=CHAP.map((c,i)=>{const p=P[c.to];return{i,x:Math.max(58,Math.min(342,p.x>200?p.x-122:p.x+122)),u:p.u+14}});
+  return {P,gates,way,bands,guests,H};
+}
+function pathX(way,u){for(let i=0;i<way.length-1;i++){const a=way[i],b=way[i+1];if(u>=a.u&&u<=b.u)return a.x+(b.x-a.x)*(u-a.u)/(b.u-a.u)}return 200}
+function smooth(pts){let s=`M${pts[0][0]} ${pts[0][1]}`;for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;s+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)} ${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)} ${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]} ${p2[1]}`}return s}
+function gateSVG(x,y,open,c){
+  const wood="#c8946a";
+  let s=shadow(x,y+4,52);
+  if(!open)s+=[-1,1].map(sd=>`<rect x="${sd<0?x-32:x}" y="${y-36}" width="32" height="40" rx="3" fill="#e8b07a" ${BO}/>`+[8,16,24].map(o=>`<path d="M${sd<0?x-32+o:x+o} ${y-34} V${y+2}" stroke="#c8946a" stroke-width="2"/>`).join("")).join("")+`<circle cx="${x}" cy="${y-16}" r="9" fill="#f2c75c" ${BO}/><path d="M${x-4} ${y-22} v-4 a4 4 0 0 1 8 0 v4" fill="none" stroke="${INK}" stroke-width="2.4"/>`;
+  s+=[-1,1].map(sd=>`<rect x="${x+sd*38-6}" y="${y-58}" width="12" height="64" rx="4" fill="${wood}" ${BO}/><circle cx="${x+sd*38}" cy="${y-60}" r="7" fill="${wood}" ${BO}/>`).join("");
+  s+=`<path d="M${x-38} ${y-56} Q${x} ${y-86} ${x+38} ${y-56}" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="M${x-38} ${y-56} Q${x} ${y-86} ${x+38} ${y-56}" fill="none" stroke="${wood}" stroke-width="7" stroke-linecap="round"/>`;
+  if(open)s+=[-30,-18,-6,6,18,30].map((a,i)=>`<circle cx="${x+a}" cy="${y-62-(1-(a/38)**2)*12}" r="4.6" fill="${["#f6a5b4","#f7d77a","#c9b8f2"][i%3]}" stroke="${INK}" stroke-width="1.8"/>`).join("");
+  s+=`<rect x="${x-44}" y="${y-104}" width="88" height="26" rx="10" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-86}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${open?c.name:`★ ${c.gate}`}</text>`;
+  return s;
+}
+function mapSVG(L){
+  const {P,gates,way,bands,guests,H}=L,Y=u=>H-u,R=rng(42);
+  let defs="",s="";
+  // saisons : on dessine du haut vers le bas pour que chaque bord ondulé recouvre la saison du dessus
+  for(const b of [...bands].reverse()){
+    const id=b.c.id,ld=LAND[id],top=Y(b.hi),bot=Y(b.lo);
+    defs+=`<pattern id="pt-${id}" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 12 l3 -6 l3 6 M30 32 l3 -6 l3 6" fill="none" stroke="${ld.mk}" stroke-width="2.4" stroke-linecap="round"/><circle cx="34" cy="10" r="2.4" fill="${ld.mk}"/><circle cx="12" cy="30" r="1.8" fill="${ld.mk}"/></pattern>`;
+    let edge=`M0 ${bot} L0 ${top}`;
+    if(b.hi<H){for(let x=0;x<MW;x+=50)edge+=` Q${x+25} ${top-14} ${x+50} ${top}`}else edge+=` L${MW} ${top}`;
+    edge+=` L${MW} ${bot}Z`;
+    s+=`<path d="${edge}" fill="${ld.bg}"/><path d="${edge}" fill="url(#pt-${id})"/>`;
+    if(b.hi<H){let w=`M0 ${top}`;for(let x=0;x<MW;x+=50)w+=` Q${x+25} ${top-14} ${x+50} ${top}`;s+=`<path d="${w}" fill="none" stroke="${INK}" stroke-width="3" opacity=".35"/>`}
+  }
+  // le chemin, puis la partie déjà parcourue en pointillés roses
+  const pts=way.map(p=>[p.x,Y(p.u)]),d=smooth(pts);
+  s+=`<path d="${d}" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#fdf1df" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const cur=curDay(),k=way.findIndex(p=>p.d===cur),done=smooth(pts.slice(0,k+1));
+  s+=`<path d="${d}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
+  if(k>0)s+=`<path d="${done}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
+  // déco : posée au hasard (graine fixe) loin du chemin, des portes et des invités
+  const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80]],deco=[];
+  for(const b of bands){
+    const n=Math.floor((b.hi-b.lo)/44),fs=DECO[b.c.id];
+    for(let j=0;j<n;j++)for(let t=0;t<14;t++){
+      const u=b.lo+34+R()*(b.hi-b.lo-60),x=24+R()*(MW-48);
+      if(Math.abs(x-pathX(way,u))<76||taken.some(([a,c,r])=>Math.hypot(a-x,c-u)<r)||deco.some(o=>Math.hypot(o.x-x,o.u-u)<54))continue;
+      deco.push({x,u,f:fs[Math.floor(R()*fs.length)],k:.75+R()*.4});break;
+    }
+  }
+  deco.sort((a,b)=>b.u-a.u).forEach(o=>s+=o.f(o.x.toFixed(1)*1,Y(o.u).toFixed(1)*1,o.k));
+  // le café de départ, les portes, le panneau de fin
+  const cy=Y(70);
+  s+=shadow(200,cy+16,56)+`<rect x="160" y="${cy-28}" width="80" height="44" rx="6" fill="#fff5e8" ${BO}/><path d="M150 ${cy-26} L200 ${cy-62} L250 ${cy-26}Z" fill="#f59a8b" ${BO}/><rect x="190" y="${cy-8}" width="20" height="24" rx="4" fill="#c8946a" ${BO}/><rect x="166" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><rect x="216" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><path d="M160 ${cy-30} h80" stroke="#f6a5b4" stroke-width="8" stroke-dasharray="10 10"/>`;
+  gates.forEach(g=>s+=gateSVG(g.x,Y(g.u),gateOpen(CHAP[g.i]),CHAP[g.i]));
+  const e=way[way.length-1],ey=Y(e.u);
+  s+=`<rect x="${e.x-4}" y="${ey-30}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${e.x-48} ${ey-56} H${e.x+40} L${e.x+52} ${ey-44} L${e.x+40} ${ey-32} H${e.x-48}Z" fill="#fffaf2" ${BO}/><text x="${e.x}" y="${ey-39}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">À suivre…</text>`;
+  return `<svg viewBox="0 0 ${MW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
+}
+let MAPL=null;
+function renderMap(){
+  const L=MAPL||(MAPL=mapLayout()),{P,gates,guests,H}=L,pc=(x,u)=>`left:${x/MW*100}%;top:${(H-u)/H*100}%`,cur=curDay();
+  let h=mapSVG(L);
+  for(let d=1;d<=LASTDAY;d++){
+    const p=P[d],st=S.stars[d]||0,op=dayOpen(d),rk=Object.keys(REC).find(k=>REC[k].day===d);
+    const cls=!op?"lock":d===cur&&!st?"cur":st===3?"gold":"done";
+    const badge=rk&&!S.own[rk]?`<span class="nb">${icon(rk)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
+    h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-day="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
+  }
+  gates.forEach(g=>{const c=CHAP[g.i],op=gateOpen(c);h+=`<button class="gbtn${!op&&S.day>=c.from?" want":""}" style="${pc(g.x,g.u+44)}" data-gate="${g.i}" type="button" aria-label="Porte ${c.name} : ${c.gate} étoiles"></button>`});
+  guests.forEach(g=>{const c=CHAP[g.i],ok=S.guest[c.guest];h+=`<button class="mguest${ok?" ok":""}" style="${pc(g.x,g.u)}" data-guest="${g.i}" type="button" aria-label="Invité d'honneur ${c.name}">${foxSVG(FOX[c.guest],{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?FOX[c.guest].name:`${chapStars(c)}/30 ★`}</em></button>`});
+  h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG(FOX.roussette,{pose:"happy"})}</div>`;
+  const w=$("mwrap");w.style.aspectRatio=`${MW}/${H}`;w.innerHTML=h;
+  mapLabel();
+}
+function mapLabel(){
+  if(!MAPL)return;const sc=$("mscroll"),w=$("mwrap"),H=MAPL.H;
+  const u=H-(sc.scrollTop+sc.clientHeight/2)/w.offsetHeight*H,b=MAPL.bands.find(b=>u>=b.lo&&u<b.hi)||MAPL.bands[0];
+  $("mchap").textContent=`${b.c.name} · ${chapStars(b.c)} / 30 ★`;$("mstars").textContent=`★ ${starSum()}`;
+}
+function openMap(){
+  closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";renderMap();renderHud();
+  const n=document.querySelector(".node.cur")||document.querySelector(`.node[data-day="${curDay()}"]`),sc=$("mscroll");
+  sc.scrollTop=n.offsetTop-sc.clientHeight*.55;mapLabel();
+  dailyBonus();
+}
+function closeMap(){$("map").hidden=true;document.body.style.overflow=""}
 
 /* ---------- effets ---------- */
 let toastT;
@@ -658,18 +904,27 @@ $("kitchen").addEventListener("click",e=>{const b=e.target.closest("button");if(
   if(b.dataset.st)tapStation(b.dataset.st,b);else if(b.dataset.bake)bake(b.dataset.bake);else if(b.dataset.unload!==undefined)unload();else if(b.dataset.vit)fromVit(b.dataset.vit,b)});
 $("tray").addEventListener("click",e=>{const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;G.tray.splice(+b.dataset.tray,1);dirty=true});
 $("hud").addEventListener("click",e=>{if(e.target.closest("#pause"))pauseMenu()});
-$("open-menu").onclick=menu;
+$("open-menu").onclick=openMap;
+function onAct(a){
+  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="quests")questsSheet();
+  else if(a==="map")openMap();
+  else if(a==="resume"){closeSheet();G.paused=0}
+  else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
+}
+$("map").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.day)daySheet(+b.dataset.day);else if(b.dataset.gate)gateSheet(+b.dataset.gate);else if(b.dataset.guest)guestSheet(+b.dataset.guest);else if(b.dataset.act)onAct(b.dataset.act);
+});
+$("mscroll").addEventListener("scroll",mapLabel,{passive:true});
 $("sheet").addEventListener("click",e=>{
   if(e.target.id==="sheet"&&!$("sheet").dataset.lock){closeSheet();return}
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.close!==undefined){closeSheet();return}
   if(b.dataset.tab){shopTab=b.dataset.tab;shop();return}
-  if(b.dataset.buy){const id=b.dataset.buy,it=REC[id]||ALLUP.find(u=>u.id===id);if(S.own[id]||S.coins<it.cost)return;S.coins-=it.cost;S.own[id]=1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(`${it.name} : acheté !`);shop();return}
-  const a=b.dataset.act;
-  if(a==="start"||a==="retry"||a==="next"){if(a==="next"){menu();return}closeSheet();newDay()}
-  else if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="menu")menu();
-  else if(a==="resume"){closeSheet();G.paused=0}
-  else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save()}
+  if(b.dataset.buy){const id=b.dataset.buy,it=ALLUP.find(u=>u.id===id);if(S.own[id]||S.coins<it.cost)return;S.coins-=it.cost;S.own[id]=1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(`${it.name} : acheté !`);shop();return}
+  if(b.dataset.play){closeSheet();newDay(+b.dataset.play);return}
+  if(b.dataset.day){daySheet(+b.dataset.day);return}
+  if(b.dataset.act)onAct(b.dataset.act);
 });
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&G&&G.run&&!G.paused)pauseMenu()});
 
@@ -680,9 +935,9 @@ function loop(ts){
   if(dirty)render();else if(G&&G.run)updateBars();
   requestAnimationFrame(loop);
 }
-$("logo").innerHTML=foxSVG(FOX.roussette,{pose:"happy"});$("ic-c").innerHTML=coinSVG;
+$("logo").innerHTML=foxSVG(FOX.roussette,{pose:"happy"});$("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;
 renderDecor();render();requestAnimationFrame(loop);
-menu();
+openMap();
 
 </script>
 

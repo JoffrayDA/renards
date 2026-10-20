@@ -2,7 +2,7 @@
 
 Deux petits jeux kawaii avec des renards, jouables dans le navigateur et installables sur téléphone :
 
-- **Café des Renards** (`cafe.html`) : jeu de gestion. Sers les commandes avant que les clients s'impatientent, atteins l'objectif du jour, achète recettes, équipement et déco.
+- **Café des Renards** (`cafe.html`) : jeu de gestion. Avance sur une carte de 40 journées en 4 saisons, sers les commandes avant que les clients s'impatientent, et vise les 3 étoiles pour ouvrir les portes, gagner des recettes et inviter des renards d'honneur.
 - **Clairière aux Renards** (`clairiere.html`) : jeu détente façon Neko Atsume. Pose des objets, les renards passent même quand l'app est fermée, débloque des zones et collectionne leurs souvenirs.
 
 Tout est en HTML, CSS et JavaScript, sans dépendance ni étape de build. Les parties sont enregistrées dans le navigateur de l'appareil (`localStorage`).
@@ -30,7 +30,7 @@ L'app s'ouvre alors en plein écran, avec son icône, et fonctionne hors ligne a
 
 ## Mettre à jour
 
-Après une modification, pousse les fichiers puis incrémente `CACHE` dans `sw.js` (par exemple `renards-v2`) pour que les téléphones récupèrent la nouvelle version.
+Après une modification, incrémente d'abord `CACHE` dans `sw.js` (par exemple `renards-v3`), puis fais le commit et le push : sans ça, les téléphones gardent l'ancienne version.
 
 ## Fichiers
 

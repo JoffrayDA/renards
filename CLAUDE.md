@@ -26,19 +26,22 @@ Découper les gros fichiers HTML en modules (`js/`, `css/`) est bienvenu si ça 
 
 ## Café des Renards (`cafe.html`)
 
-Boucle : une journée = N clients. Les boissons se préparent aux stations et se prennent quand elles sont prêtes, les viennoiseries cuisent au four par fournées puis vont en vitrine (elles brûlent si on ne les sort pas à temps). Tout passe par le plateau (3 ou 4 places), puis on touche le client pour le servir. Le client paie prix + pourboire selon la patience restante, avec un bonus de combo si on enchaîne les services rapides.
+Progression : une **carte** (écran d'accueil du jeu) de 40 journées en 4 saisons de 10 (`CHAP` : Printemps, Été, Automne, Hiver). On peut rejouer n'importe quelle journée ouverte. 1★ ouvre la journée suivante. Entre deux saisons, une porte demande un total d'étoiles (20, 45, 72). Chaque journée a un coffre qui paie les étoiles nouvellement gagnées (gros bonus à la première ★★★, rien quand on rejoue sans progresser). Les recettes se gagnent sur la carte (`REC[k].day` : thé jour 2, cookie 5, chocolat 7, smoothie 11, gâteau 16). Une saison entière en ★★★ invite son renard d'honneur (Zaza, Flocon, Professeur Noisette, Comète), qui vient ensuite en VIP. La saison change le décor du café (fenêtre, météo).
 
-Entre les journées, il y a une boutique de 17 achats : recettes, équipement, déco. Les achats de déco sont visibles dans la salle. Autres mécaniques : objectif de recette notée de 1 à 3 étoiles (objectif, ×1,35, ×1,7), réessai si l'objectif est raté, coffre surprise, 3 quêtes actives, bonus de connexion quotidien avec série, carnet de 30 clients avec des VIP (prix ×2) à partir du jour 3.
+Boucle d'une journée : N clients. Les boissons se préparent aux stations et se prennent quand elles sont prêtes, les viennoiseries cuisent au four par fournées puis vont en vitrine (elles brûlent si on ne les sort pas à temps). Tout passe par le plateau (3 ou 4 places), puis on touche le client pour le servir. Le client paie prix + pourboire selon la patience restante, avec un bonus de combo si on enchaîne les services rapides.
 
-Fonctions clés : `cfgOf(day)` (difficulté), `spawn`, `update(dt)`, `complete` (calcul des gains), `tapStation`, `bake`, `unload`, `endDay`, `menu`, `shop`.
+Depuis la carte, il y a une boutique d'équipement et de déco (16 achats, dont 5 de fin de partie qui n'arrivent qu'avec l'Automne ou l'Hiver). Les achats de déco sont visibles dans la salle. Autres mécaniques : objectif de recette notée de 1 à 3 étoiles (objectif, ×1,35, ×1,7), réessai si l'objectif est raté, coffre surprise, 3 quêtes actives, bonus de connexion quotidien avec série, carnet des clients avec des VIP (prix ×2) à partir du jour 3 : renards « discret », plus les invités d'honneur débloqués.
+
+Fonctions clés : `cfgOf(day)` (difficulté, table `GOALK`), `newDay(d)`, `spawn`, `update(dt)`, `complete` (calcul des gains), `tapStation`, `bake`, `unload`, `endDay`, `openMap`/`renderMap`/`mapLayout` (carte), `daySheet`, `shop`. `S.day` est la plus haute journée atteinte, `G.day` la journée en cours. La sauvegarde est en version 2 (`S.ver`), avec migration depuis la v1.
 
 ### Équilibrage
 
-Il a été réglé avec `tools/balance-bot.py` : un bot qui prend des décisions parfaites, avec un temps de réaction de 0,45 s (expert) ou 0,8 s (bon joueur). Cibles actuelles :
+Il a été réglé avec `tools/balance-bot.py` : un bot qui prend des décisions parfaites, avec un temps de réaction de 0,45 s (expert) ou 0,8 s (bon joueur). Il possède les recettes de la carte et un kit d'achats réaliste pour chaque jour (`KIT`), et joue chaque journée plusieurs fois pour faire la moyenne. Cibles actuelles :
 
 - Jours 1 à 4 : le bon joueur fait environ 1,4 à 1,6 fois l'objectif (2 étoiles). Les 3 étoiles demandent une partie quasi parfaite.
 - Jour 8 : le bon joueur passe tout juste.
-- Jour 12 et plus : il faut avoir acheté des améliorations.
+- Jours 10 à 40 : le bon joueur fait 1,0 à 1,3 fois l'objectif, l'expert 1,45 à 1,9.
+- Rejouer avec tout l'équipement : ★★★ facile jusqu'au jour 17 environ ; au-delà, il faut jouer comme l'expert. C'est voulu : les portes se passent en rejouant les premières saisons, et les invités des dernières saisons sont le défi ultime.
 
 Après tout changement de prix, de patience, de pourboire ou d'objectif, relance le bot et vérifie que ces cibles tiennent.
 
