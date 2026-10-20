@@ -867,26 +867,65 @@ function rng(a){return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Ma
 const blob=(cs,fill)=>cs.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${INK}" stroke="${INK}" stroke-width="6"/>`).join("")+cs.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"/>`).join("");
 const shadow=(x,y,rx)=>`<ellipse cx="${x}" cy="${y+2}" rx="${rx}" ry="${rx*.28}" fill="rgba(91,66,80,.13)"/>`;
 const tree=(x,y,k,cols,dots)=>shadow(x,y,22*k)+`<rect x="${x-5*k}" y="${y-26*k}" width="${10*k}" height="${28*k}" rx="${3*k}" fill="#b07a5a" ${BO}/>`+blob([[x-14*k,y-30*k,14*k],[x+14*k,y-30*k,14*k],[x,y-44*k,18*k]],cols[0])+`<circle cx="${x-7*k}" cy="${y-49*k}" r="${5*k}" fill="#fff" opacity=".45"/>`+(dots?[[-12,-28],[8,-40],[14,-24],[-4,-38]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${2.6*k}" fill="${dots}"/>`).join(""):"");
+// petits dessins réutilisés par la déco : chaque saison a plusieurs arbres et plusieurs fleurs pour varier la carte
+const stem=(x,y,h,k)=>`<path d="M${x} ${y} V${y-h*k}" stroke="#6fae5e" stroke-width="${2.6*k}" stroke-linecap="round"/>`;
+const daisy=(x,y,k,pet,mid)=>Array.from({length:6},(_,i)=>{const a=i/6*Math.PI*2;return `<circle cx="${x+Math.cos(a)*4.4*k}" cy="${y+Math.sin(a)*4.4*k}" r="${3.4*k}" fill="${pet}" stroke="${INK}" stroke-width="1.5"/>`}).join("")+`<circle cx="${x}" cy="${y}" r="${3*k}" fill="${mid}" stroke="${INK}" stroke-width="1.5"/>`;
+const daisies=(x,y,k,pet,mid)=>shadow(x,y,16*k)+[[-9,16],[2,24],[11,13]].map(([a,h])=>stem(x+a*k,y,h,k)).join("")+`<path d="M${x-2*k} ${y-6*k} q${-8*k} ${-4*k} ${-10*k} ${-10*k} q${7*k} 0 ${10*k} ${6*k}Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.6"/>`+[[-9,16],[2,24],[11,13]].map(([a,h],i)=>daisy(x+a*k,y-h*k,k*(i==1?1.1:.9),pet,mid)).join("");
+const birch=(x,y,k,crown,dots)=>shadow(x,y,18*k)+`<rect x="${x-4*k}" y="${y-34*k}" width="${8*k}" height="${36*k}" rx="${3*k}" fill="#fffaf2" ${BO}/><path d="M${x-4*k} ${y-12*k} h${4*k} M${x} ${y-22*k} h${4*k} M${x-4*k} ${y-28*k} h${3*k}" stroke="${INK}" stroke-width="2.2"/>`+blob([[x-9*k,y-40*k,11*k],[x+9*k,y-42*k,10*k],[x,y-52*k,12*k]],crown)+`<circle cx="${x-5*k}" cy="${y-56*k}" r="${3.6*k}" fill="#fff" opacity=".45"/>`+(dots?[[-10,-40],[6,-50],[11,-38]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${2.4*k}" fill="${dots}"/>`).join(""):"");
+const poplar=(x,y,k,col,dots)=>shadow(x,y,14*k)+`<rect x="${x-3.5*k}" y="${y-14*k}" width="${7*k}" height="${16*k}" rx="${2*k}" fill="#b07a5a" ${BO}/><ellipse cx="${x}" cy="${y-38*k}" rx="${13*k}" ry="${27*k}" fill="${col}" ${BO}/><path d="M${x-5*k} ${y-54*k} q${-4*k} ${10*k} ${-3*k} ${22*k}" fill="none" stroke="#fff" stroke-width="${3*k}" stroke-linecap="round" opacity=".45"/>`+(dots?[[4,-48],[-6,-34],[6,-24]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${2.3*k}" fill="${dots}"/>`).join(""):"");
+const pine=(x,y,k,col,snow)=>shadow(x,y,18*k)+`<rect x="${x-4*k}" y="${y-10*k}" width="${8*k}" height="${12*k}" fill="#a8785a" ${BO}/>`+[[20,-8],[16,-22],[11,-35]].map(([w,b])=>`<path d="M${x-w*k} ${y+b*k} L${x} ${y+(b-20)*k} L${x+w*k} ${y+b*k}Z" fill="${col}" ${BO}/>`+(snow?`<path d="M${x-w*.5*k} ${y+(b-10)*k} L${x} ${y+(b-20)*k} L${x+w*.5*k} ${y+(b-10)*k} Q${x} ${y+(b-6)*k} ${x-w*.5*k} ${y+(b-10)*k}Z" fill="#fff" stroke="${INK}" stroke-width="2"/>`:"")).join("");
+const bush=(x,y,k,col,berry,snow)=>shadow(x,y,20*k)+blob([[x-11*k,y-9*k,10*k],[x+11*k,y-9*k,10*k],[x,y-15*k,12*k]],col)+(snow?`<path d="M${x-16*k} ${y-18*k} Q${x-8*k} ${y-30*k} ${x} ${y-27*k} Q${x+10*k} ${y-30*k} ${x+17*k} ${y-17*k} Q${x} ${y-21*k} ${x-16*k} ${y-18*k}Z" fill="#fff" stroke="${INK}" stroke-width="2"/>`:"")+[[-11,-8],[-3,-14],[5,-7],[12,-12],[0,-4]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${2.8*k}" fill="${berry}" stroke="${INK}" stroke-width="1.4"/>`).join("");
+const bells=(x,y,k,col)=>shadow(x,y,12*k)+[[-6,1],[6,-1]].map(([a,d])=>`<path d="M${x+a*k} ${y} Q${x+a*k} ${y-26*k} ${x+(a+d*12)*k} ${y-26*k}" fill="none" stroke="#6fae5e" stroke-width="${2.4*k}" stroke-linecap="round"/>`+[.25,.6,.95].map(t=>{const bx=x+(a+d*12*t)*k,by=y-(20+6*t)*k+5*k;return `<path d="M${bx-3.4*k} ${by} Q${bx-3.4*k} ${by-7*k} ${bx} ${by-7*k} Q${bx+3.4*k} ${by-7*k} ${bx+3.4*k} ${by} L${bx+1.7*k} ${by-1.4*k} L${bx} ${by+.6*k} L${bx-1.7*k} ${by-1.4*k}Z" fill="${col}" stroke="${INK}" stroke-width="1.4"/>`}).join("")).join("")+`<path d="M${x} ${y} q${-12*k} ${-6*k} ${-12*k} ${-18*k} q${8*k} ${6*k} ${12*k} ${18*k}Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.6"/>`;
+const lavender=(x,y,k)=>shadow(x,y,14*k)+[-10,-4,2,8,13].map((a,i)=>{const h=[22,30,26,32,20][i];return stem(x+a*k,y,h,k)+[0,1,2,3].map(j=>`<ellipse cx="${x+a*k}" cy="${y-(h-j*4.4)*k}" rx="${2.8*k}" ry="${2.6*k}" fill="${j%2?"#b9a1e8":"#c9b8f2"}" stroke="${INK}" stroke-width="1.2"/>`).join("")}).join("");
+const rock=(x,y,k,top,dots)=>shadow(x,y,20*k)+`<path d="M${x-20*k} ${y} Q${x-22*k} ${y-16*k} ${x-6*k} ${y-20*k} Q${x+12*k} ${y-24*k} ${x+19*k} ${y-8*k} Q${x+21*k} ${y} ${x+14*k} ${y}Z" fill="#d6d0dc" ${BO}/><path d="M${x-17*k} ${y-12*k} Q${x-12*k} ${y-22*k} ${x-2*k} ${y-21*k} Q${x+12*k} ${y-24*k} ${x+17*k} ${y-12*k} Q${x+4*k} ${y-16*k} ${x-17*k} ${y-12*k}Z" fill="${top}" stroke="${INK}" stroke-width="2"/>`+(dots?[[-8,-20],[3,-22],[11,-17]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${2.6*k}" fill="${dots}" stroke="${INK}" stroke-width="1.3"/>`).join(""):"");
+const stump=(x,y,k)=>shadow(x,y,17*k)+`<path d="M${x-13*k} ${y-16*k} V${y-2*k} Q${x} ${y+4*k} ${x+13*k} ${y-2*k} V${y-16*k}Z" fill="#b07a5a" ${BO}/><ellipse cx="${x}" cy="${y-16*k}" rx="${13*k}" ry="${5*k}" fill="#f2d2a6" ${BO}/><ellipse cx="${x}" cy="${y-16*k}" rx="${6*k}" ry="${2.2*k}" fill="none" stroke="#c8946a" stroke-width="1.6"/><path d="M${x+15*k} ${y} V${y-8*k}" stroke="#fff5e8" stroke-width="${4*k}" stroke-linecap="round"/><path d="M${x+8*k} ${y-7*k} Q${x+15*k} ${y-19*k} ${x+22*k} ${y-7*k}Z" fill="#e8655a" stroke="${INK}" stroke-width="1.8"/><circle cx="${x+13*k}" cy="${y-11*k}" r="${1.6*k}" fill="#fff"/>`;
+const pumpkins=(x,y,k)=>shadow(x,y,20*k)+[[-8,1,"#f2a35c"],[9,.75,"#f7c85c"]].map(([a,s,c])=>{const cx=x+a*k,r=12*s*k;return `<ellipse cx="${cx}" cy="${y-r*.8}" rx="${r*1.15}" ry="${r*.85}" fill="${c}" ${BO}/><path d="M${cx-r*.4} ${y-r*1.5} Q${cx-r*.55} ${y-r*.8} ${cx-r*.4} ${y-r*.1} M${cx+r*.4} ${y-r*1.5} Q${cx+r*.55} ${y-r*.8} ${cx+r*.4} ${y-r*.1}" fill="none" stroke="${INK}" stroke-width="1.6" opacity=".5"/><path d="M${cx} ${y-r*1.6} q${1*k} ${-5*k} ${4*k} ${-6*k}" fill="none" stroke="#6fae5e" stroke-width="${3*k}" stroke-linecap="round"/>`}).join("");
+const bareTree=(x,y,k)=>{const br=`M${x-5*k} ${y} L${x-3*k} ${y-30*k} L${x-14*k} ${y-46*k} M${x-3*k} ${y-30*k} L${x+2*k} ${y-50*k} M${x+3*k} ${y-24*k} L${x+15*k} ${y-40*k} M${x+5*k} ${y} L${x+3*k} ${y-24*k}`;return shadow(x,y,18*k)+`<path d="${br}" fill="none" stroke="${INK}" stroke-width="${9*k}" stroke-linecap="round" stroke-linejoin="round"/><path d="${br} M${x} ${y-2*k} V${y-26*k}" fill="none" stroke="#a8785a" stroke-width="${5*k}" stroke-linecap="round" stroke-linejoin="round"/>`+[[-14,-47,6],[2,-51,6],[15,-41,5.4],[-4,-32,4.6]].map(([a,b,r])=>`<ellipse cx="${x+a*k}" cy="${y+b*k}" rx="${r*k}" ry="${r*.6*k}" fill="#fff" stroke="${INK}" stroke-width="1.8"/>`).join("")};
+const pond=(x,y,k,water,ice)=>`<ellipse cx="${x}" cy="${y-6*k}" rx="${30*k}" ry="${13*k}" fill="${water}" ${BO}/><ellipse cx="${x-6*k}" cy="${y-9*k}" rx="${12*k}" ry="${4*k}" fill="#fff" opacity=".6"/>`+(ice?`<path d="M${x+6*k} ${y-12*k} l${5*k} ${4*k} l${6*k} ${-2*k} M${x-14*k} ${y-3*k} l${6*k} ${-3*k}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`:"");
 const DECO={
   printemps:[
     (x,y,k)=>tree(x,y,k,["#f9c4d2"],"#fff"),
     (x,y,k)=>shadow(x,y,18*k)+[[-10,"#f6a5b4"],[0,"#f7d77a"],[10,"#c9b8f2"]].map(([a,c])=>`<path d="M${x+a*k} ${y} V${y-18*k}" stroke="#6fae5e" stroke-width="${3*k}"/><path d="M${x+a*k-6*k} ${y-26*k} L${x+a*k-6*k} ${y-16*k} Q${x+a*k} ${y-11*k} ${x+a*k+6*k} ${y-16*k} L${x+a*k+6*k} ${y-26*k} L${x+a*k+3*k} ${y-22*k} L${x+a*k} ${y-27*k} L${x+a*k-3*k} ${y-22*k}Z" fill="${c}" ${BO}/>`).join(""),
-    (x,y,k)=>shadow(x,y,20*k)+blob([[x-11*k,y-10*k,11*k],[x+11*k,y-10*k,11*k],[x,y-18*k,13*k]],"#a8d39a")+[[-10,-12],[6,-20],[12,-8]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${3*k}" fill="#f6a5b4" stroke="${INK}" stroke-width="1.5"/>`).join("")
+    (x,y,k)=>shadow(x,y,20*k)+blob([[x-11*k,y-10*k,11*k],[x+11*k,y-10*k,11*k],[x,y-18*k,13*k]],"#a8d39a")+[[-10,-12],[6,-20],[12,-8]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${3*k}" fill="#f6a5b4" stroke="${INK}" stroke-width="1.5"/>`).join(""),
+    (x,y,k)=>birch(x,y,k,"#f9c4d2","#fff"),
+    (x,y,k)=>daisies(x,y,k,"#fff","#f7d77a"),
+    (x,y,k)=>bells(x,y,k,"#9ec3ef"),
+    (x,y,k)=>poplar(x,y,k,"#a9d68f","#f6a5b4"),
+    (x,y,k)=>rock(x,y,k,"#a9d68f","#f7d77a"),
+    (x,y,k)=>tree(x,y,k,["#fff0f4"],"#f6a5b4")
   ],
   ete:[
     (x,y,k)=>tree(x,y,k,["#8fca7a"],"#e2708e"),
     (x,y,k)=>shadow(x,y,10*k)+`<path d="M${x} ${y} V${y-30*k}" stroke="#6fae5e" stroke-width="${3.4*k}"/><path d="M${x} ${y-12*k} q${9*k} ${-8*k} ${12*k} ${-2*k} q${-6*k} ${6*k} ${-12*k} ${2*k}Z" fill="#8fca7a" stroke="${INK}" stroke-width="2"/>`+Array.from({length:10},(_,i)=>{const a=i/10*Math.PI*2;return `<ellipse cx="${x+Math.cos(a)*10*k}" cy="${y-38*k+Math.sin(a)*10*k}" rx="${6*k}" ry="${3.6*k}" transform="rotate(${a*57.3} ${x+Math.cos(a)*10*k} ${y-38*k+Math.sin(a)*10*k})" fill="#f7d04e" stroke="${INK}" stroke-width="1.8"/>`}).join("")+`<circle cx="${x}" cy="${y-38*k}" r="${7*k}" fill="#a8785a" ${BO}/>`,
-    (x,y,k)=>`<ellipse cx="${x}" cy="${y-6*k}" rx="${30*k}" ry="${13*k}" fill="#a9d8ef" ${BO}/><ellipse cx="${x-6*k}" cy="${y-9*k}" rx="${12*k}" ry="${4*k}" fill="#fff" opacity=".5"/><path d="M${x+8*k} ${y-4*k} a${7*k} ${4*k} 0 1 1 ${8*k} ${-4*k} l${-6*k} ${2*k}Z" fill="#8fca7a" stroke="${INK}" stroke-width="2"/><circle cx="${x+15*k}" cy="${y-9*k}" r="${2.6*k}" fill="#f6a5b4"/>`
+    (x,y,k)=>`<ellipse cx="${x}" cy="${y-6*k}" rx="${30*k}" ry="${13*k}" fill="#a9d8ef" ${BO}/><ellipse cx="${x-6*k}" cy="${y-9*k}" rx="${12*k}" ry="${4*k}" fill="#fff" opacity=".5"/><path d="M${x+8*k} ${y-4*k} a${7*k} ${4*k} 0 1 1 ${8*k} ${-4*k} l${-6*k} ${2*k}Z" fill="#8fca7a" stroke="${INK}" stroke-width="2"/><circle cx="${x+15*k}" cy="${y-9*k}" r="${2.6*k}" fill="#f6a5b4"/>`,
+    (x,y,k)=>tree(x,y,k,["#8fca7a"],"#e8655a"),
+    (x,y,k)=>pine(x,y,k,"#6fae5e"),
+    (x,y,k)=>lavender(x,y,k),
+    (x,y,k)=>daisies(x,y,k,"#f6a5b4","#fff3a8"),
+    (x,y,k)=>bush(x,y,k,"#8fca7a","#e8655a"),
+    (x,y,k)=>poplar(x,y,k,"#6fae5e")
   ],
   automne:[
     (x,y,k)=>tree(x,y,k,["#f2a35c"],"#e8835a"),
     (x,y,k)=>shadow(x,y,13*k)+`<path d="M${x-6*k} ${y} L${x-5*k} ${y-14*k} H${x+5*k} L${x+6*k} ${y}Z" fill="#fff5e8" ${BO}/><path d="M${x-17*k} ${y-13*k} Q${x} ${y-36*k} ${x+17*k} ${y-13*k}Z" fill="#e8655a" ${BO}/><circle cx="${x-6*k}" cy="${y-20*k}" r="${3*k}" fill="#fff"/><circle cx="${x+6*k}" cy="${y-24*k}" r="${2.4*k}" fill="#fff"/><circle cx="${x+9*k}" cy="${y-16*k}" r="${2*k}" fill="#fff"/>`,
-    (x,y,k)=>shadow(x,y,18*k)+`<path d="M${x} ${y-22*k} q${-2*k} ${-6*k} ${3*k} ${-9*k}" fill="none" stroke="#6fae5e" stroke-width="${3*k}" stroke-linecap="round"/>`+blob([[x-9*k,y-10*k,10*k],[x+9*k,y-10*k,10*k],[x,y-11*k,11*k]],"#f2a35c")+`<path d="M${x} ${y-21*k} V${y-1*k} M${x-9*k} ${y-19*k} Q${x-13*k} ${y-10*k} ${x-8*k} ${y-1*k} M${x+9*k} ${y-19*k} Q${x+13*k} ${y-10*k} ${x+8*k} ${y-1*k}" fill="none" stroke="#d6803e" stroke-width="2"/>`
+    (x,y,k)=>shadow(x,y,18*k)+`<path d="M${x} ${y-22*k} q${-2*k} ${-6*k} ${3*k} ${-9*k}" fill="none" stroke="#6fae5e" stroke-width="${3*k}" stroke-linecap="round"/>`+blob([[x-9*k,y-10*k,10*k],[x+9*k,y-10*k,10*k],[x,y-11*k,11*k]],"#f2a35c")+`<path d="M${x} ${y-21*k} V${y-1*k} M${x-9*k} ${y-19*k} Q${x-13*k} ${y-10*k} ${x-8*k} ${y-1*k} M${x+9*k} ${y-19*k} Q${x+13*k} ${y-10*k} ${x+8*k} ${y-1*k}" fill="none" stroke="#d6803e" stroke-width="2"/>`,
+    (x,y,k)=>poplar(x,y,k,"#f7c85c"),
+    (x,y,k)=>birch(x,y,k,"#e8835a","#f7c85c"),
+    (x,y,k)=>pine(x,y,k,"#6fa58a"),
+    (x,y,k)=>pumpkins(x,y,k),
+    (x,y,k)=>stump(x,y,k),
+    (x,y,k)=>tree(x,y,k,["#d9603f"],"#f7c85c")
   ],
   hiver:[
     (x,y,k)=>shadow(x,y,18*k)+`<rect x="${x-4*k}" y="${y-10*k}" width="${8*k}" height="${12*k}" fill="#a8785a" ${BO}/>`+[[0,22,-8],[0,18,-24],[0,13,-38]].map(([a,w,b])=>`<path d="M${x-w*k} ${y+b*k} L${x} ${y+(b-22)*k} L${x+w*k} ${y+b*k}Z" fill="#6fa58a" ${BO}/><path d="M${x-w*.55*k} ${y+(b-10)*k} L${x} ${y+(b-22)*k} L${x+w*.55*k} ${y+(b-10)*k} Q${x} ${y+(b-6)*k} ${x-w*.55*k} ${y+(b-10)*k}Z" fill="#fff" stroke="${INK}" stroke-width="2"/>`).join(""),
     (x,y,k)=>shadow(x,y,16*k)+blob([[x,y-13*k,14*k]],"#fff")+blob([[x,y-34*k,10*k]],"#fff")+`<circle cx="${x-3.5*k}" cy="${y-36*k}" r="${1.8*k}" fill="${INK}"/><circle cx="${x+3.5*k}" cy="${y-36*k}" r="${1.8*k}" fill="${INK}"/><path d="M${x-1*k} ${y-32*k} l${4*k} ${1.5*k} l${-4*k} ${1.5*k}Z" fill="#f2a35c"/><path d="M${x-10*k} ${y-26*k} Q${x} ${y-21*k} ${x+10*k} ${y-26*k} L${x+12*k} ${y-14*k} L${x+6*k} ${y-14*k} L${x+5*k} ${y-23*k} Q${x} ${y-21*k} ${x-10*k} ${y-23*k}Z" fill="#f59a8b" stroke="${INK}" stroke-width="2"/><circle cx="${x+9*k}" cy="${y-36*k}" r="${2.4*k}" fill="#f6a5b4" opacity=".7"/>`,
-    (x,y,k)=>blob([[x-12*k,y-6*k,10*k],[x+10*k,y-6*k,12*k],[x,y-10*k,11*k]],"#fff")+`<rect x="${x-7*k}" y="${y-28*k}" width="${14*k}" height="${13*k}" rx="${2*k}" fill="#f6a5b4" ${BO}/><path d="M${x} ${y-28*k} V${y-15*k} M${x-7*k} ${y-22*k} H${x+7*k}" stroke="#f2c75c" stroke-width="${2.6*k}"/><path d="M${x} ${y-28*k} q${-6*k} ${-7*k} ${-7*k} 0 q${4*k} ${2*k} ${7*k} 0 q${6*k} ${-7*k} ${7*k} 0 q${-4*k} ${2*k} ${-7*k} 0Z" fill="#f2c75c" stroke="${INK}" stroke-width="1.8"/>`
+    (x,y,k)=>blob([[x-12*k,y-6*k,10*k],[x+10*k,y-6*k,12*k],[x,y-10*k,11*k]],"#fff")+`<rect x="${x-7*k}" y="${y-28*k}" width="${14*k}" height="${13*k}" rx="${2*k}" fill="#f6a5b4" ${BO}/><path d="M${x} ${y-28*k} V${y-15*k} M${x-7*k} ${y-22*k} H${x+7*k}" stroke="#f2c75c" stroke-width="${2.6*k}"/><path d="M${x} ${y-28*k} q${-6*k} ${-7*k} ${-7*k} 0 q${4*k} ${2*k} ${7*k} 0 q${6*k} ${-7*k} ${7*k} 0 q${-4*k} ${2*k} ${-7*k} 0Z" fill="#f2c75c" stroke="${INK}" stroke-width="1.8"/>`,
+    (x,y,k)=>bareTree(x,y,k),
+    (x,y,k)=>bush(x,y,k,"#6fa58a","#e8655a",1),
+    (x,y,k)=>rock(x,y,k,"#fff"),
+    (x,y,k)=>pond(x,y,k,"#cfe8f6",1),
+    (x,y,k)=>birch(x,y,k,"#fff"),
+    (x,y,k)=>pine(x,y,k*.8,"#8fbfa4",1)
   ]
 };
 const LAND={printemps:{bg:"#e2f1d4",mk:"#c7e2b4"},ete:{bg:"#f3efc2",mk:"#dfe0a0"},automne:{bg:"#f8dfc4",mk:"#efc59c"},hiver:{bg:"#e6eff8",mk:"#ffffff"}};
@@ -923,7 +962,7 @@ function mapSVG(L){
   // saisons : on dessine du haut vers le bas pour que chaque bord ondulé recouvre la saison du dessus
   for(const b of [...bands].reverse()){
     const id=b.c.id,ld=LAND[id],top=Y(b.hi),bot=Y(b.lo);
-    defs+=`<pattern id="pt-${id}" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 12 l3 -6 l3 6 M30 32 l3 -6 l3 6" fill="none" stroke="${ld.mk}" stroke-width="2.4" stroke-linecap="round"/><circle cx="34" cy="10" r="2.4" fill="${ld.mk}"/><circle cx="12" cy="30" r="1.8" fill="${ld.mk}"/></pattern>`;
+    defs+=`<pattern id="pt-${id}" width="120" height="104" patternUnits="userSpaceOnUse"><path d="M10 16 l3 -6 l3 6 M78 70 l3 -6 l3 6 l3 -6 l3 6" fill="none" stroke="${ld.mk}" stroke-width="2.4" stroke-linecap="round"/>${[[54,22],[24,82]].map(([x,y])=>[0,1,2,3].map(i=>`<circle cx="${x+[-3,3,0,0][i]}" cy="${y+[0,0,-3,3][i]}" r="2.2" fill="${ld.mk}"/>`).join("")).join("")}<circle cx="100" cy="30" r="2.4" fill="${ld.mk}"/><circle cx="58" cy="94" r="1.8" fill="${ld.mk}"/><path d="M36 52 q6 -8 12 0 q-6 4 -12 0Z M104 92 q5 -7 10 0 q-5 3 -10 0Z" fill="${ld.mk}"/></pattern>`;
     let edge=`M0 ${bot} L0 ${top}`;
     if(b.hi<H){for(let x=0;x<MW;x+=50)edge+=` Q${x+25} ${top-14} ${x+50} ${top}`}else edge+=` L${MW} ${top}`;
     edge+=` L${MW} ${bot}Z`;
@@ -939,11 +978,12 @@ function mapSVG(L){
   // déco : posée au hasard (graine fixe) loin du chemin, des portes et des invités
   const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80]],deco=[];
   for(const b of bands){
-    const n=Math.floor((b.hi-b.lo)/44),fs=DECO[b.c.id];
+    const n=Math.floor((b.hi-b.lo)/44),fs=DECO[b.c.id],last=[];
     for(let j=0;j<n;j++)for(let t=0;t<14;t++){
       const u=b.lo+34+R()*(b.hi-b.lo-60),x=24+R()*(MW-48);
       if(Math.abs(x-pathX(way,u))<76||taken.some(([a,c,r])=>Math.hypot(a-x,c-u)<r)||deco.some(o=>Math.hypot(o.x-x,o.u-u)<54))continue;
-      deco.push({x,u,f:fs[Math.floor(R()*fs.length)],k:.75+R()*.4});break;
+      let f;do f=Math.floor(R()*fs.length);while(last.includes(f));last.push(f);if(last.length>3)last.shift();
+      deco.push({x,u,f:fs[f],k:.75+R()*.4});break;
     }
   }
   deco.sort((a,b)=>b.u-a.u).forEach(o=>s+=o.f(o.x.toFixed(1)*1,Y(o.u).toFixed(1)*1,o.k));
