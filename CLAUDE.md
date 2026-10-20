@@ -56,7 +56,8 @@ Ce jeu est le « moment détente ». Il n'a pas besoin d'être difficile, mais i
 - « On dirait un jeu pour enfant de 2 ans » : la première version était trop simple visuellement. Il veut du très mignon, du soigné, avec de l'ambiance (pluie, lumière, détails).
 - « Aucun renard ne vient » : la fréquence des visites de la Clairière était trop basse. Il veut du retour visible rapidement.
 - « J'ai fini le jeu » puis « j'ai tout débloqué trop facilement, on s'ennuie » : l'économie de la Clairière est trop généreuse (visites accélérées, mini-jeux qui rapportent trop), et aucun choix n'y a d'importance. C'est ce qui a mené au Café, qu'il a trouvé « sympa ».
-- Il veut un jeu « le plus addictif possible » : objectifs clairs, échec possible, choix qui comptent, progression visible, récompenses variées. Pas de mécaniques d'argent réel.
+- Il veut un jeu « le plus addictif possible » : objectifs clairs, échec possible, choix qui comptent, progression visible, récompenses variées.
+- Il veut que le jeu lui rapporte de l'argent (décision d'octobre 2026). Pistes : pubs récompensées, cosmétiques, pass de saison, achat « sans pub », publication sur les stores (TWA pour le Play Store, Capacitor pour l'App Store). Penser RGPD et public mineur.
 - Il préfère qu'on corrige et qu'on teste avant de lui montrer, plutôt qu'enchaîner des versions non vérifiées.
 
 ## Pistes pour la suite
@@ -65,7 +66,8 @@ Ce jeu est le « moment détente ». Il n'a pas besoin d'être difficile, mais i
 - Clairière : ralentir l'économie (prix des zones, gains des mini-jeux, limite de parties par jour), ajouter des quêtes du jour et des combinaisons secrètes pour les renards rares.
 - Café : événements spéciaux (rush, client mystère), recettes combinées, personnalisation du café, saisons.
 - Sons doux et vibrations (à déclencher seulement après une interaction).
-- Sauvegarde exportable ou synchronisée entre appareils.
+- Backend **Firebase** (décidé, pas encore commencé) : sauvegarde cloud, classement, amis, événements live. Connexion : **compte anonyme Firebase dès le lancement, sans écran de connexion**, puis proposition de lier un compte Google au bon moment (changer d'appareil, classement, amis, achat). Ne pas imposer la connexion au démarrage.
+- Installation Android : l'identifiant du manifeste est `/renards/app`. Ne plus le changer, sinon les téléphones voient une autre app.
 
 ## Vérifier avant de livrer
 
