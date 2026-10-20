@@ -1,6 +1,6 @@
 // Cache hors ligne : les pages viennent du réseau quand il y en a (mises à jour visibles tout de suite),
 // le reste est servi depuis le cache puis mis à jour en arrière-plan.
-const CACHE = "renards-v8";
+const CACHE = "renards-v9";
 const FILES = ["./", "index.html", "cafe.html", "clairiere.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });

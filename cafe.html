@@ -97,7 +97,10 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .tray{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:6px 10px;box-shadow:0 3px 0 var(--line)}
 .tl{font-family:var(--display);font-size:13px;color:var(--ink-soft);margin-right:2px}
 .ts{width:46px;aspect-ratio:1;border-radius:14px;border:2px dashed var(--line);background:var(--card-2);display:grid;place-items:center;padding:4px;flex:0 1 auto;min-width:34px;box-sizing:border-box}
-button.ts{border-style:solid;border-color:var(--ink);background:#fff;cursor:pointer;animation:pop .25s}
+button.ts{position:relative;border-style:solid;border-color:var(--ink);background:#fff;cursor:pointer}
+button.ts.new{animation:pop .25s}
+button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s infinite}
+.ts .bin{position:absolute;top:-9px;right:-9px;width:22px;height:22px;border-radius:99px;background:#fff;border:2px solid var(--bad);display:grid;place-items:center;padding:2px}
 .ts svg{width:100%;height:100%}
 .tray small{margin-left:auto;font-size:12px;color:var(--ink-soft);text-align:right;line-height:1.3}
 @keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
@@ -369,7 +372,7 @@ const REC={
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
 let SEA="printemps";
 const VAR={
-  printemps:{croissant:["Tartelette myrtille","tartelettes myrtille"],the:["Thé sakura","thés sakura"]},
+  printemps:{cookie:["Tartelette myrtille","tartelettes myrtille"],the:["Thé sakura","thés sakura"]},
   ete:{croissant:["Tartelette fraise","tartelettes fraise"],the:["Thé glacé","thés glacés"],cookie:["Cookie citron","cookies citron"],choco:["Milkshake choco","milkshakes choco"],gateau:["Fraisier","parts de fraisier"]},
   automne:{croissant:["Tarte aux pommes","tartes aux pommes"],the:["Thé chai","thés chai"],cookie:["Cookie noisette","cookies noisette"],smoothie:["Smoothie pomme","smoothies pomme"],gateau:["Gâteau aux marrons","parts de gâteau aux marrons"]},
   hiver:{croissant:["Pumpkin pie","pumpkin pies"],the:["Thé au miel","thés au miel"],cookie:["Sablé étoile","sablés étoile"],smoothie:["Smoothie myrtille","smoothies myrtille"],gateau:["Bûche de Noël","parts de bûche"]}
@@ -421,6 +424,8 @@ const QUESTS=[
 ];
 const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
 const has=k=>(REC[k]&&!REC[k].day)||!!S.own[k];
+// au menu d'une journée : les recettes gagnées avant elle seulement, même quand on rejoue une ancienne journée
+const onMenu=(k,d=G&&G.run?G.day:curDay())=>has(k)&&!(REC[k].day>=d);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
@@ -472,8 +477,9 @@ function qEvent(k,v=1,r){
 /* ---------- dessins ---------- */
 const K=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
 const ICON={
+  bin:`<path d="M9 12 H31 L28 35 H12Z" fill="#f59a8b" ${K}/><path d="M6 11 H34 M16 7 H24" fill="none" ${K}/><path d="M16 17 L17 30 M24 17 L23 30" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`,
   cafe:`<ellipse cx="18" cy="34" rx="14" ry="3" fill="#f7b7c3" ${K}/><path d="M28 16 Q36 16 35 22 Q34 28 27 27" fill="none" ${K}/><path d="M7 14 H29 V25 Q29 33 18 33 Q7 33 7 25Z" fill="#fff" ${K}/><ellipse cx="18" cy="14" rx="11" ry="2.8" fill="#8a5a3a" ${K}/><path d="M14 9 q-2 -3 0 -6 M21 9 q-2 -3 0 -6" fill="none" stroke="#cdbfc7" stroke-width="2" stroke-linecap="round"/><path d="M16 26 c-1.5-1.3-3-2.3-3-3.5 a1.5 1.5 0 0 1 3-.5 a1.5 1.5 0 0 1 3 .5 c0 1.2-1.5 2.2-3 3.5z" fill="#f6a5b4"/>`,
-  croissant:`<path d="M3 27 Q6 11 20 9 Q34 11 37 27 Q31 23 27 27 Q23 17 20 17 Q17 17 13 27 Q9 23 3 27Z" fill="#f2b45a" ${K}/><path d="M13 27 Q15 19 20 17 M27 27 Q25 19 20 17" fill="none" ${K}/><path d="M16 13 q4 -2 8 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>`,
+  croissant:`<ellipse cx="20" cy="33" rx="15" ry="2.6" fill="#f7b7c3" opacity=".7"/>${[[6.5,26,4.6,3.4,-48,"#e39a4c"],[33.5,26,4.6,3.4,48,"#e39a4c"],[11.5,20,6.6,5.4,-38,"#f0ad5a"],[28.5,20,6.6,5.4,38,"#f0ad5a"],[20,17,7.6,8.6,0,"#f7bd66"]].map(([x,y,rx,ry,a,c])=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c}" transform="rotate(${a} ${x} ${y})" ${K}/><path d="M${x-rx*.45} ${y-ry*.35} q${rx*.45} ${-ry*.45} ${rx*.9} 0" fill="none" stroke="#ffe0a3" stroke-width="1.8" stroke-linecap="round" transform="rotate(${a} ${x} ${y})"/>`).join("")}<circle cx="17" cy="12.5" r="1.6" fill="#fff" opacity=".8"/>`,
   the:`<path d="M30 17 Q37 17 36 22 Q35 27 29 26" fill="none" ${K}/><path d="M5 15 H31 Q31 32 18 32 Q5 32 5 15Z" fill="#a9d68f" ${K}/><ellipse cx="18" cy="15" rx="13" ry="3" fill="#e8b06a" ${K}/><path d="M24 15 L27 5" fill="none" stroke="${INK}" stroke-width="1.6"/><rect x="24" y="2" width="7" height="6" rx="1.5" fill="#f2c75c" ${K}/>`,
   cookie:`<circle cx="20" cy="21" r="14" fill="#e0a868" ${K}/><circle cx="14" cy="17" r="2.3" fill="#6a4026"/><circle cx="24" cy="15" r="2" fill="#6a4026"/><circle cx="22" cy="25" r="2.4" fill="#6a4026"/><circle cx="14" cy="27" r="1.8" fill="#6a4026"/><circle cx="28" cy="22" r="1.6" fill="#6a4026"/>`,
   choco:`<path d="M30 15 Q38 16 36 23 Q34 29 28 27" fill="none" ${K}/><path d="M6 12 L9 33 Q18 36 27 33 L30 12Z" fill="#f59a8b" ${K}/><ellipse cx="18" cy="12" rx="12" ry="3" fill="#8a5a3a" ${K}/><rect x="12" y="7" width="7" height="6" rx="2" fill="#fff" ${K}/><rect x="19" y="8" width="6" height="5" rx="2" fill="#ffd6e0" ${K}/>`,
@@ -506,7 +512,7 @@ const cup=(body,liq,deco="")=>`<path d="M30 17 Q37 17 36 22 Q35 27 29 26" fill="
 const glass=(liq,top="")=>`<path d="M9 9 H31 L28 35 H12Z" fill="#fff" ${K}/><path d="M10.4 17 H29.6 L28 35 H12Z" fill="${liq}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 20 v10" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".6"/>${top}`;
 const slice=(sponge,cream,top,deco="")=>`<path d="M4 30 L36 30 L36 20 L4 14Z" fill="${sponge}" ${K}/><path d="M4 22 L36 25" fill="none" stroke="${cream}" stroke-width="3"/><path d="M4 14 L36 20 L36 17 L4 10Z" fill="${top}" ${K}/>${deco}`;
 Object.assign(ICON,{
-  "croissant@printemps":tart("#7d6fc4",[[13,18],[20,16.5],[27,18.5],[17,21.5],[24,21.5]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.7" fill="#5a5aa8" stroke="${INK}" stroke-width="1.4"/><circle cx="${x-.8}" cy="${y-.9}" r=".8" fill="#fff"/>`).join("")+`<path d="M24 12 q5 -5 9 -1 q-4 4 -9 1Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.4"/>`),
+  "cookie@printemps":tart("#7d6fc4",[[13,18],[20,16.5],[27,18.5],[17,21.5],[24,21.5]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.7" fill="#5a5aa8" stroke="${INK}" stroke-width="1.4"/><circle cx="${x-.8}" cy="${y-.9}" r=".8" fill="#fff"/>`).join("")+`<path d="M24 12 q5 -5 9 -1 q-4 4 -9 1Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.4"/>`),
   "croissant@ete":tart("#ffd6e0",[[12,19],[20,16],[28,19],[20,22]].map(([x,y])=>`<path d="M${x-4} ${y-1} Q${x} ${y-5} ${x+4} ${y-1} Q${x+3} ${y+4} ${x} ${y+4} Q${x-3} ${y+4} ${x-4} ${y-1}Z" fill="#f2546a" stroke="${INK}" stroke-width="1.4"/><circle cx="${x-1}" cy="${y+.5}" r=".6" fill="#ffe9a8"/><circle cx="${x+1.4}" cy="${y+1.6}" r=".6" fill="#ffe9a8"/>`).join("")),
   "croissant@automne":tart("#f2c060",`<path d="M9 16 L27 23 M15 15 L33 22 M11 22 L25 15 M19 23 L31 17" stroke="#e8a94e" stroke-width="3.4" stroke-linecap="round"/><path d="M9 16 L27 23 M15 15 L33 22 M11 22 L25 15 M19 23 L31 17" stroke="${INK}" stroke-width="1" stroke-linecap="round" opacity=".5"/>`),
   "croissant@hiver":tart("#f0954a",`<path d="M14 18 Q14 10 20 9 Q26 10 26 18 Q20 16 14 18Z" fill="#fff" stroke="${INK}" stroke-width="1.6"/><path d="M16 15 q4 -3 8 0" fill="none" stroke="#e8d8cc" stroke-width="1.4"/><circle cx="11" cy="20" r=".9" fill="#a8603a"/><circle cx="29" cy="20" r=".9" fill="#a8603a"/><circle cx="26" cy="22" r=".9" fill="#a8603a"/>`),
@@ -635,15 +641,15 @@ const batchOf=k=>REC[k].batch*(S.own.four2?2:1);
 let uid=0;
 function newDay(d){
   const cfg=cfgOf(d),st={};SEA=chapOf(d).id;
-  for(const k in REC)if(REC[k].kind==="drink"&&has(k))st[k]=Array.from({length:(k==="cafe"?S.own.double:S.own.machines)?2:1},()=>({t:0,busy:0,ready:0}));
-  const vit={};for(const k in REC)if(REC[k].kind==="bake"&&has(k))vit[k]=k==="croissant"?2:0;
+  for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:(k==="cafe"?S.own.double:S.own.machines)?2:1},()=>({t:0,busy:0,ready:0}));
+  const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
   G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;
 }
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
 function genOrder(){
-  const un=Object.keys(REC).filter(has),m=G.cfg.max,r=G.rng();
+  const un=Object.keys(REC).filter(k=>onMenu(k)),m=G.cfg.max,r=G.rng();
   const n=m===1?1:m===2?(r<.6?1:2):(r<.42?1:r<.78?2:3);
   return Array.from({length:n},()=>({r:un[Math.floor(G.rng()*un.length)],done:0}));
 }
@@ -683,7 +689,7 @@ function update(dt){
 const custEl=c=>document.querySelector(`[data-cust="${c.id}"]`);
 function deliver(c,el){
   if(c.state!=="wait")return;let got=0;
-  c.order.forEach(o=>{if(o.done)return;const k=G.tray.indexOf(o.r);if(k>=0){G.tray.splice(k,1);o.done=1;got++}});
+  c.order.forEach(o=>{if(o.done)return;const k=G.tray.indexOf(o.r);if(k>=0){G.tray.splice(k,1);o.done=1;got++;G.arm=null}});
   if(!got){shake(el);hint(`${FOX[c.fox].name} veut : <b>${c.order.filter(o=>!o.done).map(o=>REC[o.r].name.toLowerCase()).join(", ")}</b>. Prépare-le et pose-le sur le plateau.`);return}
   if(c.order.every(o=>o.done))complete(c);dirty=true;
 }
@@ -703,13 +709,13 @@ function complete(c){
 function tapStation(k,el){
   if(!G||!G.run)return;
   const sl=G.st[k],r=sl.find(s=>s.ready);
-  if(r){if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}r.ready=0;r.t=0;G.tray.push(k);dirty=true;return}
+  if(r){if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}r.ready=0;r.t=0;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true;return}
   const f=sl.find(s=>!s.busy&&!s.ready);
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
 }
 function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*(S.own.fourpro?.7:1)});dirty=true}
 function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(S.own.four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
-function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);dirty=true}
+function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}
 
 /* ---------- rendu ---------- */
 function renderHud(){
@@ -723,35 +729,46 @@ function render(){
   dirty=false;renderHud();
   if(!G||!G.run){$("custs").innerHTML="";renderKitchen();renderTray();return}
   const X=SPOTX[spotsN()];
-  $("custs").innerHTML=G.cust.map(c=>{const f=FOX[c.fox];
+  const box=$("custs"),keep=new Set();
+  for(const c of G.cust){const f=FOX[c.fox];
     const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(o.r)}</span>`).join("");
-    return `<button class="cust ${c.state}${c.low&&c.state==="wait"?" low":""}" data-cust="${c.id}" type="button" style="left:${X[c.spot]}%" aria-label="${f.name}"><span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">VIP</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>${foxSVG(f,{pose:c.state==="happy"?"happy":"sit"})}</button>`}).join("");
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}`,inner=`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">VIP</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>${foxSVG(f,{pose:c.state==="happy"?"happy":"sit"})}`;
+    let el=custEl(c);
+    if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);box.appendChild(el)}
+    if(el.dataset.c!==cls){el.className=cls;el.dataset.c=cls}
+    el.style.left=X[c.spot]+"%";
+    if(el._h!==inner){el.innerHTML=inner;el._h=inner}
+    keep.add(el);
+  }
+  [...box.children].forEach(e=>{if(!keep.has(e))e.remove()});
   renderKitchen();renderTray();updateBars();
 }
 function renderTray(){
-  const cap=trayCap(),t=G&&G.run?G.tray:[];
+  const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;
   let h=`<span class="tl">Plateau</span>`;
-  for(let i=0;i<cap;i++)h+=t[i]?`<button class="ts" data-tray="${i}" type="button" aria-label="Jeter ${REC[t[i]].name}">${icon(t[i])}</button>`:`<span class="ts"></span>`;
-  h+=`<small>Touche un client pour le servir.<br>Touche un article pour le jeter.</small>`;
-  $("tray").innerHTML=h;
+  for(let i=0;i<cap;i++)h+=t[i]?`<button class="ts${i===arm?" arm":""}${G.popI===i?" new":""}" data-tray="${i}" type="button" aria-label="${i===arm?`Toucher encore pour jeter ${REC[t[i]].name}`:REC[t[i]].name}">${icon(t[i])}${i===arm?`<span class="bin">${icon("bin")}</span>`:""}</button>`:`<span class="ts"></span>`;
+  h+=`<small>Touche un client pour le servir.<br>Touche 2 fois un article pour le jeter.</small>`;
+  if($("tray")._h!==h){$("tray").innerHTML=h;$("tray")._h=h}
+  if(G)G.popI=-1;
 }
 // Cuisine : une rangée de boissons, puis le four et une tuile par pâtisserie (la tuile sert aussi de vitrine).
 function renderKitchen(){
   const on=G&&G.run;
   const tile=(inner,attrs,cls,extra="")=>`<div class="kw"><button class="kb ${cls}" type="button" ${attrs} ${on?"":"disabled"}>${inner}</button>${extra}</div>`;
   let dr="";
-  for(const k of Object.keys(REC)){if(REC[k].kind!=="drink"||!has(k))continue;
+  for(const k of Object.keys(REC)){if(REC[k].kind!=="drink"||!onMenu(k))continue;
     const sl=on?G.st[k]:[{}],rd=sl.some(s=>s.ready);
     dr+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span><span class="slots">${sl.map((s,i)=>`<span class="sl${s.ready?" ready":""}"><i id="sp-${k}-${i}"></i></span>`).join("")}</span>`,`data-st="${k}" aria-label="${REC[k].name}${rd?", prêt":""}"`,rd?"rdy":"");
   }
-  const bakes=Object.keys(REC).filter(k=>REC[k].kind==="bake"&&has(k)),o=on?G.oven:{state:"idle"};
+  const bakes=Object.keys(REC).filter(k=>REC[k].kind==="bake"&&onMenu(k)),o=on?G.oven:{state:"idle"};
   const ot=o.state==="bake"?"Cuisson…":o.state==="ready"?`Sortir ×${batchOf(o.r)}`:o.state==="burnt"?"Brûlé…":"Four";
   let pa=tile(`<span class="ki">${icon("four")}${o.state!=="idle"?`<span class="mini">${icon(o.state==="burnt"?"burnt":o.r)}</span>`:""}</span><span class="kn">${ot}</span>${o.state==="bake"?`<span class="obar"><i id="ov-p"></i></span>`:o.state==="ready"?`<span class="obar"><i id="ov-b" style="background:#fff"></i></span>`:""}`,`data-oven id="unl" aria-label="Four"`,`oven ${o.state}`);
   for(const k of bakes){const n=on?G.vit[k]:0;
     pa+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span>`,`data-pa="${k}" aria-label="${REC[k].name} : ${n} en vitrine"`,n?"":"empty",
       `<span class="badge${n?"":" zero"}">${n}</span>${on&&n&&o.state==="idle"?`<button class="kbake" data-bake="${k}" type="button" aria-label="En cuire ${batchOf(k)} de plus">${icon("four")}</button>`:""}`);
   }
-  $("kitchen").innerHTML=`<div class="krow">${dr}</div><div class="krow">${pa}</div>`;
+  const h=`<div class="krow">${dr}</div><div class="krow">${pa}</div>`;
+  if($("kitchen")._h!==h){$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars()}
 }
 function updateBars(){
   if(!G||!G.run)return;
@@ -1040,7 +1057,10 @@ $("kitchen").addEventListener("click",e=>{const b=e.target.closest("button");if(
   if(b.dataset.st)tapStation(b.dataset.st,b);else if(b.dataset.bake)bake(b.dataset.bake);
   else if(b.dataset.oven!==undefined){if(G.oven.state==="ready")unload();else if(G.oven.state==="idle")hint("Touche une <b>pâtisserie</b> pour lancer une fournée.")}
   else if(b.dataset.pa){const k=b.dataset.pa;if(G.vit[k])fromVit(k,b);else if(G.oven.state==="idle")bake(k);else{shake(b);hint(G.oven.state==="ready"?"<b>Touche le four</b> pour sortir la fournée d'abord.":"Le four est occupé : attends la fin de la cuisson.")}}});
-$("tray").addEventListener("click",e=>{const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;G.tray.splice(+b.dataset.tray,1);dirty=true});
+$("tray").addEventListener("click",e=>{const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;const i=+b.dataset.tray,now=performance.now();
+  if(G.arm&&G.arm.i===i&&G.arm.until>now){G.tray.splice(i,1);G.arm=null}
+  else{G.arm={i,until:now+1800};setTimeout(()=>{dirty=true},1850);hint("Touche encore l'article pour le <b>jeter</b>.")}
+  dirty=true});
 $("back").onclick=()=>{if(G&&G.run)pauseMenu();else openMap()};
 $("open-menu").onclick=openMap;
 function onAct(a){
