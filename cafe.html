@@ -225,6 +225,18 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .mfox{position:absolute;transform:translate(-50%,-128%);width:58px;pointer-events:none;z-index:2;animation:hop 1s ease-in-out infinite alternate}
 .mfox svg{display:block;width:100%}
 @keyframes hop{to{translate:0 -6px}}
+/* Halloween */
+.ghosty{animation:boo 2.2s ease-in-out infinite alternate}
+@keyframes boo{to{translate:0 -7%}}
+.pill.cnd{display:inline-flex;align-items:center;gap:3px;background:#efe4fb;border-color:#c9b0ec;color:#5a3f80}
+.pill.cnd svg,.price.cnd svg{width:17px;height:17px}
+.mbar .btn.hw{background:#f2a35c;box-shadow:0 4px 0 #c9783a;color:#fff;border:0;line-height:1.1}
+.hwn{display:flex;align-items:center;justify-content:center;gap:2px;font-family:var(--body);font-weight:900;font-size:12px}
+.hwn svg{width:15px;height:15px}
+.fc.hwc{background:#efe4fb}
+.hwbox{background:linear-gradient(#4a3a66,#7a5a8e);color:#fff;border-radius:18px;padding:12px 14px;margin:0 0 12px;display:flex;gap:10px;align-items:center}
+.hwbox svg{width:84px;flex:none}
+.hwbox p{margin:0;font-size:13.5px;line-height:1.45}
 @media (max-width:520px){.scene{aspect-ratio:7/5}.ki{width:46px;height:46px}.kb{padding:8px 3px 8px}.cust{width:23%}.ts{width:40px}.tray small{display:none}.pill.day{padding:3px 9px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -253,7 +265,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 <div class="map" id="map" hidden>
   <div class="mtop"><a class="home" href="./" aria-label="Retour à l'accueil"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M13 4l-6 6 6 6" fill="none" stroke="#5b4250" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a><div class="mtt"><b>Kitsune Café</b><span id="mchap"></span></div><span class="pill mst" id="mstars"></span><div class="coin" title="Pièces"><span id="ic-c2"></span><span id="coins2">0</span></div></div>
   <div class="mscroll" id="mscroll"><div class="mwrap" id="mwrap"></div></div>
-  <div class="mbar"><button class="btn ghost" data-act="shop" type="button">Boutique</button><button class="btn ghost" data-act="quests" type="button">Quêtes</button><button class="btn ghost" data-act="carnet" type="button">Carnet</button></div>
+  <div class="mbar"><button class="btn ghost" data-act="shop" type="button">Boutique</button><button class="btn ghost" data-act="quests" type="button">Quêtes</button><button class="btn ghost" data-act="carnet" type="button">Carnet</button><button class="btn hw" data-act="hw" type="button" hidden>Halloween</button></div>
 </div>
 <div class="sheet" id="sheet" hidden><div class="sheet-in" id="sheet-in"></div></div>
 <div class="toast" id="toast" hidden></div>
@@ -296,7 +308,15 @@ FOXES.push(
   {id:"aurore",zone:"neige",name:"Aurore",rar:"rare",food:3,likes:["igloo"],gift:[24,36],goldP:.45,acc:"flocon",c:{b:"#f2c6e0",ch:"#fff8fc",e:"#b07ab0",s:"#b07ab0",t:"#d8e8ff"},bio:"Son pelage change de couleur la nuit."},
   {id:"yeti",zone:"neige",name:"Yéti",rar:"legend",food:4,likes:["chocolat"],gift:[45,70],goldP:1,goldN:4,acc:"bonnet",ears:.8,c:{b:"#f4f4f6",ch:"#ffffff",e:"#c8c8d0",s:"#b8b8c4",t:"#ffffff"},bio:"Gros, doux et très discret. Personne n'y croit."}
 );
+// invités d'Halloween (Café seulement) : ils viennent en VIP pendant la Nuit des citrouilles et donnent 5 bonbons
+FOXES.push(
+  {id:"feufollet",event:"halloween",name:"Feu Follet",rar:"legend",ghost:true,acc:"spectre",c:{b:"#e9eefc",ch:"#ffffff",e:"#aab6e2",s:"#c9d3f2",t:"#ffffff"},bio:"Un renard fantôme. Il traverse les murs, mais il dit toujours bonjour."},
+  {id:"croquignol",event:"halloween",name:"Comte Croquignol",rar:"legend",acc:"vampire",c:{b:"#7a6a8e",ch:"#f4ecf6",e:"#3a2e48",s:"#3a2e48",t:"#f4ecf6"},bio:"Un renard vampire. Il ne boit que du jus de cerise, promis."}
+);
 FOXES.forEach(f=>{f.zone=f.zone||"clairiere";FOX[f.id]=f});
+const HWF=FOXES.filter(f=>f.event==="halloween");
+// déguisements des clients pendant Halloween (accessoires de foxSVG)
+const COSTUMES=["sorciere","citrouille","chauvesouris","vampire"];
 function foxSVG(f,o={}){
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
   const c=sil?{b:"#e3d9df",ch:"#e3d9df",e:"#e3d9df",s:"#e3d9df",t:"#e3d9df"}:f.c;
@@ -323,6 +343,11 @@ function foxSVG(f,o={}){
 ,
     bob:`<path d="M38 ${top+9} Q60 ${top-18} 82 ${top+9}Z" fill="#f7d77a"/><path d="M28 ${top+9} Q60 ${top+18} 92 ${top+9} Q60 ${top+3} 28 ${top+9}Z" fill="#f2c45a"/>`,
     bonnet:`<path d="M38 ${top+11} Q60 ${top-20} 82 ${top+11}Z" fill="#9ec3ef"/><rect x="36" y="${top+6}" width="48" height="9" rx="4.5" fill="#f4f8fb"/><circle cx="60" cy="${top-11}" r="5.5" fill="#fff"/>`,
+    sorciere:`<ellipse cx="60" cy="${top+8}" rx="31" ry="6.5" fill="#7458a8"/><path d="M45 ${top+7} L56 ${top-22} Q60 ${top-33} 73 ${top-30} Q64 ${top-25} 66 ${top-16} L75 ${top+7}Z" fill="#8a6ac0"/><path d="M46.9 ${top+1} L73.1 ${top+1} L74.4 ${top+5} L45.6 ${top+5}Z" fill="#f2a35c" stroke-width="1.8"/><path d="M71 ${top-30} l1.4 2.6 2.8.4 -2 2 .5 2.8 -2.7 -1.3 -2.6 1.3 .5 -2.8 -2 -2 2.8 -.4z" fill="#f7d77a" stroke-width="1.2"/>`,
+    citrouille:`<ellipse cx="60" cy="${top+3}" rx="18" ry="11" fill="#f2a35c"/><path d="M53 ${top-6} Q50 ${top+3} 53 ${top+13} M67 ${top-6} Q70 ${top+3} 67 ${top+13} M60 ${top-8} V${top+14}" fill="none" stroke-width="1.6" opacity=".55"/><path d="M60 ${top-7} q0 -6 5 -8" fill="none" stroke="#6fae5e" stroke-width="3.6"/><path d="M62 ${top-11} q7 -5 10 1 q-6 3 -10 -1Z" fill="#8fca7a" stroke-width="1.6"/>`,
+    chauvesouris:`<path d="M60 ${top+3} Q52 ${top-9} 38 ${top-7} Q43 ${top-2} 41 ${top+4} Q47 ${top} 50 ${top+6} Q55 ${top+1} 60 ${top+3} Q65 ${top+1} 70 ${top+6} Q73 ${top} 79 ${top+4} Q77 ${top-2} 82 ${top-7} Q68 ${top-9} 60 ${top+3}Z" fill="#5f4f72"/><circle cx="60" cy="${top+1}" r="5.4" fill="#5f4f72"/><path d="M56 ${top-3} l1 -4 2 3 M64 ${top-3} l-1 -4 -2 3" fill="#5f4f72" stroke-width="1.6"/><circle cx="58" cy="${top+1}" r="1" fill="#ffe27a" stroke="none"/><circle cx="62" cy="${top+1}" r="1" fill="#ffe27a" stroke="none"/>`,
+    vampire:`<path d="M${60-w*.92} ${neck-1} L${60-w-7} ${neck-19} L${60-w*.35} ${neck+3}Z M${60+w*.92} ${neck-1} L${60+w+7} ${neck-19} L${60+w*.35} ${neck+3}Z" fill="#c43a5a"/><path d="M60 ${neck+2} L51 ${neck-3} L51 ${neck+7}Z M60 ${neck+2} L69 ${neck-3} L69 ${neck+7}Z" fill="#3d2a35"/><circle cx="60" cy="${neck+2}" r="2.8" fill="#e2546e" stroke-width="1.6"/><path d="M56.2 ${Y+6.4} l1.3 3.4 1.3 -3.2Z M61.2 ${Y+6.2} l1.3 3.2 1.3 -3.4Z" fill="#fff" stroke-width="1"/>`,
+    spectre:[[14,top+16,1],[104,top+8,-1],[100,top+40,1]].map(([x,y,d])=>`<path d="M${x} ${y} q${-5*d} -7 0 -15 q${2*d} 6 ${6*d} 8 q-1 6 ${-6*d} 7Z" fill="#cfe2ff" stroke="#9fb4e0" stroke-width="1.6"/>`).join(""),
     collier:[-3,-2,-1,0,1,2,3].map(k=>`<circle cx="${(60+k*w/3.6).toFixed(1)}" cy="${(neck+3-k*k*.45).toFixed(1)}" r="2.6" fill="#fff" stroke-width="1.4"/>`).join("")
   })[f.acc]||""};
   let body;
@@ -354,13 +379,16 @@ function foxSVG(f,o={}){
     ${acc(top,Y,74,30)}`;
   }
   const zz=pose==="sleep"?`<text class="zz" x="66" y="56" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="74" y="46" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
-  return `<svg viewBox="0 -16 120 116" class="${o.cls||""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})">
+  const gh=f.ghost&&!sil;
+  return `<svg viewBox="0 -16 120 116" class="${o.cls||""}${gh?" ghosty":""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"${gh?' opacity=".82"':""}>
   <ellipse cx="60" cy="92" rx="40" ry="5" fill="#3d2a35" opacity=".14"/>
   <g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${zz}</g></svg>`;
 }
 
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
+// Halloween, la Nuit des citrouilles : du 17 octobre au 3 novembre (?halloween=1 ou =0 pour forcer, pour tester)
+const HW=(()=>{const q=new URLSearchParams(location.search).get("halloween");if(q)return q==="1";const d=new Date(),m=d.getMonth(),j=d.getDate();return(m===9&&j>=17)||(m===10&&j<=3)})();
 const REC={
   cafe:{name:"Café",pl:"cafés",price:5,cost:4,kind:"drink",time:2.4,stn:"Machine à café"},
   croissant:{name:"Croissant",pl:"croissants",price:4,cost:3,kind:"bake",time:5,batch:3},
@@ -376,9 +404,11 @@ const VAR={
   printemps:{cookie:["Tartelette myrtille","tartelettes myrtille"],the:["Thé sakura","thés sakura"]},
   ete:{croissant:["Tartelette fraise","tartelettes fraise"],the:["Thé glacé","thés glacés"],cookie:["Cookie citron","cookies citron"],choco:["Milkshake choco","milkshakes choco"],gateau:["Fraisier","parts de fraisier"]},
   automne:{croissant:["Tarte aux pommes","tartes aux pommes"],the:["Thé chai","thés chai"],cookie:["Cookie noisette","cookies noisette"],smoothie:["Smoothie pomme","smoothies pomme"],gateau:["Gâteau aux marrons","parts de gâteau aux marrons"]},
-  hiver:{croissant:["Pumpkin pie","pumpkin pies"],the:["Thé au miel","thés au miel"],cookie:["Sablé étoile","sablés étoile"],smoothie:["Smoothie myrtille","smoothies myrtille"],gateau:["Bûche de Noël","parts de bûche"]}
+  hiver:{croissant:["Pumpkin pie","pumpkin pies"],the:["Thé au miel","thés au miel"],cookie:["Sablé étoile","sablés étoile"],smoothie:["Smoothie myrtille","smoothies myrtille"],gateau:["Bûche de Noël","parts de bûche"]},
+  // pendant Halloween, quelle que soit la saison
+  halloween:{cookie:["Cookie fantôme","cookies fantômes"],smoothie:["Potion de sorcière","potions de sorcière"],gateau:["Gâteau citrouille","parts de gâteau citrouille"]}
 };
-const vName=(k,sea=SEA)=>VAR[sea][k]||[REC[k].nm,REC[k].npl];
+const vName=(k,sea=SEA)=>(HW&&VAR.halloween[k])||VAR[sea][k]||[REC[k].nm,REC[k].npl];
 for(const k in REC){const r=REC[k];r.nm=r.name;r.npl=r.pl;Object.defineProperty(r,"name",{get:()=>vName(k)[0]});Object.defineProperty(r,"pl",{get:()=>vName(k)[1]})}
 /* La carte : 4 saisons de 10 journées. Une porte demande un total d'étoiles, et un invité d'honneur rejoint le café quand toute la saison est en ★★★. */
 const CHAP=[
@@ -417,20 +447,26 @@ const STYLE={
     {id:"menthe",name:"Menthe à l'eau",c:400,w:"#dff3e6",d:"#c4e6cf",b:"#bfe0c9",l:"#a5d1b3"},
     {id:"lavande",name:"Lavande",c:650,w:"#ece4fa",d:"#d9cdf2",b:"#d3c5ee",l:"#bfaee4"},
     {id:"citron",name:"Citron doux",c:950,w:"#fbf3cf",d:"#f2e3a6",b:"#f2dc9a",l:"#e6c97a"},
-    {id:"ciel",name:"Bleu nuage",c:1400,w:"#e0eefb",d:"#c7ddf3",b:"#c3d9f0",l:"#a9c6e6"}]},
+    {id:"ciel",name:"Bleu nuage",c:1400,w:"#e0eefb",d:"#c7ddf3",b:"#c3d9f0",l:"#a9c6e6"},
+    {id:"nuit",name:"Nuit des citrouilles",cb:40,w:"#5d4a7e",d:"#f2c75c",b:"#463863",l:"#f2a35c"}]},
   counter:{name:"Comptoir",items:[
     {id:"bois",name:"Bois de noisetier",c:0,t:"#c8946a",f:"#e8b07a",p:"#d09a64"},
     {id:"fraise",name:"Fraise",c:500,t:"#e8848f",f:"#f7b7c3",p:"#ec9aa8"},
     {id:"pistache",name:"Pistache",c:750,t:"#7fbf98",f:"#b6e2c4",p:"#94cfa8"},
     {id:"nuage",name:"Nuage lilas",c:1100,t:"#a99fd8",f:"#e4e0f7",p:"#cbc4ec"},
-    {id:"miel",name:"Miel doré",c:1600,t:"#d9a33a",f:"#f6d27a",p:"#e8b94e"}]},
+    {id:"miel",name:"Miel doré",c:1600,t:"#d9a33a",f:"#f6d27a",p:"#e8b94e"},
+    {id:"citrouille",name:"Citrouille",cb:40,t:"#5f4f72",f:"#f2a35c",p:"#d9803a"}]},
   acc:{name:"Tenue de Roussette",items:[
     {id:"",name:"Au naturel",c:0},
     {id:"noeud",name:"Petit nœud",c:300},
     {id:"echarpe",name:"Écharpe",c:550},
     {id:"bonnet",name:"Bonnet",c:800},
     {id:"lunettes",name:"Lunettes rondes",c:1000},
-    {id:"etoile",name:"Étoile filante",c:1500}]}
+    {id:"etoile",name:"Étoile filante",c:1500},
+    {id:"sorciere",name:"Chapeau de sorcière",cb:25},
+    {id:"chauvesouris",name:"Serre-tête chauve-souris",cb:25},
+    {id:"citrouille",name:"Bonnet citrouille",cb:30},
+    {id:"vampire",name:"Cape de vampire",cb:45}]}
 };
 const styleOf=k=>{const it=STYLE[k].items;return it.find(x=>x.id===(S.style||{})[k])||it[0]};
 const ALLUP=[...UPG.equip,...UPG.deco];
@@ -481,6 +517,7 @@ if(S.ver<3){
   if(S.own.comptoir2){S.own.comptoir1=2;delete S.own.comptoir2}
   S.style={wall:"rose",counter:"bois",acc:""};S.ver=3;
 }
+S.candy=S.candy||0; // bonbons d'Halloween (gardés d'une année sur l'autre)
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const chapOf=d=>CHAP.find(c=>d<=c.to)||CHAP[CHAP.length-1];
 const starSum=()=>Object.values(S.stars).reduce((a,b)=>a+b,0);
@@ -564,7 +601,13 @@ Object.assign(ICON,{
   "gateau@hiver":`<rect x="3" y="14" width="30" height="17" rx="8.5" fill="#8a5a3a" ${K}/><ellipse cx="32" cy="22.5" rx="5" ry="8.5" fill="#c8946a" ${K}/><path d="M32 18 a3 4 0 1 1 -1 7 a1.6 2 0 1 1 1 -3.6" fill="none" stroke="#8a5a3a" stroke-width="1.6" stroke-linecap="round"/><path d="M7 19 q6 3 12 0 M10 26 q6 2 12 0" fill="none" stroke="#6a4026" stroke-width="1.6" stroke-linecap="round"/><path d="M12 14 q-6 -6 0 -8 q2 4 0 8Z M14 14 q6 -6 9 -2 q-4 3 -9 2Z" fill="#6fae5e" stroke="${INK}" stroke-width="1.4"/><circle cx="13" cy="12" r="2.2" fill="#e2546e" stroke="${INK}" stroke-width="1.2"/>${[[8,16],[20,15],[26,17],[16,29]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".9" fill="#fff"/>`).join("")}`,
   four:`<rect x="4" y="8" width="32" height="27" rx="6" fill="#f6c1cf" ${K}/><rect x="9" y="16" width="22" height="14" rx="4" fill="#ffe3c2" ${K}/><path d="M10 12 h4 M17 12 h4" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><circle cx="30" cy="12" r="1.8" fill="${INK}"/><circle cx="16" cy="22" r="1.6" fill="${INK}"/><circle cx="24" cy="22" r="1.6" fill="${INK}"/><path d="M18.5 25 q1.5 1.5 3 0" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/><circle cx="13" cy="25" r="1.8" fill="#f6a5b4"/><circle cx="27" cy="25" r="1.8" fill="#f6a5b4"/>`
 });
-const icon=(k,sea=SEA)=>`<svg viewBox="0 0 40 40" aria-hidden="true">${ICON[k+"@"+sea]||ICON[k]||""}</svg>`;
+Object.assign(ICON,{
+  "cookie@halloween":`<path d="M9 35 V19 Q9 6 21 6 Q33 6 33 19 V35 l-4 -3.4 -4 3.4 -4 -3.4 -4 3.4 -4 -3.4Z" fill="#e0a868" ${K}/><path d="M7 33 V17 Q7 4 19 4 Q31 4 31 17 V33 l-4 -3.4 -4 3.4 -4 -3.4 -4 3.4 -4 -3.4Z" fill="#fff" ${K}/><ellipse cx="15" cy="16" rx="2.2" ry="3" fill="${INK}"/><ellipse cx="23" cy="16" rx="2.2" ry="3" fill="${INK}"/><ellipse cx="19" cy="23" rx="2.2" ry="2.8" fill="${INK}"/><circle cx="11.5" cy="20" r="2" fill="#f6a5b4"/><circle cx="26.5" cy="20" r="2" fill="#f6a5b4"/>`,
+  "smoothie@halloween":glass("#9fdc7a",`<circle cx="16" cy="22" r="2.4" fill="#d6f5c0" stroke="${INK}" stroke-width="1.3"/><circle cx="22" cy="27" r="1.8" fill="#d6f5c0" stroke="${INK}" stroke-width="1.3"/><circle cx="16" cy="11" r="3.2" fill="#c8f0a8" stroke="${INK}" stroke-width="1.5"/><circle cx="22" cy="7" r="2.3" fill="#c8f0a8" stroke="${INK}" stroke-width="1.4"/><path d="M26 2 L23 20" stroke="#9a6ac0" stroke-width="3" stroke-linecap="round"/>`),
+  "gateau@halloween":slice("#f2a35c","#fff5e8","#6a4a7a",`<ellipse cx="22" cy="10" rx="6" ry="4.6" fill="#f2a35c" stroke="${INK}" stroke-width="1.8"/><path d="M22 5.6 q0 -3 3 -4" fill="none" stroke="#6fae5e" stroke-width="2.4" stroke-linecap="round"/><path d="M8 13 l2 -2 2 2 M30 18 l2 -2 2 2" fill="none" stroke="#f7d77a" stroke-width="1.6" stroke-linecap="round"/>`)
+});
+const icon=(k,sea=SEA)=>`<svg viewBox="0 0 40 40" aria-hidden="true">${(HW&&ICON[k+"@halloween"])||ICON[k+"@"+sea]||ICON[k]||""}</svg>`;
+const candySVG=`<svg viewBox="0 0 26 26" aria-hidden="true"><path d="M7 13 L1.5 7.5 L2.5 18.5Z M19 13 L24.5 7.5 L23.5 18.5Z" fill="#b48ae0" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="13" cy="13" r="7.2" fill="#f2a35c" stroke="${INK}" stroke-width="1.8"/><path d="M8.6 10.4 q3.4 6.4 8.8 6.2" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".75"/></svg>`;
 const coinSVG=`<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="#f7d77a" stroke="${INK}" stroke-width="1.8"/><circle cx="13" cy="13" r="8.4" fill="none" stroke="#e8b84a" stroke-width="1.3"/><path d="M6.6 9.6 a7.4 7.4 0 0 1 4 -3.6" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".8"/><path d="M13 12.6 c-2.6 0 -4.4 2.2 -4.4 3.9 c0 1.5 1.3 2.1 2.4 1.8 c.8 -.2 1.3 -.5 2 -.5 s1.2 .3 2 .5 c1.1 .3 2.4 -.3 2.4 -1.8 c0 -1.7 -1.8 -3.9 -4.4 -3.9Z" fill="#c98a1e"/><ellipse cx="8.4" cy="11.4" rx="1.5" ry="1.8" fill="#c98a1e" transform="rotate(-20 8.4 11.4)"/><ellipse cx="11.3" cy="8.7" rx="1.5" ry="1.9" fill="#c98a1e" transform="rotate(-6 11.3 8.7)"/><ellipse cx="14.7" cy="8.7" rx="1.5" ry="1.9" fill="#c98a1e" transform="rotate(6 14.7 8.7)"/><ellipse cx="17.6" cy="11.4" rx="1.5" ry="1.8" fill="#c98a1e" transform="rotate(20 17.6 11.4)"/></svg>`;
 const BO=`stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
 /* La salle : une véranda ouverte sur le dehors. On voit la saison derrière les vitres (et la nuit en hiver). */
@@ -579,10 +622,13 @@ const PANES=[GX0,192,300,408,GX1];
 // motif animé qui défile dans la vitre (neige, feuilles, pétales)
 const fxPat=(id,w,h,c,to,dur)=>[`<pattern id="${id}" width="${w}" height="${h}" patternUnits="userSpaceOnUse">${c}<animateTransform attributeName="patternTransform" type="translate" from="0 0" to="${to}" dur="${dur}s" repeatCount="indefinite"/></pattern>`,`<rect x="${GX0}" y="${GY0}" width="${GX1-GX0}" height="${GY1-GY0}" fill="url(#${id})"/>`];
 function outsideSVG(sea){
-  const O=OUT[sea],R=rng(11),fx=[];
+  const O=HW?{...OUT[sea],sky:sea==="hiver"?OUT.hiver.sky:["#3c2e60","#c98a9a"],cloud:"#7d6aa6"}:OUT[sea],R=rng(11),fx=[];
   let defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${O.sky[0]}"/><stop offset="1" stop-color="${O.sky[1]}"/></linearGradient>`;
   let st=`<rect x="0" y="0" width="600" height="200" fill="url(#sky)"/>`,an="";
-  if(sea==="hiver"){
+  if(HW&&sea!=="hiver"){
+    for(let i=0;i<22;i++){const x=GX0+8+R()*(GX1-GX0-16),y=GY0+6+R()*70,r=.8+R()*1.3;an+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#fff8dc"><animate attributeName="opacity" values="1;.2;1" dur="${(2+R()*3).toFixed(1)}s" repeatCount="indefinite"/></circle>`}
+    st+=`<circle cx="430" cy="66" r="44" fill="#fff3c4" opacity=".35" filter="url(#soft)"/><circle cx="430" cy="66" r="24" fill="#fff3c4" stroke="${INK}" stroke-width="2.4"/><circle cx="422" cy="60" r="4" fill="#efdca0"/><circle cx="437" cy="73" r="5" fill="#efdca0"/><circle cx="440" cy="58" r="2.4" fill="#efdca0"/>`;
+  }else if(sea==="hiver"){
     for(let i=0;i<28;i++){const x=GX0+8+R()*(GX1-GX0-16),y=GY0+6+R()*86,r=.8+R()*1.4;an+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#fff8dc"><animate attributeName="opacity" values="1;.2;1" dur="${(2+R()*3).toFixed(1)}s" repeatCount="indefinite"/></circle>`}
     st+=`<circle cx="430" cy="62" r="34" fill="#fff6c8" opacity=".3" filter="url(#soft)"/><circle cx="430" cy="62" r="17" fill="#fff6c8" stroke="${INK}" stroke-width="2.4"/><circle cx="438" cy="56" r="14" fill="${O.sky[0]}"/>`;
   }else if(sea==="ete"){
@@ -598,14 +644,17 @@ function outsideSVG(sea){
   an+=cloud(160,92,1,22)+cloud(330,52,.8,28)+cloud(262,118,.6,19);
   // collines et paysage : les mêmes dessins que sur la carte
   st+=`<path d="M0 150 Q90 112 190 138 T380 128 T600 136 V200 H0Z" fill="${O.hill[0]}" ${BO}/>`;
-  if(sea==="hiver")st+=`<rect x="290" y="114" width="26" height="18" rx="2" fill="#f7d9c4" ${BO}/><path d="M285 116 L303 100 L321 116Z" fill="#fff" ${BO}/><rect x="297" y="119" width="9" height="8" rx="1.5" fill="#ffd66b"/><circle cx="301" cy="123" r="12" fill="#ffd66b" opacity=".45" filter="url(#soft)"/>`;
+  if(sea==="hiver"||HW)st+=`<rect x="290" y="114" width="26" height="18" rx="2" fill="#f7d9c4" ${BO}/><path d="M285 116 L303 100 L321 116Z" fill="#fff" ${BO}/><rect x="297" y="119" width="9" height="8" rx="1.5" fill="#ffd66b"/><circle cx="301" cy="123" r="12" fill="#ffd66b" opacity=".45" filter="url(#soft)"/>`;
   const F=DECO[sea];
   [[150,146,.5,0],[372,140,.45,0],[248,142,.4,sea==="ete"?1:0]].forEach(([x,y,k,i])=>st+=F[i](x,y,k));
   st+=`<path d="M0 172 Q130 148 270 166 T600 158 V200 H0Z" fill="${O.hill[1]}" ${BO}/>`;
   const near={printemps:[[112,182,.8,0],[214,180,.65,1],[396,182,.6,2],[492,186,.85,0]],ete:[[110,184,.8,0],[200,182,.75,1],[226,184,.6,1],[392,184,.62,1],[490,188,.85,0]],automne:[[110,184,.8,0],[210,180,.7,2],[392,182,.65,1],[490,188,.85,0]],hiver:[[112,184,.85,0],[212,182,.75,1],[392,184,.7,0],[488,188,.9,1]]}[sea];
   near.forEach(([x,y,k,i])=>st+=F[i](x,y,k));
+  if(HW)[[160,190,.7],[300,192,.85],[446,190,.6]].forEach(([x,y,k])=>st+=jack(x,y,k));
   if(sea==="hiver")st+=`<circle cx="345" cy="122" r="24" fill="#ffd66b" opacity=".45" filter="url(#soft)"/><rect x="342" y="128" width="6" height="56" fill="#5b4a5e" ${BO}/><rect x="334" y="114" width="22" height="16" rx="4" fill="#ffe7a0" ${BO}/>`;
   if(sea==="ete")[[150,120,"#f6a5b4",0],[330,104,"#c9b8f2",4]].forEach(([x,y,c,dl])=>an+=`<g transform="translate(${x} ${y})"><g><animateMotion path="M0 0 C24 -18 50 14 76 -4 S120 -20 96 16 S30 20 0 0Z" dur="11s" begin="-${dl}s" repeatCount="indefinite"/><path d="M0 0 Q-9 -10 -10 -2 Q-8 4 0 0 Q9 -10 10 -2 Q8 4 0 0Z" fill="${c}" stroke="${INK}" stroke-width="1.6"><animateTransform attributeName="transform" type="scale" values="1 1;.3 1;1 1" dur=".35s" repeatCount="indefinite"/></path></g></g>`);
+  // chauves-souris qui passent devant la lune
+  if(HW)[[300,70,0,1],[400,96,3,.8],[200,60,6,.7]].forEach(([x,y,dl,k])=>an+=`<g transform="translate(${x} ${y}) scale(${k})"><g><animateMotion path="M0 0 C40 -30 90 20 130 -10 S170 -40 120 10 S20 30 0 0Z" dur="9s" begin="-${dl}s" repeatCount="indefinite"/><path d="M0 0 Q-6 -8 -16 -6 Q-12 -2 -13 3 Q-8 0 -6 4 Q-3 0 0 0 Q3 0 6 4 Q8 0 13 3 Q12 -2 16 -6 Q6 -8 0 0Z" fill="#3d2a35"><animateTransform attributeName="transform" type="scale" values="1 1;1 .3;1 1" dur=".4s" repeatCount="indefinite"/></path><circle r="3.4" fill="#3d2a35"/></g></g>`);
   if(sea==="hiver")fx.push(fxPat("fx1",40,40,`<circle cx="8" cy="10" r="2.3" fill="#fff"/><circle cx="28" cy="30" r="1.7" fill="#fff"/>`,"6 40",4.6),fxPat("fx2",26,26,`<circle cx="6" cy="6" r="1.3" fill="#fff" opacity=".85"/>`,"-4 26",3));
   if(sea==="automne")fx.push(fxPat("fx1",64,64,`<ellipse cx="12" cy="14" rx="5" ry="2.6" fill="#e8835a" transform="rotate(30 12 14)"/><ellipse cx="44" cy="46" rx="4.4" ry="2.4" fill="#f2c060" transform="rotate(-40 44 46)"/><ellipse cx="50" cy="12" rx="4" ry="2.2" fill="#d9603f" transform="rotate(70 50 12)"/>`,"40 64",7));
   if(sea==="printemps")fx.push(fxPat("fx1",56,56,`<ellipse cx="10" cy="12" rx="3.6" ry="2.2" fill="#f9c4d2" transform="rotate(25 10 12)"/><ellipse cx="38" cy="40" rx="3.2" ry="2" fill="#fff0f4" transform="rotate(-35 38 40)"/>`,"30 56",8));
@@ -643,12 +692,19 @@ function roomSVG(night){
   }
   if(S.own.guirlande){s+=`<path d="M-10 ${GY0} Q150 62 300 30 T610 ${GY0}" fill="none" stroke="${INK}" stroke-width="2"/>`;
     for(let i=0;i<14;i++){const x=10+i*44,t=x<300?x/300:(x-300)/300,y=x<300?GY0+(30-GY0)*t+24*Math.sin(Math.PI*t):30+(GY0-30)*t-14*Math.sin(Math.PI*t);
-      const c=["#f2c75c","#f47f9a","#9ec3ef","#8fca7a"][i%4];s+=`<circle cx="${x}" cy="${y+6}" r="${night?14:10}" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><ellipse cx="${x}" cy="${y+6}" rx="4.5" ry="6" fill="${c}" stroke="${INK}" stroke-width="2"/>`}}
+      const c=(HW?["#f2a35c","#b48ae0","#f7d77a","#8fca7a"]:["#f2c75c","#f47f9a","#9ec3ef","#8fca7a"])[i%4];s+=`<circle cx="${x}" cy="${y+6}" r="${night?14:10}" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><ellipse cx="${x}" cy="${y+6}" rx="4.5" ry="6" fill="${c}" stroke="${INK}" stroke-width="2"/>`}}
+  if(HW){
+    // toiles d'araignée dans les coins de la vitre, citrouilles sur le rebord, guirlande de petites chauves-souris
+    [[GX0+6,GY0,1],[GX1-6,GY0,-1]].forEach(([x,y,d])=>{s+=`<g fill="none" stroke="#fff" stroke-width="1.6" opacity=".8">${[0,30,60,90].map(a=>{const r=a*Math.PI/180;return `<path d="M${x} ${y} L${x+d*Math.cos(r)*46} ${y+Math.sin(r)*46}"/>`}).join("")}${[16,30,44].map(r=>`<path d="M${x+d*r} ${y} Q${x+d*r*.8} ${y+r*.4} ${x+d*r*.87} ${y+r*.5} Q${x+d*r*.55} ${y+r*.65} ${x+d*r*.5} ${y+r*.87} Q${x+d*r*.3} ${y+r*.75} ${x} ${y+r}"/>`).join("")}</g>`});
+    s+=jack(150,GY1+2,.62)+jack(452,GY1+2,.52)+jack(66,84,.42);
+    s+=`<path d="M${GX0} ${GY0+4} Q300 ${GY0+44} ${GX1} ${GY0+4}" fill="none" stroke="${INK}" stroke-width="1.8"/>`;
+    for(let i=1;i<9;i++){const t=i/9,x=GX0+(GX1-GX0)*t,y=GY0+11+80*t*(1-t);s+=`<path d="M${x} ${y} q-5 -6 -12 -4 q3 3 2 6 q4 -2 5 2 q2 -2 5 -4 q3 2 5 4 q1 -4 5 -2 q-1 -3 2 -6 q-7 -2 -12 4Z" fill="${i%2?"#5f4f72":"#f2a35c"}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`}
+  }
   if(S.own.lanternes)[[232,"#f59a8b"],[368,"#f2c75c"],[440,"#c9b8f2"]].forEach(([x,c],i)=>{const y=i===1?58:48;s+=`<path d="M${x} ${GY0} V${y-14}" stroke="${INK}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="22" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><ellipse cx="${x}" cy="${y}" rx="12" ry="14" fill="${c}" ${BO}/><path d="M${x} ${y-14} V${y+14} M${x-6} ${y-12} Q${x-10} ${y} ${x-6} ${y+12} M${x+6} ${y-12} Q${x+10} ${y} ${x+6} ${y+12}" fill="none" stroke="${INK}" stroke-width="1.5"/>`});
   return s;
 }
 function bgSVG(){
-  const o=outsideSVG(SEA),night=SEA==="hiver";
+  const o=outsideSVG(SEA),night=SEA==="hiver"||HW;
   return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${o.defs}</defs><g filter="url(#wobble)">${o.st}</g>${o.an}<g filter="url(#wobble)">${roomSVG(night)}</g></svg>${S.own.disque?`<span class="notes">♪</span><span class="notes" style="left:90%;animation-delay:1.2s">♫</span>`:""}`;
 }
 function counterSVG(){
@@ -678,7 +734,7 @@ function newDay(d){
   for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:k==="cafe"?1+lv("double"):S.own.machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,cost:0,gain:0,replay:(S.stars[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
+  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,candy:0,cost:0,gain:0,replay:(S.stars[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;
 }
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
@@ -692,12 +748,14 @@ function spawn(){
   const here=new Set(G.cust.map(c=>c.fox));
   const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]):0,guests=CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]);
   let f,vip=false;
-  if(G.rng()<vipCh){vip=true;const pool=(guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
+  // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
+  if(G.rng()<vipCh){vip=true;const pool=(HW&&Math.random()<.5?HWF:guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1);
-  G.cust.push({id:++uid,fox:f.id,spot:sp,order:genOrder(),pat,patMax:pat,state:"wait",vip,born:G.t});
-  if(vip)toast(`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
+  const costume=HW&&!vip&&Math.random()<.5?pick(COSTUMES):"";
+  G.cust.push({id:++uid,fox:f.id,spot:sp,order:genOrder(),pat,patMax:pat,state:"wait",vip,born:G.t,costume});
+  if(vip)toast(f.event?`${f.name} est là ! Sers-le vite : il paie ×3 et donne 5 bonbons.`:`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
   if(!S.seen[f.id])G.newFox.push(f.name);
   S.seen[f.id]=(S.seen[f.id]||0)+1;
   G.spawned++;dirty=true;return true;
@@ -741,7 +799,10 @@ function complete(c){
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
   if(frac>=.6)qEvent("green");
   c.state="happy";c.leave=.9;
-  const el=custEl(c);if(el){burst(el);floatAt(el,`+${tot}`,true);if(cb)setTimeout(()=>floatAt(el,`Combo ×${G.combo}`),250)}
+  // Halloween : les clients déguisés donnent des bonbons (2 s'ils sont servis vite), les invités d'Halloween 5
+  const cdy=HW?(FOX[c.fox].event?5:c.costume?(frac>=.5?2:1):0):0;
+  if(cdy){S.candy+=cdy;G.candy+=cdy}
+  const el=custEl(c);if(el){burst(el);floatAt(el,`+${tot}`,true);if(cb)setTimeout(()=>floatAt(el,`Combo ×${G.combo}`),250);if(cdy)setTimeout(()=>floatAt(el,`+${cdy} bonbon${cdy>1?"s":""}`),cb?500:250)}
   dirty=true;
 }
 function tapStation(k,el){
@@ -758,10 +819,11 @@ function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($(
 /* ---------- rendu ---------- */
 function renderHud(){
   $("coins").textContent=S.coins;$("coins2").textContent=S.coins;
+  if(HW)document.querySelector('[data-act="hw"]').innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${starSum()}</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,mx=g*1.7,e=G.earned;
   $("hud").innerHTML=`<span class="pill day">Jour ${G.day}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map(m=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e}/${g}</b></div>`;
-  $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}`;
+  $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
 }
 function render(){
   dirty=false;renderHud();
@@ -769,8 +831,9 @@ function render(){
   const X=SPOTX[spotsN()];
   const box=$("custs"),keep=new Set();
   for(const c of G.cust){const f=FOX[c.fox];
+    const fx=c.costume?{...f,acc:c.costume}:f;
     const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(o.r)}</span>`).join("");
-    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}`,inner=`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">VIP ×3</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>${foxSVG(f,{pose:c.state==="happy"?"happy":"sit"})}`;
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}`,inner=`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>${foxSVG(fx,{pose:c.state==="happy"?"happy":"sit"})}`;
     let el=custEl(c);
     if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);box.appendChild(el)}
     if(el.dataset.c!==cls){el.className=cls;el.dataset.c=cls}
@@ -858,7 +921,7 @@ function endDay(){
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
   openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${G.cost}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 30 %</small>`:""}</div></div>
+  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${G.cost}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 30 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
   ${news.join("")}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
@@ -902,27 +965,33 @@ function guestSheet(i){
   const c=CHAP[i],f=FOX[c.guest],ok=S.guest[c.guest];
   openSheet(`<h2>${ok?f.name:"Invité mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invité d'honneur du café : il paie le triple, mais il est pressé.`:`Obtiens ★★★ sur les 10 journées du ${c.name} pour l'inviter au café. Pour l'instant : <b>${chapStars(c)} / 30 ★</b>.`}</p>`);
 }
+function hwSheet(){
+  const hf=HWF.map(f=>`<div class="fc hwc">${foxSVG(f,{pose:"happy"})}${f.name}<em>${S.seen[f.id]?`${S.seen[f.id]} visite${S.seen[f.id]>1?"s":""}`:"Pas encore venu"}</em></div>`).join("");
+  openSheet(`<h2>Nuit des citrouilles</h2><p class="sub">Jusqu'au 3 novembre, le café fête Halloween ! Les clients viennent <b>déguisés</b> : sers-les pour gagner des <b>bonbons</b> (2 si tu es rapide). Deux invités très spéciaux passent en VIP : ils paient ×3 et donnent 5 bonbons.</p><div class="fgrid" style="grid-template-columns:repeat(2,1fr);max-width:260px;margin:0 auto 12px">${hf}</div><p class="sub" style="text-align:center">Tu as <b>${S.candy} bonbons</b>. Dépense-les dans la boutique : papier peint, comptoir et déguisements pour Roussette.</p><div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button></div>`);
+}
 function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées. Une quête réussie rapporte des pièces, et une nouvelle la remplace.</p>${questHTML()}`)}
 let shopTab="equip";
 function shop(){
   let list;
-  if(shopTab==="style"){
+  if(shopTab==="hw"&&!HW)shopTab="style";
+  if(shopTab==="style"||shopTab==="hw"){
     S.style=S.style||{wall:"rose",counter:"bois",acc:""};
-    list=Object.keys(STYLE).map(k=>`<p class="sub" style="margin:8px 0 4px"><b>${STYLE[k].name}</b></p>`+STYLE[k].items.map(it=>{
-      const key=`st-${k}-${it.id}`,own=!it.c||S.own[key],on=styleOf(k).id===it.id;
+    const hw=shopTab==="hw";
+    list=(hw?`<div class="hwbox">${foxSVG(FOX.croquignol,{pose:"happy"})}<p><b>Nuit des citrouilles</b><br>Les clients déguisés donnent des bonbons : 1, ou 2 si tu les sers vite. Feu Follet et le Comte Croquignol en donnent 5. Tu as <b>${S.candy} bonbons</b>.</p></div>`:"")+Object.keys(STYLE).map(k=>`<p class="sub" style="margin:8px 0 4px"><b>${STYLE[k].name}</b></p>`+STYLE[k].items.filter(it=>hw?it.cb:!it.cb||S.own[`st-${k}-${it.id}`]).map(it=>{
+      const key=`st-${k}-${it.id}`,own=(!it.c&&!it.cb)||S.own[key],on=styleOf(k).id===it.id;
       const sw=k==="acc"?foxSVG({...FOX.roussette,acc:it.id||undefined},{pose:"happy"}):k==="wall"?`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="22" rx="4" fill="${it.w}" ${K}/>${[[11,11],[23,11],[17,18],[29,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="${it.d}"/>`).join("")}<rect x="4" y="26" width="32" height="10" rx="3" fill="${it.b}" ${K}/></svg>`:`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="10" width="34" height="7" rx="3" fill="${it.t}" ${K}/><rect x="5" y="17" width="30" height="18" fill="${it.f}" ${K}/><rect x="9" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/><rect x="22" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/></svg>`;
-      return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${k==="acc"?"Roussette la porte sur la carte.":"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
+      return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${k==="acc"?"Roussette la porte sur la carte.":"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:it.cb?`<span class="price cnd">${candySVG}${it.cb}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.candy>=it.cb?"":"disabled"}>Acheter</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
   }else list=UPG[shopTab].map(u=>{
     const n=lv(u.id),max=u.lv.length,nx=u.lv[n],early=nx&&nx.from&&S.day<nx.from;
     const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";
     const desc=nx?(n?`Maintenant : ${lvDesc(u,n)} <b>Niveau ${n+1} :</b> ${nx.d}`:nx.d)+(early?` (Arrive avec la saison ${chapOf(nx.from).name}.)`:""):lvDesc(u,n);
     return `<div class="it"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${nx.c}</span><button class="btn" data-buy="${u.id}" type="button" ${!early&&S.coins>=nx.c?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("");
-  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer, et le style rend ton café unique.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"],["style","Style"]].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
+  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer, et le style rend ton café unique.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
   const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
 }
 function carnet(){
   const rows=FOXES.map(f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
-    return `<div class="fc${c?" vipc":""}">${foxSVG(f,{sil:!n})}${n||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur":`★★★ au ${c.name}`):"Pas encore venu"}</em></div>`}).join("");
+    return `<div class="fc${c?" vipc":f.event?" hwc":""}">${foxSVG(f,{sil:!n})}${n||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur":`★★★ au ${c.name}`):f.event?"Vient à Halloween":"Pas encore venu"}</em></div>`}).join("");
   openSheet(`<h2>Carnet des clients</h2><p class="sub">${Object.keys(S.seen).length} / ${FOXES.length} clients rencontrés. Les invités d'honneur viennent quand une saison entière est en ★★★.</p><div class="fgrid">${rows}</div>`);
 }
 function pauseMenu(){if(!G||!G.run)return;G.paused=1;openSheet(`<h2>Pause</h2><p class="sub">Les clients t'attendent sagement.</p><div class="col"><button class="btn big wide" data-act="resume" type="button">Reprendre</button><button class="btn ghost wide" data-act="quit" type="button">Abandonner la journée</button></div>`,true)}
@@ -949,6 +1018,8 @@ const stump=(x,y,k)=>shadow(x,y,17*k)+`<path d="M${x-13*k} ${y-16*k} V${y-2*k} Q
 const pumpkins=(x,y,k)=>shadow(x,y,20*k)+[[-8,1,"#f2a35c"],[9,.75,"#f7c85c"]].map(([a,s,c])=>{const cx=x+a*k,r=12*s*k;return `<ellipse cx="${cx}" cy="${y-r*.8}" rx="${r*1.15}" ry="${r*.85}" fill="${c}" ${BO}/><path d="M${cx-r*.4} ${y-r*1.5} Q${cx-r*.55} ${y-r*.8} ${cx-r*.4} ${y-r*.1} M${cx+r*.4} ${y-r*1.5} Q${cx+r*.55} ${y-r*.8} ${cx+r*.4} ${y-r*.1}" fill="none" stroke="${INK}" stroke-width="1.6" opacity=".5"/><path d="M${cx} ${y-r*1.6} q${1*k} ${-5*k} ${4*k} ${-6*k}" fill="none" stroke="#6fae5e" stroke-width="${3*k}" stroke-linecap="round"/>`}).join("");
 const bareTree=(x,y,k)=>{const br=`M${x-5*k} ${y} L${x-3*k} ${y-30*k} L${x-14*k} ${y-46*k} M${x-3*k} ${y-30*k} L${x+2*k} ${y-50*k} M${x+3*k} ${y-24*k} L${x+15*k} ${y-40*k} M${x+5*k} ${y} L${x+3*k} ${y-24*k}`;return shadow(x,y,18*k)+`<path d="${br}" fill="none" stroke="${INK}" stroke-width="${9*k}" stroke-linecap="round" stroke-linejoin="round"/><path d="${br} M${x} ${y-2*k} V${y-26*k}" fill="none" stroke="#a8785a" stroke-width="${5*k}" stroke-linecap="round" stroke-linejoin="round"/>`+[[-14,-47,6],[2,-51,6],[15,-41,5.4],[-4,-32,4.6]].map(([a,b,r])=>`<ellipse cx="${x+a*k}" cy="${y+b*k}" rx="${r*k}" ry="${r*.6*k}" fill="#fff" stroke="${INK}" stroke-width="1.8"/>`).join("")};
 const pond=(x,y,k,water,ice)=>`<ellipse cx="${x}" cy="${y-6*k}" rx="${30*k}" ry="${13*k}" fill="${water}" ${BO}/><ellipse cx="${x-6*k}" cy="${y-9*k}" rx="${12*k}" ry="${4*k}" fill="#fff" opacity=".6"/>`+(ice?`<path d="M${x+6*k} ${y-12*k} l${5*k} ${4*k} l${6*k} ${-2*k} M${x-14*k} ${y-3*k} l${6*k} ${-3*k}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`:"");
+const jack=(x,y,k)=>shadow(x,y,18*k)+`<circle cx="${x}" cy="${y-14*k}" r="${22*k}" fill="#ffb84a" opacity=".35" filter="url(#soft)"/><ellipse cx="${x}" cy="${y-13*k}" rx="${18*k}" ry="${14*k}" fill="#f2a35c" ${BO}/><path d="M${x-7*k} ${y-26*k} Q${x-11*k} ${y-13*k} ${x-7*k} ${y} M${x+7*k} ${y-26*k} Q${x+11*k} ${y-13*k} ${x+7*k} ${y}" fill="none" stroke="${INK}" stroke-width="1.6" opacity=".45"/><path d="M${x} ${y-27*k} q${1*k} ${-6*k} ${6*k} ${-7*k}" fill="none" stroke="#6fae5e" stroke-width="${3.6*k}" stroke-linecap="round"/><path d="M${x-10*k} ${y-14*k} l${3.5*k} ${-6*k} l${3.5*k} ${6*k}Z M${x+3*k} ${y-14*k} l${3.5*k} ${-6*k} l${3.5*k} ${6*k}Z M${x-9*k} ${y-8*k} Q${x} ${y-1*k} ${x+9*k} ${y-8*k} l${-3*k} ${2.4*k} l${-3*k} ${-2*k} l${-3*k} ${2.4*k} l${-3*k} ${-2.4*k}Z" fill="#ffe27a" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>`;
+const ghostie=(x,y,k)=>`<ellipse cx="${x}" cy="${y+2}" rx="${12*k}" ry="${3*k}" fill="rgba(91,66,80,.1)"/><g><animateTransform attributeName="transform" type="translate" values="0 0;0 ${-5*k};0 0" dur="2.6s" repeatCount="indefinite"/><path d="M${x-12*k} ${y-6*k} V${y-22*k} Q${x-12*k} ${y-38*k} ${x} ${y-38*k} Q${x+12*k} ${y-38*k} ${x+12*k} ${y-22*k} V${y-6*k} l${-4*k} ${-3*k} l${-4*k} ${3*k} l${-4*k} ${-3*k} l${-4*k} ${3*k} l${-4*k} ${-3*k}Z" fill="#fff" ${BO}/><ellipse cx="${x-4*k}" cy="${y-24*k}" rx="${1.8*k}" ry="${2.4*k}" fill="${INK}"/><ellipse cx="${x+4*k}" cy="${y-24*k}" rx="${1.8*k}" ry="${2.4*k}" fill="${INK}"/><ellipse cx="${x-8*k}" cy="${y-19*k}" rx="${2.2*k}" ry="${1.4*k}" fill="#f6a5b4"/><ellipse cx="${x+8*k}" cy="${y-19*k}" rx="${2.2*k}" ry="${1.4*k}" fill="#f6a5b4"/></g>`;
 const DECO={
   printemps:[
     (x,y,k)=>tree(x,y,k,["#f9c4d2"],"#fff"),
@@ -1045,7 +1116,7 @@ function mapSVG(L){
   // déco : posée au hasard (graine fixe) loin du chemin, des portes et des invités
   const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80]],deco=[];
   for(const b of bands){
-    const n=Math.floor((b.hi-b.lo)/44),fs=DECO[b.c.id],last=[];
+    const n=Math.floor((b.hi-b.lo)/44),fs=HW?[...DECO[b.c.id],jack,ghostie,jack]:DECO[b.c.id],last=[];
     for(let j=0;j<n;j++)for(let t=0;t<14;t++){
       const u=b.lo+34+R()*(b.hi-b.lo-60),x=24+R()*(MW-48);
       if(Math.abs(x-pathX(way,u))<76||taken.some(([a,c,r])=>Math.hypot(a-x,c-u)<r)||deco.some(o=>Math.hypot(o.x-x,o.u-u)<54))continue;
@@ -1056,7 +1127,8 @@ function mapSVG(L){
   deco.sort((a,b)=>b.u-a.u).forEach(o=>s+=o.f(o.x.toFixed(1)*1,Y(o.u).toFixed(1)*1,o.k));
   // le café de départ, les portes, le panneau de fin
   const cy=Y(70);
-  s+=shadow(200,cy+16,56)+`<rect x="160" y="${cy-28}" width="80" height="44" rx="6" fill="#fff5e8" ${BO}/><path d="M150 ${cy-26} L200 ${cy-62} L250 ${cy-26}Z" fill="#f59a8b" ${BO}/><rect x="190" y="${cy-8}" width="20" height="24" rx="4" fill="#c8946a" ${BO}/><rect x="166" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><rect x="216" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><path d="M160 ${cy-30} h80" stroke="#f6a5b4" stroke-width="8" stroke-dasharray="10 10"/>`;
+  s+=shadow(200,cy+16,56)+`<rect x="160" y="${cy-28}" width="80" height="44" rx="6" fill="#fff5e8" ${BO}/><path d="M150 ${cy-26} L200 ${cy-62} L250 ${cy-26}Z" fill="#f59a8b" ${BO}/><rect x="190" y="${cy-8}" width="20" height="24" rx="4" fill="#c8946a" ${BO}/><rect x="166" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><rect x="216" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><path d="M160 ${cy-30} h80" stroke="${HW?"#f2a35c":"#f6a5b4"}" stroke-width="8" stroke-dasharray="10 10"/>`;
+  if(HW)s+=jack(146,cy+16,.7)+jack(256,cy+18,.55);
   gates.forEach(g=>s+=gateSVG(g.x,Y(g.u),gateOpen(CHAP[g.i]),CHAP[g.i]));
   const e=way[way.length-1],ey=Y(e.u);
   s+=`<rect x="${e.x-4}" y="${ey-30}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${e.x-48} ${ey-56} H${e.x+40} L${e.x+52} ${ey-44} L${e.x+40} ${ey-32} H${e.x-48}Z" fill="#fffaf2" ${BO}/><text x="${e.x}" y="${ey-39}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">À suivre…</text>`;
@@ -1089,7 +1161,8 @@ function openMap(){
   renderMap();renderHud();
   const n=document.querySelector(".node.cur")||document.querySelector(`.node[data-day="${curDay()}"]`),sc=$("mscroll");
   sc.scrollTop=n.offsetTop-sc.clientHeight*.55;mapLabel();
-  dailyBonus();
+  // présentation d'Halloween, une fois par an ; le bonus du jour attend la prochaine ouverture de la carte
+  const yr=new Date().getFullYear();if(HW&&S.hwIntro!==yr){S.hwIntro=yr;save();hwSheet()}else dailyBonus();
 }
 function closeMap(){$("map").hidden=true;document.body.style.overflow=""}
 
@@ -1114,7 +1187,7 @@ $("tray").addEventListener("click",e=>{const b=e.target.closest("[data-tray]");i
 $("back").onclick=()=>{if(G&&G.run)pauseMenu();else openMap()};
 $("open-menu").onclick=openMap;
 function onAct(a){
-  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="quests")questsSheet();
+  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="quests")questsSheet();
   else if(a==="map")openMap();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
@@ -1129,9 +1202,10 @@ $("sheet").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.close!==undefined){closeSheet();return}
   if(b.dataset.tab){shopTab=b.dataset.tab;shop();return}
+  if(b.dataset.hwshop!==undefined){shopTab="hw";shop();return}
   if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<nx.c||(nx.from&&S.day<nx.from))return;S.coins-=nx.c;S.own[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
   if(b.dataset.sbuy||b.dataset.style){const [k,id]=(b.dataset.sbuy||b.dataset.style).split(":"),it=STYLE[k].items.find(x=>x.id===id),key=`st-${k}-${id}`;
-    if(b.dataset.sbuy){if(S.coins<it.c)return;S.coins-=it.c;S.own[key]=1;toast(`${it.name} : acheté !`)}
+    if(b.dataset.sbuy){if(it.cb){if(S.candy<it.cb)return;S.candy-=it.cb}else{if(S.coins<it.c)return;S.coins-=it.c}S.own[key]=1;toast(`${it.name} : acheté !`)}
     S.style=S.style||{};S.style[k]=id;save();renderDecor();renderHud();if(MAPL&&!$("map").hidden)renderMap();shop.y=$("sheet-in").scrollTop;shop();return}
   if(b.dataset.play){closeSheet();newDay(+b.dataset.play);return}
   if(b.dataset.day){daySheet(+b.dataset.day);return}
@@ -1147,6 +1221,7 @@ function loop(ts){
   requestAnimationFrame(loop);
 }
 $("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;
+if(HW)document.querySelector('[data-act="hw"]').hidden=false;
 SEA=chapOf(curDay()).id;renderDecor();render();requestAnimationFrame(loop);
 openMap();
 
