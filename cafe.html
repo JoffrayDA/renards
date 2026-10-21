@@ -325,6 +325,7 @@ FOXES.forEach(f=>{f.zone=f.zone||"clairiere";FOX[f.id]=f});
 const HWF=FOXES.filter(f=>f.event==="halloween");
 // déguisements des clients pendant Halloween (accessoires de foxSVG)
 const COSTUMES=["sorciere","citrouille","chauvesouris","vampire"];
+const COSTNAME={sorciere:"en sorcière",citrouille:"en citrouille",chauvesouris:"en chauve-souris",vampire:"en vampire"};
 // Les 5 Nuits d'Halloween : le rythme d'un jour de référence (base) avec d'autres commandes (graine seed).
 // Graines et objectifs calculés par « python tools/balance-bot.py --nuits ». Réussir la 5e garde Feu Follet au café pour toujours.
 const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:34,goal:166},{base:14,seed:21,goal:226},{base:19,seed:56,goal:314},{base:24,seed:36,goal:340}];
@@ -537,7 +538,7 @@ if(S.ver<3){
   S.style={wall:"rose",counter:"bois",acc:""};S.ver=3;
 }
 S.candy=S.candy||0; // bonbons d'Halloween (gardés d'une année sur l'autre)
-S.hwStars=S.hwStars||{};S.hwServed=S.hwServed||{}; // étoiles des Nuits, album des invités d'Halloween servis (S.hwKeep : Feu Follet reste)
+S.hwStars=S.hwStars||{};S.hwServed=S.hwServed||{};S.costSeen=S.costSeen||{}; // costSeen["renard:déguisement"] = nombre de visites // étoiles des Nuits, album des invités d'Halloween servis (S.hwKeep : Feu Follet reste)
 function nightOpen(n){const N=NIGHTS[n-1];return HW&&S.day>N.base&&(n===1||(S.hwStars[n-1]||0)>0)}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const chapOf=d=>CHAP.find(c=>d<=c.to)||CHAP[CHAP.length-1];
@@ -779,6 +780,7 @@ function spawn(){
   const pat=G.cfg.pat*patMult()*(vip?.5:1);
   const costume=HW&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé
   G.cust.push({id:++uid,fox:f.id,spot:sp,order:genOrder(),pat,patMax:pat,state:"wait",vip,born:G.t,costume});
+  if(costume){const ck=f.id+":"+costume;if(!S.costSeen[ck]&&S.seen[f.id])toast(`Nouveau déguisement : ${f.name} ${COSTNAME[costume]} !`);S.costSeen[ck]=(S.costSeen[ck]||0)+1}
   if(vip)toast(f.event?`${f.name} est là ! Sers-le vite : il paie ×3 et donne 5 bonbons.`:`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
   if(!S.seen[f.id])G.newFox.push(f.name);
   S.seen[f.id]=(S.seen[f.id]||0)+1;
@@ -1025,7 +1027,13 @@ function hwSheet(){
   openSheet(`<h2>Nuit des citrouilles</h2><p class="sub">Jusqu'au 3 novembre, le café fête Halloween ! Les clients viennent <b>déguisés</b> : sers-les pour gagner des <b>bonbons</b> (2 si tu es rapide). Cinq invités très spéciaux passent en VIP : un fantôme, un vampire, un squelette, un mort-vivant et un épouvantail. Ils paient ×3 et donnent 5 bonbons. Tu as <b>${S.candy} bonbons</b>.</p>
   <p class="sub" style="margin:0 0 6px"><b>Les 5 nuits</b> · tous les clients sont déguisés, les étoiles rapportent des bonbons</p><div class="col" style="margin-bottom:14px">${nights}</div>
   <p class="sub" style="margin:0 0 6px"><b>Album des invités : ${k} / ${HWF.length}</b> · ${crown?"complet ! Roussette a sa Couronne de citrouilles.":"sers-les tous pour gagner la Couronne de citrouilles de Roussette."}</p><div class="fgrid" style="grid-template-columns:repeat(3,1fr);max-width:380px;margin:0 auto 12px">${album}</div>
-  <div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button></div>`);
+  <div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`);
+}
+// galerie des clients déguisés déjà croisés (visible toute l'année)
+function costumesSheet(){
+  const tot=REG.length*COSTUMES.length,seen=REG.flatMap(f=>COSTUMES.filter(c=>S.costSeen[f.id+":"+c]).map(c=>[f,c]));
+  const cards=seen.map(([f,c])=>{const n=S.costSeen[f.id+":"+c];return `<div class="fc hwc">${foxSVG({...f,acc:c},{pose:"happy"})}${f.name}<em>${COSTNAME[c]} · ${n} visite${n>1?"s":""}</em></div>`}).join("");
+  openSheet(`<h2>Clients déguisés</h2><p class="sub"><b>${seen.length} / ${tot}</b> déguisements rencontrés. Chaque client peut venir en sorcière, en citrouille, en chauve-souris ou en vampire, pendant Halloween.</p>${seen.length?`<div class="fgrid">${cards}</div>`:`<p class="sub">Aucun pour l'instant : les clients déguisés viennent pendant Halloween.</p>`}<div class="col" style="margin-top:10px">${HW?`<button class="btn ghost wide" data-act="hw" type="button">Halloween</button>`:""}<button class="btn ghost wide" data-act="carnet" type="button">Carnet des clients</button></div>`);
 }
 function nightSheet(n){
   if(!nightOpen(n)){toast("Cette nuit n'est pas encore ouverte.");return}
@@ -1062,7 +1070,7 @@ function shop(){
 function carnet(){
   const rows=FOXES.map(f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
     return `<div class="fc${c?" vipc":f.event?" hwc":""}">${foxSVG(f,{sil:!n})}${n||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur":`★★★ au ${c.name}`):f.event?"Vient à Halloween":"Pas encore venu"}</em></div>`}).join("");
-  openSheet(`<h2>Carnet des clients</h2><p class="sub">${Object.keys(S.seen).length} / ${FOXES.length} clients rencontrés. Les invités d'honneur viennent quand une saison entière est en ★★★.</p><div class="fgrid">${rows}</div>`);
+  openSheet(`<h2>Carnet des clients</h2><p class="sub">${Object.keys(S.seen).length} / ${FOXES.length} clients rencontrés. Les invités d'honneur viennent quand une saison entière est en ★★★.</p><div class="fgrid">${rows}</div>${Object.keys(S.costSeen).length||HW?`<div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`:""}`);
 }
 function pauseMenu(){if(!G||!G.run)return;G.paused=1;openSheet(`<h2>Pause</h2><p class="sub">Les clients t'attendent sagement.</p><div class="col"><button class="btn big wide" data-act="resume" type="button">Reprendre</button><button class="btn ghost wide" data-act="quit" type="button">Abandonner la journée</button></div>`,true)}
 
@@ -1258,7 +1266,7 @@ $("tray").addEventListener("click",e=>{const b=e.target.closest("[data-tray]");i
 $("back").onclick=()=>{if(G&&G.run)pauseMenu();else openMap()};
 $("open-menu").onclick=openMap;
 function onAct(a){
-  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="quests")questsSheet();
+  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="costumes")costumesSheet();else if(a==="quests")questsSheet();
   else if(a==="map")openMap();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
