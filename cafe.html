@@ -237,6 +237,11 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .hwbox{background:linear-gradient(#4a3a66,#7a5a8e);color:#fff;border-radius:18px;padding:12px 14px;margin:0 0 12px;display:flex;gap:10px;align-items:center}
 .hwbox svg{width:84px;flex:none}
 .hwbox p{margin:0;font-size:13.5px;line-height:1.45}
+.mhw{position:absolute;transform:translate(-50%,-78%);width:86px;background:none;border:0;padding:0;cursor:pointer;z-index:1;text-align:center}
+.mhw svg{display:block;width:100%}
+.mhw em{display:inline-block;font-style:normal;font-family:var(--display);font-size:11px;background:#5d4a7e;color:#fff;border-radius:999px;padding:2px 9px;box-shadow:0 2px 0 #3e2f58;white-space:nowrap}
+.it.nlock{opacity:.6}
+.nst2{color:var(--gold-d);font-size:13px;letter-spacing:1px}.nst2 em{color:#d8ccd4;font-style:normal}
 @media (max-width:520px){.scene{aspect-ratio:7/5}.ki{width:46px;height:46px}.kb{padding:8px 3px 8px}.cust{width:23%}.ts{width:40px}.tray small{display:none}.pill.day{padding:3px 9px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -265,7 +270,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 <div class="map" id="map" hidden>
   <div class="mtop"><a class="home" href="./" aria-label="Retour à l'accueil"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M13 4l-6 6 6 6" fill="none" stroke="#5b4250" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a><div class="mtt"><b>Kitsune Café</b><span id="mchap"></span></div><span class="pill mst" id="mstars"></span><div class="coin" title="Pièces"><span id="ic-c2"></span><span id="coins2">0</span></div></div>
   <div class="mscroll" id="mscroll"><div class="mwrap" id="mwrap"></div></div>
-  <div class="mbar"><button class="btn ghost" data-act="shop" type="button">Boutique</button><button class="btn ghost" data-act="quests" type="button">Quêtes</button><button class="btn ghost" data-act="carnet" type="button">Carnet</button><button class="btn hw" data-act="hw" type="button" hidden>Halloween</button></div>
+  <div class="mbar"><button class="btn ghost" data-act="shop" type="button">Boutique</button><button class="btn ghost" data-act="quests" type="button">Quêtes</button><button class="btn ghost" data-act="carnet" type="button">Carnet</button><button class="btn hw" id="hwbtn" data-act="hw" type="button" hidden>Halloween</button></div>
 </div>
 <div class="sheet" id="sheet" hidden><div class="sheet-in" id="sheet-in"></div></div>
 <div class="toast" id="toast" hidden></div>
@@ -320,6 +325,10 @@ FOXES.forEach(f=>{f.zone=f.zone||"clairiere";FOX[f.id]=f});
 const HWF=FOXES.filter(f=>f.event==="halloween");
 // déguisements des clients pendant Halloween (accessoires de foxSVG)
 const COSTUMES=["sorciere","citrouille","chauvesouris","vampire"];
+// Les 5 Nuits d'Halloween : le rythme d'un jour de référence (base) avec d'autres commandes (graine seed).
+// Graines et objectifs calculés par « python tools/balance-bot.py --nuits ». Réussir la 5e garde Feu Follet au café pour toujours.
+const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:34,goal:166},{base:14,seed:21,goal:226},{base:19,seed:56,goal:314},{base:24,seed:36,goal:340}];
+const NIGHT_NAMES=["Nuit des lanternes","Nuit des chauves-souris","Nuit du brouillard","Nuit de la pleine lune","Grande nuit d'Halloween"];
 function foxSVG(f,o={}){
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
   const c=sil?{b:"#e3d9df",ch:"#e3d9df",e:"#e3d9df",s:"#e3d9df",t:"#e3d9df"}:f.c;
@@ -353,6 +362,7 @@ function foxSVG(f,o={}){
     os:`<g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round">${[0,1,2].map(i=>`<path d="M${(60-w*(.42-i*.08)).toFixed(1)} ${neck+4+i*5} Q60 ${neck+1+i*5} ${(60+w*(.42-i*.08)).toFixed(1)} ${neck+4+i*5}"/>`).join("")}<path d="M60 ${neck+1} V${neck+15}"/></g><g fill="none" stroke="#fff" stroke-width="1.8"><circle cx="48" cy="${Y}" r="5.8"/><circle cx="72" cy="${Y}" r="5.8"/></g><path d="M86 ${top+14} l6 -6 M84 ${top+10} a2.2 2.2 0 1 1 3 -2 M91 ${top+12} a2.2 2.2 0 1 0 3 -2 M88 ${top+15} a2.2 2.2 0 1 1 -3 -1 M94 ${top+9} a2.2 2.2 0 1 0 -2 -3" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`,
     zombie:`<path d="M44 ${top+2} L80 ${top+15} L78 ${top+21} L42 ${top+8}Z" fill="#fff5e8"/><path d="M51 ${top+5} l-1.4 5 M59 ${top+8} l-1.4 5 M67 ${top+11} l-1.4 5 M75 ${top+14} l-1.4 5" stroke="#d8ccd4" stroke-width="1.4"/><path d="M75 ${Y+11} l10 -7" fill="none" stroke-width="1.6"/><path d="M76.5 ${Y+7} l2.4 3 M79.5 ${Y+5} l2.4 3 M82.5 ${Y+3} l2.4 3" fill="none" stroke-width="1.4"/><circle cx="40" cy="${Y-9}" r="2.6" fill="#7aa874" stroke-width="1.2"/>`,
     epouvantail:`<path d="M${60-w*.75} ${neck} l-6 8 M${60-w*.55} ${neck+2} l-2 9 M${60+w*.55} ${neck+2} l2 9 M${60+w*.75} ${neck} l6 8" fill="none" stroke="#e8c45a" stroke-width="2.6"/><path d="M${60-w*.6} ${neck-1} Q60 ${neck+5} ${60+w*.6} ${neck-1}" fill="none" stroke="#c43a5a" stroke-width="3.4"/><rect x="${60+w*.2}" y="${neck+5}" width="11" height="10" rx="1.5" fill="#9ec3ef" stroke-width="1.8"/><path d="M${60+w*.2+2} ${neck+7.5} h7 M${60+w*.2+2} ${neck+12.5} h7" stroke="${INK}" stroke-width="1" stroke-dasharray="1.6 1.4"/><path d="M27 ${top+9} l-6 3 M29 ${top+11} l-4 6 M93 ${top+9} l6 3 M91 ${top+11} l4 6" fill="none" stroke="#e8c45a" stroke-width="2.4"/><ellipse cx="60" cy="${top+8}" rx="34" ry="6.5" fill="#d9a85a"/><path d="M42 ${top+7} Q43 ${top-15} 60 ${top-16} Q77 ${top-15} 78 ${top+7}Z" fill="#e8c47a"/><path d="M42.6 ${top+1} Q60 ${top+4} 77.4 ${top+1} L77.8 ${top+6} Q60 ${top+9} 42.2 ${top+6}Z" fill="#e2546e" stroke-width="1.8"/><rect x="62" y="${top-11}" width="9" height="8" rx="1.4" fill="#8fca7a" stroke-width="1.6" transform="rotate(8 66 ${top-7})"/>`,
+    couronne:`<path d="M42 ${top+9} Q60 ${top+3} 78 ${top+9}" fill="none" stroke="#6fae5e" stroke-width="3"/>${[[45,top+5,5],[60,top,6.5],[75,top+5,5]].map(([x,y,r])=>`<path d="M${x} ${y-r+.5} q.5 -3 3.4 -3.8" fill="none" stroke="#6fae5e" stroke-width="2.2"/><ellipse cx="${x}" cy="${y}" rx="${r*1.25}" ry="${r}" fill="#f2a35c" stroke-width="2"/><path d="M${x-r*.7} ${y} l${r*.3} ${-r*.45} l${r*.3} ${r*.45}Z M${x+r*.1} ${y} l${r*.3} ${-r*.45} l${r*.3} ${r*.45}Z" fill="#ffe27a" stroke-width="1"/>`).join("")}`,
     spectre:[[14,top+16,1],[104,top+8,-1],[100,top+40,1]].map(([x,y,d])=>`<path d="M${x} ${y} q${-5*d} -7 0 -15 q${2*d} 6 ${6*d} 8 q-1 6 ${-6*d} 7Z" fill="#cfe2ff" stroke="#9fb4e0" stroke-width="1.6"/>`).join(""),
     collier:[-3,-2,-1,0,1,2,3].map(k=>`<circle cx="${(60+k*w/3.6).toFixed(1)}" cy="${(neck+3-k*k*.45).toFixed(1)}" r="2.6" fill="#fff" stroke-width="1.4"/>`).join("")
   })[f.acc]||""};
@@ -472,7 +482,8 @@ const STYLE={
     {id:"sorciere",name:"Chapeau de sorcière",cb:25},
     {id:"chauvesouris",name:"Serre-tête chauve-souris",cb:25},
     {id:"citrouille",name:"Bonnet citrouille",cb:30},
-    {id:"vampire",name:"Cape de vampire",cb:45}]}
+    {id:"vampire",name:"Cape de vampire",cb:45},
+    {id:"couronne",name:"Couronne de citrouilles",album:1}]}
 };
 const styleOf=k=>{const it=STYLE[k].items;return it.find(x=>x.id===(S.style||{})[k])||it[0]};
 const ALLUP=[...UPG.equip,...UPG.deco];
@@ -487,7 +498,9 @@ const QUESTS=[
   {k:"combo",n:3,t:"Fais un combo ×3",g:15},{k:"combo",n:5,t:"Fais un combo ×5",g:30},
   {k:"vip",n:1,t:"Sers un client VIP",g:25},{k:"perfect",n:1,t:"Réussis une journée sans client fâché",g:30},
   {k:"stars3",n:1,t:"Obtiens 3 étoiles sur une journée",g:40},{k:"orders",n:15,t:"Complète 15 commandes",g:20},
-  {k:"big",n:2,t:"Complète 2 commandes de 3 articles",g:25},{k:"green",n:5,t:"Sers 5 clients quand leur jauge est encore verte",g:20}
+  {k:"big",n:2,t:"Complète 2 commandes de 3 articles",g:25},{k:"green",n:5,t:"Sers 5 clients quand leur jauge est encore verte",g:20},
+  {k:"costume",n:10,t:"Sers 10 clients déguisés",g:15,cdy:1,hw:1},{k:"hwguest",n:2,t:"Sers 2 invités d'Halloween",g:20,cdy:1,hw:1},
+  {k:"candy",n:30,t:"Récolte 30 bonbons",g:15,cdy:1,hw:1},{k:"night",n:1,t:"Réussis une Nuit d'Halloween",g:20,cdy:1,hw:1}
 ];
 const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
 const has=k=>(REC[k]&&!REC[k].day)||!!S.own[k];
@@ -524,6 +537,8 @@ if(S.ver<3){
   S.style={wall:"rose",counter:"bois",acc:""};S.ver=3;
 }
 S.candy=S.candy||0; // bonbons d'Halloween (gardés d'une année sur l'autre)
+S.hwStars=S.hwStars||{};S.hwServed=S.hwServed||{}; // étoiles des Nuits, album des invités d'Halloween servis (S.hwKeep : Feu Follet reste)
+function nightOpen(n){const N=NIGHTS[n-1];return HW&&S.day>N.base&&(n===1||(S.hwStars[n-1]||0)>0)}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const chapOf=d=>CHAP.find(c=>d<=c.to)||CHAP[CHAP.length-1];
 const starSum=()=>Object.values(S.stars).reduce((a,b)=>a+b,0);
@@ -533,12 +548,14 @@ const dayOpen=d=>d>=1&&d<=Math.min(S.day,LASTDAY)&&gateOpen(chapOf(d));
 const curDay=()=>{let d=Math.min(S.day,LASTDAY);while(d>1&&!dayOpen(d))d--;return d};
 function checkGuests(){const n=[];for(const c of CHAP)if(!S.guest[c.guest]&&chapStars(c)>=30){S.guest[c.guest]=1;n.push(c)}return n}
 checkGuests();
-function questAvail(q){return q.k==="serve"?has(q.r):q.k==="vip"?S.day>=3:q.k==="big"?S.day>=4:true}
+function questAvail(q){if(q.hw)return HW&&(q.k!=="night"||nightOpen(1))&&(q.k!=="hwguest"||S.day>=3);return q.k==="serve"?has(q.r):q.k==="vip"?S.day>=3:q.k==="big"?S.day>=4:true}
 // quêtes d'avant le 21/10/2026 : celles qui n'existent plus sont remplacées, les autres gardent leur avancée
-S.quests=S.quests.filter(q=>QUESTS.some(x=>x.t===q.t)).map(q=>({...QUESTS.find(x=>x.t===q.t),p:Math.min(q.p,QUESTS.find(x=>x.t===q.t).n),done:q.done}));
+S.quests=S.quests.filter(q=>QUESTS.some(x=>x.t===q.t&&(!x.hw||HW))).map(q=>({...QUESTS.find(x=>x.t===q.t),p:Math.min(q.p,QUESTS.find(x=>x.t===q.t).n),done:q.done}));
 function fillQuests(){
-  while(S.quests.length<3){
-    const used=new Set(S.quests.map(q=>q.t)),opts=QUESTS.filter(q=>questAvail(q)&&!used.has(q.t));
+  // pendant Halloween, une 4e quête, toujours d'Halloween
+  if(HW&&!S.quests.some(q=>q.hw)){const o=QUESTS.filter(q=>q.hw&&questAvail(q));if(o.length)S.quests.push({...pick(o),p:0})}
+  while(S.quests.filter(q=>!q.hw).length<3){
+    const used=new Set(S.quests.map(q=>q.t)),opts=QUESTS.filter(q=>!q.hw&&questAvail(q)&&!used.has(q.t));
     if(!opts.length)break;const q=pick(opts);S.quests.push({...q,p:0});
   }
 }
@@ -547,7 +564,7 @@ let G=null,last=0,dirty=true,qDone=[];
 function qEvent(k,v=1,r){
   S.quests.forEach(q=>{if(q.done||q.k!==k||(q.r&&q.r!==r))return;
     if(k==="combo"){q.p=Math.max(q.p,v)}else q.p+=v;
-    if(q.p>=q.n){q.done=1;q.p=q.n;S.coins+=q.g;qDone.push(q);toast(`Quête réussie : ${qText(q)} · +${q.g} pièces`);if(G&&G.run){const el=$("chips");floatAt(el,`Quête réussie ! +${q.g}`,true)}}});
+    if(q.p>=q.n){q.done=1;q.p=q.n;if(q.cdy)S.candy+=q.g;else S.coins+=q.g;qDone.push(q);toast(`Quête réussie : ${qText(q)} · +${q.g} ${q.cdy?"bonbons":"pièces"}`);if(G&&G.run){const el=$("chips");floatAt(el,`Quête réussie ! +${q.g}`,true)}}});
 }
 
 /* ---------- dessins ---------- */
@@ -743,6 +760,7 @@ function newDay(d){
   G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,candy:0,cost:0,gain:0,replay:(S.stars[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;
 }
+function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:N.goal};G.replay=(S.hwStars[n]||0)>0;dirty=true}
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
 function genOrder(){
   const un=Object.keys(REC).filter(k=>onMenu(k)),m=G.cfg.max,r=G.rng();
@@ -752,14 +770,14 @@ function genOrder(){
 function spawn(){
   const sp=freeSpot();if(sp<0)return false;
   const here=new Set(G.cust.map(c=>c.fox));
-  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]):0,guests=CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]);
+  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[])];
   let f,vip=false;
   // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
-  if(G.rng()<vipCh){vip=true;const pool=(HW&&Math.random()<.7?HWF:guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
+  if(G.rng()<vipCh){vip=true;const pool=(HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1);
-  const costume=HW&&!vip&&Math.random()<.5?pick(COSTUMES):"";
+  const costume=HW&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé
   G.cust.push({id:++uid,fox:f.id,spot:sp,order:genOrder(),pat,patMax:pat,state:"wait",vip,born:G.t,costume});
   if(vip)toast(f.event?`${f.name} est là ! Sers-le vite : il paie ×3 et donne 5 bonbons.`:`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
   if(!S.seen[f.id])G.newFox.push(f.name);
@@ -807,8 +825,11 @@ function complete(c){
   c.state="happy";c.leave=.9;
   // Halloween : les clients déguisés donnent des bonbons (2 s'ils sont servis vite), les invités d'Halloween 5
   const cdy=HW?(FOX[c.fox].event?5:c.costume?(frac>=.5?2:1):0):0;
-  if(cdy){S.candy+=cdy;G.candy+=cdy}
-  const el=custEl(c);if(el){burst(el);floatAt(el,`+${tot}`,true);if(cb)setTimeout(()=>floatAt(el,`Combo ×${G.combo}`),250);if(cdy)setTimeout(()=>floatAt(el,`+${cdy} bonbon${cdy>1?"s":""}`),cb?500:250)}
+  if(cdy){S.candy+=cdy;G.candy+=cdy;qEvent("candy",cdy)}
+  if(c.costume)qEvent("costume");
+  // album d'Halloween : servir chacun des 5 invités une fois donne la Couronne de citrouilles à Roussette
+  if(FOX[c.fox].event){qEvent("hwguest");if(!S.hwServed[c.fox]){S.hwServed[c.fox]=1;const k=HWF.filter(f=>S.hwServed[f.id]).length;toast(`Album d'Halloween : ${FOX[c.fox].name} ! (${k} / ${HWF.length})`);if(k===HWF.length&&!S.own["st-acc-couronne"]){S.own["st-acc-couronne"]=1;G.albumNew=1}}}
+  const el=custEl(c);if(el){burst(el);floatAt(el,`+${tot}`,true);if(cb){const n=G.combo;setTimeout(()=>floatAt(el,`Combo ×${n}`),250)}if(cdy)setTimeout(()=>floatAt(el,`+${cdy} bonbon${cdy>1?"s":""}`),cb?500:250)}
   dirty=true;
 }
 function tapStation(k,el){
@@ -825,10 +846,10 @@ function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($(
 /* ---------- rendu ---------- */
 function renderHud(){
   $("coins").textContent=S.coins;$("coins2").textContent=S.coins;
-  if(HW)document.querySelector('[data-act="hw"]').innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
+  if(HW)$("hwbtn").innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${starSum()}</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,mx=g*1.7,e=G.earned;
-  $("hud").innerHTML=`<span class="pill day">Jour ${G.day}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map(m=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e}/${g}</b></div>`;
+  $("hud").innerHTML=`<span class="pill day">${G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map(m=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e}/${g}</b></div>`;
   $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
 }
 function render(){
@@ -907,7 +928,9 @@ function autoHint(){
 
 /* ---------- fin de journée ---------- */
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
+const albumRow=()=>G.albumNew?itRow(foxSVG({...FOX.roussette,acc:"couronne"},{pose:"happy"}),"Album d'Halloween complet !","Tu as servi les 5 invités : Roussette gagne la Couronne de citrouilles (dans la boutique, onglet Style).","background:#efe4fb"):"";
 function endDay(){
+  if(G.night)return endNight();
   const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=G.day,prev=S.stars[d]||0,before=starSum();
   G.run=0;
   if(!G.lost&&st)qEvent("perfect");if(st===3)qEvent("stars3");
@@ -929,14 +952,36 @@ function endDay(){
   openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${G.cost}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 30 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
-  ${news.join("")}
+  ${news.join("")}${albumRow()}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
   <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`,true);
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
 }
+function endNight(){
+  const n=G.night,g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,prev=S.hwStars[n]||0;
+  G.run=0;
+  if(!G.lost&&st)qEvent("perfect");if(st===3)qEvent("stars3");if(st)qEvent("night");
+  S.hwStars[n]=Math.max(prev,st);
+  // les nouvelles étoiles d'une Nuit paient en bonbons
+  let cb=0;if(st>prev){cb=8*(st-prev)+(st===3?15:0);S.candy+=cb}
+  const news=[];
+  if(n===5&&st&&!S.hwKeep){S.hwKeep=1;news.push(itRow(foxSVG(FOX.feufollet,{pose:"happy"}),"Feu Follet reste au café !","Il a tant aimé la Grande nuit qu'il viendra toute l'année, en invité d'honneur : il paie le triple, mais il est pressé.","background:#efe4fb"))}
+  if(st&&n<5&&!prev)news.push(itRow(candySVG,`${NIGHT_NAMES[n]} ouverte !`,n===4?"La dernière nuit : réussis-la pour garder Feu Follet au café.":"La nuit suivante t'attend.","background:#efe4fb"));
+  const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
+  S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
+  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
+  const canNext=st&&n<5&&nightOpen(n+1);
+  openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NIGHT_NAMES[n-1]}</b><br>${nxt}</p>
+  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 30 %</small>`:""}</div><div style="background:#efe4fb">Bonbons<b>+${G.candy+cb}</b></div></div>
+  ${cb?itRow(candySVG,`Coffre de la nuit : +${cb} bonbons`,st===3?"Trois étoiles : le grand coffre !":"Chaque nouvelle étoile d'une nuit rapporte des bonbons."):""}
+  ${news.join("")}${albumRow()}
+  ${questHTML(qShow)}
+  <div class="col">${canNext?`<button class="btn big wide" data-nplay="${n+1}" type="button">Nuit ${n+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-nplay="${n}" type="button">${st?"Rejouer":"Réessayer"} la nuit ${n}</button><button class="btn ghost wide" data-act="hw" type="button">Les nuits d'Halloween</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`,true);
+  G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
+}
 function questHTML(list=S.quests){
-  return `<p class="sub" style="margin:0 0 6px"><b>Quêtes</b></p><div class="col" style="margin-bottom:14px">${list.map(q=>`<div class="it" style="padding:8px 12px;${q.done?"background:#e3f2d6":""}"><span class="tx"><strong style="font-size:14px">${qText(q)}</strong><div class="obar" style="margin-top:4px"><i style="width:${q.p/q.n*100}%;background:${q.done?"var(--good)":"var(--gold)"}"></i></div></span><span class="side"><span class="price">${coinSVG}${q.g}</span><span style="font-size:12px;color:var(--ink-soft)">${q.done?"<b style=\"color:#4f9a3e\">Réussie !</b>":`${q.p} / ${q.n}${q.gain>0?` <b style="color:#4f9a3e">+${q.gain}</b>`:""}`}</span></span></div>`).join("")}</div>${list.some(q=>q.done)?`<p class="sub" style="margin:-6px 0 12px;font-size:12px">Les quêtes réussies sont payées et remplacées par de nouvelles.</p>`:""}`;
+  return `<p class="sub" style="margin:0 0 6px"><b>Quêtes</b></p><div class="col" style="margin-bottom:14px">${list.map(q=>`<div class="it" style="padding:8px 12px;${q.done?"background:#e3f2d6":""}"><span class="tx"><strong style="font-size:14px">${qText(q)}</strong><div class="obar" style="margin-top:4px"><i style="width:${q.p/q.n*100}%;background:${q.done?"var(--good)":"var(--gold)"}"></i></div></span><span class="side"><span class="price">${q.cdy?candySVG:coinSVG}${q.g}</span><span style="font-size:12px;color:var(--ink-soft)">${q.done?"<b style=\"color:#4f9a3e\">Réussie !</b>":`${q.p} / ${q.n}${q.gain>0?` <b style="color:#4f9a3e">+${q.gain}</b>`:""}`}</span></span></div>`).join("")}</div>${list.some(q=>q.done)?`<p class="sub" style="margin:-6px 0 12px;font-size:12px">Les quêtes réussies sont payées et remplacées par de nouvelles.</p>`:""}`;
 }
 
 /* ---------- menus ---------- */
@@ -972,8 +1017,26 @@ function guestSheet(i){
   openSheet(`<h2>${ok?f.name:"Invité mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invité d'honneur du café : il paie le triple, mais il est pressé.`:`Obtiens ★★★ sur les 10 journées du ${c.name} pour l'inviter au café. Pour l'instant : <b>${chapStars(c)} / 30 ★</b>.`}</p>`);
 }
 function hwSheet(){
-  const hf=HWF.map(f=>`<div class="fc hwc">${foxSVG(f,{pose:"happy"})}${f.name}<em>${S.seen[f.id]?`${S.seen[f.id]} visite${S.seen[f.id]>1?"s":""}`:"Pas encore venu"}</em></div>`).join("");
-  openSheet(`<h2>Nuit des citrouilles</h2><p class="sub">Jusqu'au 3 novembre, le café fête Halloween ! Les clients viennent <b>déguisés</b> : sers-les pour gagner des <b>bonbons</b> (2 si tu es rapide). Cinq invités très spéciaux passent en VIP : un fantôme, un vampire, un squelette, un mort-vivant et un épouvantail. Ils paient ×3 et donnent 5 bonbons.</p><div class="fgrid" style="grid-template-columns:repeat(3,1fr);max-width:380px;margin:0 auto 12px">${hf}</div><p class="sub" style="text-align:center">Tu as <b>${S.candy} bonbons</b>. Dépense-les dans la boutique : papier peint, comptoir et déguisements pour Roussette.</p><div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button></div>`);
+  const nights=NIGHTS.map((N,i)=>{const n=i+1,op=nightOpen(n),st=S.hwStars[n]||0;
+    const why=!HW?"L'événement est fini.":S.day<=N.base?`Réussis d'abord le jour ${N.base}.`:"Réussis la nuit précédente.";
+    return `<div class="it${op?"":" nlock"}"><span class="ic">${n===5?foxSVG(FOX.feufollet,{pose:"happy",sil:!S.hwKeep}):`<svg viewBox="0 0 40 40" aria-hidden="true">${jack(20,36,.9)}</svg>`}</span><span class="tx"><strong>${n}. ${NIGHT_NAMES[i]}</strong><span>${op?`<span class="nst2">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></span> Objectif ${N.goal}${n===5&&!S.hwKeep?" · garde Feu Follet pour toujours":""}`:why}</span></span><span class="side">${op?`<button class="btn" data-night="${n}" type="button">${st?"Rejouer":"Jouer"}</button>`:""}</span></div>`}).join("");
+  const k=HWF.filter(f=>S.hwServed[f.id]).length,crown=S.own["st-acc-couronne"];
+  const album=HWF.map(f=>`<div class="fc hwc">${foxSVG(f,{pose:"happy"})}${f.name}<em>${S.hwServed[f.id]?"<b style=\"color:#4f9a3e\">Servi !</b>":"À servir"}</em></div>`).join("");
+  openSheet(`<h2>Nuit des citrouilles</h2><p class="sub">Jusqu'au 3 novembre, le café fête Halloween ! Les clients viennent <b>déguisés</b> : sers-les pour gagner des <b>bonbons</b> (2 si tu es rapide). Cinq invités très spéciaux passent en VIP : un fantôme, un vampire, un squelette, un mort-vivant et un épouvantail. Ils paient ×3 et donnent 5 bonbons. Tu as <b>${S.candy} bonbons</b>.</p>
+  <p class="sub" style="margin:0 0 6px"><b>Les 5 nuits</b> · tous les clients sont déguisés, les étoiles rapportent des bonbons</p><div class="col" style="margin-bottom:14px">${nights}</div>
+  <p class="sub" style="margin:0 0 6px"><b>Album des invités : ${k} / ${HWF.length}</b> · ${crown?"complet ! Roussette a sa Couronne de citrouilles.":"sers-les tous pour gagner la Couronne de citrouilles de Roussette."}</p><div class="fgrid" style="grid-template-columns:repeat(3,1fr);max-width:380px;margin:0 auto 12px">${album}</div>
+  <div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button></div>`);
+}
+function nightSheet(n){
+  if(!nightOpen(n)){toast("Cette nuit n'est pas encore ouverte.");return}
+  const N=NIGHTS[n-1],c=cfgOf(N.base),g=N.goal,st=S.hwStars[n]||0;
+  openSheet(`<h2>${NIGHT_NAMES[n-1]}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
+  <p class="sub">Nuit ${n} sur 5. ${c.c} clients, <b>tous déguisés</b>${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Les VIP sont les invités d'Halloween.</p>
+  <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
+  ${st<3?itRow(candySVG,"Coffre de bonbons","Chaque nouvelle étoile rapporte 8 bonbons, et ★★★ ouvre le grand coffre (+15)."):""}
+  ${n===5&&!S.hwKeep?itRow(foxSVG(FOX.feufollet,{pose:"happy"}),"Récompense : Feu Follet","Réussis cette nuit et il restera au café toute l'année.","background:#efe4fb"):""}
+  ${st?itRow(icon("coeur"),"Nuit déjà réussie","La rejouer ne rapporte que 30 % des pièces."):""}
+  <div class="col" style="margin-top:6px"><button class="btn big wide" data-nplay="${n}" type="button">Commencer la nuit</button><button class="btn ghost wide" data-act="hw" type="button">Retour</button></div>`);
 }
 function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées. Une quête réussie rapporte des pièces, et une nouvelle la remplace.</p>${questHTML()}`)}
 let shopTab="equip";
@@ -983,10 +1046,11 @@ function shop(){
   if(shopTab==="style"||shopTab==="hw"){
     S.style=S.style||{wall:"rose",counter:"bois",acc:""};
     const hw=shopTab==="hw";
-    list=(hw?`<div class="hwbox">${foxSVG(FOX.croquignol,{pose:"happy"})}<p><b>Nuit des citrouilles</b><br>Les clients déguisés donnent des bonbons : 1, ou 2 si tu les sers vite. Les invités d'Halloween en donnent 5. Tu as <b>${S.candy} bonbons</b>.</p></div>`:"")+Object.keys(STYLE).map(k=>`<p class="sub" style="margin:8px 0 4px"><b>${STYLE[k].name}</b></p>`+STYLE[k].items.filter(it=>hw?it.cb:!it.cb||S.own[`st-${k}-${it.id}`]).map(it=>{
-      const key=`st-${k}-${it.id}`,own=(!it.c&&!it.cb)||S.own[key],on=styleOf(k).id===it.id;
+    const ak=HWF.filter(f=>S.hwServed[f.id]).length;
+    list=(hw?`<div class="hwbox">${foxSVG(FOX.croquignol,{pose:"happy"})}<p><b>Nuit des citrouilles</b><br>Les clients déguisés donnent des bonbons : 1, ou 2 si tu les sers vite. Les invités d'Halloween en donnent 5. Tu as <b>${S.candy} bonbons</b>.</p></div>`:"")+Object.keys(STYLE).map(k=>`<p class="sub" style="margin:8px 0 4px"><b>${STYLE[k].name}</b></p>`+STYLE[k].items.filter(it=>hw?it.cb||it.album:(!it.cb&&!it.album)||S.own[`st-${k}-${it.id}`]).map(it=>{
+      const key=`st-${k}-${it.id}`,own=(!it.c&&!it.cb&&!it.album)||S.own[key],on=styleOf(k).id===it.id;
       const sw=k==="acc"?foxSVG({...FOX.roussette,acc:it.id||undefined},{pose:"happy"}):k==="wall"?`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="22" rx="4" fill="${it.w}" ${K}/>${[[11,11],[23,11],[17,18],[29,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="${it.d}"/>`).join("")}<rect x="4" y="26" width="32" height="10" rx="3" fill="${it.b}" ${K}/></svg>`:`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="10" width="34" height="7" rx="3" fill="${it.t}" ${K}/><rect x="5" y="17" width="30" height="18" fill="${it.f}" ${K}/><rect x="9" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/><rect x="22" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/></svg>`;
-      return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${k==="acc"?"Roussette la porte sur la carte.":"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:it.cb?`<span class="price cnd">${candySVG}${it.cb}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.candy>=it.cb?"":"disabled"}>Acheter</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
+      return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${it.album?"Sers les 5 invités d'Halloween pour l'obtenir.":k==="acc"?"Roussette la porte sur la carte.":"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:it.album?`<span class="owned">Album ${ak} / ${HWF.length}</span>`:it.cb?`<span class="price cnd">${candySVG}${it.cb}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.candy>=it.cb?"":"disabled"}>Acheter</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
   }else list=UPG[shopTab].map(u=>{
     const n=lv(u.id),max=u.lv.length,nx=u.lv[n],early=nx&&nx.from&&S.day<nx.from;
     const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";
@@ -1120,7 +1184,7 @@ function mapSVG(L){
   s+=`<path d="${d}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   if(k>0)s+=`<path d="${done}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   // déco : posée au hasard (graine fixe) loin du chemin, des portes et des invités
-  const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80]],deco=[];
+  const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80],...(HW?[[322,104,62]]:[])],deco=[];
   for(const b of bands){
     const n=Math.floor((b.hi-b.lo)/44),fs=HW?[...DECO[b.c.id],jack,ghostie,jack]:DECO[b.c.id],last=[];
     for(let j=0;j<n;j++)for(let t=0;t<14;t++){
@@ -1152,6 +1216,7 @@ function renderMap(){
   }
   gates.forEach(g=>{const c=CHAP[g.i],op=gateOpen(c);h+=`<button class="gbtn${!op&&S.day>=c.from?" want":""}" style="${pc(g.x,g.u+44)}" data-gate="${g.i}" type="button" aria-label="Porte ${c.name} : ${c.gate} étoiles"></button>`});
   guests.forEach(g=>{const c=CHAP[g.i],ok=S.guest[c.guest];h+=`<button class="mguest${ok?" ok":""}" style="${pc(g.x,g.u)}" data-guest="${g.i}" type="button" aria-label="Invité d'honneur ${c.name}">${foxSVG(FOX[c.guest],{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?FOX[c.guest].name:`${chapStars(c)}/30 ★`}</em></button>`});
+  if(HW)h+=`<button class="mhw" style="${pc(322,104)}" data-act="hw" type="button" aria-label="Les nuits d'Halloween"><svg viewBox="0 0 90 70" aria-hidden="true"><g stroke="${INK}">${ghostie(66,40,.8)}${jack(36,66,1.25)}${jack(66,68,.7)}</g></svg><em>Nuits ${Object.values(S.hwStars).filter(x=>x).length} / 5</em></button>`;
   h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG({...FOX.roussette,acc:styleOf("acc").id||undefined},{pose:"happy"})}</div>`;
   const w=$("mwrap");w.style.aspectRatio=`${MW}/${H}`;w.innerHTML=h;
   mapLabel();
@@ -1209,6 +1274,8 @@ $("sheet").addEventListener("click",e=>{
   if(b.dataset.close!==undefined){closeSheet();return}
   if(b.dataset.tab){shopTab=b.dataset.tab;shop();return}
   if(b.dataset.hwshop!==undefined){shopTab="hw";shop();return}
+  if(b.dataset.night){nightSheet(+b.dataset.night);return}
+  if(b.dataset.nplay){closeSheet();newNight(+b.dataset.nplay);return}
   if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<nx.c||(nx.from&&S.day<nx.from))return;S.coins-=nx.c;S.own[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
   if(b.dataset.sbuy||b.dataset.style){const [k,id]=(b.dataset.sbuy||b.dataset.style).split(":"),it=STYLE[k].items.find(x=>x.id===id),key=`st-${k}-${id}`;
     if(b.dataset.sbuy){if(it.cb){if(S.candy<it.cb)return;S.candy-=it.cb}else{if(S.coins<it.c)return;S.coins-=it.c}S.own[key]=1;toast(`${it.name} : acheté !`)}
@@ -1227,7 +1294,7 @@ function loop(ts){
   requestAnimationFrame(loop);
 }
 $("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;
-if(HW)document.querySelector('[data-act="hw"]').hidden=false;
+if(HW)$("hwbtn").hidden=false;
 SEA=chapOf(curDay()).id;renderDecor();render();requestAnimationFrame(loop);
 openMap();
 
