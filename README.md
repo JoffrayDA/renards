@@ -30,7 +30,7 @@ L'app s'ouvre alors en plein écran, avec son icône, et fonctionne hors ligne a
 
 ## Mettre à jour
 
-Après une modification, incrémente d'abord `CACHE` dans `sw.js` (par exemple `renards-v12`), puis fais le commit et le push : sans ça, les téléphones gardent l'ancienne version.
+Après une modification, incrémente d'abord `CACHE` dans `sw.js` (par exemple `renards-v13`), puis fais le commit et le push : sans ça, les téléphones gardent l'ancienne version.
 
 ## Fichiers
 

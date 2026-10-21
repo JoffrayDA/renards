@@ -167,6 +167,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .stats b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
 .tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
 .tab{font-family:var(--display);font-size:13.5px;background:var(--card-2);border:2px solid var(--line);color:var(--ink-soft);padding:5px 14px;border-radius:999px;cursor:pointer}
+.it .lvd{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle}.lvd i{display:block;width:8px;height:8px;border-radius:99px;border:1.6px solid var(--ink);background:#fff}.lvd i.on{background:var(--gold)}
 .tab.on{background:var(--coral);border-color:var(--coral);color:#fff}
 .shop{display:flex;flex-direction:column;gap:8px}
 .it{display:flex;align-items:center;gap:12px;background:var(--card-2);border-radius:18px;padding:10px 12px}
@@ -361,13 +362,13 @@ function foxSVG(f,o={}){
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
 const REC={
-  cafe:{name:"Café",pl:"cafés",price:5,kind:"drink",time:2.4,stn:"Machine à café"},
-  croissant:{name:"Croissant",pl:"croissants",price:4,kind:"bake",time:5,batch:3},
-  the:{name:"Thé",pl:"thés",price:5,kind:"drink",time:2,day:2,stn:"Bouilloire",desc:"Une bouilloire rapide. Infusion express."},
-  cookie:{name:"Cookie",pl:"cookies",price:6,kind:"bake",time:5,batch:4,day:5,desc:"Au four, par fournées de 4."},
-  choco:{name:"Chocolat chaud",pl:"chocolats chauds",price:8,kind:"drink",time:3,day:7,stn:"Chocolatière",desc:"Avec une guimauve qui flotte."},
-  smoothie:{name:"Smoothie",pl:"smoothies",price:10,kind:"drink",time:3.4,day:11,stn:"Blender",desc:"Aux baies des bois, bien mixé."},
-  gateau:{name:"Gâteau aux baies",pl:"parts de gâteau",price:14,kind:"bake",time:7,batch:2,day:16,desc:"Le plus cher de la carte. Par fournées de 2 parts."}
+  cafe:{name:"Café",pl:"cafés",price:5,cost:4,kind:"drink",time:2.4,stn:"Machine à café"},
+  croissant:{name:"Croissant",pl:"croissants",price:4,cost:3,kind:"bake",time:5,batch:3},
+  the:{name:"Thé",pl:"thés",price:5,cost:4,kind:"drink",time:2,day:2,stn:"Bouilloire",desc:"Une bouilloire rapide. Infusion express."},
+  cookie:{name:"Cookie",pl:"cookies",price:6,cost:4,kind:"bake",time:5,batch:4,day:5,desc:"Au four, par fournées de 4."},
+  choco:{name:"Chocolat chaud",pl:"chocolats chauds",price:8,cost:6,kind:"drink",time:3,day:7,stn:"Chocolatière",desc:"Avec une guimauve qui flotte."},
+  smoothie:{name:"Smoothie",pl:"smoothies",price:10,cost:7,kind:"drink",time:3.4,day:11,stn:"Blender",desc:"Aux baies des bois, bien mixé."},
+  gateau:{name:"Gâteau aux baies",pl:"parts de gâteau",price:14,cost:10,kind:"bake",time:7,batch:2,day:16,desc:"Le plus cher de la carte. Par fournées de 2 parts."}
 };
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
 let SEA="printemps";
@@ -387,29 +388,53 @@ const CHAP=[
   {id:"hiver",name:"Hiver",from:31,to:40,gate:72,guest:"comete"}
 ];
 const LASTDAY=40;
+// Boutique : chaque achat a un ou plusieurs niveaux (S.own[id] = niveau atteint, 0 ou absent = pas acheté).
 const UPG={
   equip:[
-    {id:"plateau",name:"Grand plateau",desc:"4 places sur le plateau au lieu de 3.",cost:60},
-    {id:"double",name:"Machine à 2 tasses",desc:"Prépare 2 cafés en même temps.",cost:80},
-    {id:"comptoir1",name:"Comptoir agrandi",desc:"Un 3e client peut commander en même temps.",cost:100},
-    {id:"fourpro",name:"Four rapide",desc:"Cuisson 30 % plus rapide, et les fournées brûlent moins vite.",cost:110},
-    {id:"barista",name:"Gestes de barista",desc:"Toutes les boissons se préparent 25 % plus vite.",cost:150},
-    {id:"comptoir2",name:"Grand comptoir",desc:"Un 4e client peut commander en même temps.",cost:220,req:"comptoir1"},
-    {id:"serveur",name:"Apprenti serveur",desc:"Petit Pois apporte tout seul les viennoiseries de la vitrine aux clients.",cost:320},
-    {id:"machines",name:"Machines doubles",desc:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",cost:900,from:21},
-    {id:"plateau5",name:"Plateau géant",desc:"5 places sur le plateau.",cost:700,from:21,req:"plateau"},
-    {id:"four2",name:"Four de boulanger",desc:"Chaque fournée donne deux fois plus de viennoiseries.",cost:1400,from:31}
+    {id:"plateau",name:"Plateau",lv:[{d:"4 places sur le plateau au lieu de 3.",c:60},{d:"5 places sur le plateau.",c:700,from:21,ic:"plateau5"}]},
+    {id:"double",name:"Machine à café",lv:[{d:"Prépare 2 cafés en même temps.",c:80},{d:"Prépare 3 cafés en même temps.",c:650}]},
+    {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:240,ic:"comptoir2"}]},
+    {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 30 % plus rapide, et les fournées brûlent moins vite.",c:110},{d:"Cuisson 45 % plus rapide, et les fournées brûlent encore moins vite.",c:700}]},
+    {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 33 % plus vite.",c:150},{d:"Toutes les boissons se préparent 50 % plus vite.",c:550},{d:"Toutes les boissons se préparent 70 % plus vite.",c:1600,from:31}]},
+    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul les pâtisseries de la vitrine aux clients.",c:320},{d:"Petit Pois court plus vite : un service toutes les 1,4 s.",c:950}]},
+    {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:900,from:21}]},
+    {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:1400,from:31}]}
   ],
   deco:[
-    {id:"plantes",name:"Plantes vertes",desc:"Les clients patientent 15 % plus longtemps.",cost:50},
-    {id:"guirlande",name:"Guirlande lumineuse",desc:"+25 % de pourboires.",cost:90},
-    {id:"coussins",name:"Tabourets moelleux",desc:"Les clients VIP viennent deux fois plus souvent.",cost:130},
-    {id:"disque",name:"Tourne-disque",desc:"Musique douce : +10 % de patience et +10 % de pourboires.",cost:170},
-    {id:"fauteuils",name:"Fauteuils douillets",desc:"Les clients patientent 20 % plus longtemps.",cost:800,from:21},
-    {id:"lanternes",name:"Lanternes de saison",desc:"+25 % de pourboires.",cost:1200,from:31}
+    {id:"plantes",name:"Plantes vertes",lv:[{d:"Les clients patientent 15 % plus longtemps.",c:50},{d:"Les clients patientent 25 % plus longtemps.",c:450}]},
+    {id:"guirlande",name:"Guirlande lumineuse",lv:[{d:"+25 % de pourboires.",c:90},{d:"+40 % de pourboires.",c:750}]},
+    {id:"coussins",name:"Tabourets moelleux",lv:[{d:"Les clients VIP viennent deux fois plus souvent.",c:130},{d:"Les clients VIP viennent 2,5 fois plus souvent.",c:650}]},
+    {id:"disque",name:"Tourne-disque",lv:[{d:"Musique douce : +10 % de patience et +10 % de pourboires.",c:170}]},
+    {id:"fauteuils",name:"Fauteuils douillets",lv:[{d:"Les clients patientent 20 % plus longtemps.",c:800,from:21}]},
+    {id:"lanternes",name:"Lanternes de saison",lv:[{d:"+25 % de pourboires.",c:1200,from:31}]}
   ]
 };
+const lv=id=>+S.own[id]||0;
+// Style : purement décoratif (papier peint, comptoir, tenue de Roussette sur la carte). S.style garde le choix.
+const STYLE={
+  wall:{name:"Papier peint",items:[
+    {id:"rose",name:"Rose poudré",c:0,w:"#fbe6d6",d:"#f4d3c2",b:"#f2c6b2",l:"#e8b4a0"},
+    {id:"menthe",name:"Menthe à l'eau",c:400,w:"#dff3e6",d:"#c4e6cf",b:"#bfe0c9",l:"#a5d1b3"},
+    {id:"lavande",name:"Lavande",c:650,w:"#ece4fa",d:"#d9cdf2",b:"#d3c5ee",l:"#bfaee4"},
+    {id:"citron",name:"Citron doux",c:950,w:"#fbf3cf",d:"#f2e3a6",b:"#f2dc9a",l:"#e6c97a"},
+    {id:"ciel",name:"Bleu nuage",c:1400,w:"#e0eefb",d:"#c7ddf3",b:"#c3d9f0",l:"#a9c6e6"}]},
+  counter:{name:"Comptoir",items:[
+    {id:"bois",name:"Bois de noisetier",c:0,t:"#c8946a",f:"#e8b07a",p:"#d09a64"},
+    {id:"fraise",name:"Fraise",c:500,t:"#e8848f",f:"#f7b7c3",p:"#ec9aa8"},
+    {id:"pistache",name:"Pistache",c:750,t:"#7fbf98",f:"#b6e2c4",p:"#94cfa8"},
+    {id:"nuage",name:"Nuage lilas",c:1100,t:"#a99fd8",f:"#e4e0f7",p:"#cbc4ec"},
+    {id:"miel",name:"Miel doré",c:1600,t:"#d9a33a",f:"#f6d27a",p:"#e8b94e"}]},
+  acc:{name:"Tenue de Roussette",items:[
+    {id:"",name:"Au naturel",c:0},
+    {id:"noeud",name:"Petit nœud",c:300},
+    {id:"echarpe",name:"Écharpe",c:550},
+    {id:"bonnet",name:"Bonnet",c:800},
+    {id:"lunettes",name:"Lunettes rondes",c:1000},
+    {id:"etoile",name:"Étoile filante",c:1500}]}
+};
+const styleOf=k=>{const it=STYLE[k].items;return it.find(x=>x.id===(S.style||{})[k])||it[0]};
 const ALLUP=[...UPG.equip,...UPG.deco];
+const lvDesc=(u,n)=>u.lv[Math.max(0,n-1)].d;
 const SPOTX={2:[31,69],3:[20,50,80],4:[14,38,62,86]};
 const REG=[...FOXES.filter(f=>f.rar==="commun"),...FOXES.filter(f=>f.rar==="discret")];
 const VIPS=FOXES.filter(f=>f.rar==="discret");
@@ -442,13 +467,19 @@ const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()
 /* ---------- état ---------- */
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
-if(!S||!S.own)S={day:1,coins:0,own:{},seen:{},stars:{},quests:[],qp:{},streak:0,lastDay:"",total:0,served:0,ver:2,best:{},guest:{},pass:{}};
+if(!S||!S.own)S={day:1,coins:0,own:{},seen:{},stars:{},quests:[],qp:{},streak:0,lastDay:"",total:0,served:0,ver:3,best:{},guest:{},pass:{},style:{wall:"rose",counter:"bois",acc:""}};
 if(!S.ver){
   // v1 -> v2 : les recettes viennent de la carte, et les saisons déjà atteintes restent ouvertes
   for(const k in REC)if(REC[k].day&&REC[k].day<S.day)S.own[k]=1;
   S.best={};S.guest={};S.pass={};
   for(const c of CHAP)if(c.gate&&c.from<=S.day)S.pass[c.id]=1;
   S.ver=2;
+}
+if(S.ver<3){
+  // v2 -> v3 : boutique à niveaux (Plateau géant = Plateau niv. 2, Grand comptoir = Comptoir niv. 2), style du café
+  if(S.own.plateau5){S.own.plateau=2;delete S.own.plateau5}
+  if(S.own.comptoir2){S.own.comptoir1=2;delete S.own.comptoir2}
+  S.style={wall:"rose",counter:"bois",acc:""};S.ver=3;
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const chapOf=d=>CHAP.find(c=>d<=c.to)||CHAP[CHAP.length-1];
@@ -584,17 +615,17 @@ function outsideSVG(sea){
 const potSVG=(x,y,k)=>`<path d="M${x} ${y-10*k} Q${x-16*k} ${y-16*k} ${x-18*k} ${y-34*k} Q${x-4*k} ${y-28*k} ${x} ${y-10*k} Q${x+2*k} ${y-30*k} ${x+16*k} ${y-36*k} Q${x+18*k} ${y-16*k} ${x} ${y-10*k}Z" fill="#8fca7a" ${BO}/><path d="M${x-12*k} ${y-12*k} H${x+12*k} L${x+9*k} ${y} H${x-9*k}Z" fill="#f59a8b" ${BO}/>`;
 const books=(x,y,cs)=>cs.map((c,i)=>{const h=[22,18,24,20,16][i%5];return `<rect x="${x+i*9}" y="${y-h}" width="8" height="${h}" rx="1.5" fill="${c}" stroke="${INK}" stroke-width="2"/>`}).join("");
 function roomSVG(night){
-  let s="";
+  let s="";const W=styleOf("wall");
   // reflets sur les vitres, montants et traverse de la véranda
   for(let i=0;i<PANES.length-1;i++){const x=PANES[i];s+=`<path d="M${x+28} ${GY0+12} l-16 34 M${x+44} ${GY0+12} l-8 17" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity="${night?.12:.4}"/>`}
   s+=`<rect x="${GX0}" y="60" width="${GX1-GX0}" height="7" fill="#fffaf2" ${BO}/>`;
   PANES.slice(1,-1).forEach(x=>s+=`<rect x="${x-5}" y="${GY0}" width="10" height="${GY1-GY0}" fill="#fffaf2" ${BO}/>`);
   // murs de côté, poutre, rebord et soubassement
-  [[-6,GX0+6],[GX1-6,612]].forEach(([a,b])=>{s+=`<rect x="${a}" y="-4" width="${b-a}" height="${GY1+8}" fill="#fbe6d6" ${BO}/>`;for(let y=34;y<GY1;y+=24)for(let x=a+12+(y/24%2)*10;x<b-6;x+=20)s+=`<circle cx="${x}" cy="${y}" r="2" fill="#f4d3c2"/>`});
+  [[-6,GX0+6],[GX1-6,612]].forEach(([a,b])=>{s+=`<rect x="${a}" y="-4" width="${b-a}" height="${GY1+8}" fill="${W.w}" ${BO}/>`;for(let y=34;y<GY1;y+=24)for(let x=a+12+(y/24%2)*10;x<b-6;x+=20)s+=`<circle cx="${x}" cy="${y}" r="2" fill="${W.d}"/>`});
   [GX0,GX1].forEach(x=>s+=`<rect x="${x-6}" y="${GY0}" width="12" height="${GY1-GY0}" fill="#fffaf2" ${BO}/>`);
   s+=`<rect x="-6" y="-4" width="612" height="${GY0+4}" fill="#c8946a" ${BO}/><path d="M40 10 h60 M180 8 h90 M360 12 h70 M500 9 h60" stroke="#a8785a" stroke-width="2" stroke-linecap="round"/>`;
-  s+=`<rect x="-6" y="${GY1}" width="612" height="12" rx="4" fill="#c8946a" ${BO}/><rect x="-6" y="${GY1+12}" width="612" height="64" fill="#f2c6b2" ${BO}/>`;
-  for(let x=12;x<600;x+=30)s+=`<path d="M${x} ${GY1+18} V${GY1+60}" stroke="#e8b4a0" stroke-width="3" stroke-linecap="round"/>`;
+  s+=`<rect x="-6" y="${GY1}" width="612" height="12" rx="4" fill="#c8946a" ${BO}/><rect x="-6" y="${GY1+12}" width="612" height="64" fill="${W.b}" ${BO}/>`;
+  for(let x=12;x<600;x+=30)s+=`<path d="M${x} ${GY1+18} V${GY1+60}" stroke="${W.l}" stroke-width="3" stroke-linecap="round"/>`;
   // étagère de gauche : bocaux et livres
   s+=`<rect x="34" y="84" width="46" height="7" rx="2" fill="#c8946a" ${BO}/><rect x="34" y="146" width="46" height="7" rx="2" fill="#c8946a" ${BO}/>`;
   s+=`<rect x="40" y="60" width="16" height="24" rx="5" fill="#cfe4f2" ${BO}/><rect x="42" y="55" width="12" height="6" rx="2" fill="#a8785a" stroke="${INK}" stroke-width="2"/><rect x="60" y="66" width="15" height="18" rx="5" fill="#f7d77a" ${BO}/><rect x="62" y="61" width="11" height="6" rx="2" fill="#a8785a" stroke="${INK}" stroke-width="2"/>`;
@@ -621,8 +652,9 @@ function bgSVG(){
   return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${o.defs}</defs><g filter="url(#wobble)">${o.st}</g>${o.an}<g filter="url(#wobble)">${roomSVG(night)}</g></svg>${S.own.disque?`<span class="notes">♪</span><span class="notes" style="left:90%;animation-delay:1.2s">♫</span>`:""}`;
 }
 function counterSVG(){
-  let s=`<rect x="-10" y="246" width="620" height="20" rx="8" fill="#c8946a" ${BO}/><rect x="0" y="264" width="600" height="120" fill="#e8b07a" ${BO}/>`;
-  for(let x=20;x<600;x+=96)s+=`<rect x="${x}" y="280" width="72" height="80" rx="8" fill="none" stroke="#d09a64" stroke-width="3"/>`;
+  const C=styleOf("counter");
+  let s=`<rect x="-10" y="246" width="620" height="20" rx="8" fill="${C.t}" ${BO}/><rect x="0" y="264" width="600" height="120" fill="${C.f}" ${BO}/>`;
+  for(let x=20;x<600;x+=96)s+=`<rect x="${x}" y="280" width="72" height="80" rx="8" fill="none" stroke="${C.p}" stroke-width="3"/>`;
   s+=`<rect x="548" y="214" width="44" height="34" rx="5" fill="#f59a8b" ${BO}/><rect x="554" y="220" width="32" height="10" rx="2" fill="#fff5e8" stroke="${INK}" stroke-width="2"/><rect x="560" y="204" width="22" height="12" rx="3" fill="#d8ccd4" stroke="${INK}" stroke-width="2"/>`;
   s+=`<path d="M10 246 Q10 214 30 214 Q50 214 50 246Z" fill="rgba(220,240,255,.75)" ${BO}/><circle cx="30" cy="236" r="9" fill="#f6a5c8" stroke="${INK}" stroke-width="2"/>`;
   if(S.own.coussins)[100,300,500].forEach(x=>s+=`<rect x="${x-4}" y="338" width="8" height="40" fill="#a8785a" ${BO}/><rect x="${x-30}" y="322" width="60" height="18" rx="9" fill="#c9b8f2" ${BO}/><ellipse cx="${x}" cy="322" rx="30" ry="7" fill="#ffc7d8" ${BO}/>`);
@@ -635,18 +667,18 @@ function renderDecor(){
 }
 
 /* ---------- jeu ---------- */
-const spotsN=()=>2+(S.own.comptoir1?1:0)+(S.own.comptoir2?1:0);
-const trayCap=()=>S.own.plateau5?5:S.own.plateau?4:3;
-const patMult=()=>1+(S.own.plantes?.15:0)+(S.own.disque?.1:0)+(S.own.fauteuils?.2:0);
-const tipMult=()=>1+(S.own.guirlande?.25:0)+(S.own.disque?.1:0)+(S.own.lanternes?.25:0);
+const spotsN=()=>2+lv("comptoir1");
+const trayCap=()=>3+lv("plateau");
+const patMult=()=>1+[0,.15,.25][lv("plantes")]+(S.own.disque?.1:0)+(S.own.fauteuils?.2:0);
+const tipMult=()=>1+[0,.25,.4][lv("guirlande")]+(S.own.disque?.1:0)+(S.own.lanternes?.25:0);
 const batchOf=k=>REC[k].batch*(S.own.four2?2:1);
 let uid=0;
 function newDay(d){
   const cfg=cfgOf(d),st={};SEA=chapOf(d).id;
-  for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:(k==="cafe"?S.own.double:S.own.machines)?2:1},()=>({t:0,busy:0,ready:0}));
+  for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:k==="cafe"?1+lv("double"):S.own.machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
+  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,cost:0,gain:0,replay:(S.stars[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;
 }
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
@@ -658,7 +690,7 @@ function genOrder(){
 function spawn(){
   const sp=freeSpot();if(sp<0)return false;
   const here=new Set(G.cust.map(c=>c.fox));
-  const vipCh=G.day>=3?(.07*(S.own.coussins?2:1)):0,guests=CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]);
+  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]):0,guests=CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]);
   let f,vip=false;
   if(G.rng()<vipCh){vip=true;const pool=(guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
@@ -679,13 +711,13 @@ function update(dt){
     else{c.leave-=dt;if(c.leave<=0){c.gone=1;dirty=true}}
   }
   G.cust=G.cust.filter(c=>!c.gone);
-  const sp=S.own.barista?1.33:1;
+  const sp=[1,1.33,1.5,1.7][lv("barista")];
   for(const k in G.st)for(const s of G.st[k])if(s.busy){s.t+=dt*sp;if(s.t>=REC[k].time){s.busy=0;s.ready=1;dirty=true}}
   const o=G.oven;
-  if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=S.own.fourpro?6:4.5;dirty=true}}
-  else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){o.state="burnt";o.t=1.4;dirty=true;toast(`Oh non, les ${REC[o.r].pl} ont brûlé !`)}}
+  if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,6,7.5][lv("fourpro")];dirty=true}}
+  else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=REC[o.r].cost*batchOf(o.r);o.state="burnt";o.t=1.4;dirty=true;S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
-  if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=2.2;
+  if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=lv("serveur")>1?1.4:2.2;
     for(const c of G.cust){if(c.state!=="wait")continue;const it=c.order.find(x=>!x.done&&REC[x.r].kind==="bake"&&G.vit[x.r]>0);
       if(it){G.vit[it.r]--;it.done=1;floatAt(custEl(c),"Petit Pois !");if(c.order.every(x=>x.done))complete(c);dirty=true;break}}}}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
@@ -703,7 +735,9 @@ function complete(c){
   if(frac>=.5){G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo)}else G.combo=0;
   const cb=G.combo>=3?Math.min(G.combo,6)-1:0;
   let tot=base+tip+cb;if(c.vip){tot*=3;G.vipServed++;qEvent("vip")}
-  G.earned+=tot;S.coins+=tot;S.total+=tot;G.served++;S.served++;
+  // la recette (objectif, étoiles) compte le prix payé ; on ne garde en pièces que le bénéfice, et 30 % quand on rejoue
+  const cost=c.order.reduce((a,o)=>a+REC[o.r].cost,0),gain=Math.max(0,Math.round((tot-cost)*(G.replay?.3:1)));
+  G.earned+=tot;G.cost+=cost;G.gain+=gain;S.coins+=gain;S.total+=gain;G.served++;S.served++;
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
   if(frac>=.6)qEvent("green");
   c.state="happy";c.leave=.9;
@@ -717,7 +751,7 @@ function tapStation(k,el){
   const f=sl.find(s=>!s.busy&&!s.ready);
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
 }
-function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*(S.own.fourpro?.7:1)});dirty=true}
+function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.7,.55][lv("fourpro")]});dirty=true}
 function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(S.own.four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}
 
@@ -824,7 +858,7 @@ function endDay(){
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
   openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div></div>
+  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${G.cost}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 30 %</small>`:""}</div></div>
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
   ${news.join("")}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
@@ -850,6 +884,7 @@ function daySheet(d){
   const c=cfgOf(d),g=c.goal,st=S.stars[d]||0,ch=chapOf(d),rk=Object.keys(REC).find(k=>REC[k].day===d);
   const rw=[];
   if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,`Réussis cette journée pour l'ajouter à ta carte.`,"background:#e3f2d6"));
+  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que 30 % des pièces. Les nouvelles étoiles restent payées par le coffre."));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★",st?"Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre.":"Chaque étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
   if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient au café et paie le triple, mais il est pressé.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
@@ -870,10 +905,20 @@ function guestSheet(i){
 function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées. Une quête réussie rapporte des pièces, et une nouvelle la remplace.</p>${questHTML()}`)}
 let shopTab="equip";
 function shop(){
-  const row=(id,name,desc,cost,ok,owned,ic)=>`<div class="it"><span class="ic">${icon(ic)}</span><span class="tx"><strong>${name}</strong><span>${desc}</span></span><span class="side">${owned?`<span class="owned">Acheté</span>`:`<span class="price">${coinSVG}${cost}</span><button class="btn" data-buy="${id}" type="button" ${ok&&S.coins>=cost?"":"disabled"}>Acheter</button>`}</span></div>`;
-  const list=UPG[shopTab].map(u=>{const early=u.from&&S.day<u.from,rq=u.req&&!S.own[u.req];
-    return row(u.id,u.name,u.desc+(early?` (Arrive avec la saison ${chapOf(u.from).name}.)`:rq?` (Nécessite « ${ALLUP.find(x=>x.id===u.req).name} ».)`:""),u.cost,!early&&!rq,S.own[u.id],u.id)}).join("");
-  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"]].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
+  let list;
+  if(shopTab==="style"){
+    S.style=S.style||{wall:"rose",counter:"bois",acc:""};
+    list=Object.keys(STYLE).map(k=>`<p class="sub" style="margin:8px 0 4px"><b>${STYLE[k].name}</b></p>`+STYLE[k].items.map(it=>{
+      const key=`st-${k}-${it.id}`,own=!it.c||S.own[key],on=styleOf(k).id===it.id;
+      const sw=k==="acc"?foxSVG({...FOX.roussette,acc:it.id||undefined},{pose:"happy"}):k==="wall"?`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="22" rx="4" fill="${it.w}" ${K}/>${[[11,11],[23,11],[17,18],[29,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="${it.d}"/>`).join("")}<rect x="4" y="26" width="32" height="10" rx="3" fill="${it.b}" ${K}/></svg>`:`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="10" width="34" height="7" rx="3" fill="${it.t}" ${K}/><rect x="5" y="17" width="30" height="18" fill="${it.f}" ${K}/><rect x="9" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/><rect x="22" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/></svg>`;
+      return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${k==="acc"?"Roussette la porte sur la carte.":"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
+  }else list=UPG[shopTab].map(u=>{
+    const n=lv(u.id),max=u.lv.length,nx=u.lv[n],early=nx&&nx.from&&S.day<nx.from;
+    const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";
+    const desc=nx?(n?`Maintenant : ${lvDesc(u,n)} <b>Niveau ${n+1} :</b> ${nx.d}`:nx.d)+(early?` (Arrive avec la saison ${chapOf(nx.from).name}.)`:""):lvDesc(u,n);
+    return `<div class="it"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${nx.c}</span><button class="btn" data-buy="${u.id}" type="button" ${!early&&S.coins>=nx.c?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("");
+  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer, et le style rend ton café unique.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"],["style","Style"]].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
+  const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
 }
 function carnet(){
   const rows=FOXES.map(f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
@@ -1029,7 +1074,7 @@ function renderMap(){
   }
   gates.forEach(g=>{const c=CHAP[g.i],op=gateOpen(c);h+=`<button class="gbtn${!op&&S.day>=c.from?" want":""}" style="${pc(g.x,g.u+44)}" data-gate="${g.i}" type="button" aria-label="Porte ${c.name} : ${c.gate} étoiles"></button>`});
   guests.forEach(g=>{const c=CHAP[g.i],ok=S.guest[c.guest];h+=`<button class="mguest${ok?" ok":""}" style="${pc(g.x,g.u)}" data-guest="${g.i}" type="button" aria-label="Invité d'honneur ${c.name}">${foxSVG(FOX[c.guest],{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?FOX[c.guest].name:`${chapStars(c)}/30 ★`}</em></button>`});
-  h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG(FOX.roussette,{pose:"happy"})}</div>`;
+  h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG({...FOX.roussette,acc:styleOf("acc").id||undefined},{pose:"happy"})}</div>`;
   const w=$("mwrap");w.style.aspectRatio=`${MW}/${H}`;w.innerHTML=h;
   mapLabel();
 }
@@ -1084,7 +1129,10 @@ $("sheet").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.close!==undefined){closeSheet();return}
   if(b.dataset.tab){shopTab=b.dataset.tab;shop();return}
-  if(b.dataset.buy){const id=b.dataset.buy,it=ALLUP.find(u=>u.id===id);if(S.own[id]||S.coins<it.cost)return;S.coins-=it.cost;S.own[id]=1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(`${it.name} : acheté !`);shop();return}
+  if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<nx.c||(nx.from&&S.day<nx.from))return;S.coins-=nx.c;S.own[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
+  if(b.dataset.sbuy||b.dataset.style){const [k,id]=(b.dataset.sbuy||b.dataset.style).split(":"),it=STYLE[k].items.find(x=>x.id===id),key=`st-${k}-${id}`;
+    if(b.dataset.sbuy){if(S.coins<it.c)return;S.coins-=it.c;S.own[key]=1;toast(`${it.name} : acheté !`)}
+    S.style=S.style||{};S.style[k]=id;save();renderDecor();renderHud();if(MAPL&&!$("map").hidden)renderMap();shop.y=$("sheet-in").scrollTop;shop();return}
   if(b.dataset.play){closeSheet();newDay(+b.dataset.play);return}
   if(b.dataset.day){daySheet(+b.dataset.day);return}
   if(b.dataset.act)onAct(b.dataset.act);
