@@ -60,12 +60,8 @@ BOT = """(args) => {
 
 # Recettes de la carte (gagnées en réussissant ce jour-là) et achats en boutique à partir de quel jour.
 RECIPES = {"the": 2, "cookie": 5, "choco": 7, "smoothie": 11, "gateau": 16}
-# (achat, niveau, jour) : seulement les premiers niveaux et les deux niveaux 2 « historiques » (Plateau, Comptoir).
-# Les autres niveaux 2-3 ne sont pas dans le kit : ils rendent le jeu plus facile à qui les achète.
-KIT = [("plantes", 1, 4), ("comptoir1", 1, 6), ("double", 1, 6), ("guirlande", 1, 8), ("fourpro", 1, 8),
-       ("barista", 1, 11), ("plateau", 1, 11), ("comptoir1", 2, 13), ("disque", 1, 13), ("coussins", 1, 16),
-       ("serveur", 1, 19), ("machines", 1, 23), ("plateau", 2, 24), ("fauteuils", 1, 27), ("four2", 1, 33),
-       ("lanternes", 1, 37)]
+# Équipement prévu pour chaque jour (achat, niveau, jour) : lu dans cafe.html (const KIT), voir plus bas.
+KIT = []
 
 
 def own_for(day):
@@ -91,6 +87,7 @@ with sync_playwright() as p:
     page.on("pageerror", lambda e: errors.append(str(e)))
     page.goto(PAGE)
     page.wait_for_timeout(500)
+    KIT = [tuple(x) for x in page.evaluate("() => KIT")]
     if CALIB:
         # Pour chaque jour, on joue plusieurs graines en « parfait ». On lisse la médiane des scores en une courbe
         # qui ne redescend jamais, puis on garde la graine la plus proche de cette courbe : les journées ne sont

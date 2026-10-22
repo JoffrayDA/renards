@@ -331,28 +331,9 @@ const COSTUMES=["sorciere","citrouille","chauvesouris","vampire"];
 const COSTNAME={sorciere:"en sorcière",citrouille:"en citrouille",chauvesouris:"en chauve-souris",vampire:"en vampire"};
 // Les 5 Nuits d'Halloween : le rythme d'un jour de référence (base) avec d'autres commandes (graine seed).
 // Graines et objectifs calculés par « python tools/balance-bot.py --nuits ». Réussir la 5e garde Feu Follet au café pour toujours.
-const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:34,goal:166},{base:14,seed:21,goal:226},{base:19,seed:52,goal:322},{base:24,seed:58,goal:349}];
+const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:24,goal:168},{base:14,seed:21,goal:225},{base:19,seed:58,goal:309},{base:24,seed:26,goal:340}];
 const NIGHT_NAMES=["Nuit des lanternes","Nuit des chauves-souris","Nuit du brouillard","Nuit de la pleine lune","Grande nuit d'Halloween"];
-// Feu Follet, version « drap de fantôme » (GHOSTV=2) : une seule forme qui s'effile en volute, oreilles pointues, grands yeux, bouche en « o »
-const GHOSTV=2;
-function ghostSVG(f,o){
-  const c=f.c,happy=o.pose==="happy",dark="#2e2028",Y=47;
-  const eyes=happy?`<path d="M43 ${Y+1} Q47.5 ${Y-5} 52 ${Y+1} M68 ${Y+1} Q72.5 ${Y-5} 77 ${Y+1}" fill="none" stroke-width="2.6"/>`
-    :`<g class="eyes" style="transform-origin:60px ${Y}px">${[47.5,72.5].map(x=>`<ellipse cx="${x}" cy="${Y}" rx="3.6" ry="5" fill="${dark}" stroke="none"/><circle cx="${x+1.1}" cy="${Y-1.8}" r="1.2" fill="#fff" stroke="none"/>`).join("")}</g>`;
-  const mouth=happy?`<path d="M55 ${Y+10} Q60 ${Y+17} 65 ${Y+10}Z" fill="#e2708e" stroke-width="1.8"/>`:`<ellipse cx="60" cy="${Y+12}" rx="2.6" ry="3.4" fill="${dark}" stroke="none"/>`;
-  const body=`<ellipse cx="26" cy="58" rx="5.5" ry="8.5" fill="${c.b}" transform="rotate(35 26 58)"/><ellipse cx="94" cy="58" rx="5.5" ry="8.5" fill="${c.b}" transform="rotate(-35 94 58)"/>
-    <path d="M33 34 L35 3 L54 21Z" fill="${c.b}"/><path d="M87 34 L85 3 L66 21Z" fill="${c.b}"/>
-    <path d="M28 58 Q26 18 60 16 Q94 18 92 56 Q92 72 99 81 Q106 88 114 83 Q111 95 97 94 Q89 93 84 88 Q78 94 70 89 Q62 95 54 89 Q46 95 38 88 Q30 82 28 58Z" fill="${c.b}"/>
-    <path d="M37.5 28 L38.5 10 L49 20Z M82.5 28 L81.5 10 L71 20Z" fill="#f9c0cb" stroke="none"/>
-    <path d="M38 30 Q40 22 47 19" fill="none" stroke="#fff" stroke-width="3" opacity=".9"/>
-    ${eyes}<ellipse cx="60" cy="${Y+6}" rx="1.9" ry="1.4" fill="${dark}" stroke="none"/>${mouth}
-    <ellipse cx="39" cy="${Y+7}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="81" cy="${Y+7}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/>
-    ${[[12,30,1],[106,22,-1],[110,58,-1]].map(([x,y,d])=>`<path d="M${x} ${y} q${-5*d} -7 0 -15 q${2*d} 6 ${6*d} 8 q-1 6 ${-6*d} 7Z" fill="#cfe2ff" stroke="#9fb4e0" stroke-width="1.6"/>`).join("")}`;
-  return `<svg viewBox="0 -16 120 116" class="${o.cls||""} ghosty" aria-hidden="true"><ellipse cx="60" cy="99" rx="22" ry="3" fill="#3d2a35" opacity=".08"/><circle cx="60" cy="54" r="40" fill="#cfe2ff" opacity=".5" filter="url(#soft)"/>
-  <g opacity=".9" stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g></svg>`;
-}
 function foxSVG(f,o={}){
-  if(f.ghost&&!o.sil&&GHOSTV===2)return ghostSVG(f,o);
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
   const c=sil?{b:"#e3d9df",ch:"#e3d9df",e:"#e3d9df",s:"#e3d9df",t:"#e3d9df"}:f.c;
   const st=sil?"#cbbec6":INK,e=f.ears||1,sc=f.scale||1,dark="#2e2028";
@@ -363,6 +344,7 @@ function foxSVG(f,o={}){
     return `<path d="M${X(33)} ${44+dy} Q${X(30)} ${24+dy} ${X(38)} ${16+dy} Q${X(50)} ${23+dy} ${X(55)} ${36+dy}Z" fill="${c.b}"/>`+(sil?"":`<path d="M${X(37)} ${38+dy} Q${X(36)} ${27+dy} ${X(39.5)} ${22+dy} Q${X(46)} ${27+dy} ${X(49)} ${35+dy}Z" fill="${pink}" stroke="none"/><path d="M${X(38)} ${16.6+dy} Q${X(34.5)} ${19+dy} ${X(33.6)} ${23+dy} Q${X(38)} ${21+dy} ${X(42)} ${19.5+dy}Z" fill="${c.e}" stroke="none"/>`)};
   const face=(Y,happy)=>`<ellipse cx="60" cy="${Y+6.5}" rx="12.5" ry="7.5" fill="${c.ch}" stroke="none"/>`+(sil?"":
     (happy?`<path d="M44 ${Y+1} Q48 ${Y-4} 52 ${Y+1} M68 ${Y+1} Q72 ${Y-4} 76 ${Y+1}" fill="none" stroke-width="2.6"/>`
+      :gh?`<g class="eyes" style="transform-origin:60px ${Y}px">${[47,73].map(x=>`<ellipse cx="${x}" cy="${Y-.5}" rx="4.6" ry="6.2" fill="${dark}" stroke="none"/><circle cx="${x+1.4}" cy="${Y-2.8}" r="1.7" fill="#fff" stroke="none"/><circle cx="${x-1.5}" cy="${Y+2.2}" r=".8" fill="#fff" stroke="none"/>`).join("")}</g>`
       :`<g class="eyes" style="transform-origin:60px ${Y}px"><ellipse cx="48" cy="${Y}" rx="2.9" ry="3.5" fill="${dark}" stroke="none"/><ellipse cx="72" cy="${Y}" rx="2.9" ry="3.5" fill="${dark}" stroke="none"/><circle cx="48.9" cy="${Y-1.3}" r=".95" fill="#fff" stroke="none"/><circle cx="72.9" cy="${Y-1.3}" r=".95" fill="#fff" stroke="none"/></g>`)
     +`<ellipse cx="40" cy="${Y+5}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="80" cy="${Y+5}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="60" cy="${Y+3.6}" rx="2.1" ry="1.5" fill="${dark}" stroke="none"/>${f.stitch?`<path d="M47 ${Y+7} Q60 ${Y+15} 73 ${Y+7}" fill="none" stroke-width="1.8"/>`+[.12,.28,.44,.6,.76,.92].map(t=>{const x=47+26*t,y=Y+7+16*t*(1-t);return `<path d="M${x.toFixed(1)} ${(y-2.4).toFixed(1)} v4.8" stroke-width="1.3"/>`}).join(""):`<path d="M56 ${Y+5.6} Q58 ${Y+8.6} 60 ${Y+5.6} Q62 ${Y+8.6} 64 ${Y+5.6}" fill="none" stroke-width="1.8"/>`}`);
   const acc=(top,Y,neck,w)=>{if(sil)return "";return({
@@ -475,8 +457,8 @@ const UPG={
     {id:"plateau",name:"Plateau",lv:[{d:"4 places sur le plateau au lieu de 3.",c:60},{d:"5 places sur le plateau.",c:1200,from:21,ic:"plateau5"}]},
     {id:"double",name:"Machine à café",lv:[{d:"Prépare 2 cafés en même temps.",c:80},{d:"Prépare 3 cafés en même temps.",c:1100}]},
     {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:400,ic:"comptoir2"}]},
-    {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 30 % plus rapide, et les fournées brûlent moins vite.",c:110},{d:"Cuisson 45 % plus rapide, et les fournées brûlent encore moins vite.",c:1200}]},
-    {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 33 % plus vite.",c:150},{d:"Toutes les boissons se préparent 50 % plus vite.",c:950},{d:"Toutes les boissons se préparent 70 % plus vite.",c:2800,from:31}]},
+    {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 12 % plus rapide, et les fournées brûlent un peu moins vite.",c:110},{d:"Cuisson 20 % plus rapide, et les fournées brûlent encore un peu moins vite.",c:1200}]},
+    {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 15 % plus vite.",c:150},{d:"Toutes les boissons se préparent 22 % plus vite.",c:950},{d:"Toutes les boissons se préparent 30 % plus vite.",c:2800,from:31}]},
     {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320}]},
     {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:1350,from:21}]},
     {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:2100,from:31}]}
@@ -554,10 +536,20 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
 // « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
 // L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.
-const SEED=[13,6,8,15,2,4,4,2,5,14,8,8,6,6,6,15,2,1,9,12,8,6,13,1,0,12,13,11,15,2,7,8,0,3,11,1,5,15,3,7];
-const GOALS=[37,58,69,89,108,124,143,158,167,177,189,202,211,227,247,266,276,320,317,324,333,338,346,349,351,353,366,373,398,408,407,399,409,412,418,430,442,444,456,463];
+const SEED=[13,6,8,15,2,8,4,2,5,14,8,5,6,6,9,15,2,9,5,14,3,6,13,1,0,12,7,0,15,15,11,10,0,14,11,0,5,7,3,11];
+const GOALS=[37,58,69,89,108,128,143,158,167,177,188,199,210,225,248,265,275,282,309,314,317,327,344,340,339,349,353,360,367,383,381,394,408,403,418,422,432,437,444,442];
+// Équipement prévu pour chaque jour : [achat, niveau, à partir du jour]. Les objectifs sont calibrés avec lui
+// (tools/balance-bot.py le lit ici). Chaque niveau d'amélioration en plus relève l'objectif de 2 % (12 % au plus) :
+// tout équipé, ★★★ devenait gratuit (Joffray à 815 / 407 au jour 31). Pas plus de 12 % : tout équipé, le jeu parfait
+// ne fait que 10 à 25 % de mieux selon le jour, et ★★★ doit rester possible. EQUIP=0 retire cet ajustement.
+const KIT=[["plantes",1,4],["comptoir1",1,6],["double",1,6],["guirlande",1,8],["fourpro",1,8],["barista",1,11],["plateau",1,11],["comptoir1",2,13],["disque",1,13],["coussins",1,16],["serveur",1,19],["machines",1,23],["plateau",2,24],["fauteuils",1,27],["four2",1,33],["lanternes",1,37]];
+const EQUIP=.02;
+function equipBonus(d){
+  let n=0;for(const u of ALLUP){const k=Math.max(0,...KIT.filter(x=>x[0]===u.id&&x[2]<=d).map(x=>x[1]));n+=Math.max(0,lv(u.id)-k)}
+  return Math.min(.12,EQUIP*n);
+}
 function cfgOf(d){
-  const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3)),goal=GOALS[d-1];
+  const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3)),goal=Math.round(GOALS[d-1]*(1+equipBonus(d)));
   return{c,gap:Math.max(d<=20?4:3.2,6-d*.27),pat:Math.max(14,21-d*.6),max:d<2?1:d<4?2:3,goal};
 }
 const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
@@ -810,7 +802,7 @@ function newDay(d){
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
-function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:N.goal};G.replay=(S.hwStars[n]||0)>0;dirty=true}
+function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base)))};G.replay=(S.hwStars[n]||0)>0;dirty=true}
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
 function genOrder(){
   const un=Object.keys(REC).filter(k=>onMenu(k)),m=G.cfg.max,r=G.rng();
@@ -844,10 +836,10 @@ function update(dt){
     else{c.leave-=dt;if(c.leave<=0){c.gone=1;dirty=true}}
   }
   G.cust=G.cust.filter(c=>!c.gone);
-  const sp=[1,1.33,1.5,1.7][lv("barista")];
+  const sp=[1,1.15,1.22,1.3][lv("barista")];
   for(const k in G.st)for(const s of G.st[k])if(s.busy){s.t+=dt*sp;if(s.t>=REC[k].time){s.busy=0;s.ready=1;dirty=true}}
   const o=G.oven;
-  if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,6,7.5][lv("fourpro")];dirty=true}}
+  if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,5.2,6][lv("fourpro")];dirty=true}}
   else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
   // Petit Pois : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé
@@ -893,7 +885,7 @@ function tapStation(k,el){
   const f=sl.find(s=>!s.busy&&!s.ready);
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
 }
-function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.7,.55][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
+function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
 function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(S.own.four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}
 
@@ -1066,6 +1058,7 @@ function daySheet(d){
   <p class="sub">${c.c} clients attendus${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Patience : ${Math.round(c.pat*patMult())} s.${S.best[d]?` Record : <b>${S.best[d]} pièces</b>.`:""}</p>
   ${d===1&&!S.total?`<div class="tuto"><b>Comment jouer</b><ol><li>Touche <b>Café</b> pour le préparer, puis touche-le à nouveau quand il est prêt : il va sur ton plateau.</li><li>Touche <b>${vName("croissant","printemps")[0]}</b> pour lancer une fournée, puis le <b>four</b> quand elle est cuite, avant qu'elle brûle. Touche-la ensuite pour la poser sur le plateau.</li><li>Touche un <b>client</b> pour lui servir ce qui est sur ton plateau. Plus tu es rapide, plus le pourboire est gros.</li></ol></div>`:""}
   <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
+  ${equipBonus(d)?`<p class="sub" style="margin:6px 0 0;font-size:12.5px">Objectif relevé de <b>${Math.round(equipBonus(d)*100)} %</b> : ton équipement dépasse celui prévu pour ce jour.</p>`:""}
   ${rw.join("")}
   ${d>=3?boostHTML(()=>daySheet(d)):""}
   <div class="col" style="margin-top:10px"><button class="btn big wide" data-play="${d}" type="button">Ouvrir le café</button></div>`);
@@ -1097,7 +1090,7 @@ function costumesSheet(){
 }
 function nightSheet(n){
   if(!nightOpen(n)){toast("Cette nuit n'est pas encore ouverte.");return}
-  const N=NIGHTS[n-1],c=cfgOf(N.base),g=N.goal,st=S.hwStars[n]||0;
+  const N=NIGHTS[n-1],c=cfgOf(N.base),g=Math.round(N.goal*(1+equipBonus(N.base))),st=S.hwStars[n]||0;
   openSheet(`<h2>${NIGHT_NAMES[n-1]}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">Nuit ${n} sur 5. ${c.c} clients, <b>tous déguisés</b>${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Les VIP sont les invités d'Halloween.</p>
   <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
