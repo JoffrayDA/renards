@@ -14,6 +14,8 @@ function endDay(){
   if(st&&d===S.day)S.day++;
   const rk=Object.keys(REC).find(k=>REC[k].day===d);
   if(st&&rk&&!S.own[rk]){S.own[rk]=1;news.push(itRow(icon(rk),`Nouvelle recette : ${REC[rk].name}`,`Elle arrive sur ta carte dès la prochaine journée. ${REC[rk].desc}`,"background:#e3f2d6"))}
+  const ok=Object.keys(OPTS).find(o=>OPTS[o].day===d);
+  if(st&&ok&&!S.own[ok]){S.own[ok]=1;news.push(itRow(icon(ok),`Nouvelle option : ${OPTS[ok].name}`,`Elle arrive dès la prochaine journée. ${OPTS[ok].desc}`,"background:#e3f2d6"))}
   for(const c of checkGuests())news.push(itRow(foxSVG(FOX[c.guest],{pose:"happy"}),`${FOX[c.guest].name} rejoint ton café !`,`Saison ${c.name} en ★★★ : ${FOX[c.guest].name} vient désormais en invité d'honneur dans toutes les journées, toutes saisons confondues : il paie le triple, mais il est pressé.`,"background:#fbf0cc"));
   for(const c of CHAP)if(c.gate&&!S.pass[c.id]&&before<c.gate&&starSum()>=c.gate&&gateOpen(c))news.push(itRow(icon("chest"),`La porte de la saison ${c.name} s'ouvre !`,`Tu as réuni ${c.gate} étoiles.`,"background:#e3f2d6"));
   const nc=chapOf(S.day);

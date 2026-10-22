@@ -226,7 +226,7 @@ h1 span{color:var(--coral-d)}
 <div class="app">
   <header>
     <div class="brand"><a class="home" href="./" aria-label="Retour à l'accueil"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M13 4l-6 6 6 6" fill="none" stroke="#5b4250" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span id="logo"></span><h1>La <span>Clairière</span></h1></div>
-    <div class="purse">
+    <div class="purse"><button class="snd" data-sound type="button"></button>
       <div class="coin" title="Glands"><span id="ic-g"></span><span id="glands">0</span></div>
       <div class="coin" title="Glands dorés"><span id="ic-o"></span><span id="gold">0</span></div>
     </div>
@@ -1067,6 +1067,8 @@ setInterval(()=>tick(false),5000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)tick(true)});
 </script>
 
+<script src="js/music.js"></script>
+<script>MUSIC.want("foret")</script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>

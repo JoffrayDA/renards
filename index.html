@@ -41,7 +41,7 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
 </head>
 <body>
 <main>
-  <div class="top"><img src="icons/icon-192.png" alt=""><div><h1>Kitsune Café</h1><p>Un café tenu par des renards, et une clairière pour souffler.</p></div></div>
+  <div class="top"><img src="icons/icon-192.png" alt=""><div><h1>Kitsune Café</h1><p>Un café tenu par des renards, et une clairière pour souffler.</p></div><button class="snd" data-sound type="button" style="margin-left:auto"></button></div>
   <a class="game" href="cafe.html">
     <img src="img/cafe.jpg" alt="Aperçu du café">
     <div class="tx"><div><strong>Le café</strong><span>Sers les commandes avant que les clients s'impatientent, décroche tes étoiles et traverse les quatre saisons.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
@@ -52,6 +52,8 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
   </a>
   <footer>Tes parties sont enregistrées sur cet appareil.</footer>
 </main>
+<script src="js/music.js"></script>
+<script>MUSIC.want("boite")</script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>

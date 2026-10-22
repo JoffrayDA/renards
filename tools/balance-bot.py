@@ -34,12 +34,15 @@ BOT = """(args) => {
   endDay = () => { res = [G.earned, cfg.goal, G.served, cfg.c, G.lost, G.gain]; G = null; };
   const act = () => {
     const w = G.cust.filter(c => c.state === "wait").sort((a, b) => a.pat - b.pat);
-    for (const c of w) if (c.order.some(o => !o.done && G.tray.includes(o.r))) { deliver(c, null); return; }
+    for (const c of w) if (c.order.some(o => !o.done && G.tray.includes(itemKey(o)))) { deliver(c, null); return; }
     if (G.oven.state === "ready") { unload(); return; }
-    const need = []; w.forEach(c => c.order.forEach(o => { if (!o.done) need.push(o.r); }));
-    const onTray = {}; G.tray.forEach(r => onTray[r] = (onTray[r] || 0) + 1);
-    for (const r of need) {
-      if (onTray[r]) { onTray[r]--; continue; }
+    const need = []; w.forEach(c => c.order.forEach(o => { if (!o.done) need.push(itemKey(o)); }));
+    const onTray = {}; G.tray.forEach(k => onTray[k] = (onTray[k] || 0) + 1);
+    for (const k of need) {
+      if (onTray[k]) { onTray[k]--; continue; }
+      const [r, op] = k.split("+");
+      // option : si l'article de base est déjà sur le plateau, on la pose (sinon on prépare la base)
+      if (op && onTray[r]) { onTray[r]--; applyOpt(op, null); return; }
       if (REC[r].kind === "drink") {
         const sl = G.st[r];
         if (sl.some(s => s.ready) && G.tray.length < trayCap()) { tapStation(r, null); return; }
@@ -59,7 +62,7 @@ BOT = """(args) => {
 }"""
 
 # Recettes de la carte (gagnées en réussissant ce jour-là) et achats en boutique à partir de quel jour.
-RECIPES = {"the": 2, "cookie": 5, "choco": 7, "smoothie": 11, "gateau": 16}
+RECIPES = {"the": 2, "cookie": 5, "choco": 7, "smoothie": 11, "gateau": 16, "lait": 4, "chantilly": 13}
 # Équipement prévu pour chaque jour (achat, niveau, jour) : lu dans cafe.html (const KIT), voir plus bas.
 KIT = []
 

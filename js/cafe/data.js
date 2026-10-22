@@ -12,6 +12,17 @@ const REC={
   smoothie:{name:"Smoothie",pl:"smoothies",price:10,cost:8.5,kind:"drink",time:3.4,day:11,stn:"Blender",desc:"Aux baies des bois, bien mixé."},
   gateau:{name:"Gâteau aux baies",pl:"parts de gâteau",price:14,cost:11.9,kind:"bake",time:7,batch:2,day:16,desc:"Le plus cher de la carte. Par fournées de 2 parts."}
 };
+// Options : un supplément qu'on ajoute à un article déjà sur le plateau (tuiles rondes au bout du plateau).
+// Elles se gagnent comme les recettes, en réussissant leur journée. Un article du plateau s'écrit "cafe" ou "cafe+lait".
+const OPTS={
+  lait:{name:"Lait",for:["cafe"],price:2,cost:1.2,day:4,desc:"Touche « Lait » pour transformer un café du plateau en café crème."},
+  chantilly:{name:"Chantilly",for:["choco","gateau"],price:3,cost:1.8,day:13,desc:"Touche « Chantilly » pour en mettre sur un chocolat chaud ou une part de gâteau du plateau."}
+};
+const itemKey=o=>o.r+(o.o?"+"+o.o:"");
+const baseOf=k=>k.split("+")[0];
+const itemName=k=>{const [r,o]=k.split("+");return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
+const itemPrice=k=>{const [r,o]=k.split("+");return REC[r].price+(o?OPTS[o].price:0)};
+const itemCost=k=>{const [r,o]=k.split("+");return REC[r].cost+(o?OPTS[o].cost:0)};
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
 let SEA="printemps";
 const VAR={
@@ -35,22 +46,22 @@ const LASTDAY=40;
 // Boutique : chaque achat a un ou plusieurs niveaux (S.own[id] = niveau atteint, 0 ou absent = pas acheté).
 const UPG={
   equip:[
-    {id:"plateau",name:"Plateau",lv:[{d:"4 places sur le plateau au lieu de 3.",c:60},{d:"5 places sur le plateau.",c:1200,from:21,ic:"plateau5"}]},
+    {id:"plateau",name:"Plateau",lv:[{d:"4 places sur le plateau au lieu de 3.",c:60},{d:"5 places sur le plateau.",c:1000,from:21,ic:"plateau5"}]},
     {id:"double",name:"Machine à café",lv:[{d:"Prépare 2 cafés en même temps.",c:80},{d:"Prépare 3 cafés en même temps.",c:1100}]},
     {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:400,ic:"comptoir2"}]},
     {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 12 % plus rapide, et les fournées brûlent un peu moins vite.",c:110},{d:"Cuisson 20 % plus rapide, et les fournées brûlent encore un peu moins vite.",c:1200}]},
     {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 15 % plus vite.",c:150},{d:"Toutes les boissons se préparent 22 % plus vite.",c:950},{d:"Toutes les boissons se préparent 30 % plus vite.",c:2800,from:31}]},
     {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320}]},
-    {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:1350,from:21}]},
-    {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:2100,from:31}]}
+    {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:1100,from:21}]},
+    {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:1800,from:31}]}
   ],
   deco:[
     {id:"plantes",name:"Plantes vertes",lv:[{d:"Les clients patientent 15 % plus longtemps.",c:50},{d:"Les clients patientent 25 % plus longtemps.",c:800}]},
     {id:"guirlande",name:"Guirlande lumineuse",lv:[{d:"+25 % de pourboires.",c:90},{d:"+40 % de pourboires.",c:1300}]},
     {id:"coussins",name:"Tabourets moelleux",lv:[{d:"Les clients VIP viennent deux fois plus souvent.",c:130},{d:"Les clients VIP viennent 2,5 fois plus souvent.",c:1100}]},
     {id:"disque",name:"Tourne-disque",lv:[{d:"Musique douce : +10 % de patience et +10 % de pourboires.",c:170}]},
-    {id:"fauteuils",name:"Fauteuils douillets",lv:[{d:"Les clients patientent 20 % plus longtemps.",c:1200,from:21}]},
-    {id:"lanternes",name:"Lanternes de saison",lv:[{d:"+25 % de pourboires.",c:1800,from:31}]}
+    {id:"fauteuils",name:"Fauteuils douillets",lv:[{d:"Les clients patientent 20 % plus longtemps.",c:1000,from:21}]},
+    {id:"lanternes",name:"Lanternes de saison",lv:[{d:"+25 % de pourboires.",c:1400,from:31}]}
   ]
 };
 const lv=id=>+S.own[id]||0;
@@ -112,13 +123,14 @@ const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
 const has=k=>(REC[k]&&!REC[k].day)||!!S.own[k];
 // au menu d'une journée : les recettes gagnées avant elle seulement, même quand on rejoue une ancienne journée
 const onMenu=(k,d=G&&G.run?G.day:curDay())=>has(k)&&!(REC[k].day>=d);
+const optOn=(o,d=G&&G.run?G.day:curDay())=>!!S.own[o]&&OPTS[o].day<d;
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
 // « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
 // L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.
-const SEED=[13,6,8,15,2,8,4,2,5,14,8,5,6,6,9,15,2,9,5,14,3,6,13,1,0,12,7,0,15,15,11,10,0,14,11,0,5,7,3,11];
-const GOALS=[37,58,69,89,108,128,143,158,167,177,188,199,210,225,248,265,275,282,309,314,317,327,344,340,339,349,353,360,367,383,381,394,408,403,418,422,432,437,444,442];
+const SEED=[4,12,15,10,7,4,0,5,10,10,1,4,9,4,8,8,4,13,13,7,11,1,10,8,15,14,0,1,12,13,13,8,15,3,13,3,13,14,8,11];
+const GOALS=[37,59,73,92,102,123,139,156,160,181,186,209,212,207,206,265,265,275,308,319,333,358,373,362,331,384,383,376,373,384,395,407,423,415,438,439,449,459,448,468];
 // Équipement prévu pour chaque jour : [achat, niveau, à partir du jour]. Les objectifs sont calibrés avec lui
 // (tools/balance-bot.py le lit ici). Chaque niveau d'amélioration en plus relève l'objectif de 2 % (12 % au plus) :
 // tout équipé, ★★★ devenait gratuit (Joffray à 815 / 407 au jour 31). Pas plus de 12 % : tout équipé, le jeu parfait
@@ -131,6 +143,7 @@ function equipBonus(d){
 }
 function cfgOf(d){
   const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3)),goal=Math.round(GOALS[d-1]*(1+equipBonus(d)));
-  return{c,gap:Math.max(d<=20?4:3.2,6-d*.27),pat:Math.max(14,21-d*.6),max:d<2?1:d<4?2:3,goal};
+  // arrivées serrées (22/10/2026, Joffray passait 70 % du temps à attendre) : une file se forme à la porte
+  return{c,gap:Math.max(d<=20?2.8:2.3,4.2-d*.19),pat:Math.max(14,21-d*.6),max:d<2?1:d<4?2:3,goal};
 }
 const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};

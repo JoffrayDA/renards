@@ -6,21 +6,26 @@ function renderHud(){
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${starSum()}</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,mx=g*1.7,e=G.earned;
   $("hud").innerHTML=`<span class="pill day">${G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map(m=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e}/${g}</b></div>`;
-  $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
+  $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait"||c.state==="walkin"||c.state==="queue").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
 }
 function render(){
   dirty=false;renderHud();
   if(!G||!G.run){$("custs").innerHTML="";renderKitchen();renderTray();return}
   const X=SPOTX[spotsN()];
   const box=$("custs"),keep=new Set();
+  let qi=0;
   for(const c of G.cust){const f=FOX[c.fox];
-    const fx=c.costume?{...f,acc:c.costume}:f;
-    const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(o.r)}</span>`).join("");
-    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}`,inner=`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>${foxSVG(fx,{pose:c.state==="happy"?"happy":"sit"})}`;
+    const fx=c.costume?{...f,acc:c.costume}:f,walking=c.state==="walkin"||c.state==="walkout",inQ=c.state==="queue"||(c.gave&&c.state==="angry");
+    // position : la file à gauche (petits renards), sa place au comptoir, ou la sortie à droite
+    const left=inQ?5+(qi++)*6:c.state==="walkout"?114:X[c.spot];
+    const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(itemKey(o))}</span>`).join("");
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}`,bub=!walking&&!inQ?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
+    const inner=bub+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit"});
     let el=custEl(c);
-    if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);box.appendChild(el)}
+    // un nouveau client apparaît hors champ à gauche, puis la transition CSS le fait marcher jusqu'à sa place
+    if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);el.style.left="-14%";box.appendChild(el);void el.offsetWidth}
     if(el.dataset.c!==cls){el.className=cls;el.dataset.c=cls}
-    el.style.left=X[c.spot]+"%";
+    if(el._l!==left){el.style.left=left+"%";el._l=left}
     if(el._h!==inner){el.innerHTML=inner;el._h=inner}
     keep.add(el);
   }
@@ -30,8 +35,10 @@ function render(){
 function renderTray(){
   const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;
   let h=`<span class="tl">Plateau</span>`;
-  for(let i=0;i<cap;i++)h+=t[i]?`<button class="ts${i===arm?" arm":""}${G.popI===i?" new":""}" data-tray="${i}" type="button" aria-label="${i===arm?`Toucher encore pour jeter ${REC[t[i]].name}`:REC[t[i]].name}">${icon(t[i])}${i===arm?`<span class="bin">${icon("bin")}</span>`:""}</button>`:`<span class="ts"></span>`;
-  h+=`<small>Touche un client pour le servir.<br>Touche 2 fois un article pour le jeter.</small>`;
+  for(let i=0;i<cap;i++)h+=t[i]?`<button class="ts${i===arm?" arm":""}${G.popI===i?" new":""}" data-tray="${i}" type="button" aria-label="${i===arm?`Toucher encore pour jeter ${itemName(t[i])}`:itemName(t[i])}">${icon(t[i])}${i===arm?`<span class="bin">${icon("bin")}</span>`:""}</button>`:`<span class="ts"></span>`;
+  const ops=Object.keys(OPTS).filter(o=>optOn(o));
+  if(ops.length)h+=`<span class="tps">${ops.map(o=>`<button class="tp" data-opt="${o}" type="button" aria-label="Ajouter ${OPTS[o].name.toLowerCase()}" ${G&&G.run?"":"disabled"}>${icon(o)}<em>${OPTS[o].name}</em></button>`).join("")}</span>`;
+  else h+=`<small>Touche un client pour le servir.<br>Touche 2 fois un article pour le jeter.</small>`;
   if($("tray")._h!==h){$("tray").innerHTML=h;$("tray")._h=h}
   if(G)G.popI=-1;
 }
@@ -69,10 +76,12 @@ function autoHint(){
   const w=G.cust.filter(c=>c.state==="wait");let h="";
   if(!w.length)h=`Les clients arrivent. <b>Touche « ${REC.croissant.name} »</b> pour en cuire d'avance.`;
   else{
-    const need=[];w.forEach(c=>c.order.forEach(o=>{if(!o.done)need.push(o.r)}));
-    if(need.some(r=>G.tray.includes(r)))h="Ton plateau a ce qu'il faut : <b>touche le client</b> pour le servir.";
+    const need=[];w.forEach(c=>c.order.forEach(o=>{if(!o.done)need.push(itemKey(o))}));
+    const opt=need.find(k=>k.includes("+")&&G.tray.includes(baseOf(k)));
+    if(need.some(k=>G.tray.includes(k)))h="Ton plateau a ce qu'il faut : <b>touche le client</b> pour le servir.";
+    else if(opt)h=`Touche <b>« ${OPTS[opt.split("+")[1]].name} »</b>, au bout du plateau, pour compléter la commande.`;
     else if(G.oven.state==="ready")h="<b>Touche le four</b> pour sortir la fournée avant qu'elle brûle !";
-    else{const d=need.find(r=>REC[r].kind==="drink");const b=need.find(r=>REC[r].kind==="bake");
+    else{const nb=need.map(baseOf);const d=nb.find(r=>REC[r].kind==="drink");const b=nb.find(r=>REC[r].kind==="bake");
       if(d&&G.st[d].some(s=>s.ready))h=`« ${REC[d].name} » est prêt : <b>touche-le</b> pour le poser sur le plateau.`;
       else if(b&&G.vit[b])h=`Il y en a en vitrine : <b>touche « ${REC[b].name} »</b> pour le mettre sur le plateau.`;
       else if(d&&!G.st[d].some(s=>s.busy))h=`<b>Touche « ${REC[d].name} »</b> pour lancer la préparation.`;

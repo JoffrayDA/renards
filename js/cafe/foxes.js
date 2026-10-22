@@ -53,7 +53,7 @@ const COSTUMES=["sorciere","citrouille","chauvesouris","vampire"];
 const COSTNAME={sorciere:"en sorcière",citrouille:"en citrouille",chauvesouris:"en chauve-souris",vampire:"en vampire"};
 // Les 5 Nuits d'Halloween : le rythme d'un jour de référence (base) avec d'autres commandes (graine seed).
 // Graines et objectifs calculés par « python tools/balance-bot.py --nuits ». Réussir la 5e garde Feu Follet au café pour toujours.
-const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:24,goal:168},{base:14,seed:21,goal:225},{base:19,seed:58,goal:309},{base:24,seed:26,goal:340}];
+const NIGHTS=[{base:4,seed:20,goal:92},{base:9,seed:42,goal:159},{base:14,seed:21,goal:234},{base:19,seed:23,goal:306},{base:24,seed:53,goal:349}];
 const NIGHT_NAMES=["Nuit des lanternes","Nuit des chauves-souris","Nuit du brouillard","Nuit de la pleine lune","Grande nuit d'Halloween"];
 function foxSVG(f,o={}){
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");

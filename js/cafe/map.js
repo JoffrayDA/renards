@@ -160,6 +160,7 @@ function mapLabel(){
   $("mchap").textContent=`${b.c.name} · ${chapStars(b.c)} / 30 ★`;$("mstars").textContent=`★ ${starSum()}`;
 }
 function openMap(){
+  MUSIC.want(HW?"fantomes":"ukulele");
   closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";
   if(!G||!G.run){const se=chapOf(curDay()).id;if(se!==SEA){SEA=se;renderDecor();dirty=true}}
   renderMap();renderHud();

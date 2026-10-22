@@ -12,6 +12,8 @@ if(!S.ver){
 }
 // 22/10/2026 : le niveau 2 de Petit Pois (relance du four) est retiré, il est remboursé
 if(S.own.serveur>1){S.own.serveur=1;S.coins+=1600;save()}
+// options (22/10/2026) : déjà gagnées si on a dépassé leur journée
+for(const o in OPTS)if(S.day>OPTS[o].day)S.own[o]=1;
 if(S.ver<3){
   // v2 -> v3 : boutique à niveaux (Plateau géant = Plateau niv. 2, Grand comptoir = Comptoir niv. 2), style du café
   if(S.own.plateau5){S.own.plateau=2;delete S.own.plateau5}
