@@ -5,12 +5,12 @@
 ## Structure
 
 - `index.html` : accueil, choix entre les deux jeux.
-- `cafe.html` : **Kitsune Café**, jeu de gestion actif. C'est le jeu principal.
+- `cafe.html` : **Kitsune Café**, jeu de gestion actif. C'est le jeu principal. Depuis le 22/10/2026, la page ne contient plus que le HTML : le style est dans `css/cafe.css` et le code dans `js/cafe/` (foxes, data, state, draw, game, render, end, menus, map, main), des scripts classiques qui partagent la portée globale et se chargent dans cet ordre. Une fonction appelée au chargement doit être définie dans un fichier précédent (ou le même).
 - `clairiere.html` : **La Clairière**, jeu détente façon Neko Atsume.
 - `manifest.webmanifest`, `sw.js`, `icons/`, `img/` : PWA (installation sur l'écran d'accueil, hors ligne).
 - `tools/balance-bot.py` : bot qui joue au Café pour vérifier l'équilibrage.
 
-Chaque jeu tient dans un seul fichier HTML autonome (CSS et JS inline, aucune dépendance, aucun build). Seules les polices viennent de Google Fonts (Mochiy Pop One pour les titres, Zen Maru Gothic pour le texte). Les sauvegardes sont en `localStorage` : `cafe-renards-v1` et `clairiere-renards-v1`. Si tu changes leur forme, écris une migration, ne casse pas les parties existantes.
+Aucune dépendance, aucun build. La Clairière tient encore dans un seul fichier HTML ; le Café est découpé en fichiers (voir plus haut). Seules les polices viennent de Google Fonts (Mochiy Pop One pour les titres, Zen Maru Gothic pour le texte). Les sauvegardes sont en `localStorage` : `cafe-renards-v1` et `clairiere-renards-v1`. Si tu changes leur forme, écris une migration, ne casse pas les parties existantes.
 
 **À chaque modification publiée, incrémente `CACHE` dans `sw.js`** (`renards-v1` → `renards-v2`…), sinon les téléphones gardent l'ancienne version.
 
