@@ -77,8 +77,11 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
 MUSIC.want("boite");
 // démarrage : le logo au moins 2,4 s (le temps de tout charger), puis un bouton ; ce toucher lance la musique
 const t0=Date.now();
+setTimeout(()=>{document.getElementById("splash").addEventListener("click",enter)},6000);
 addEventListener("load",()=>setTimeout(()=>{document.getElementById("dots").hidden=true;document.getElementById("enter").hidden=false},Math.max(0,2400-(Date.now()-t0))));
-document.getElementById("enter").addEventListener("click",()=>{MUSIC.unlock();document.getElementById("splash").classList.add("out")});
+// on entre d'abord, le son ensuite : si le son échoue (ancien fichier en cache, navigateur sans Web Audio), on entre quand même
+const enter=()=>{document.getElementById("splash").classList.add("out");try{MUSIC.unlock()}catch(e){}};
+document.getElementById("enter").addEventListener("click",enter);
 // les jeux s'ouvrent dans un cadre : la musique continue, et le bouton retour du téléphone revient à l'accueil
 const frame=document.getElementById("game");
 // location.replace : charger un jeu dans le cadre n'ajoute pas d'entrée à l'historique (sinon « retour » rouvrirait l'ancien jeu)
@@ -87,7 +90,7 @@ function openGame(url){load(url);frame.hidden=false;history.pushState({game:url}
 function hide(){frame.hidden=true;load("about:blank");MUSIC.want("boite")}
 function closeGame(){if(frame.hidden)return;hide();if(history.state&&history.state.game)history.back()}
 addEventListener("popstate",()=>{if(!frame.hidden)hide()});
-document.querySelectorAll("a.game").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();MUSIC.unlock();openGame(a.getAttribute("href"))}));
+document.querySelectorAll("a.game").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();try{MUSIC.unlock()}catch(err){}openGame(a.getAttribute("href"))}));
 </script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>

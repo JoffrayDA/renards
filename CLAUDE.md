@@ -12,7 +12,7 @@
 
 Aucune dépendance, aucun build. La Clairière tient encore dans un seul fichier HTML ; le Café est découpé en fichiers (voir plus haut). Seules les polices viennent de Google Fonts (Mochiy Pop One pour les titres, Zen Maru Gothic pour le texte). Les sauvegardes sont en `localStorage` : `cafe-renards-v1` et `clairiere-renards-v1`. Si tu changes leur forme, écris une migration, ne casse pas les parties existantes.
 
-**À chaque modification publiée, incrémente `CACHE` dans `sw.js`** (`renards-v1` → `renards-v2`…), sinon les téléphones gardent l'ancienne version.
+Le service worker sert nos fichiers depuis le réseau d'abord (cache seulement hors ligne) : avant, une page neuve tournait avec un vieux script en cache, et le bouton d'entrée ne marchait plus. **À chaque modification publiée, incrémente aussi `CACHE` dans `sw.js`** (`renards-v1` → `renards-v2`…), sinon les téléphones gardent l'ancienne version.
 
 Découper les gros fichiers HTML en modules (`js/`, `css/`) est bienvenu si ça aide. Il faut alors ajouter les nouveaux fichiers à la liste `FILES` de `sw.js`.
 
