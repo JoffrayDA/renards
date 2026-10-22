@@ -4,7 +4,7 @@
 
 ## Structure
 
-- `index.html` : accueil, choix entre les deux jeux. C'est aussi la coquille de l'app : écran de démarrage (logo au moins 2,4 s, puis « Touche pour entrer », ce toucher autorise le son), et les jeux s'ouvrent dans un cadre (`#game`, `openGame`/`closeGame`, chargés par `location.replace` pour ne pas polluer l'historique) afin que la musique de l'accueil continue sans redemander de toucher. Dans le cadre, `js/music.js` pilote la musique de l'accueil et le bouton maison referme le jeu ; ouverte seule, une page de jeu garde son propre son.
+- `index.html` : accueil, choix entre les deux jeux. C'est aussi la coquille de l'app : écran de démarrage (logo et « Touche pour entrer » tout de suite, Joffray ne voulait pas d'attente ; toucher n'importe où entre et autorise le son), et les jeux s'ouvrent dans un cadre (`#game`, `openGame`/`closeGame`, chargés par `location.replace` pour ne pas polluer l'historique) afin que la musique de l'accueil continue sans redemander de toucher. Dans le cadre, `js/music.js` pilote la musique de l'accueil et le bouton maison referme le jeu ; ouverte seule, une page de jeu garde son propre son.
 - `cafe.html` : **Kitsune Café**, jeu de gestion actif. C'est le jeu principal. Depuis le 22/10/2026, la page ne contient plus que le HTML : le style est dans `css/cafe.css` et le code dans `js/cafe/` (foxes, data, state, draw, game, render, end, menus, map, main), des scripts classiques qui partagent la portée globale et se chargent dans cet ordre. Une fonction appelée au chargement doit être définie dans un fichier précédent (ou le même).
 - `clairiere.html` : **La Clairière**, jeu détente façon Neko Atsume.
 - `manifest.webmanifest`, `sw.js`, `icons/`, `img/` : PWA (installation sur l'écran d'accueil, hors ligne).
