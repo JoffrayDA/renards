@@ -64,8 +64,8 @@ RECIPES = {"the": 2, "cookie": 5, "choco": 7, "smoothie": 11, "gateau": 16}
 # Les autres niveaux 2-3 ne sont pas dans le kit : ils rendent le jeu plus facile à qui les achète.
 KIT = [("plantes", 1, 4), ("comptoir1", 1, 6), ("double", 1, 6), ("guirlande", 1, 8), ("fourpro", 1, 8),
        ("barista", 1, 11), ("plateau", 1, 11), ("comptoir1", 2, 13), ("disque", 1, 13), ("coussins", 1, 16),
-       ("serveur", 1, 19), ("machines", 1, 23), ("plateau", 2, 24), ("fauteuils", 1, 26), ("four2", 1, 33),
-       ("lanternes", 1, 35)]
+       ("serveur", 1, 19), ("machines", 1, 23), ("plateau", 2, 24), ("fauteuils", 1, 27), ("four2", 1, 33),
+       ("lanternes", 1, 37)]
 
 
 def own_for(day):
@@ -138,7 +138,7 @@ with sync_playwright() as p:
         # Bon joueur, premier passage de chaque jour : pièces gagnées (bénéfice + coffre + ~1 quête par jour + bonus
         # quotidien), moins les achats du kit le jour prévu. Un solde négatif = le kit n'est pas abordable à temps.
         cost = page.evaluate("() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map(l => l.c)]))")
-        coins, prev = 0, 0
+        coins, prev, low = 0, 0, 0
         for d in days:
             e, g, *_, gain = page.evaluate(BOT, [d, own_for(d), GOOD, None])
             st = 3 if e >= g * 1.7 else 2 if e >= g * 1.35 else 1 if e >= g else 0
