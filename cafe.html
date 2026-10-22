@@ -40,7 +40,8 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(19px,5vw,26px);mar
 h1 span{color:var(--coral-d)}
 .coin{display:flex;align-items:center;gap:5px;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:3px 12px 3px 5px;font-weight:900;font-variant-numeric:tabular-nums;box-shadow:0 3px 0 var(--line)}
 .coin svg{width:24px;height:24px}
-button{font:inherit;color:inherit;touch-action:manipulation}
+button{font:inherit;color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.app{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 
 .hud{flex:1;min-width:0;display:flex;align-items:center;gap:6px}
@@ -328,13 +329,13 @@ const COSTUMES=["sorciere","citrouille","chauvesouris","vampire"];
 const COSTNAME={sorciere:"en sorcière",citrouille:"en citrouille",chauvesouris:"en chauve-souris",vampire:"en vampire"};
 // Les 5 Nuits d'Halloween : le rythme d'un jour de référence (base) avec d'autres commandes (graine seed).
 // Graines et objectifs calculés par « python tools/balance-bot.py --nuits ». Réussir la 5e garde Feu Follet au café pour toujours.
-const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:34,goal:166},{base:14,seed:21,goal:226},{base:19,seed:56,goal:314},{base:24,seed:36,goal:340}];
+const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:34,goal:166},{base:14,seed:21,goal:226},{base:19,seed:52,goal:322},{base:24,seed:58,goal:349}];
 const NIGHT_NAMES=["Nuit des lanternes","Nuit des chauves-souris","Nuit du brouillard","Nuit de la pleine lune","Grande nuit d'Halloween"];
 function foxSVG(f,o={}){
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
   const c=sil?{b:"#e3d9df",ch:"#e3d9df",e:"#e3d9df",s:"#e3d9df",t:"#e3d9df"}:f.c;
   const st=sil?"#cbbec6":INK,e=f.ears||1,sc=f.scale||1,dark="#2e2028";
-  const pink=sil?"none":"#f9c0cb";
+  const pink=sil?"none":"#f9c0cb",gh=f.ghost&&!sil;
   const earPair=(L,R,base)=>[L,R].map((d,i)=>{const [bx,by]=base[i];
     return `<g class="${i?"earR":""}" style="transform-origin:${bx}px ${by}px"><g transform="translate(${bx} ${by}) scale(${e}) translate(${-bx} ${-by})">${d}</g></g>`}).join("");
   const ear=(dy,left)=>{const X=x=>left?x:120-x;
@@ -360,14 +361,14 @@ function foxSVG(f,o={}){
     citrouille:`<ellipse cx="60" cy="${top+3}" rx="18" ry="11" fill="#f2a35c"/><path d="M53 ${top-6} Q50 ${top+3} 53 ${top+13} M67 ${top-6} Q70 ${top+3} 67 ${top+13} M60 ${top-8} V${top+14}" fill="none" stroke-width="1.6" opacity=".55"/><path d="M60 ${top-7} q0 -6 5 -8" fill="none" stroke="#6fae5e" stroke-width="3.6"/><path d="M62 ${top-11} q7 -5 10 1 q-6 3 -10 -1Z" fill="#8fca7a" stroke-width="1.6"/>`,
     chauvesouris:`<path d="M60 ${top+3} Q52 ${top-9} 38 ${top-7} Q43 ${top-2} 41 ${top+4} Q47 ${top} 50 ${top+6} Q55 ${top+1} 60 ${top+3} Q65 ${top+1} 70 ${top+6} Q73 ${top} 79 ${top+4} Q77 ${top-2} 82 ${top-7} Q68 ${top-9} 60 ${top+3}Z" fill="#5f4f72"/><circle cx="60" cy="${top+1}" r="5.4" fill="#5f4f72"/><path d="M56 ${top-3} l1 -4 2 3 M64 ${top-3} l-1 -4 -2 3" fill="#5f4f72" stroke-width="1.6"/><circle cx="58" cy="${top+1}" r="1" fill="#ffe27a" stroke="none"/><circle cx="62" cy="${top+1}" r="1" fill="#ffe27a" stroke="none"/>`,
     vampire:`<path d="M${60-w*.92} ${neck-1} L${60-w-7} ${neck-19} L${60-w*.35} ${neck+3}Z M${60+w*.92} ${neck-1} L${60+w+7} ${neck-19} L${60+w*.35} ${neck+3}Z" fill="#c43a5a"/><path d="M60 ${neck+2} L51 ${neck-3} L51 ${neck+7}Z M60 ${neck+2} L69 ${neck-3} L69 ${neck+7}Z" fill="#3d2a35"/><circle cx="60" cy="${neck+2}" r="2.8" fill="#e2546e" stroke-width="1.6"/><path d="M56.2 ${Y+6.4} l1.3 3.4 1.3 -3.2Z M61.2 ${Y+6.2} l1.3 3.2 1.3 -3.4Z" fill="#fff" stroke-width="1"/>`,
-    os:`<g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round">${[0,1,2].map(i=>`<path d="M${(60-w*(.42-i*.08)).toFixed(1)} ${neck+4+i*5} Q60 ${neck+1+i*5} ${(60+w*(.42-i*.08)).toFixed(1)} ${neck+4+i*5}"/>`).join("")}<path d="M60 ${neck+1} V${neck+15}"/></g><g fill="none" stroke="#fff" stroke-width="1.8"><circle cx="48" cy="${Y}" r="5.8"/><circle cx="72" cy="${Y}" r="5.8"/></g><path d="M86 ${top+14} l6 -6 M84 ${top+10} a2.2 2.2 0 1 1 3 -2 M91 ${top+12} a2.2 2.2 0 1 0 3 -2 M88 ${top+15} a2.2 2.2 0 1 1 -3 -1 M94 ${top+9} a2.2 2.2 0 1 0 -2 -3" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`,
+    os:`<g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round">${[0,1,2].map(i=>`<path d="M${(60-w*(.42-i*.08)).toFixed(1)} ${neck+4+i*5} Q60 ${neck+1+i*5} ${(60+w*(.42-i*.08)).toFixed(1)} ${neck+4+i*5}"/>`).join("")}<path d="M60 ${neck+1} V${neck+15}"/></g><g fill="none" stroke="#fff" stroke-width="1.8"><circle cx="48" cy="${Y}" r="5.8"/><circle cx="72" cy="${Y}" r="5.8"/></g><g transform="translate(89 ${top+5}) rotate(-32) scale(1.15)"><rect x="-8" y="-2.4" width="16" height="4.8" fill="#fff" stroke-width="1.8"/>${[[-8,-2.5],[-8,2.5],[8,-2.5],[8,2.5]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3.2" fill="#fff" stroke-width="1.8"/>`).join("")}<rect x="-8.6" y="-1.5" width="17.2" height="3" fill="#fff" stroke="none"/></g>`,
     zombie:`<path d="M44 ${top+2} L80 ${top+15} L78 ${top+21} L42 ${top+8}Z" fill="#fff5e8"/><path d="M51 ${top+5} l-1.4 5 M59 ${top+8} l-1.4 5 M67 ${top+11} l-1.4 5 M75 ${top+14} l-1.4 5" stroke="#d8ccd4" stroke-width="1.4"/><path d="M75 ${Y+11} l10 -7" fill="none" stroke-width="1.6"/><path d="M76.5 ${Y+7} l2.4 3 M79.5 ${Y+5} l2.4 3 M82.5 ${Y+3} l2.4 3" fill="none" stroke-width="1.4"/><circle cx="40" cy="${Y-9}" r="2.6" fill="#7aa874" stroke-width="1.2"/>`,
-    epouvantail:`<path d="M${60-w*.75} ${neck} l-6 8 M${60-w*.55} ${neck+2} l-2 9 M${60+w*.55} ${neck+2} l2 9 M${60+w*.75} ${neck} l6 8" fill="none" stroke="#e8c45a" stroke-width="2.6"/><path d="M${60-w*.6} ${neck-1} Q60 ${neck+5} ${60+w*.6} ${neck-1}" fill="none" stroke="#c43a5a" stroke-width="3.4"/><rect x="${60+w*.2}" y="${neck+5}" width="11" height="10" rx="1.5" fill="#9ec3ef" stroke-width="1.8"/><path d="M${60+w*.2+2} ${neck+7.5} h7 M${60+w*.2+2} ${neck+12.5} h7" stroke="${INK}" stroke-width="1" stroke-dasharray="1.6 1.4"/><path d="M27 ${top+9} l-6 3 M29 ${top+11} l-4 6 M93 ${top+9} l6 3 M91 ${top+11} l4 6" fill="none" stroke="#e8c45a" stroke-width="2.4"/><ellipse cx="60" cy="${top+8}" rx="34" ry="6.5" fill="#d9a85a"/><path d="M42 ${top+7} Q43 ${top-15} 60 ${top-16} Q77 ${top-15} 78 ${top+7}Z" fill="#e8c47a"/><path d="M42.6 ${top+1} Q60 ${top+4} 77.4 ${top+1} L77.8 ${top+6} Q60 ${top+9} 42.2 ${top+6}Z" fill="#e2546e" stroke-width="1.8"/><rect x="62" y="${top-11}" width="9" height="8" rx="1.4" fill="#8fca7a" stroke-width="1.6" transform="rotate(8 66 ${top-7})"/>`,
+    epouvantail:`<path d="M${60-w*.75} ${neck} l-6 8 M${60-w*.55} ${neck+2} l-2 9 M${60+w*.55} ${neck+2} l2 9 M${60+w*.75} ${neck} l6 8" fill="none" stroke="#e8c45a" stroke-width="2.6"/><path d="M${60-w*.6} ${neck-1} Q60 ${neck+5} ${60+w*.6} ${neck-1}" fill="none" stroke="#9a6f3e" stroke-width="3.2"/><path d="M58 ${neck+3} l-3 7 M62 ${neck+3} l3 7" fill="none" stroke="#9a6f3e" stroke-width="2.4"/><rect x="${60+w*.2}" y="${neck+6}" width="11" height="10" rx="1.5" fill="#9ec3ef" stroke-width="1.8"/><path d="M${60+w*.2+2} ${neck+8.5} h7 M${60+w*.2+2} ${neck+13.5} h7" stroke="${INK}" stroke-width="1" stroke-dasharray="1.6 1.4"/><path d="M35 ${Y+3} l4 4 M39 ${Y+3} l-4 4 M39.5 ${Y+5} l4 4 M43.5 ${Y+5} l-4 4" fill="none" stroke-width="1.3"/><path d="M28 ${top+9} l-6 4 M30 ${top+11} l-3 7 M92 ${top+9} l6 4 M90 ${top+11} l3 7" fill="none" stroke="#e8c45a" stroke-width="2.4"/><ellipse cx="60" cy="${top+8}" rx="31" ry="6" fill="#8a6a3e"/><path d="M43 ${top+7} Q45 ${top-9} 55 ${top-19} Q62 ${top-27} 71 ${top-23} Q80 ${top-19} 86 ${top-9} Q78 ${top-13} 73 ${top-11} Q77 ${top-2} 77 ${top+7}Z" fill="#a8834e"/><rect x="50" y="${top-6}" width="9" height="8" rx="1.4" fill="#8fca7a" stroke-width="1.6" transform="rotate(-10 54 ${top-2})"/><path d="M51 ${top-4} h7 M51 ${top} h7" stroke="${INK}" stroke-width=".9" stroke-dasharray="1.4 1.2" transform="rotate(-10 54 ${top-2})"/><path d="M41 ${top+1} l6 -3 l-1 5Z" fill="#3d2a35" stroke-width="1.4"/><ellipse cx="35" cy="${top+1}" rx="6.5" ry="4.8" fill="#3d2a35" stroke-width="1.6"/><circle cx="30.5" cy="${top-4}" r="3.8" fill="#3d2a35" stroke-width="1.6"/><path d="M27 ${top-4.4} l-4 1.2 l3.8 1.6Z" fill="#f2a35c" stroke-width="1"/><circle cx="29.8" cy="${top-5}" r="1" fill="#fff" stroke="none"/><path d="M33 ${top+6} v2.4 M37 ${top+6} v2.4" stroke="#f2a35c" stroke-width="1.4"/>`,
     couronne:`<path d="M42 ${top+9} Q60 ${top+3} 78 ${top+9}" fill="none" stroke="#6fae5e" stroke-width="3"/>${[[45,top+5,5],[60,top,6.5],[75,top+5,5]].map(([x,y,r])=>`<path d="M${x} ${y-r+.5} q.5 -3 3.4 -3.8" fill="none" stroke="#6fae5e" stroke-width="2.2"/><ellipse cx="${x}" cy="${y}" rx="${r*1.25}" ry="${r}" fill="#f2a35c" stroke-width="2"/><path d="M${x-r*.7} ${y} l${r*.3} ${-r*.45} l${r*.3} ${r*.45}Z M${x+r*.1} ${y} l${r*.3} ${-r*.45} l${r*.3} ${r*.45}Z" fill="#ffe27a" stroke-width="1"/>`).join("")}`,
     spectre:[[14,top+16,1],[104,top+8,-1],[100,top+40,1]].map(([x,y,d])=>`<path d="M${x} ${y} q${-5*d} -7 0 -15 q${2*d} 6 ${6*d} 8 q-1 6 ${-6*d} 7Z" fill="#cfe2ff" stroke="#9fb4e0" stroke-width="1.6"/>`).join(""),
     collier:[-3,-2,-1,0,1,2,3].map(k=>`<circle cx="${(60+k*w/3.6).toFixed(1)}" cy="${(neck+3-k*k*.45).toFixed(1)}" r="2.6" fill="#fff" stroke-width="1.4"/>`).join("")
   })[f.acc]||""};
-  let body;
+  let body;const tailG=s=>gh?"":s;
   if(pose==="sleep"){
     body=`<ellipse cx="64" cy="76" rx="36" ry="17" fill="${c.b}"/>
     <path d="M98 74 C104 94 70 98 32 92 C24 90 24 85 32 85 C64 88 88 86 92 74Z" fill="${c.b}"/>
@@ -379,26 +380,25 @@ function foxSVG(f,o={}){
     ${sil?"":`<path d="M34 72 Q37.5 74.5 41 72 M47 72 Q50.5 74.5 54 72" fill="none" stroke-width="2.4"/><ellipse cx="32" cy="77" rx="3.6" ry="2.2" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="56" cy="77" rx="3.6" ry="2.2" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="44" cy="76" rx="1.8" ry="1.3" fill="${dark}" stroke="none"/>`}`;
   }else if(pose==="happy"){
     const top=20,Y=42;
-    body=`<g class="tail" style="transform-origin:82px 82px"><path d="M80 86 C104 86 112 60 99 46 C96 60 90 70 78 74Z" fill="${c.b}"/><path d="M99 46 C106 53 108 62 106 68 C102 63 98 58 95 53 C96 51 97 48 99 46Z" fill="${c.t}"/></g>
-    <path d="M37 90 C30 70 38 55 60 55 C82 55 90 70 83 90 Q60 95 37 90Z" fill="${c.b}"/>
+    body=tailG(`<g class="tail" style="transform-origin:82px 82px"><path d="M80 86 C104 86 112 60 99 46 C96 60 90 70 78 74Z" fill="${c.b}"/><path d="M99 46 C106 53 108 62 106 68 C102 63 98 58 95 53 C96 51 97 48 99 46Z" fill="${c.t}"/></g>`)+`
+    ${gh?`<ellipse cx="33" cy="64" rx="5" ry="8" fill="${c.b}" transform="rotate(40 33 64)"/><ellipse cx="87" cy="64" rx="5" ry="8" fill="${c.b}" transform="rotate(-40 87 64)"/><path d="M37 86 C30 70 38 55 60 55 C82 55 90 70 83 86 L85 97 Q80 91 74 96 Q67 91 60 96 Q53 91 46 96 Q40 91 35 97Z" fill="${c.b}"/>`:`<path d="M37 90 C30 70 38 55 60 55 C82 55 90 70 83 90 Q60 95 37 90Z" fill="${c.b}"/>`}
     <ellipse cx="60" cy="77" rx="11" ry="11" fill="${c.ch}" stroke="none"/>
-    <ellipse cx="51" cy="90" rx="6.5" ry="4.2" fill="${c.s}"/><ellipse cx="69" cy="90" rx="6.5" ry="4.2" fill="${c.s}"/>
+    ${gh?"":`<ellipse cx="51" cy="90" rx="6.5" ry="4.2" fill="${c.s}"/><ellipse cx="69" cy="90" rx="6.5" ry="4.2" fill="${c.s}"/>`}
     ${earPair(ear(-15,true),ear(-15,false),[[44,23],[76,23]])}
     <ellipse cx="60" cy="42" rx="27" ry="22" fill="${c.b}"/>
     ${face(Y,true)}${acc(top,Y,63,21)}`;
   }else{
     const top=35,Y=55;
-    body=`<g class="tail" style="transform-origin:90px 82px"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/></g>
+    body=tailG(`<g class="tail" style="transform-origin:90px 82px"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/></g>`)+`
     ${earPair(ear(0,true),ear(0,false),[[44,38],[76,38]])}
-    <path d="M24 88 C18 60 30 35 60 35 C90 35 102 60 96 88 Q60 95 24 88Z" fill="${c.b}"/>
+    ${gh?`<ellipse cx="22" cy="68" rx="6" ry="9" fill="${c.b}" transform="rotate(35 22 68)"/><ellipse cx="98" cy="68" rx="6" ry="9" fill="${c.b}" transform="rotate(-35 98 68)"/><path d="M24 84 C18 60 30 35 60 35 C90 35 102 60 96 84 L98 96 Q92 89 86 95 Q80 89 73 95 Q67 89 60 95 Q53 89 47 95 Q40 89 34 95 Q28 89 22 96Z" fill="${c.b}"/>`:`<path d="M24 88 C18 60 30 35 60 35 C90 35 102 60 96 88 Q60 95 24 88Z" fill="${c.b}"/>`}
     ${face(Y,false)}
-    <ellipse cx="50" cy="89" rx="7" ry="4.4" fill="${c.s}"/><ellipse cx="70" cy="89" rx="7" ry="4.4" fill="${c.s}"/>
+    ${gh?"":`<ellipse cx="50" cy="89" rx="7" ry="4.4" fill="${c.s}"/><ellipse cx="70" cy="89" rx="7" ry="4.4" fill="${c.s}"/>`}
     ${acc(top,Y,74,30)}`;
   }
   const zz=pose==="sleep"?`<text class="zz" x="66" y="56" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="74" y="46" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
-  const gh=f.ghost&&!sil;
   return `<svg viewBox="0 -16 120 116" class="${o.cls||""}${gh?" ghosty":""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"${gh?' opacity=".82"':""}>
-  <ellipse cx="60" cy="92" rx="40" ry="5" fill="#3d2a35" opacity=".14"/>
+  <ellipse cx="60" cy="${gh?99:92}" rx="${gh?26:40}" ry="${gh?3.5:5}" fill="#3d2a35" opacity="${gh?.09:.14}"/>
   <g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${zz}</g></svg>`;
 }
 
@@ -443,7 +443,7 @@ const UPG={
     {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:240,ic:"comptoir2"}]},
     {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 30 % plus rapide, et les fournées brûlent moins vite.",c:110},{d:"Cuisson 45 % plus rapide, et les fournées brûlent encore moins vite.",c:700}]},
     {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 33 % plus vite.",c:150},{d:"Toutes les boissons se préparent 50 % plus vite.",c:550},{d:"Toutes les boissons se préparent 70 % plus vite.",c:1600,from:31}]},
-    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul les pâtisseries de la vitrine aux clients.",c:320},{d:"Petit Pois court plus vite : un service toutes les 1,4 s.",c:950}]},
+    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320},{d:"Petit Pois relance aussi le four quand une pâtisserie demandée manque en vitrine.",c:950}]},
     {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:900,from:21}]},
     {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:1400,from:31}]}
   ],
@@ -512,8 +512,8 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
 // « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
 // L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.
-const SEED=[13,6,8,15,2,4,4,2,5,14,8,8,6,6,6,15,2,1,8,12,13,6,13,1,0,8,13,9,15,2,7,8,0,3,2,0,5,15,3,7];
-const GOALS=[37,58,69,89,108,124,143,158,167,177,189,202,211,227,247,266,276,320,313,322,328,334,345,342,350,356,367,372,393,406,405,398,408,412,422,443,437,444,456,462];
+const SEED=[13,6,8,15,2,4,4,2,5,14,8,8,6,6,6,15,2,1,9,12,8,6,13,1,0,8,14,11,15,2,7,8,0,12,2,0,5,15,3,7];
+const GOALS=[37,58,69,89,108,124,143,158,167,177,189,202,211,227,247,266,276,320,317,324,333,338,346,349,351,358,368,373,398,408,407,399,409,412,423,445,442,444,456,463];
 function cfgOf(d){
   const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3)),goal=GOALS[d-1];
   return{c,gap:Math.max(d<=20?4:3.2,6-d*.27),pat:Math.max(14,21-d*.6),max:d<2?1:d<4?2:3,goal};
@@ -801,9 +801,13 @@ function update(dt){
   if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,6,7.5][lv("fourpro")];dirty=true}}
   else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=REC[o.r].cost*batchOf(o.r);o.state="burnt";o.t=1.4;dirty=true;S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
-  if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=lv("serveur")>1?1.4:2.2;
-    for(const c of G.cust){if(c.state!=="wait")continue;const it=c.order.find(x=>!x.done&&REC[x.r].kind==="bake"&&G.vit[x.r]>0);
-      if(it){G.vit[it.r]--;it.done=1;floatAt(custEl(c),"Petit Pois !");if(c.order.every(x=>x.done))complete(c);dirty=true;break}}}}
+  // Petit Pois : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé ;
+  // au niveau 2, il relance aussi le four quand une pâtisserie demandée manque
+  if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
+    const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
+    for(const c of w){let got=0;for(const it of c.order)if(!it.done&&REC[it.r].kind==="bake"&&G.vit[it.r]>0){G.vit[it.r]--;it.done=1;got++}
+      if(got){floatAt(custEl(c),"Petit Pois !");if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
+    if(lv("serveur")>1&&G.oven.state==="idle"){const r=w.flatMap(c=>c.order.filter(x=>!x.done&&REC[x.r].kind==="bake"&&!G.vit[x.r]).map(x=>x.r))[0];if(r)bake(r)}}}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
 const custEl=c=>document.querySelector(`[data-cust="${c.id}"]`);
@@ -1255,12 +1259,15 @@ function floatAt(el,t,gold){if(!el)return;const [x,y]=rel(el),s=document.createE
 function burst(el){const [x,y]=rel(el);for(let i=0;i<3;i++){const s=document.createElement("span");s.className="heart";s.textContent="♥";s.style.left=(x+(i-1)*14)+"px";s.style.top=y+"px";s.style.setProperty("--dx",((i-1)*16)+"px");s.style.animationDelay=(i*.1)+"s";$("scene").appendChild(s);setTimeout(()=>s.remove(),1500)}}
 
 /* ---------- événements ---------- */
-$("custs").addEventListener("click",e=>{const b=e.target.closest("[data-cust]");if(!b||!G||!G.run)return;const c=G.cust.find(x=>x.id==b.dataset.cust);if(c)deliver(c,b)});
-$("kitchen").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!G||!G.run)return;
+// Sur iPhone, le clic n'arrive qu'au relâcher et se perd si la tuile a été redessinée pendant l'appui :
+// en jeu, on agit dès que le doigt touche l'écran (le clic clavier, detail 0, marche toujours).
+function onTap(el,fn){el.addEventListener("pointerdown",e=>{if(e.button)return;fn(e)});el.addEventListener("click",e=>{if(e.detail===0)fn(e)})}
+onTap($("custs"),e=>{const b=e.target.closest("[data-cust]");if(!b||!G||!G.run)return;const c=G.cust.find(x=>x.id==b.dataset.cust);if(c)deliver(c,b)});
+onTap($("kitchen"),e=>{const b=e.target.closest("button");if(!b||!G||!G.run)return;
   if(b.dataset.st)tapStation(b.dataset.st,b);else if(b.dataset.bake)bake(b.dataset.bake);
   else if(b.dataset.oven!==undefined){if(G.oven.state==="ready")unload();else if(G.oven.state==="idle")hint("Touche une <b>pâtisserie</b> pour lancer une fournée.")}
   else if(b.dataset.pa){const k=b.dataset.pa;if(G.vit[k])fromVit(k,b);else if(G.oven.state==="idle")bake(k);else{shake(b);hint(G.oven.state==="ready"?"<b>Touche le four</b> pour sortir la fournée d'abord.":"Le four est occupé : attends la fin de la cuisson.")}}});
-$("tray").addEventListener("click",e=>{const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;const i=+b.dataset.tray,now=performance.now();
+onTap($("tray"),e=>{const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;const i=+b.dataset.tray,now=performance.now();
   if(G.arm&&G.arm.i===i&&G.arm.until>now){G.tray.splice(i,1);G.arm=null}
   else{G.arm={i,until:now+1800};setTimeout(()=>{dirty=true},1850);hint("Touche encore l'article pour le <b>jeter</b>.")}
   dirty=true});
