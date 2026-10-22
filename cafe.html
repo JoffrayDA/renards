@@ -333,7 +333,26 @@ const COSTNAME={sorciere:"en sorcière",citrouille:"en citrouille",chauvesouris:
 // Graines et objectifs calculés par « python tools/balance-bot.py --nuits ». Réussir la 5e garde Feu Follet au café pour toujours.
 const NIGHTS=[{base:4,seed:30,goal:89},{base:9,seed:34,goal:166},{base:14,seed:21,goal:226},{base:19,seed:52,goal:322},{base:24,seed:58,goal:349}];
 const NIGHT_NAMES=["Nuit des lanternes","Nuit des chauves-souris","Nuit du brouillard","Nuit de la pleine lune","Grande nuit d'Halloween"];
+// Feu Follet, version « drap de fantôme » (GHOSTV=2) : une seule forme qui s'effile en volute, oreilles pointues, grands yeux, bouche en « o »
+const GHOSTV=2;
+function ghostSVG(f,o){
+  const c=f.c,happy=o.pose==="happy",dark="#2e2028",Y=47;
+  const eyes=happy?`<path d="M43 ${Y+1} Q47.5 ${Y-5} 52 ${Y+1} M68 ${Y+1} Q72.5 ${Y-5} 77 ${Y+1}" fill="none" stroke-width="2.6"/>`
+    :`<g class="eyes" style="transform-origin:60px ${Y}px">${[47.5,72.5].map(x=>`<ellipse cx="${x}" cy="${Y}" rx="3.6" ry="5" fill="${dark}" stroke="none"/><circle cx="${x+1.1}" cy="${Y-1.8}" r="1.2" fill="#fff" stroke="none"/>`).join("")}</g>`;
+  const mouth=happy?`<path d="M55 ${Y+10} Q60 ${Y+17} 65 ${Y+10}Z" fill="#e2708e" stroke-width="1.8"/>`:`<ellipse cx="60" cy="${Y+12}" rx="2.6" ry="3.4" fill="${dark}" stroke="none"/>`;
+  const body=`<ellipse cx="26" cy="58" rx="5.5" ry="8.5" fill="${c.b}" transform="rotate(35 26 58)"/><ellipse cx="94" cy="58" rx="5.5" ry="8.5" fill="${c.b}" transform="rotate(-35 94 58)"/>
+    <path d="M33 34 L35 3 L54 21Z" fill="${c.b}"/><path d="M87 34 L85 3 L66 21Z" fill="${c.b}"/>
+    <path d="M28 58 Q26 18 60 16 Q94 18 92 56 Q92 72 99 81 Q106 88 114 83 Q111 95 97 94 Q89 93 84 88 Q78 94 70 89 Q62 95 54 89 Q46 95 38 88 Q30 82 28 58Z" fill="${c.b}"/>
+    <path d="M37.5 28 L38.5 10 L49 20Z M82.5 28 L81.5 10 L71 20Z" fill="#f9c0cb" stroke="none"/>
+    <path d="M38 30 Q40 22 47 19" fill="none" stroke="#fff" stroke-width="3" opacity=".9"/>
+    ${eyes}<ellipse cx="60" cy="${Y+6}" rx="1.9" ry="1.4" fill="${dark}" stroke="none"/>${mouth}
+    <ellipse cx="39" cy="${Y+7}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="81" cy="${Y+7}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/>
+    ${[[12,30,1],[106,22,-1],[110,58,-1]].map(([x,y,d])=>`<path d="M${x} ${y} q${-5*d} -7 0 -15 q${2*d} 6 ${6*d} 8 q-1 6 ${-6*d} 7Z" fill="#cfe2ff" stroke="#9fb4e0" stroke-width="1.6"/>`).join("")}`;
+  return `<svg viewBox="0 -16 120 116" class="${o.cls||""} ghosty" aria-hidden="true"><ellipse cx="60" cy="99" rx="22" ry="3" fill="#3d2a35" opacity=".08"/><circle cx="60" cy="54" r="40" fill="#cfe2ff" opacity=".5" filter="url(#soft)"/>
+  <g opacity=".9" stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g></svg>`;
+}
 function foxSVG(f,o={}){
+  if(f.ghost&&!o.sil&&GHOSTV===2)return ghostSVG(f,o);
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
   const c=sil?{b:"#e3d9df",ch:"#e3d9df",e:"#e3d9df",s:"#e3d9df",t:"#e3d9df"}:f.c;
   const st=sil?"#cbbec6":INK,e=f.ears||1,sc=f.scale||1,dark="#2e2028";
@@ -458,7 +477,7 @@ const UPG={
     {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:400,ic:"comptoir2"}]},
     {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 30 % plus rapide, et les fournées brûlent moins vite.",c:110},{d:"Cuisson 45 % plus rapide, et les fournées brûlent encore moins vite.",c:1200}]},
     {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 33 % plus vite.",c:150},{d:"Toutes les boissons se préparent 50 % plus vite.",c:950},{d:"Toutes les boissons se préparent 70 % plus vite.",c:2800,from:31}]},
-    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320},{d:"Petit Pois relance aussi le four quand une pâtisserie demandée manque en vitrine.",c:1600}]},
+    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320}]},
     {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:1350,from:21}]},
     {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:2100,from:31}]}
   ],
@@ -554,6 +573,8 @@ if(!S.ver){
   for(const c of CHAP)if(c.gate&&c.from<=S.day)S.pass[c.id]=1;
   S.ver=2;
 }
+// 22/10/2026 : le niveau 2 de Petit Pois (relance du four) est retiré, il est remboursé
+if(S.own.serveur>1){S.own.serveur=1;S.coins+=1600;save()}
 if(S.ver<3){
   // v2 -> v3 : boutique à niveaux (Plateau géant = Plateau niv. 2, Grand comptoir = Comptoir niv. 2), style du café
   if(S.own.plateau5){S.own.plateau=2;delete S.own.plateau5}
@@ -829,13 +850,12 @@ function update(dt){
   if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,6,7.5][lv("fourpro")];dirty=true}}
   else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
-  // Petit Pois : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé ;
-  // au niveau 2, il relance aussi le four quand une pâtisserie demandée manque
+  // Petit Pois : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé
   if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
     for(const c of w){let got=0;for(const it of c.order)if(!it.done&&REC[it.r].kind==="bake"&&G.vit[it.r]>0){G.vit[it.r]--;it.done=1;got++}
       if(got){floatAt(custEl(c),"Petit Pois !");if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
-    if(lv("serveur")>1&&G.oven.state==="idle"){const r=w.flatMap(c=>c.order.filter(x=>!x.done&&REC[x.r].kind==="bake"&&!G.vit[x.r]).map(x=>x.r))[0];if(r)bake(r)}}}
+}}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
 const custEl=c=>document.querySelector(`[data-cust="${c.id}"]`);
@@ -975,7 +995,7 @@ function endDay(){
   if(st&&d===S.day)S.day++;
   const rk=Object.keys(REC).find(k=>REC[k].day===d);
   if(st&&rk&&!S.own[rk]){S.own[rk]=1;news.push(itRow(icon(rk),`Nouvelle recette : ${REC[rk].name}`,`Elle arrive sur ta carte dès la prochaine journée. ${REC[rk].desc}`,"background:#e3f2d6"))}
-  for(const c of checkGuests())news.push(itRow(foxSVG(FOX[c.guest],{pose:"happy"}),`${FOX[c.guest].name} rejoint ton café !`,`Saison ${c.name} en ★★★ : ${FOX[c.guest].name} vient désormais en invité d'honneur et paie le triple, mais il est pressé.`,"background:#fbf0cc"));
+  for(const c of checkGuests())news.push(itRow(foxSVG(FOX[c.guest],{pose:"happy"}),`${FOX[c.guest].name} rejoint ton café !`,`Saison ${c.name} en ★★★ : ${FOX[c.guest].name} vient désormais en invité d'honneur dans toutes les journées, toutes saisons confondues : il paie le triple, mais il est pressé.`,"background:#fbf0cc"));
   for(const c of CHAP)if(c.gate&&!S.pass[c.id]&&before<c.gate&&starSum()>=c.gate&&gateOpen(c))news.push(itRow(icon("chest"),`La porte de la saison ${c.name} s'ouvre !`,`Tu as réuni ${c.gate} étoiles.`,"background:#e3f2d6"));
   const nc=chapOf(S.day);
   if(st&&S.day===nc.from&&nc.gate&&!gateOpen(nc))news.push(itRow(icon("chest"),`Porte de la saison ${nc.name} : ${starSum()} / ${nc.gate} ★`,`Rejoue des journées pour gagner les étoiles qui manquent.`));
@@ -1041,7 +1061,7 @@ function daySheet(d){
   if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,`Réussis cette journée pour l'ajouter à ta carte.`,"background:#e3f2d6"));
   if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que 30 % des pièces. Les nouvelles étoiles restent payées par le coffre."));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★",st?"Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre.":"Chaque étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
-  if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient au café et paie le triple, mais il est pressé.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
+  if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient dans toutes les journées, toutes saisons confondues : il paie le triple, mais il est pressé.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">${c.c} clients attendus${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Patience : ${Math.round(c.pat*patMult())} s.${S.best[d]?` Record : <b>${S.best[d]} pièces</b>.`:""}</p>
   ${d===1&&!S.total?`<div class="tuto"><b>Comment jouer</b><ol><li>Touche <b>Café</b> pour le préparer, puis touche-le à nouveau quand il est prêt : il va sur ton plateau.</li><li>Touche <b>${vName("croissant","printemps")[0]}</b> pour lancer une fournée, puis le <b>four</b> quand elle est cuite, avant qu'elle brûle. Touche-la ensuite pour la poser sur le plateau.</li><li>Touche un <b>client</b> pour lui servir ce qui est sur ton plateau. Plus tu es rapide, plus le pourboire est gros.</li></ol></div>`:""}
@@ -1056,7 +1076,7 @@ function gateSheet(i){
 }
 function guestSheet(i){
   const c=CHAP[i],f=FOX[c.guest],ok=S.guest[c.guest];
-  openSheet(`<h2>${ok?f.name:"Invité mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invité d'honneur du café : il paie le triple, mais il est pressé.`:`Obtiens ★★★ sur les 10 journées du ${c.name} pour l'inviter au café. Pour l'instant : <b>${chapStars(c)} / 30 ★</b>.`}</p>`);
+  openSheet(`<h2>${ok?f.name:"Invité mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invité d'honneur : il vient dans toutes les journées, toutes saisons confondues, paie le triple, mais il est pressé.`:`Obtiens ★★★ sur les 10 journées du ${c.name} pour l'inviter au café. Pour l'instant : <b>${chapStars(c)} / 30 ★</b>.`}</p>`);
 }
 function hwSheet(){
   const nights=NIGHTS.map((N,i)=>{const n=i+1,op=nightOpen(n),st=S.hwStars[n]||0;
