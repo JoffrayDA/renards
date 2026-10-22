@@ -106,8 +106,10 @@ with sync_playwright() as p:
             # ce qui arrive quand un VIP pressé tombe mal pour lui
             good = {k: page.evaluate(BOT, [d, own_for(d), GOOD, k])[0] for _, k in r}
             goal = lambda x: round(min(x[0] / STAR3, good[x[1]] / PASS))
-            up = [x for x in r if not goals or goal(x) >= goals[-1] * .97]   # l'objectif ne redescend presque pas
-            e, k = min(up or r, key=lambda x: abs(x[0] - t) + 4 * max(0, x[0] / STAR3 - good[x[1]] / PASS))
+            # (pas de cliquet « l'objectif ne redescend pas » : avec la file d'attente, il choisissait des journées
+            # chanceuses et les objectifs s'emballaient ; la courbe lissée suffit à les faire monter)
+            # on vise l'objectif final (plafonné par le bon joueur) le plus proche de la courbe lissée : pas de creux
+            e, k = min(r, key=lambda x: abs(goal(x) - t / STAR3) + .25 * abs(x[0] - t) / STAR3)
             g = good[k]
             seeds.append(k); goals.append(goal((e, k)))
             print(f"jour {d:>2} : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {g}, objectif {goals[-1]}", file=sys.stderr)

@@ -19,7 +19,7 @@ function newDay(d){
 function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base)))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
 // Un client vit ainsi : file d'attente à la porte (queue), il entre en trottinant (walkin), attend sa commande (wait),
 // reste un instant content ou fâché (happy, angry), puis repart en marchant (walkout). Sa patience ne baisse qu'en « wait ».
-const WALK=1.1,QMAX=3;
+const WALK=1.6,QMAX=3;
 function freeSpot(){const n=spotsN(),used=new Set(G.cust.filter(c=>c.spot>=0&&c.state!=="walkout").map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
 function genOrder(){
   const un=Object.keys(REC).filter(k=>onMenu(k)),m=G.cfg.max,r=G.rng();

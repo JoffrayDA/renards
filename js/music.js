@@ -3,6 +3,18 @@
    Un bouton [data-sound] coupe ou remet le son, choix mémorisé dans localStorage « renards-son ».
    Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), lofi (en réserve). */
 const MUSIC=(()=>{
+  // Un jeu ouvert dans l'accueil (iframe) n'a pas son propre son : il pilote la musique de l'accueil, qui a déjà eu
+  // son toucher de départ et continue de jouer d'une page à l'autre. Le bouton maison referme le jeu.
+  let host=null;try{if(window.parent!==window&&window.parent.MUSIC&&window.parent.openGame)host=window.parent}catch(e){}
+  if(host){
+    const H=host.MUSIC;
+    const paint=()=>document.querySelectorAll("[data-sound]").forEach(b=>{b.innerHTML=H.icon();b.setAttribute("aria-label",H.on?"Couper la musique":"Remettre la musique")});
+    document.addEventListener("click",e=>{if(e.target.closest("[data-sound]")){H.setOn(!H.on);paint()}
+      const a=e.target.closest("a.home");if(a){e.preventDefault();host.closeGame()}});
+    const st=document.createElement("style");st.textContent=H.css;document.head.appendChild(st);
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
+    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},get on(){return H.on},get current(){return H.current}};
+  }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
   const hz=m=>440*Math.pow(2,(m-69)/12);
   function init(){
@@ -134,17 +146,21 @@ const MUSIC=(()=>{
   let on=true,wanted=null,unlocked=false;
   try{on=localStorage.getItem(SKEY)!=="0"}catch(e){}
   function want(id){wanted=id;if(unlocked&&on&&cur!==id)play(id)}
-  const unlock=()=>{if(unlocked)return;unlocked=true;if(on&&wanted)play(wanted)};
-  addEventListener("pointerdown",unlock,{capture:true});addEventListener("keydown",unlock,{capture:true});
+  // le son n'est permis qu'après un vrai toucher (doigt relevé, clic ou touche) : pas sur « pointerdown » au doigt
+  const unlock=()=>{if(C&&C.state==="suspended")C.resume();if(unlocked)return;unlocked=true;if(on&&wanted)play(wanted)};
+  ["pointerup","touchend","click","keydown"].forEach(ev=>addEventListener(ev,unlock,{capture:true}));
   document.addEventListener("visibilitychange",()=>{if(!C)return;document.hidden?C.suspend():C.resume()});
   const ICON_ON='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M3 8 H6 L10 4.5 V15.5 L6 12 H3Z" fill="#5b4250"/><path d="M13 7 Q15 10 13 13 M15.5 5 Q19 10 15.5 15" fill="none" stroke="#5b4250" stroke-width="2" stroke-linecap="round"/></svg>';
   const ICON_OFF='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M3 8 H6 L10 4.5 V15.5 L6 12 H3Z" fill="#5b4250"/><path d="M13 7.5 L18 12.5 M18 7.5 L13 12.5" fill="none" stroke="#5b4250" stroke-width="2" stroke-linecap="round"/></svg>';
-  function paint(){document.querySelectorAll("[data-sound]").forEach(b=>{b.innerHTML=on?ICON_ON:ICON_OFF;b.setAttribute("aria-label",on?"Couper la musique":"Remettre la musique");b.setAttribute("aria-pressed",on?"false":"true")})}
+  const icon=()=>on?ICON_ON:ICON_OFF;
+  function paint(){document.querySelectorAll("[data-sound]").forEach(b=>{b.innerHTML=icon();b.setAttribute("aria-label",on?"Couper la musique":"Remettre la musique");b.setAttribute("aria-pressed",on?"false":"true")})}
   function setOn(v){on=v;try{localStorage.setItem(SKEY,v?"1":"0")}catch(e){}unlocked=true;if(!v)stop();else if(wanted)play(wanted);paint()}
   document.addEventListener("click",e=>{if(e.target.closest("[data-sound]"))setOn(!on)});
   const st=document.createElement("style");
-  st.textContent=".snd{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fffaf2;border:2px solid #ead9cc;box-shadow:0 3px 0 #ead9cc;flex:none;cursor:pointer;padding:0;touch-action:manipulation}.snd svg{display:block}";
-  document.head.appendChild(st);
+  const css=".snd{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fffaf2;border:2px solid #ead9cc;box-shadow:0 3px 0 #ead9cc;flex:none;cursor:pointer;padding:0;touch-action:manipulation}.snd svg{display:block}";
+  st.textContent=css;document.head.appendChild(st);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-  return{play,stop,volume,want,setOn,paint,tracks:TRACKS,get current(){return cur},get on(){return on}};
+  return{play,stop,volume,want,setOn,paint,icon,css,unlock,tracks:TRACKS,get current(){return cur},get on(){return on}};
 })();
+// visible par les jeux ouverts dans le cadre de l'accueil (une const n'est pas une propriété de window)
+window.MUSIC=MUSIC;

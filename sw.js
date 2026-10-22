@@ -2,7 +2,7 @@
 // le reste est servi depuis le cache puis mis à jour en arrière-plan.
 // GitHub Pages autorise 10 min de cache HTTP : on le contourne (cache "reload" / "no-cache"), sinon un téléphone
 // peut recevoir l'ancienne page juste après une mise à jour.
-const CACHE = "renards-v24";
+const CACHE = "renards-v25";
 const FILES = ["./", "index.html", "cafe.html", "clairiere.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg", "css/cafe.css", "js/music.js",
   ...["foxes", "data", "state", "draw", "game", "render", "end", "menus", "map", "main"].map(n => `js/cafe/${n}.js`)];

@@ -129,8 +129,8 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
 // « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
 // L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.
-const SEED=[4,12,15,10,7,4,0,5,10,10,1,4,9,4,8,8,4,13,13,7,11,1,10,8,15,14,0,1,12,13,13,8,15,3,13,3,13,14,8,11];
-const GOALS=[37,59,73,92,102,123,139,156,160,181,186,209,212,207,206,265,265,275,308,319,333,358,373,362,331,384,383,376,373,384,395,407,423,415,438,439,449,459,448,468];
+const SEED=[4,12,15,10,14,4,0,11,10,10,13,4,9,6,8,8,4,13,11,7,13,0,2,3,4,7,15,6,4,14,11,10,6,5,13,12,13,14,3,11];
+const GOALS=[37,59,73,92,109,123,139,152,160,181,185,208,212,217,217,263,266,277,309,317,323,317,328,342,347,372,363,379,378,382,381,403,407,422,439,452,449,460,489,469];
 // Équipement prévu pour chaque jour : [achat, niveau, à partir du jour]. Les objectifs sont calibrés avec lui
 // (tools/balance-bot.py le lit ici). Chaque niveau d'amélioration en plus relève l'objectif de 2 % (12 % au plus) :
 // tout équipé, ★★★ devenait gratuit (Joffray à 815 / 407 au jour 31). Pas plus de 12 % : tout équipé, le jeu parfait
