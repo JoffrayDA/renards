@@ -13,7 +13,7 @@ $("b-bowl").innerHTML=acornSVG()+"Gamelle";
 $("b-bowl").onclick=bowlSheet;$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
 // (l'accueil compte comme le moment d'histoire du jour : la première étape attend le lendemain)
-if(!R.intro)talk(INTRO,()=>{R.intro=1;R.storyDay=today();save();showNews()});else showNews();
+if(!R.intro)talk(INTRO,()=>{R.intro=1;R.stepDay=today();save();showNews()});else showNews();
 log(togGot.length?togGot.map(([id,n])=>`${FOX[id].name} a passé ${n} journée${n>1?"s":""} avec toi au Café : +${n} cœur${n>1?"s":""}.`).join(" "):Object.keys(R.res).length>1?"Bienvenue au refuge.":"Petit Pois t'attendait.");
 
 setInterval(tick,100);

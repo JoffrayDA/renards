@@ -1,6 +1,7 @@
 /* La Clairière : les histoires des renards, en boîte de dialogue. Voir docs/clairiere-v2.md, « Les histoires ».
    Chaque renard a un arc en 3 étapes ; une étape s'ouvre selon l'amitié, le moment ou un autre renard.
-   Au plus une étape par jour réel (R.storyDay). R.story[id] = nombre d'étapes finies, R.souv[id] = souvenir reçu. */
+   Au plus une étape par jour réel (R.stepDay, noté quand l'étape est lue jusqu'au bout : quitter au milieu la fait rejouer ;
+   l'ancien R.storyDay, noté dès le début de l'étape, est ignoré). R.story[id] = nombre d'étapes finies, R.souv[id] = souvenir reçu. */
 const STORIES={
   petitpois:{title:"Peur du noir",souv:"le gland porte-bonheur",steps:[
     {lv:1,dark:1,hint:"Petit Pois a quelque chose à te dire, le soir venu.",lines:[
@@ -63,10 +64,10 @@ function storyGuest(){for(const id in STORIES){const st=storyStep(id);if(st&&st.
 
 // lance l'étape prête, s'il n'y a ni dialogue ni feuille ouverte
 function storyCheck(){
-  if(!R.intro||R.storyDay===today()||!$("talk").hidden||!$("sheet").hidden)return;
+  if(!R.intro||R.stepDay===today()||!$("talk").hidden||!$("sheet").hidden)return;
   for(const id in STORIES){const st=storyStep(id);if(!st||!stepReady(id,st))continue;
-    R.storyDay=today();save();syncFoxes();
-    talk(st.lines,()=>{const S=STORIES[id];R.story[id]=(R.story[id]||0)+1;
+    syncFoxes();
+    talk(st.lines,()=>{const S=STORIES[id];R.story[id]=(R.story[id]||0)+1;R.stepDay=today();
       if(R.story[id]===S.steps.length){R.souv[id]=S.souv;toast(`Souvenir reçu : ${S.souv}.`)}
       save()});
     return;
@@ -77,8 +78,10 @@ function storyCheck(){
 function storyHTML(id){const S=STORIES[id];if(!S)return "";const n=R.story[id]||0,st=storyStep(id);
   const next=!st?`Histoire terminée. Souvenir : ${R.souv[id]||S.souv}.`
     :lvOf(R.res[id].h)<st.lv?`La suite quand vous serez plus proches (amitié ${st.lv}).`
-    :R.storyDay===today()&&stepReady(id,st)?"La suite demain.":st.hint;
-  return `<p class="story"><b>Histoire : ${S.title}</b> · étape ${Math.min(n+1,S.steps.length)} sur ${S.steps.length}<br>${next}</p>`}
+    :R.stepDay===today()&&stepReady(id,st)?"La suite demain.":st.hint;
+  return `<p class="story"><b>Histoire : ${S.title}</b> · étape ${Math.min(n+1,S.steps.length)} sur ${S.steps.length}<br>${next}</p>${n?`<button class="btn ghost" data-reread="${id}" type="button">Relire l'histoire</button>`:""}`}
+// relit les étapes déjà passées, à la suite
+function reread(id){const S=STORIES[id],n=R.story[id]||0;closeSheet();talk(S.steps.slice(0,n).flatMap(st=>st.lines),()=>foxSheet(id))}
 
 // compagnon au Café : Petit Pois, ou tout renard dont l'histoire est terminée
 const canBuddy=id=>isRes(id)&&(id==="petitpois"||(STORIES[id]&&(R.story[id]||0)>=STORIES[id].steps.length));
