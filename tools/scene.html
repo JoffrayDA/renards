@@ -23,6 +23,10 @@ h1{font:20px "Mochiy Pop One",sans-serif;margin:4px 0 10px}
 .fox svg{display:block;width:100%;overflow:visible}
 .fox.walking .bob{animation:hop .2s ease-in-out infinite alternate}
 @keyframes hop{to{transform:translateY(-5%) scaleY(.97)}}
+.lick{animation:lick .9s ease-in-out infinite}
+@keyframes lick{0%,100%{transform:rotate(0)}50%{transform:rotate(16deg) translateY(-2px)}}
+.tongue{animation:tongue .9s ease-in-out infinite}
+@keyframes tongue{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
 .fox.inside{opacity:0;pointer-events:none;transition:opacity .6s,left 1s linear,top 1s linear}
 .fox.f1 .w0,.fox:not(.f1) .w1{display:none}
 .zz{animation:zz 2.4s ease-in-out infinite;opacity:0}

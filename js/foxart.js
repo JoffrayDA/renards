@@ -121,7 +121,8 @@ function foxArt(f,o={}){
   const tailBack=(rot=0,ox=90,oy=82)=>tailG(`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64)}</g></g>`);
   // pour l'épouvantail : pas d'yeux boutons quand les yeux sont fermés
   const closedPose=["happy","sleep","groom","eat"].includes(pose);if(closedPose)o.closed=1;
-  let body,T=35,Y=55,N=74,W=30;
+  // fx : parties animées, dessinées hors du filtre #wobble (sinon il est recalculé à chaque image)
+  let body,fx="",T=35,Y=55,N=74,W=30;
   if(pose==="happy"){
     // étirée vers le haut, pattes levées, queue haute
     T=27;Y=49;N=68;W=29;
@@ -137,8 +138,10 @@ function foxArt(f,o={}){
     T=42;Y=64;N=82;W=31;
     body=tailBack(-10)+ears(7,8)+bun(T,88,37)+faceOf(Y,"joy")+paws(89,47,73);
   }else if(pose==="groom"){
-    // toilette : une patte frotte la joue, petite langue rose
-    body=tailBack(-6)+ears(0,-6)+bun(T,88,36)+faceOf(Y,"shut")+paws(89,62,72)+(gh?"":`<path d="M64.5 ${Y+8} q1.5 3.6 3.4 .4" fill="#f6a5b4" stroke-width="1.6"/><ellipse cx="39" cy="${Y+12}" rx="6" ry="7.6" fill="${c.s}" transform="rotate(20 39 ${Y+12})"/>`);
+    // toilette : une patte frotte la joue en va-et-vient (pivot au coude), la petite langue sort au même rythme
+    body=tailBack(-6)+ears(0,-6)+bun(T,88,36)+faceOf(Y,"shut")+paws(89,62,72);
+    if(!gh)fx=`<g class="tongue" style="transform-origin:60px ${Y+7}px"><path d="M56.6 ${Y+7} Q56.4 ${Y+13.4} 60 ${Y+13.4} Q63.6 ${Y+13.4} 63.4 ${Y+7}Z" fill="#f6a5b4" stroke-width="1.6"/><path d="M60 ${Y+8.4} V${Y+11}" stroke="#e2849a" stroke-width="1.1"/></g>`
+      +`<g class="lick" style="transform-origin:46px ${Y+22}px"><ellipse cx="39" cy="${Y+12}" rx="6" ry="7.6" fill="${c.s}" transform="rotate(20 39 ${Y+12})"/></g>`;
   }else if(pose==="up"){
     // regarde en l'air (la pluie, une luciole) : visage remonté, oreilles en arrière
     Y=50;N=70;
@@ -152,9 +155,10 @@ function foxArt(f,o={}){
     body=tailBack(ex==="surprise"?-14:0)+ears(ex==="surprise"?-3:0,ex==="sad"?-26:ex==="shy"?-12:0)+bun(T,88,36)+faceOf(Y,ex==="joy"||ex==="open"?ex:ex)+paws(89);
   }
   body+=markOf(Y)+acc(T,Y,N,W);
+  const fxG=fx?`<g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${fx}</g>`:"";
   const zz=pose==="sleep"?`<text class="zz" x="70" y="42" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="80" y="32" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
-  if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g></g></svg>`;
+  if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}</g></svg>`;
   return `<svg viewBox="0 -16 120 116" class="${o.cls||""}${gh?" ghosty":""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"${gh?' opacity=".82"':""}>
   <ellipse cx="60" cy="${gh?99:92}" rx="${gh?26:40}" ry="${gh?3.5:5}" fill="#3d2a35" opacity="${gh?.09:.14}"/>
-  <g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${zz}</g></svg>`;
+  <g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}${zz}</g></svg>`;
 }

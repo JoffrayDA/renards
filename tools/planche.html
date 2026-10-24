@@ -27,6 +27,11 @@ nav button[aria-pressed=true]{background:#5b4250;color:#fff;border-color:#5b4250
 .talk span{font-size:15px;line-height:1.35}
 .walk svg{animation:hop .36s ease-in-out infinite alternate}
 @keyframes hop{to{transform:translateY(-4px) scaleY(.97)}}
+.lick{animation:lick .9s ease-in-out infinite}
+@keyframes lick{0%,100%{transform:rotate(0)}50%{transform:rotate(16deg) translateY(-2px)}}
+.tongue{animation:tongue .9s ease-in-out infinite}
+@keyframes tongue{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
