@@ -49,3 +49,12 @@ function storyHTML(id){const S=STORIES[id];if(!S)return "";const n=R.story[id]||
     :lvOf(R.res[id].h)<st.lv?`La suite quand vous serez plus proches (amitié ${st.lv}).`
     :R.storyDay===today()&&stepReady(id,st)?"La suite demain.":st.hint;
   return `<p class="story"><b>Histoire : ${S.title}</b> · étape ${Math.min(n+1,S.steps.length)} sur ${S.steps.length}<br>${next}</p>`}
+
+// compagnon au Café : Petit Pois, ou tout renard dont l'histoire est terminée
+const canBuddy=id=>isRes(id)&&(id==="petitpois"||(STORIES[id]&&(R.story[id]||0)>=STORIES[id].steps.length));
+function buddyHTML(id){if(!canBuddy(id))return "";
+  const own=((load(CAFEKEY)||{}).own||{}).serveur,n=(R.tog[id]||0);
+  const why=own?"":" Sa place à côté de toi s'ouvre avec l'Apprenti serveur, dans la boutique du Café.";
+  const days=n?` ${n} journée${n>1?"s":""} ensemble au Café.`:"";
+  return R.buddy===id?`<p class="story"><b>Ton compagnon au Café.</b> Chaque journée ensemble ajoute un cœur.${days}${why}</p>`
+    :`<p class="story">Il peut t'accompagner au Café : même aide que Petit Pois, et chaque journée ensemble ajoute un cœur.${why}</p><button class="btn" data-buddy="${id}" type="button">L'emmener au Café</button>`}

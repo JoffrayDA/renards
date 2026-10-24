@@ -4,6 +4,7 @@ $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});
 $("actors").appendChild(bowlEl);
 scn.rain=rainNow();
 simulate(false);
+const togGot=syncTogether();
 drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
 syncFoxes();
 checkArrival();
@@ -13,7 +14,7 @@ $("b-bowl").onclick=bowlSheet;$("b-carnet").onclick=carnet;$("b-photos").onclick
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
 // (l'accueil compte comme le moment d'histoire du jour : la première étape attend le lendemain)
 if(!R.intro)talk(INTRO,()=>{R.intro=1;R.storyDay=today();save();showNews()});else showNews();
-log(Object.keys(R.res).length>1?"Bienvenue au refuge.":"Petit Pois t'attendait.");
+log(togGot.length?togGot.map(([id,n])=>`${FOX[id].name} a passé ${n} journée${n>1?"s":""} avec toi au Café : +${n} cœur${n>1?"s":""}.`).join(" "):Object.keys(R.res).length>1?"Bienvenue au refuge.":"Petit Pois t'attendait.");
 
 setInterval(tick,100);
 // toutes les 30 s : simulation (glands, gamelle, sauvages), arrivée du jour, moment de la journée, pluie

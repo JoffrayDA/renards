@@ -1,6 +1,6 @@
 # La Clairière, version 2 — fiche de conception
 
-*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Histoire de Petit Pois codée le 24/10/2026 (`js/clairiere/story.js`). Reste : les autres histoires, le compagnon, Roussette héroïne.*
+*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Histoire de Petit Pois codée le 24/10/2026 (`js/clairiere/story.js`). Compagnon codé le 25/10/2026. Reste : les autres histoires, Roussette héroïne (le nom choisi est fait).*
 
 ## L'intention
 

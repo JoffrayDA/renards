@@ -45,6 +45,7 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 #custs{z-index:1}
 #counter{z-index:2}
 #helper{z-index:3;pointer-events:none}
+#helper .buddy>div.hop{animation:joy .18s ease-out 2 alternate}
 #closed{z-index:4;display:grid;place-items:center;background:rgba(91,66,80,.16)}
 .closed-in{display:flex;flex-direction:column;align-items:center;gap:8px}
 .sign{font-family:var(--display);background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:4px 18px;font-size:clamp(16px,4vw,24px);transform:rotate(-4deg);box-shadow:0 4px 0 var(--ink)}

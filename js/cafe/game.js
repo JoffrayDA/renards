@@ -67,11 +67,11 @@ function update(dt){
   if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,5.2,6][lv("fourpro")];dirty=true}}
   else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
-  // Petit Pois : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé
+  // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé
   if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
     for(const c of w){let got=0;for(const it of c.order)if(!it.done&&!it.o&&REC[it.r].kind==="bake"&&G.vit[it.r]>0){G.vit[it.r]--;it.done=1;got++}
-      if(got){floatAt(custEl(c),"Petit Pois !");if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
+      if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);buddyHop();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
 }}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
@@ -91,7 +91,7 @@ function deliver(c,el){
 function complete(c){
   const frac=Math.max(0,c.pat/c.patMax),base=c.order.reduce((a,o)=>a+itemPrice(itemKey(o)),0);
   let tip=Math.round(base*.45*frac*tipMult()*(G.boost.tips?2:1));
-  if(frac>=.5){S.happy[c.fox]=(S.happy[c.fox]||0)+1;G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo);if(G.combo===3)qEvent("combo3")}else G.combo=0;
+  if(frac>=.5){S.happy[c.fox]=(S.happy[c.fox]||0)+1;G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo);if(G.combo===3)qEvent("combo3");if(G.combo>=3)buddyHop()}else G.combo=0;
   const cb=G.combo>=3?Math.min(G.combo,6)-1:0;
   let tot=base+tip+cb;if(c.vip){tot*=3;G.vipServed++;qEvent("vip")}
   // la recette (objectif, étoiles) compte le prix payé ; on ne garde en pièces que le bénéfice, et 30 % quand on rejoue

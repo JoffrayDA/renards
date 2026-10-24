@@ -51,7 +51,7 @@ const UPG={
     {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:400,ic:"comptoir2"}]},
     {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 12 % plus rapide, et les fournées brûlent un peu moins vite.",c:110},{d:"Cuisson 20 % plus rapide, et les fournées brûlent encore un peu moins vite.",c:1200}]},
     {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 15 % plus vite.",c:150},{d:"Toutes les boissons se préparent 22 % plus vite.",c:950},{d:"Toutes les boissons se préparent 30 % plus vite.",c:2800,from:31}]},
-    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Petit Pois apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320}]},
+    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Ton compagnon (Petit Pois, ou un autre ami du refuge) apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320}]},
     {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:1100,from:21}]},
     {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:1800,from:31}]}
   ],

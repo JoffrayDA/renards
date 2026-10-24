@@ -22,6 +22,10 @@ if(S.ver<3){
 }
 // le nom du joueur (Roussette par défaut) ; S.named : l'écran d'accueil où on le choisit a été vu (une fois, parties en cours comprises)
 const ME=()=>S.name||"Roussette";
+// le compagnon, à côté de Roussette quand l'Apprenti serveur est acheté : choisi au refuge (R.buddy dans la sauvegarde
+// de la Clairière, lue sans y écrire), Petit Pois par défaut. S.together[id] = {n : journées ensemble (une par jour réel), last}
+function buddy(){try{const R=JSON.parse(localStorage.getItem("clairiere-renards-v2"));const id=R&&R.buddy;if(id&&R.res&&R.res[id]&&FOX[id])return id}catch(e){}return "petitpois"}
+S.together=S.together||{};
 S.candy=S.candy||0;S.boost=S.boost||{};S.happy=S.happy||{}; // happy : clients servis contents, par renard (ils peuvent suivre Roussette au refuge)
  // bonbons d'Halloween (gardés d'une année sur l'autre)
 S.hwStars=S.hwStars||{};S.hwServed=S.hwServed||{};S.costSeen=S.costSeen||{}; // costSeen["renard:déguisement"] = nombre de visites // étoiles des Nuits, album des invités d'Halloween servis (S.hwKeep : Feu Follet reste)

@@ -50,6 +50,7 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.buy)buyBowl(b.dataset.buy);
   else if(b.dataset.fox)foxSheet(b.dataset.fox);
+  else if(b.dataset.buddy){R.buddy=b.dataset.buddy;save();toast(`${FOX[R.buddy].name} t'accompagnera au Café.`);foxSheet(R.buddy)}
   else if(b.dataset.go==="carnet")carnet();else if(b.dataset.go==="photos")photos()};
 
 function hoursLeft(){if(!R.bowl)return "";const h=(R.bowl.until-Date.now())/36e5;return h>=1?`encore ${Math.round(h)} h`:"presque vide"}
@@ -87,7 +88,7 @@ function carnet(){
 }
 function foxSheet(id){
   const f=FOX[id],r=R.res[id],M=metIds(),s=status(id,M),show=s.ok||s.seen;
-  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`);
+  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`);
 }
 
 /* ---------- nouvelles au retour ---------- */

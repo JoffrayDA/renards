@@ -13,6 +13,11 @@ R.story=R.story||{};R.souv=R.souv||{}; // histoires : étapes finies par renard 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}}
 function canFollow(id){const f=FOX[id];return f&&!f.event&&!WILD[id]&&id!=="roussette"}
 const isRes=id=>!!R.res[id];
+// compagnon au Café (Petit Pois par défaut) ; R.tog[id] = journées ensemble au Café déjà comptées en cœurs
+R.buddy=R.buddy||"petitpois";R.tog=R.tog||{};
+function syncTogether(){const T=(load(CAFEKEY)||{}).together||{},got=[];
+  for(const id in T){const n=T[id].n-(R.tog[id]||0);if(n>0&&R.res[id]){R.res[id].h+=n;got.push([id,n])}if(T[id].n>(R.tog[id]||0))R.tog[id]=T[id].n}
+  if(got.length)save();return got}
 // le nom choisi au Café (Roussette par défaut)
 const ME=()=>(load(CAFEKEY)||{}).name||"Roussette";
 

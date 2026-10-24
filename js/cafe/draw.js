@@ -183,5 +183,9 @@ function counterSVG(){
 }
 function renderDecor(){
   $("bgl").innerHTML=bgSVG();$("counter").innerHTML=counterSVG();
-  $("helper").innerHTML=S.own.serveur?`<div style="position:absolute;left:3%;bottom:30%;width:11%">${foxSVG({...FOX.petitpois,scale:1},{pose:"happy"})}</div>`:"";
+  // le compagnon : assis pendant le service, endormi quand le café est fermé
+  $("helper").innerHTML=S.own.serveur?`<div class="buddy" style="position:absolute;left:3%;bottom:30%;width:11%"><div>${foxSVG({...FOX[buddy()],scale:1},{pose:G&&G.run?"sit":"sleep"})}</div></div>`:"";
+}
+// petit saut de joie du compagnon (combo, service)
+function buddyHop(){const b=document.querySelector("#helper .buddy>div");if(!b)return;b.classList.remove("hop");void b.offsetWidth;b.classList.add("hop")
 }
