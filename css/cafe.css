@@ -234,4 +234,9 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .it.bon{background:#e3f2d6}
 .nst2{color:var(--gold-d);font-size:13px;letter-spacing:1px}.nst2 em{color:#d8ccd4;font-style:normal}
 @media (max-width:520px){.scene{aspect-ratio:7/5}.ki{width:46px;height:46px}.kb{padding:8px 3px 8px}.cust{width:23%}.ts{width:40px}.tray small{display:none}.pill.day{padding:3px 9px}}
+/* la queue de Luciole est une vraie petite lumière (js/foxart.js) */
+.lumi{animation:lumi 1.8s ease-in-out infinite}
+@keyframes lumi{50%{transform:scale(1.18);opacity:.8}}
+.spark{animation:spark 1.6s ease-in-out infinite;opacity:0;transform-box:fill-box;transform-origin:center}
+@keyframes spark{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

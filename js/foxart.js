@@ -117,10 +117,15 @@ function foxArt(f,o={}){
     }
     return dx?`<g transform="translate(${dx} 0)">${h}</g>`:h};
   const paws=(y,l=50,r=70,lift=[0,0])=>gh?"":(f.mark==="moufle"&&!sil?`<path d="M${l-8} ${y-lift[0]+3} Q${l-9} ${y-lift[0]-7} ${l-1} ${y-lift[0]-7} Q${l+8} ${y-lift[0]-7} ${l+8} ${y-lift[0]+3}Z" fill="#7cb8e0"/><path d="M${l-8} ${y-lift[0]+3} L${l+8} ${y-lift[0]+3}" stroke="#fff" stroke-width="2.4"/><path d="M${l-4} ${y-lift[0]-3} l2 2 2 -2 2 2 2 -2" fill="none" stroke="#fff" stroke-width="1.2"/>`:`<ellipse cx="${l}" cy="${y-lift[0]}" rx="7" ry="4.4" fill="${c.s}"/>`)+`<ellipse cx="${r}" cy="${y-lift[1]}" rx="7" ry="4.4" fill="${c.s}"/>`;
-  // Luciole : le bout de la queue brille un peu
-  const glow=(x,y)=>f.mark==="lueur"&&!sil?`<circle cx="${x}" cy="${y}" r="15" fill="#fff6b0" opacity=".7" stroke="none"/><circle cx="${x}" cy="${y}" r="9" fill="#fffbe0" opacity=".9" stroke="none"/>${[[9,-14,1],[-12,-6,.8],[6,12,.7]].map(([dx,dy,k])=>`<path d="M${x+dx} ${y+dy-3*k} l${k} ${2*k} ${2*k} ${k} ${-2*k} ${k} ${-k} ${2*k} ${-k} ${-2*k} ${-2*k} ${-k} ${2*k} ${-k}z" fill="#ffd84a" stroke-width="1"/>`).join("")}`:"";
+  // Luciole : le bout de la queue est une vraie petite lumière (cœur blanc, halo qui pulse, étincelles).
+  // Elle est dessinée hors du filtre #wobble, avec les parties animées (fx) ; o.glowAt garde sa position pour la Clairière.
+  const glow=(x,y,rot=0,ox=90,oy=82)=>{if(f.mark!=="lueur"||sil)return "";
+    const a=rot*Math.PI/180,gx=ox+(x-ox)*Math.cos(a)-(y-oy)*Math.sin(a),gy=oy+(x-ox)*Math.sin(a)+(y-oy)*Math.cos(a);o.glowAt=[gx,gy];
+    fx+=`<g stroke="none"><g class="lumi" style="transform-origin:${gx.toFixed(1)}px ${gy.toFixed(1)}px"><circle cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="24" fill="#fff3a0" opacity=".16"/><circle cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="16" fill="#ffe680" opacity=".32"/><circle cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="10" fill="#fff6c0" opacity=".75"/><circle cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="5.5" fill="#fff"/></g>`
+      +[[13,-15,1.2,0],[-15,-7,.9,.5],[9,14,.8,1],[-8,13,.7,1.4],[18,4,.6,.8]].map(([dx,dy,k,d])=>`<path class="spark" style="animation-delay:${d}s" d="M${(gx+dx).toFixed(1)} ${(gy+dy-4*k).toFixed(1)} q${.8*k} ${3.2*k} ${4*k} ${4*k} q${-3.2*k} ${.8*k} ${-4*k} ${4*k} q${-.8*k} ${-3.2*k} ${-4*k} ${-4*k} q${3.2*k} ${-.8*k} ${4*k} ${-4*k}Z" fill="#fff8c8"/>`).join("")+`</g>`;
+    return ""};
   const tailG=s=>gh?"":s;
-  const tailBack=(rot=0,ox=90,oy=82)=>tailG(`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64)}</g></g>`);
+  const tailBack=(rot=0,ox=90,oy=82)=>tailG(`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64,rot,ox,oy)}</g></g>`);
   // pour l'épouvantail : pas d'yeux boutons quand les yeux sont fermés
   const closedPose=["happy","sleep","groom","eat"].includes(pose);if(closedPose)o.closed=1;
   // fx : parties animées, dessinées hors du filtre #wobble (sinon il est recalculé à chaque image)
@@ -142,7 +147,7 @@ function foxArt(f,o={}){
   }else if(pose==="groom"){
     // toilette : une patte frotte la joue en va-et-vient (pivot au coude), la petite langue sort au même rythme
     body=tailBack(-6)+ears(0,-6)+bun(T,88,36)+faceOf(Y,"shut")+paws(89,62,72);
-    if(!gh)fx=`<g class="tongue" style="transform-origin:60px ${Y+7}px"><path d="M56.6 ${Y+7} Q56.4 ${Y+13.4} 60 ${Y+13.4} Q63.6 ${Y+13.4} 63.4 ${Y+7}Z" fill="#f6a5b4" stroke-width="1.6"/><path d="M60 ${Y+8.4} V${Y+11}" stroke="#e2849a" stroke-width="1.1"/></g>`
+    if(!gh)fx+=`<g class="tongue" style="transform-origin:60px ${Y+7}px"><path d="M56.6 ${Y+7} Q56.4 ${Y+13.4} 60 ${Y+13.4} Q63.6 ${Y+13.4} 63.4 ${Y+7}Z" fill="#f6a5b4" stroke-width="1.6"/><path d="M60 ${Y+8.4} V${Y+11}" stroke="#e2849a" stroke-width="1.1"/></g>`
       +`<g class="lick" style="transform-origin:46px ${Y+22}px"><ellipse cx="39" cy="${Y+12}" rx="6" ry="7.6" fill="${c.s}" transform="rotate(20 39 ${Y+12})"/></g>`;
   }else if(pose==="up"){
     // regarde en l'air (la pluie, une luciole) : visage remonté, oreilles en arrière

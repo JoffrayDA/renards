@@ -19,17 +19,24 @@ function makeFox(id,spot,o={}){
   const f={id,el,spot:null,pose:"sit",x:0,y:0,until:0,walk:null,inside:false,wild:!!o.wild};
   el.onpointerdown=e=>{e.stopPropagation();tapFox(f)};
   foxes.push(f);$("actors").appendChild(el);
+  if((LOOK[id]||{}).mark==="lueur"){f.light=document.createElement("div");f.light.className="flight";f.light.innerHTML=`<i><svg viewBox="-50 -50 100 100" aria-hidden="true">${[[9,-12,1.3,0],[-12,-5,1,.5],[7,11,.9,1],[-6,10,.8,1.4],[14,2,.7,.8],[-2,-16,.7,1.1]].map(([x,y,k,d])=>`<path class="spark" style="animation-delay:${d}s" d="M${x} ${y-4*k} q${.8*k} ${3.2*k} ${4*k} ${4*k} q${-3.2*k} ${.8*k} ${-4*k} ${4*k} q${-.8*k} ${-3.2*k} ${-4*k} ${-4*k} q${3.2*k} ${-.8*k} ${4*k} ${-4*k}Z" fill="#fffbe0"/>`).join("")}</svg></i>`;$("lights").appendChild(f.light)}
   if(spot)place(f,spot);else{f.x=EDGE.x;f.y=EDGE.y;el.style.cssText+=";"+pc(EDGE.x,EDGE.y)}
   return f;
 }
-function removeFox(f){f.el.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
+function removeFox(f){f.el.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
 function draw(f){
-  const art=FOX[f.id];
-  if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,{pose:"walk",frame:0})}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
-  else f.el.innerHTML=`<div class="flip">${foxArt(art,{pose:f.pose})}</div>`;
-  f.el.classList.toggle("walking",!!f.walk);
+  const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
+  if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
+  else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
+  f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);
 }
-function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.y);settle(f)}
+// la lumière de Luciole passe au-dessus du voile de la nuit : elle suit le bout de sa queue
+function moveLight(f,dur){if(!f.light)return;const L=f.light,g=f.glowAt||[107,64],left=f.el.classList.contains("left");
+  L.classList.toggle("off",!dark()||f.inside);
+  if(dur!=null)L.style.transitionDuration=dur+"s";
+  L.style.left=f.x/W*100+"%";L.style.top=f.y/H*100+"%";
+  const i=L.firstChild;i.style.left=(left?120-g[0]:g[0])/120*100+"%";i.style.top=(g[1]+16)/116*100+"%"}
+function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";if(f.light)f.light.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.y);settle(f)}
 // choisit une pose qui va avec l'endroit, l'heure et la pluie
 function settle(f){
   const sp=f.spot;let poses=sp.poses.slice();
@@ -48,12 +55,12 @@ function goTo(f,sp){
   const from={x:f.x,y:f.y},to=sp==="door"?DOOR:sp==="edge"?EDGE:sp,d=Math.hypot(to.x-from.x,to.y-from.y),dur=Math.max(.8,d/38);
   f.walk={to:sp,t0:Date.now(),dur:dur*1000,from,goal:to};f.spot=null;
   f.el.classList.toggle("left",to.x<from.x);draw(f);
-  requestAnimationFrame(()=>{f.el.style.transitionDuration=dur+"s";f.el.style.left=to.x/W*100+"%";f.el.style.top=to.y/H*100+"%"});
+  requestAnimationFrame(()=>{f.el.style.transitionDuration=dur+"s";f.el.style.left=to.x/W*100+"%";f.el.style.top=to.y/H*100+"%";f.x=to.x;f.y=to.y;moveLight(f,dur)});
 }
 function arrive(f){
   const w=f.walk;f.x=w.goal.x;f.y=w.goal.y;
   if(w.to==="edge"){removeFox(f);return}
-  if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");f.until=Date.now()+9000+Math.random()*9000;drawGlow();log(`${FOX[f.id].name} rentre se mettre au chaud.`);return}
+  if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");moveLight(f);f.until=Date.now()+9000+Math.random()*9000;drawGlow();log(`${FOX[f.id].name} rentre se mettre au chaud.`);return}
   f.spot=w.to;f.el.style.zIndex=Math.round(f.y);settle(f);
   if(f.wild&&w.to.bowl)log(`${FOX[f.id].name} mange à la gamelle !`);
 }

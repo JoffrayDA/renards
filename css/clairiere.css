@@ -25,13 +25,17 @@ h1 span{color:var(--coral-d)}
 .scene{position:relative;width:100%;aspect-ratio:400/480;border:3px solid #fff;box-shadow:0 0 0 2px var(--line),0 14px 30px rgba(91,66,80,.18);border-radius:26px;overflow:hidden;background:#cfe3a8;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 .scene>svg,.scene>canvas,.layer{position:absolute;inset:0;width:100%;height:100%}
 .layer{pointer-events:none}
-#actors{z-index:1}#tint{z-index:2;transition:background-color 2s,opacity 2s}#glow{z-index:3}#rain{z-index:4;pointer-events:none}
+#actors{z-index:1}#tint{z-index:2;transition:background-color 2s,opacity 2s}#glow{z-index:3}#lights{z-index:3}#rain{z-index:4;pointer-events:none}
 .fox{position:absolute;width:13.5%;transform:translate(-50%,-93%);pointer-events:auto;cursor:pointer;transition-property:left,top;transition-timing-function:linear}
 .fox .flip{transition:transform .2s}
 .fox.left .flip{transform:scaleX(-1)}
 .fox svg{display:block;width:100%;overflow:visible}
 .fox.walking .bob{animation:hop .2s ease-in-out infinite alternate}
 @keyframes hop{to{transform:translateY(-5%) scaleY(.97)}}
+.flight{position:absolute;width:13.5%;aspect-ratio:120/116;transform:translate(-50%,-93%);transition-property:left,top,opacity;transition-timing-function:linear;pointer-events:none}
+.flight i{position:absolute;width:240%;aspect-ratio:1;margin:-120% 0 0 -120%;border-radius:50%;background:radial-gradient(circle,#fffef2 0 3.5%,rgba(255,247,190,.92) 7%,rgba(255,230,120,.5) 16%,rgba(255,214,90,.2) 32%,rgba(255,206,90,.07) 50%,transparent 68%);mix-blend-mode:screen;animation:lumi 1.8s ease-in-out infinite}
+.flight i svg{display:block;width:100%;height:100%;overflow:visible}
+.flight.off{opacity:0}
 .fox.inside{opacity:0;pointer-events:none;transition:opacity .6s,left 1s linear,top 1s linear}
 .fox.f1 .w0,.fox:not(.f1) .w1{display:none}
 .tail{animation:wag 2.6s ease-in-out infinite}
@@ -42,6 +46,10 @@ h1 span{color:var(--coral-d)}
 @keyframes lick{0%,100%{transform:rotate(0)}50%{transform:rotate(16deg) translateY(-2px)}}
 .tongue{animation:tongue .9s ease-in-out infinite}
 @keyframes tongue{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+.lumi{animation:lumi 1.8s ease-in-out infinite}
+@keyframes lumi{50%{transform:scale(1.18);opacity:.8}}
+.spark{animation:spark 1.6s ease-in-out infinite;opacity:0;transform-box:fill-box;transform-origin:center}
+@keyframes spark{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}}
 .zz{animation:zz 2.4s ease-in-out infinite;opacity:0}
 @keyframes zz{0%{opacity:0;transform:translate(0,4px)}30%{opacity:1}100%{opacity:0;transform:translate(6px,-10px)}}
 .ghosty{animation:float 3s ease-in-out infinite}

@@ -72,7 +72,7 @@ function glowSVG(){
   s+=[0,1.3,2.6].map(d=>`<circle class="smoke" style="animation-delay:${d}s;transform-origin:242px 40px" cx="242" cy="38" r="6" fill="#f4f0ee"/>`).join("");
   return s;
 }
-function drawBg(){scn.phase=phaseNow();if(!dark())scn.lamps={L:false,R:false};$("bg").innerHTML=bgSVG();drawGlow();const ph=PH[scn.phase];$("tint").style.backgroundColor=ph.tint;$("tint").style.opacity=ph.a;drawPills()}
+function drawBg(){scn.phase=phaseNow();if(!dark())scn.lamps={L:false,R:false};$("bg").innerHTML=bgSVG();drawGlow();foxes.forEach(f=>moveLight(f));const ph=PH[scn.phase];$("tint").style.backgroundColor=ph.tint;$("tint").style.opacity=ph.a;drawPills()}
 function drawGlow(){$("glow").innerHTML=glowSVG()}
 function drawPills(){$("phase").textContent=PH[phaseNow()].name+(scn.rain?" · il pleut":"")}
 
