@@ -1,0 +1,161 @@
+# La Clairière, version 2 — fiche de conception
+
+*Rédigée le 24/10/2026 avec Joffray. Rien n'est codé : cette fiche est à relire et valider avant la première ligne.*
+
+## L'intention
+
+La Clairière était l'idée de départ de l'app (un Tamagotchi de renards). Le Café est venu ensuite pour gamifier. Les deux ont deux rôles différents :
+
+- **le Café**, c'est la tension : objectifs, échec possible, étoiles ;
+- **la Clairière**, c'est le moment pour souffler : kawaii, cosy, calme, il pleut. Elle ne doit pas être addictive mais **désirable**.
+
+On ne juge donc pas la Clairière avec les critères du Café. C'est ce qui a abîmé la version 1 : visites accélérées, glands trop faciles, paliers à acheter, mini-jeux.
+
+**Le récit.** Roussette tient le Café le jour. Le soir, elle rentre dans sa petite maison en forêt, et certains de ses clients la suivent. La Clairière est **son refuge, et le joueur, c'est Roussette.**
+
+## Ce qu'on garde, ce qu'on supprime
+
+| On garde | On supprime |
+|---|---|
+| Les 30 renards, leurs bios et leurs couleurs | Les deux mini-jeux (Cache-cache, Repas express) |
+| Les niveaux d'amitié (1 à 5) | Les glands qui tombent du ciel (mini-jeux, visites accélérées) |
+| Les souvenirs, mais gagnés au bout d'une histoire | Les 4 zones achetables |
+| La météo, la pluie, l'ambiance, la musique (Forêt enchantée) | Les glands dorés |
+| La simulation page fermée (les renards vivent pendant ton absence) | Les 9 emplacements fixes |
+| La vue en hauteur, refaite (voir plus bas) | Les poses actuelles : elles sont redessinées |
+| Les glands, mais beaucoup plus rares (voir « Économie ») | |
+| Les gamelles à plusieurs niveaux de prix | |
+
+## Le lieu
+
+**Une seule scène**, vue **en plongée** comme le jardin de Neko Atsume : caméra en hauteur, sol vu en biais, renards vus de face ou de trois quarts. Une vraie vue de dessus montrerait le dos des renards et leur ferait perdre leur visage.
+
+- Au fond, en bordure de forêt, **la petite maison en bois de Roussette** : fenêtres éclairées d'une lumière chaude, cheminée qui fume, **porche abrité**.
+- Devant, une clairière de mousse avec des **endroits** où les renards vont : le porche, une souche, un tapis de feuilles, une flaque ou un petit étang, un banc, la gamelle près de la porte, des lanternes dans les branches.
+- **Cycle du jour en temps réel** : aube, jour, crépuscule, nuit.
+- **La météo change la scène.** Quand il pleut, les renards se serrent sous le porche. Quand il fait beau, ils s'éparpillent dans l'herbe.
+- **On n'entre pas dans la maison en v1**, mais elle est habitée : le soir, on devine des silhouettes de renards derrière les fenêtres, la porte est entrouverte. L'intérieur viendra plus tard, comme récompense (voir « Plus tard »).
+
+## La vie des renards : par petits sauts
+
+Les renards ne déambulent pas librement : il faudrait gérer les obstacles, l'ordre devant/derrière et les collisions, pour 30 personnages. À la place :
+
+- chaque renard présent a **une activité à un endroit** : dormir en boule, faire sa toilette, manger, jouer avec un autre, regarder la pluie, s'asseoir sur le banc ;
+- de temps en temps, il **change d'activité et trottine** jusqu'à l'endroit suivant. Le corps chibi rebondit avec un petit tassement à chaque pas, comme le trottinement du Café ;
+- sur place, de petites animations en boucle : respiration, queue, oreilles, clignement des yeux.
+
+C'est la vie de fond, qu'on regarde sans rien faire, comme un aquarium. Elle tourne tout le temps.
+
+**Les vrais événements restent rares : 2 par jour au maximum.** Une arrivée, une étape d'histoire, ou une lettre.
+
+## Les arrivées
+
+Deux portes d'entrée :
+
+1. **Les clients du Café.** Un renard servi content au Café peut suivre Roussette. **Au plus un nouveau renard par jour réel**, tiré parmi les clients bien servis depuis la dernière arrivée (plus on l'a bien servi, plus il a de chances). Le joueur qui enchaîne 10 journées n'en reçoit pas plus que celui qui en joue une, il a seulement plus de candidats.
+2. **La gamelle**, indépendante du Café. On la remplit, elle attire de temps en temps un **renard sauvage**. Ça tombe bien : six renards rares ne viennent jamais au Café (Marée, Perle, Somnus, Réglisse, Aurore, Yéti). La gamelle est leur seule porte d'entrée. Elle fait aussi vivre le refuge pour quelqu'un qui ne joue pas au Café.
+
+**Trois gammes de gamelle**, selon ce qu'on est prêt à dépenser :
+
+| Gamelle | Prix | Effet |
+|---|---|---|
+| Croquettes | gratuites | Les renards déjà installés restent plus longtemps. Aucun sauvage. |
+| Baies des bois | glands | Petite chance de visite d'un sauvage du sous-bois : Somnus, Réglisse, Aurore. |
+| Poisson | glands | Petite chance de visite d'un sauvage de la rivière : Marée, Perle. |
+| Rayon de miel | beaucoup de glands | Le seul mets qui tente le Yéti. |
+
+**La photo de la gamelle.** Un sauvage passe souvent pendant qu'on n'est pas là, puis repart. Il laisse une **photo** de lui en train de manger devant la gamelle, rangée dans un album. C'est la seule trace de son passage, comme dans Neko Atsume, et c'est ce qui donne sa valeur au moment « qui est venu ? ». Il faut que la photo montre ce qu'on ne voit pas ailleurs : la pose « mange », devant la gamelle choisie.
+
+C'est le principal moyen de dépenser des glands, et le seul choix de risque du refuge : on mise des glands sur une visite qui n'est pas garantie.
+
+Le moment fort : **en ouvrant la Clairière, on découvre qui est venu.** C'est la simulation page fermée qui le rend possible.
+
+## Les histoires
+
+Chaque renard a **un arc unique, écrit, en 3 étapes**, réparti sur ses niveaux d'amitié. Exemple : Mitaine a perdu une moufle. Étape 1, elle te le confie. Étape 2, tu trouves un indice. Étape 3, vous la retrouvez ensemble.
+
+- **À la fin de l'histoire**, le renard donne son **souvenir** (ici, la moufle) et peut devenir **compagnon** au Café. Le souvenir est la preuve de sa confiance.
+- **Après l'histoire**, il exprime de **petites envies qui reviennent**, sans récit : « Roussette, j'aimerais des feuilles fraîches ». Un même renard peut en redemander une quelques jours plus tard.
+- Une étape d'histoire peut demander, par exemple : un objet posé, un moment (la nuit, sous la pluie), la présence d'un autre renard, ou simplement du temps.
+- Il faut éviter les demandes génériques (« veut un objet confortable ») : l'attachement vient de ce qui est précis et propre au renard. Joffray prend en charge ce travail d'écriture.
+
+**Format des histoires : une boîte de dialogue.** En bas de l'écran, le portrait du renard dans un carré à gauche, son texte à droite (« Mince, j'ai perdu mes clés… tu m'aides ? »). Le portrait change d'expression selon la réplique : il faut donc des expressions en plus des poses (neutre, joyeux, triste, surpris, gêné).
+
+**Règle : on récompense le retour, on ne punit jamais l'absence.** Un renard ne dépérit pas parce que l'app est restée fermée. Le public peut être mineur, et Google y fait attention pour les jeux familiaux.
+
+## Économie : les glands, en beaucoup plus rare
+
+Les glands restent la monnaie de la Clairière, séparée des pièces du Café. Le problème de la v1 n'était pas les glands, mais leur rythme : visites accélérées et mini-jeux en donnaient beaucoup trop.
+
+- **Ce qui en donne** : les renards installés laissent quelques glands chaque jour (un peu plus selon l'amitié), et chaque petite envie satisfaite en donne. Les mini-jeux disparaissent, et avec eux la principale source d'abus.
+- **Ce qui en coûte** : les objets du refuge et les gamelles de baies ou de miel.
+- **Les étapes d'histoire donnent des objets**, pas des glands : un objet nécessaire à une histoire ne doit jamais bloquer faute de glands.
+- **Cible de rythme, à vérifier par simulation** (comme `tools/balance-bot.py --economie` pour le Café) : un objet ordinaire tous les 2 à 3 jours de jeu normal, une gamelle de miel une fois par semaine au plus.
+
+## Le compagnon au Café
+
+- **Une seule place**, à côté de Roussette. **Petit Pois** l'occupe par défaut. La place s'ouvre avec l'achat de l'Apprenti serveur, qui coûte 320 pièces et peut déjà s'acheter dès le jour 1 (`UPG` dans `js/cafe/data.js`). Rien à changer : c'est le kit prévu (`KIT`) qui le place au jour 19, pas une limite du jeu. Un joueur qui l'achète plus tôt voit son objectif relevé par `equipBonus`, comme pour toute amélioration achetée en avance.
+- À la Clairière, on peut le remplacer par **n'importe quel renard dont l'histoire est terminée**. Ce n'est pas obligatoire.
+- **Même rôle, autre visage** : le compagnon fait exactement ce que fait Petit Pois (Apprenti serveur). L'équilibrage, le bot, les graines, les objectifs et `equipBonus` ne changent pas. Le choix reste un choix d'affection, pas d'efficacité.
+- Ce qu'il apporte : il **réagit** pendant le service (bulle, saut de joie sur un combo, bâillement en fin de journée), il **apparaît dans l'écran de fin**, et **chaque journée passée ensemble au Café fait monter son amitié** à la Clairière.
+
+## Roussette, l'héroïne
+
+- **Elle n'est plus cliente du Café.** On la retire de `REG` (`js/cafe/data.js:109`). Le client est tiré avec `Math.random` et pas avec la graine (`js/cafe/game.js:36`) : l'équilibrage ne bouge pas. Au jour 1, Galette la remplace.
+- **Elle a sa propre page en tête du carnet** (« Roussette, c'est toi »), avec ses tenues. Elle ne compte plus dans les renards à rencontrer.
+- **Un 30e renard est à inventer** pour la remplacer, pensé pour le refuge dès le départ. Un renard commun, qui vient aussi au Café. Pistes de noms :
+  - **Lumignon (abandonné)** : son rôle passe à **Luciole**, qui a déjà la queue qui brille. C'est elle qui allume chaque soir les lanternes du refuge ;
+  - **Gribouille (retenu)** : dessine du bout de la patte sur les vitres embuées les jours de pluie. Pelage vieux rose, béret, taches de peinture, bout de la queue trempé dans le bleu comme un pinceau. Ses dessins sur la vitre peuvent être ses cadeaux ;
+  - **Clochette (gardée pour plus tard)** : un grelot au cou, on l'entend avant de la voir. Elle arrive avec les bruitages : son grelot est le premier son du refuge.
+
+**Principe pour les mises à jour** : chaque nouveauté arrive avec un renard dont l'histoire l'introduit. Sésame ouvre la maison, Clochette apporte les sons. Une mise à jour sur le store, c'est un nouveau visage, pas seulement une fonction.
+  - **Sésame (gardé pour plus tard)** : garde la clé de la maison et la perd tout le temps. Il arrive avec l'intérieur de la maison : son histoire, c'est retrouver la clé, et la fin de son histoire ouvre la porte ;
+- **Petit Pois est le premier arrivant** à la Clairière, et sa première histoire ouvre le jeu. C'est un renardeau, ce qui explique qu'il suive Roussette partout.
+- Plus tard : changer la couleur du pelage de Roussette (`foxSVG` dessine à partir des couleurs, donc les tenues restent compatibles). Un cosmétique tout trouvé pour la boutique.
+
+## Le dessin : planche de modèle d'abord
+
+Prototype en cours : `js/foxart.js` (dessin) et `tools/planche.html` (planche à ouvrir dans le navigateur, avant / après). Pas encore branché sur les jeux.
+
+Constat de départ : les trois poses actuelles sont trois modèles différents (brioche assise, tête posée sur un corps mince pour « content », petite tête au bout d'un long pain pour « dort »). Autre constat : une dizaine de renards sont orange ou beige, souvent sans accessoire (Roussette, Galette, Pantoufle étaient indiscernables). On les distingue par des **motifs** (liste blanche, taches de rousseur, chaussettes, bonnet), pas seulement par la couleur.
+
+Avant la scène, on dessine **une planche de modèle** : un seul corps de référence, des proportions fixes, et toutes les poses.
+
+- **Poses** : assis (l'actuelle, réussie), endormi en boule (à refaire), couché éveillé, marche en rebond, toilette, mange, joue, regarde en l'air.
+- Chaque renard varie seulement par ses couleurs, son accessoire et, rarement, une **taille assumée** (Petit Pois renardeau, Zaza aux grandes oreilles, Yéti). Les écarts involontaires disparaissent.
+- **Un seul fichier de dessin partagé par les deux jeux** (par exemple `js/foxes-art.js`). Aujourd'hui `foxSVG` est copié dans chaque jeu, et les renards finissent par ne plus être pareils d'un jeu à l'autre.
+
+## Technique
+
+- Découper la Clairière comme le Café : `css/clairiere.css`, `js/clairiere/*.js`, sans build. Ajouter les fichiers à `FILES` dans `sw.js` et incrémenter `CACHE`.
+- Les animations restent hors du filtre `#wobble`, sinon il est recalculé à chaque image (leçon du Café).
+- La simulation page fermée est gardée, mais elle simule des activités, des arrivées et les glands laissés par les renards.
+
+## Ordre de travail
+
+1. Planche de modèle des renards (fichier partagé).
+2. La scène : maison, porche, endroits, jour/nuit, pluie.
+3. La vie par petits sauts.
+4. Les arrivées (Café et gamelle) et la simulation page fermée.
+5. **Les histoires de 3 à 5 renards seulement**, dont Petit Pois.
+6. Le compagnon au Café.
+7. Roussette héroïne (retrait de `REG`, page de carnet).
+
+Puis **une semaine de test avec la copine de Joffray**. Le critère n'est pas « c'est mignon ». C'est : **est-ce qu'elle ouvre la Clairière sans qu'on le lui demande ?** Si oui, on écrit les autres histoires et on ajoute la suite. Sinon, on revoit le ressort avant d'ajouter du contenu.
+
+## Plus tard
+
+- **L'intérieur de la maison**, ouvert par l'histoire de Sésame : cheminée, coussins, renards endormis près du feu. C'est le lieu naturel de la décoration et des cosmétiques payants.
+- **L'appareil photo** et les **scènes rares** entre deux renards.
+- La couleur du pelage de Roussette.
+- Feu Follet et les invités d'Halloween au refuge.
+
+## Les parties existantes
+
+Nouvelle sauvegarde `clairiere-renards-v2`. L'ancienne (`clairiere-renards-v1`) reste intacte dans le téléphone. On n'en reprend qu'une chose : **les renards déjà rencontrés**, notés « déjà croisés » dans le carnet. L'amitié, les souvenirs et les glands repartent de zéro, puisque les souvenirs viennent maintenant des histoires.
+
+## Questions encore ouvertes
+
+1. **Gribouille** : son histoire.
+2. **Les chiffres des glands** : gains par jour, prix des objets et des gamelles, à fixer par simulation.
+3. **Les objets du refuge** : la liste complète, en partant de ceux que les histoires demandent.

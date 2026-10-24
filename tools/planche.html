@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planche des renards</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+p{margin:0 0 14px;opacity:.8}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+nav button{font:inherit;border:2px solid #ead9cf;background:#fffaf5;color:inherit;border-radius:99px;padding:4px 12px;cursor:pointer}
+nav button[aria-pressed=true]{background:#5b4250;color:#fff;border-color:#5b4250}
+.fox{background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:8px;margin-bottom:10px}
+.fox strong{display:block;font-size:13px;margin-bottom:4px}
+.row{display:flex;flex-wrap:wrap;align-items:flex-end}
+.row figure{margin:0;width:var(--w,110px);text-align:center}
+.row svg{display:block;width:100%}
+.row figcaption{font-size:11px;opacity:.6}
+.label{font-size:11px;font-weight:700;opacity:.5;margin:6px 0 0}
+.row.portraits figure{width:86px}
+.row.portraits svg{background:#f3e6dc;border:2px solid #ead9cf;border-radius:12px;box-sizing:border-box}
+.talk{display:flex;gap:12px;align-items:center;max-width:560px;background:#fffaf5;border:3px solid #5b4250;border-radius:18px;padding:10px;margin:0 0 16px;box-shadow:0 4px 0 #5b4250}
+.talk .pic{width:84px;flex:none;background:#f3e6dc;border-radius:12px}
+.talk .pic svg{display:block;width:100%}
+.talk b{display:block;font-size:13px;margin-bottom:2px}
+.talk span{font-size:15px;line-height:1.35}
+.walk svg{animation:hop .36s ease-in-out infinite alternate}
+@keyframes hop{to{transform:translateY(-4px) scaleY(.97)}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Planche des renards</h1>
+<p>En haut de chaque carte, les poses actuelles ; en dessous, les nouvelles, toutes tirées de la brioche assise.</p>
+<div class="talk" id="talk"></div>
+<nav id="nav"></nav>
+<div id="list"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const OLD=[["sit","assis"],["happy","content"],["sleep","dort"]];
+const NEW=[["sit","assis"],["happy","content"],["sleep","dort"],["lie","couché"],["eat","mange"],["groom","toilette"],["up","regarde en l'air"],["walk","trottine"]];
+const EXPR=[["open","neutre"],["joy","joyeux"],["sad","triste"],["surprise","surpris"],["shy","gêné"]];
+NEW_FOXES.forEach(f=>FOX[f.id]=f);
+const GROUPS={"Nouveaux rôles":["gribouille","luciole"],"Roussette, Galette, Pantoufle":["roussette","galette","pantoufle"],"Sosies":["biscuit","brioche","cannelle","mitaine","painepice","grignote","givre","flocon","luciole"],"Quelques-uns":["petitpois","charbon","zaza","brume","yeti"],"Halloween":HWF.map(f=>f.id),"Tous":[...FOXES,...NEW_FOXES].map(f=>f.id)};
+let group="Nouveaux rôles",walkFrame=0;
+function fig(svg,cap,cls=""){return `<figure class="${cls}">${svg}<figcaption>${cap}</figcaption></figure>`}
+function render(){
+  $("nav").innerHTML=Object.keys(GROUPS).map(g=>`<button type="button" aria-pressed="${g===group}" data-g="${g}">${g}</button>`).join("");
+  $("list").innerHTML=GROUPS[group].map(id=>{const f=FOX[id];return `<div class="fox" data-id="${id}"><strong>${f.name}</strong>
+    <p class="label">Avant</p><div class="row">${OLD.map(([p,n])=>fig(foxSVG(f,{pose:p}),n)).join("")}</div>
+    <p class="label">Portrait (dialogues)</p><div class="row portraits">${EXPR.map(([e,n])=>fig(foxArt(f,{expr:e,portrait:1}),n)).join("")}</div>
+    <p class="label">Après</p><div class="row">${NEW.map(([p,n])=>fig(foxArt(f,{pose:p,frame:walkFrame}),n,p==="walk"?"walk":"")).join("")}</div></div>`}).join("");
+}
+$("nav").onclick=e=>{const b=e.target.closest("[data-g]");if(b){group=b.dataset.g;render()}};
+render();
+// exemple de boîte de dialogue : l'expression change à chaque réplique
+const LINES=[["sad","Mince… j'ai perdu ma deuxième moufle. Tu m'aides à la chercher ?"],["surprise","Attends… tu as entendu ? Ça venait de sous la souche !"],["joy","Elle était là ! Merci, Roussette !"],["shy","Euh… je peux rester dormir ici ce soir ?"]];
+let li=0;function talk(){const [e,t]=LINES[li];$("talk").innerHTML=`<div class="pic">${foxArt(FOX.mitaine,{expr:e,portrait:1})}</div><div><b>Mitaine</b><span>${t}</span></div>`;li=(li+1)%LINES.length}
+talk();setInterval(talk,2600);
+// les deux images de la marche alternent
+setInterval(()=>{walkFrame^=1;
+  document.querySelectorAll(".fox").forEach(card=>{const w=card.querySelector(".walk");if(w)w.firstElementChild.outerHTML=foxArt(FOX[card.dataset.id],{pose:"walk",frame:walkFrame})})},360);
+</script>
+</body>
+</html>

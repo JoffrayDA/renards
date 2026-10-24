@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le refuge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#5b4250;--bg:#f6ece4;--card:#fffaf5;--line:#ead9cf}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px "Zen Maru Gothic",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px 16px 24px}
+h1{font:20px "Mochiy Pop One",sans-serif;margin:4px 0 10px}
+.scene{position:relative;width:100%;max-width:520px;aspect-ratio:400/480;border:3px solid var(--ink);border-radius:22px;overflow:hidden;background:#cfe3a8;user-select:none;-webkit-user-select:none}
+.scene>svg,.scene>canvas,.layer{position:absolute;inset:0;width:100%;height:100%}
+.layer{pointer-events:none}
+#bg,#glow{will-change:transform}
+#actors{z-index:1}#tint{z-index:2}#glow{z-index:3}#rain{z-index:4}
+#tint{transition:background-color 2s,opacity 2s}
+.fox{position:absolute;width:13.5%;transform:translate(-50%,-93%);pointer-events:auto;cursor:pointer;transition-property:left,top;transition-timing-function:linear}
+.fox .flip{transition:transform .2s}
+.fox.left .flip{transform:scaleX(-1)}
+.fox svg{display:block;width:100%;overflow:visible}
+.fox.walking .bob{animation:hop .2s ease-in-out infinite alternate}
+@keyframes hop{to{transform:translateY(-5%) scaleY(.97)}}
+.fox.inside{opacity:0;pointer-events:none;transition:opacity .6s,left 1s linear,top 1s linear}
+.fox.f1 .w0,.fox:not(.f1) .w1{display:none}
+.zz{animation:zz 2.4s ease-in-out infinite;opacity:0}
+@keyframes zz{0%{opacity:0;transform:translate(0,4px)}30%{opacity:1}100%{opacity:0;transform:translate(6px,-10px)}}
+.bowl{position:absolute;width:9%;transform:translate(-50%,-60%);pointer-events:none}
+.bowl svg{display:block;width:100%}
+.bubble{position:absolute;transform:translate(-50%,-100%);background:var(--card);border:2.5px solid var(--ink);border-radius:12px;padding:4px 10px;font-size:13px;font-weight:700;white-space:nowrap;z-index:5;pointer-events:none;box-shadow:0 3px 0 var(--ink)}
+.bubble small{display:block;font-weight:500;font-size:11.5px;opacity:.75}
+.smoke{animation:smoke 4s ease-out infinite;opacity:0}
+@keyframes smoke{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:.7}100%{opacity:0;transform:translate(10px,-34px) scale(1.4)}}
+.fly{animation:fly 5s ease-in-out infinite alternate}
+@keyframes fly{0%{transform:translate(0,0);opacity:.2}50%{opacity:1}100%{transform:translate(14px,-18px);opacity:.3}}
+.lit{animation:flick 3s ease-in-out infinite alternate}
+@keyframes flick{to{opacity:.8}}
+.bar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0 6px;max-width:520px}
+.bar button{font:inherit;font-size:13.5px;font-weight:700;border:2.5px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:5px 12px;cursor:pointer}
+.bar button[aria-pressed=true]{background:var(--ink);color:#fff}
+#log{min-height:22px;font-size:14px;text-align:center;max-width:520px;opacity:.85}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Le refuge</h1>
+<div class="scene" id="scene">
+  <svg id="bg" viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+  <div class="layer" id="actors" style="pointer-events:none"></div>
+  <div class="layer" id="tint"></div>
+  <svg class="layer" id="glow" viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+  <canvas class="layer" id="rain"></canvas>
+</div>
+<div class="bar" id="bar"></div>
+<p id="log"></p>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+/* Prototype de la scène du refuge (Clairière v2). Vue en plongée, maison de Roussette au fond,
+   renards qui vivent par petits sauts. Voir docs/clairiere-v2.md. */
+const W=400,H=480,O=`stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+NEW_FOXES.forEach(f=>FOX[f.id]=f);
+const pc=(x,y)=>`left:${x/W*100}%;top:${y/H*100}%`;
+
+/* ---------- endroits ---------- */
+// cov : à l'abri de la pluie ; poses : ce qu'on peut y faire
+const SPOTS=[
+  {id:"p1",x:136,y:238,cov:1,poses:["sleep","lie","sit","groom","up"]},
+  {id:"p2",x:164,y:236,cov:1,poses:["sleep","lie","sit","groom","up"]},
+  {id:"p3",x:238,y:236,cov:1,poses:["sleep","lie","sit","groom","up"]},
+  {id:"p4",x:266,y:238,cov:1,poses:["sleep","lie","sit","groom","up"]},
+  {id:"bowl",x:240,y:262,poses:["eat"],bowl:1},
+  {id:"stump",x:85,y:304,poses:["sit","up","groom","sleep"]},
+  {id:"leaves",x:322,y:336,poses:["sleep","lie","sleep"]},
+  {id:"bench1",x:284,y:404,poses:["sit","sleep","groom"]},
+  {id:"bench2",x:316,y:404,poses:["sit","lie","up"]},
+  {id:"pond",x:174,y:420,poses:["sit","up","lie"]},
+  {id:"lampL",x:62,y:264,poses:["up","sit"],lamp:"L"},
+  {id:"lampR",x:338,y:264,poses:["up","sit"],lamp:"R"},
+  {id:"g1",x:150,y:328,poses:["sit","happy","groom","lie"]},
+  {id:"g2",x:252,y:318,poses:["sit","happy","groom","lie"]},
+  {id:"g3",x:204,y:372,poses:["sit","happy","up","lie"]},
+  {id:"g4",x:66,y:372,poses:["sit","groom","sleep"]},
+  {id:"g5",x:350,y:388,poses:["sit","happy","lie"]},
+  {id:"g6",x:236,y:452,poses:["sit","happy","groom"]},
+  {id:"g7",x:120,y:462,poses:["sit","lie","up"]}
+];
+const SPOT=Object.fromEntries(SPOTS.map(s=>[s.id,s]));
+const DOOR={x:200,y:240};
+const ACT={sit:"se repose",happy:"joue",sleep:"dort",lie:"paresse",groom:"fait sa toilette",up:"regarde le ciel",eat:"mange"};
+const PLACE={p1:"sous le porche",p2:"sous le porche",p3:"sous le porche",p4:"sous le porche",bowl:"à la gamelle",stump:"sur la souche",leaves:"dans les feuilles",bench1:"sur le banc",bench2:"sur le banc",pond:"au bord de la mare",lampL:"près des lanternes",lampR:"près des lanternes"};
+
+/* ---------- état ---------- */
+const st={phase:"auto",rain:false,bowl:3,lamps:{L:false,R:false}};
+const RESIDENTS=["petitpois","luciole","gribouille","mitaine","biscuit","charbon","galette","pantoufle","brume","somnus"];
+const foxes=[];
+
+/* ---------- moments de la journée ---------- */
+const PH={aube:{sky:["#ffd2bd","#fde9d8"],tint:"#ffb7a0",a:.12},jour:{sky:["#bfe0f2","#e9f5ee"],tint:"#fff",a:0},crepu:{sky:["#b99ad6","#f7c1a0"],tint:"#8a6ab0",a:.22},nuit:{sky:["#252b62","#47467f"],tint:"#262c6a",a:.45}};
+const phaseNow=()=>{if(st.phase!=="auto")return st.phase;const h=new Date().getHours();return h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit"};
+const dark=()=>["crepu","nuit"].includes(phaseNow());
+
+/* ---------- décor ---------- */
+function rng(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646}}
+function bgSVG(){
+  const ph=PH[phaseNow()],r=rng(11);let s=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ph.sky[0]}"/><stop offset="1" stop-color="${ph.sky[1]}"/></linearGradient>
+  <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bcd99a"/><stop offset="1" stop-color="#d6e9b4"/></linearGradient></defs>`;
+  s+=`<rect width="400" height="480" fill="url(#grass)"/><rect width="400" height="150" fill="url(#sky)"/>`;
+  s+=`<g filter="url(#wobble)">`;
+  // forêt du fond : deux rangées de houppiers ronds
+  for(const [row,col,y0] of [[0,"#9cc796",34],[1,"#7fb27f",70]])for(let i=-1;i<11;i++){const x=i*40+(row?20:0)+r()*10,y=y0+r()*18,R=34+r()*12;s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${R.toFixed(1)}" fill="${col}" ${O}/>`}
+  s+=`<path d="M0 150 Q100 132 200 146 Q300 132 400 150 L400 200 L0 200Z" fill="#6fa070" ${O}/>`;
+  s+=`<rect x="0" y="168" width="400" height="320" fill="url(#grass)"/>`;
+  // herbe : petites touffes et fleurs
+  for(let i=0;i<46;i++){const x=r()*400,y=180+r()*295;s+=`<path d="M${x.toFixed(1)} ${y.toFixed(1)} l-3 -6 M${x.toFixed(1)} ${y.toFixed(1)} l0 -7 M${x.toFixed(1)} ${y.toFixed(1)} l3 -6" fill="none" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}
+  for(let i=0;i<14;i++){const x=20+r()*360,y=280+r()*190,c=["#ffd1dc","#fff3a8","#d9c7f2"][i%3];s+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">${[0,72,144,216,288].map(a=>`<circle cx="${(3*Math.cos(a*Math.PI/180)).toFixed(1)}" cy="${(3*Math.sin(a*Math.PI/180)).toFixed(1)}" r="2.4" fill="${c}"/>`).join("")}<circle r="1.6" fill="#f2b84a"/></g>`}
+  // chemin de pierres plates
+  [[200,272],[193,296],[206,322],[196,350],[205,392],[196,430],[204,466]].forEach(([x,y],i)=>s+=`<ellipse cx="${x}" cy="${y}" rx="${13-i*.3}" ry="6" fill="#e3dccf" stroke="${INK}" stroke-width="2.4"/>`);
+  // arbres sur les côtés (troncs qui encadrent la clairière)
+  s+=`<path d="M14 250 Q20 200 16 150 L36 150 Q32 200 40 250Z" fill="#a9785a" ${O}/><path d="M362 250 Q368 200 364 150 L384 150 Q380 200 388 250Z" fill="#a9785a" ${O}/>`;
+  s+=`<circle cx="22" cy="128" r="40" fill="#8dbd86" ${O}/><circle cx="380" cy="128" r="40" fill="#8dbd86" ${O}/>`;
+  // la maison de Roussette
+  s+=`<rect x="232" y="44" width="20" height="40" rx="3" fill="#c9a08a" ${O}/>`;
+  s+=`<path d="M128 106 L272 106 L272 202 L128 202Z" fill="#f0c99a" ${O}/>`;
+  for(let y=124;y<200;y+=16)s+=`<path d="M130 ${y} H270" stroke="#d9ac7c" stroke-width="2"/>`;
+  s+=`<path d="M110 112 L200 42 L290 112 Q200 122 110 112Z" fill="#d98b7a" ${O}/><path d="M140 96 Q200 102 260 96 M162 79 Q200 84 238 79 M183 62 Q200 65 217 62" fill="none" stroke="#b8665a" stroke-width="2.4" stroke-linecap="round"/>`;
+  const win=x=>`<rect x="${x}" y="124" width="36" height="34" rx="5" fill="${dark()?"#ffe7a3":"#d9ecf4"}" ${O}/><path d="M${x+18} 125 V157 M${x+1} 141 H${x+35}" stroke="${INK}" stroke-width="2.4"/><path d="M${x-3} 160 H${x+39}" stroke="${INK}" stroke-width="3"/><path d="M${x+2} 162 h32 l-2 6 h-28Z" fill="#a9d68f" stroke="${INK}" stroke-width="2"/>`;
+  s+=win(146)+win(218);
+  // porte entrouverte : un filet de lumière chaude
+  s+=`<path d="M186 140 Q200 130 214 140 V202 H186Z" fill="#6a4434" ${O}/><path d="M188 142 Q195 136 202 137 V202 H188Z" fill="#ffd98a" stroke="none"/><path d="M199 136 Q207 134 213 141 V202 H199Z" fill="#a8704e" ${O}/><circle cx="203" cy="172" r="1.8" fill="#f2c45a" stroke="none"/>`;
+  // le porche : auvent, poteaux, terrasse en planches, marches
+  s+=`<path d="M106 202 L294 202 L302 246 L98 246Z" fill="#d9a777" ${O}/>`;
+  for(const y of [213,224,235])s+=`<path d="M${104-(y-202)*.1} ${y} H${296+(y-202)*.1}" stroke="#c08a5c" stroke-width="2"/>`;
+  s+=`<path d="M182 246 h36 l2 8 h-40Z M178 254 h44 l2 7 h-48Z" fill="#c99a6a" ${O}/>`;
+  s+=`<path d="M108 168 L292 168 L302 192 L98 192Z" fill="#c97b6a" ${O}/>${[128,156,184,212,240,268].map(x=>`<path d="M${x} 170 L${x-4+((x-200)*.06)} 191" stroke="#a9604f" stroke-width="2"/>`).join("")}`;
+  s+=`<rect x="102" y="190" width="7" height="54" rx="2" fill="#b58460" ${O}/><rect x="291" y="190" width="7" height="54" rx="2" fill="#b58460" ${O}/>`;
+  // guirlandes de lanternes, du porche aux arbres
+  s+=`<path d="M106 194 Q60 226 26 200 M294 194 Q340 226 374 200" fill="none" stroke="${INK}" stroke-width="1.8"/>`;
+  // la souche
+  s+=`<path d="M63 290 L63 304 Q85 316 107 304 L107 290Z" fill="#b5835a" ${O}/><ellipse cx="85" cy="290" rx="22" ry="8" fill="#e6c49a" ${O}/><ellipse cx="85" cy="290" rx="12" ry="4" fill="none" stroke="#c99a6a" stroke-width="1.8"/><path d="M60 304 q-6 4 -10 2 M110 304 q6 4 10 2" fill="none" ${O}/>`;
+  // le tas de feuilles
+  s+=`<g ${O}>${[[300,336,"#f2a35c"],[318,330,"#e8794e"],[338,334,"#f6c065"],[310,340,"#e98a5a"],[330,342,"#f2a35c"]].map(([x,y,c],i)=>`<path d="M${x-14} ${y} Q${x} ${y-14} ${x+14} ${y} Q${x} ${y+6} ${x-14} ${y}Z" fill="${c}" transform="rotate(${[-12,8,-4,14,-8][i]} ${x} ${y})"/>`).join("")}</g>`;
+  // la mare
+  s+=`<ellipse cx="96" cy="424" rx="62" ry="24" fill="#a9d3e6" ${O}/><path d="M60 420 q14 -6 28 0 M98 432 q12 -5 24 0" fill="none" stroke="#e4f3f9" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="72" cy="430" rx="10" ry="4.5" fill="#8fca7a" ${O}/><path d="M38 418 l-4 -18 M44 414 l0 -20 M150 416 l3 -16" fill="none" stroke="#6f9a60" stroke-width="3" stroke-linecap="round"/>`;
+  // le banc
+  s+=`<rect x="266" y="406" width="6" height="12" fill="#a9785a" ${O}/><rect x="328" y="406" width="6" height="12" fill="#a9785a" ${O}/><rect x="260" y="396" width="80" height="12" rx="3" fill="#d9a777" ${O}/><path d="M262 402 H338" stroke="#c08a5c" stroke-width="1.8"/>`;
+  s+=`</g>`;
+  return s;
+}
+// les lumières passent au-dessus du voile de la nuit pour vraiment briller
+function glowSVG(){
+  let s="";const lamps=(side,pts)=>pts.map(([x,y])=>{const on=st.lamps[side];return (on?`<circle class="lit" cx="${x}" cy="${y+8}" r="14" fill="#ffe08a" opacity=".45"/>`:"")+`<path d="M${x} ${y} v4" stroke="${INK}" stroke-width="1.6"/><rect x="${x-5}" y="${y+3}" width="10" height="12" rx="4" fill="${on?"#ffd36a":"#f4e6d4"}" stroke="${INK}" stroke-width="2"/>`}).join("");
+  s+=lamps("L",[[86,206],[60,214],[38,208]])+lamps("R",[[314,206],[340,214],[362,208]]);
+  if(dark()){
+    s+=[166,236].map(x=>`<circle cx="${x}" cy="141" r="26" fill="#ffe08a" opacity=".22"/>`).join("");
+    s+=`<path d="M188 142 Q195 136 202 137 V202 H188Z" fill="#ffe08a" opacity=".35"/>`;
+  }
+  if(phaseNow()==="nuit"){const r=rng(5);for(let i=0;i<16;i++)s+=`<circle cx="${(r()*400).toFixed(1)}" cy="${(r()*60).toFixed(1)}" r="${(.8+r()*1.2).toFixed(1)}" fill="#fff8d0" opacity=".8"/>`;
+    if(!st.rain)for(let i=0;i<7;i++)s+=`<circle class="fly" style="animation-delay:${(-r()*5).toFixed(1)}s" cx="${(30+r()*340).toFixed(1)}" cy="${(260+r()*190).toFixed(1)}" r="2" fill="#fff6a0"/>`}
+  // renards à l'intérieur : des silhouettes derrière les vitres
+  const inside=foxes.filter(f=>f.inside);
+  inside.slice(0,4).forEach((f,i)=>{const x=[156,170,228,242][i];s+=`<g opacity=".55"><path d="M${x-7} 158 Q${x-8} 148 ${x-5} 144 L${x-6} 136 L${x-1} 142 Q${x} 141 ${x+1} 142 L${x+6} 136 L${x+5} 144 Q${x+8} 148 ${x+7} 158Z" fill="${INK}"/></g>`});
+  // fumée de la cheminée
+  s+=[0,1.3,2.6].map(d=>`<circle class="smoke" style="animation-delay:${d}s;transform-origin:242px 40px" cx="242" cy="38" r="6" fill="#f4f0ee"/>`).join("");
+  return s;
+}
+function drawBg(){$("bg").innerHTML=bgSVG();drawGlow();const ph=PH[phaseNow()];$("tint").style.backgroundColor=ph.tint;$("tint").style.opacity=ph.a}
+function drawGlow(){$("glow").innerHTML=glowSVG()}
+
+/* ---------- gamelle ---------- */
+const bowlEl=document.createElement("div");bowlEl.className="bowl";
+function drawBowl(){const n=st.bowl;bowlEl.style.cssText=pc(240,268)+";z-index:269";
+  bowlEl.innerHTML=`<svg viewBox="0 0 40 24" aria-hidden="true"><g filter="url(#wobble)"><path d="M3 9 Q4 22 20 22 Q36 22 37 9Z" fill="#9ec3ef" ${O}/>${Array.from({length:n*3},(_,i)=>`<circle cx="${9+(i%6)*4.4}" cy="${8.5-Math.floor(i/6)*2.4}" r="2.4" fill="#c98a5a" stroke="${INK}" stroke-width="1.4"/>`).join("")}<ellipse cx="20" cy="9" rx="17" ry="4" fill="none" ${O}/></g></svg>`}
+
+/* ---------- renards ---------- */
+function makeFox(id,spot){
+  const el=document.createElement("div");el.className="fox";
+  const f={id,el,spot:null,pose:"sit",x:0,y:0,until:0,walk:null,inside:false};
+  el.onpointerdown=e=>{e.stopPropagation();say(f)};
+  foxes.push(f);$("actors").appendChild(el);place(f,spot);return f;
+}
+function draw(f){
+  const art=FOX[f.id];
+  if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,{pose:"walk",frame:0})}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
+  else f.el.innerHTML=`<div class="flip">${foxArt(art,{pose:f.pose})}</div>`;
+  f.el.classList.toggle("walking",!!f.walk);
+}
+function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.y);settle(f)}
+// choisit une pose qui va avec l'endroit, l'heure et la pluie
+function settle(f){
+  const sp=f.spot;let poses=sp.poses.slice();
+  if(phaseNow()==="nuit")poses=poses.concat(poses.filter(p=>p==="sleep"||p==="lie"),["sleep","sleep"].filter(()=>sp.poses.includes("sleep")));
+  if(st.rain&&sp.cov)poses=poses.concat(["up","up","sleep"]);
+  f.pose=sp.lamp&&f.id==="luciole"?"up":poses[Math.floor(Math.random()*poses.length)];
+  if(sp.bowl){f.pose="eat";st.bowl=Math.max(0,st.bowl-1);drawBowl();log(`${FOX[f.id].name} mange à la gamelle.`)}
+  if(sp.lamp&&f.id==="luciole"&&dark()&&!st.lamps[sp.lamp]){st.lamps[sp.lamp]=true;drawGlow();log("Luciole allume les lanternes.")}
+  f.walk=null;f.until=Date.now()+(f.pose==="sleep"?16000:7000)+Math.random()*12000;draw(f);
+}
+const taken=sp=>foxes.some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
+function goTo(f,sp){
+  const from={x:f.x,y:f.y},to=sp==="door"?DOOR:sp,d=Math.hypot(to.x-from.x,to.y-from.y),dur=Math.max(.8,d/38);
+  f.walk={to:sp,t0:Date.now(),dur:dur*1000,from,goal:to};f.spot=null;
+  f.el.classList.toggle("left",to.x<from.x);draw(f);
+  requestAnimationFrame(()=>{f.el.style.transitionDuration=dur+"s";f.el.style.left=to.x/W*100+"%";f.el.style.top=to.y/H*100+"%"});
+}
+function arrive(f){
+  const w=f.walk;f.x=w.goal.x;f.y=w.goal.y;
+  if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");f.until=Date.now()+9000+Math.random()*9000;drawGlow();log(`${FOX[f.id].name} rentre se mettre au chaud.`);return}
+  f.spot=w.to;f.el.style.zIndex=Math.round(f.y);settle(f);
+}
+// où aller ensuite
+function choose(f){
+  const free=SPOTS.filter(s=>!taken(s)&&s!==f.spot);
+  if(st.rain){
+    const cov=free.filter(s=>s.cov);
+    if(f.spot&&f.spot.cov)return Math.random()<.85?null:cov[0]||null;
+    return cov.length?cov[Math.floor(Math.random()*cov.length)]:"door";
+  }
+  if(f.id==="luciole"&&dark()){const l=free.find(s=>s.lamp&&!st.lamps[s.lamp]);if(l)return l}
+  let pool=free.filter(s=>!s.lamp||f.id==="luciole");
+  if(!st.bowl)pool=pool.filter(s=>!s.bowl);else if(Math.random()<.3&&pool.some(s=>s.bowl))return SPOT.bowl;else pool=pool.filter(s=>!s.bowl);
+  return pool[Math.floor(Math.random()*pool.length)]||null;
+}
+function tick(){
+  const now=Date.now();
+  for(const f of foxes){
+    if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
+    if(f.inside){if(!st.rain&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${FOX[f.id].name} ressort de la maison.`)}}continue}
+    if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
+  }
+  const f1=Math.floor(now/200)%2===1;for(const f of foxes)if(f.walk)f.el.classList.toggle("f1",f1);
+}
+
+/* ---------- bulle et journal ---------- */
+let bubT;
+function say(f){const b=document.querySelector(".bubble")||document.createElement("div");b.className="bubble";
+  const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
+  b.innerHTML=`${FOX[f.id].name}<small>${what}</small>`;b.style.cssText=pc(f.x,f.y-58);$("scene").appendChild(b);clearTimeout(bubT);bubT=setTimeout(()=>b.remove(),2600)}
+function log(t){$("log").textContent=t}
+
+/* ---------- pluie ---------- */
+const cv=$("rain"),cx=cv.getContext("2d");let drops=[];
+function sizeRain(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;cx.setTransform(d,0,0,d,0,0);drops=Array.from({length:90},()=>({x:Math.random()*r.width,y:Math.random()*r.height,v:260+Math.random()*160}))}
+let last=performance.now(),raining=false;
+function startRain(){if(raining)return;raining=true;last=performance.now();requestAnimationFrame(rainLoop)}
+function rainLoop(now){const dt=Math.min(.05,(now-last)/1000);last=now;const w=cv.width/(devicePixelRatio||1),h=cv.height/(devicePixelRatio||1);cx.clearRect(0,0,w,h);
+  if(st.rain){cx.strokeStyle="rgba(214,232,255,.75)";cx.lineWidth=1.6;cx.lineCap="round";cx.beginPath();for(const d of drops){d.y+=d.v*dt;d.x-=d.v*dt*.12;if(d.y>h){d.y=-10;d.x=Math.random()*w*1.1}cx.moveTo(d.x,d.y);cx.lineTo(d.x+1.4,d.y-11)}cx.stroke()}
+  if(st.rain)requestAnimationFrame(rainLoop);else raining=false}
+
+/* ---------- commandes ---------- */
+function drawBar(){
+  const P=[["auto","Heure réelle"],["aube","Aube"],["jour","Jour"],["crepu","Crépuscule"],["nuit","Nuit"]];
+  $("bar").innerHTML=P.map(([k,n])=>`<button type="button" data-ph="${k}" aria-pressed="${st.phase===k}">${n}</button>`).join("")+
+    `<button type="button" data-rain aria-pressed="${st.rain}">Pluie</button><button type="button" data-bowl>Remplir la gamelle</button>`;
+}
+$("bar").onclick=e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.ph){st.phase=b.dataset.ph;if(!dark())st.lamps={L:false,R:false};drawBg()}
+  else if("rain" in b.dataset){st.rain=!st.rain;if(st.rain)startRain();log(st.rain?"Il pleut. Tout le monde file sous le porche.":"La pluie s'arrête.");
+    for(const f of foxes)if(!f.walk&&!f.inside&&(st.rain?!(f.spot&&f.spot.cov):Math.random()<.5))f.until=Date.now()+Math.random()*1500;drawGlow()}
+  else if("bowl" in b.dataset){st.bowl=3;drawBowl();log("La gamelle est pleine de croquettes.")}
+  drawBar()};
+
+/* ---------- départ ---------- */
+$("actors").appendChild(bowlEl);drawBowl();drawBg();drawBar();sizeRain();addEventListener("resize",sizeRain);
+const start=["p1","stump","leaves","bench1","pond","g1","g2","g3","g5","p4"];
+RESIDENTS.forEach((id,i)=>makeFox(id,SPOT[start[i]]));
+setInterval(tick,100);
+setInterval(()=>{const p=phaseNow();if(p!==drawBg.last){drawBg.last=p;if(!dark())st.lamps={L:false,R:false};drawBg()}},30000);drawBg.last=phaseNow();
+log("Bienvenue au refuge.");
+</script>
+</body>
+</html>
