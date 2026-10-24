@@ -167,6 +167,6 @@ function openMap(){
   const n=document.querySelector(".node.cur")||document.querySelector(`.node[data-day="${curDay()}"]`),sc=$("mscroll");
   sc.scrollTop=n.offsetTop-sc.clientHeight*.55;mapLabel();
   // présentation d'Halloween, une fois par an ; le bonus du jour attend la prochaine ouverture de la carte
-  const yr=new Date().getFullYear();if(!S.name)welcome();else if(HW&&S.hwIntro!==yr){S.hwIntro=yr;save();hwSheet()}else dailyBonus();
+  const yr=new Date().getFullYear();if(!S.named)welcome();else if(HW&&S.hwIntro!==yr){S.hwIntro=yr;save();hwSheet()}else dailyBonus();
 }
 function closeMap(){$("map").hidden=true;document.body.style.overflow=""}

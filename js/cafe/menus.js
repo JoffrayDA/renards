@@ -6,10 +6,10 @@ function closeSheet(){$("sheet").hidden=true}
 function welcome(){
   const say=(expr,txt,extra="")=>`<div style="width:150px;margin:0 auto">${foxSVG(FOX.roussette,{pose:"happy"})}</div><div class="talk"><div class="pic">${foxArt(FOX.petitpois,{expr,portrait:1})}</div><div class="txt"><b>Petit Pois</b><span>${txt}</span>${extra||"<small>Touche pour continuer</small>"}</div></div>`;
   const steps=[()=>say("joy","Coucou ! Ce petit renard, c'est toi ! C'est toi qui tiens le Kitsune Café."),
-    ()=>say("shy","Euh… tu t'appelles comment, déjà ?",`<form class="name" id="wname"><input id="wname-in" maxlength="14" value="Roussette" autocomplete="off" aria-label="Ton nom"><button class="btn" type="submit">C'est moi !</button></form>`),
-    ()=>say("joy",`${ME()} ! Je ne l'oublierai plus. Allez, les premiers clients arrivent !`)];
+    ()=>say("shy","Euh… tu t'appelles comment, déjà ?",`<form class="name" id="wname"><input id="wname-in" maxlength="14" value="${ME()}" autocomplete="off" aria-label="Ton nom"><button class="btn" type="submit">C'est moi !</button></form>`),
+    ()=>say("joy",`${ME()} ! Je ne l'oublierai plus. Allez, les clients t'attendent !`)];
   let i=0;const show=()=>{openSheet(steps[i](),1);
-    const f=$("wname");if(f)f.onsubmit=e=>{e.preventDefault();S.name=$("wname-in").value.trim().replace(/\s+/g," ")||"Roussette";save();i++;show()};
+    const f=$("wname");if(f)f.onsubmit=e=>{e.preventDefault();S.name=$("wname-in").value.replace(/[<>"&]/g,"").trim().replace(/\s+/g," ")||"Roussette";S.named=1;save();i++;show()};
     else $("sheet-in").querySelector(".talk").onclick=()=>{if(++i<steps.length)show();else{closeSheet();dailyBonus()}}};
   show();
 }
