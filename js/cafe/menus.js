@@ -62,7 +62,7 @@ function hwSheet(){
   openSheet(`<h2>Nuit des citrouilles</h2><p class="sub">Jusqu'au 3 novembre, le café fête Halloween ! Les clients viennent <b>déguisés</b> : sers-les pour gagner des <b>bonbons</b> (2 si tu es rapide). Six invités très spéciaux passent en VIP : un fantôme, un vampire, un squelette, un mort-vivant, un épouvantail et une sorcière. Ils paient ×3 et donnent 5 bonbons. Tu as <b>${S.candy} bonbons</b>.</p>
   <p class="sub" style="margin:0 0 6px"><b>Les 5 nuits</b> · tous les clients sont déguisés, les étoiles rapportent des bonbons</p><div class="col" style="margin-bottom:14px">${nights}</div>
   <p class="sub" style="margin:0 0 6px"><b>Album des invités : ${k} / ${HWF.length}</b> · ${crown?`complet ! ${ME()} a sa Couronne de citrouilles.`:"sers-les tous pour gagner la Couronne de citrouilles de Roussette."}</p><div class="fgrid" style="grid-template-columns:repeat(3,1fr);max-width:380px;margin:0 auto 12px">${album}</div>
-  <div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`);
+  <div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button><button class="btn ghost wide" data-act="hwintro" type="button">Revoir l'animation</button><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`);
 }
 // galerie des clients déguisés déjà croisés (visible toute l'année)
 function costumesSheet(){

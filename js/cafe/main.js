@@ -24,7 +24,7 @@ onTap($("tray"),e=>{const p=e.target.closest("[data-opt]");if(p&&G&&G.run){apply
 $("back").onclick=()=>{if(G&&G.run)pauseMenu();else openMap()};
 $("open-menu").onclick=openMap;
 function onAct(a){
-  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="costumes")costumesSheet();else if(a==="quests")questsSheet();
+  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="costumes")costumesSheet();else if(a==="hwintro"){closeSheet();hwIntro(hwSheet)}else if(a==="quests")questsSheet();
   else if(a==="map")openMap();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}

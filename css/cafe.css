@@ -254,3 +254,35 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .name{display:flex;gap:8px;margin-top:8px}
 .name .btn{flex:none;padding:6px 12px;font-size:14px}
 .name input{flex:1;min-width:0;font:700 16px "Zen Maru Gothic",sans-serif;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 10px}
+
+/* animation d'ouverture d'Halloween (js/cafe/hwintro.js) */
+#hwintro{position:fixed;inset:0;z-index:40;overflow:hidden;background:#1f1840;cursor:pointer;animation:hi-in .5s ease-out}
+#hwintro.hi-out{opacity:0;transition:opacity .35s}
+.hi-bg{position:absolute;inset:0;width:100%;height:100%}
+.hi-stars circle{opacity:0;animation:hi-twinkle 2.4s ease-in-out infinite}
+.hi-moon{position:absolute;top:3%;right:6%;width:24vmin;transform:translateY(40vh);opacity:0;animation:hi-rise 2s cubic-bezier(.2,.8,.3,1) .3s forwards}
+.hi-jack{opacity:0;transform-box:fill-box;transform-origin:50% 100%;animation:hi-light .6s cubic-bezier(.3,1.5,.5,1) forwards}
+.hi-bat{transform:translate(-60px,var(--y));animation:hi-fly 3.4s linear forwards}
+.hi-bats{position:absolute;left:0;top:0;width:100%;height:45%}
+.hi-title{position:absolute;left:16px;right:16px;top:calc(4% + 26vmin);text-align:center;color:#fff3e0;opacity:0;animation:hi-pop .7s cubic-bezier(.3,1.5,.5,1) 5.4s forwards}
+.hi-title b{display:block;font:400 clamp(30px,9vw,48px)/1.1 "Mochiy Pop One",sans-serif;color:#ffb84a;text-shadow:0 3px 0 #5b2e40,0 0 18px rgba(255,184,74,.55)}
+.hi-title span{display:block;margin-top:8px;font-weight:700;font-size:15px}
+.hi-ground{position:absolute;left:0;right:0;bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(transparent 50%,#3b2d4c 50%)}
+.hi-ground svg{display:block;width:100%;margin-bottom:-1px}
+.hi-crew{position:absolute;left:50%;top:2%;transform:translateX(-50%);width:min(560px,100%);display:flex;justify-content:center;align-items:flex-end}
+.hi-fox{flex:1;max-width:110px;opacity:0;transform:translateY(40%) scale(.6);animation:hi-hop .6s cubic-bezier(.3,1.5,.5,1) forwards}
+.hi-fox svg{display:block;width:100%}
+.hi-ghost{max-width:140px;animation:hi-ghost 1.2s ease-out forwards}
+.hi-ghost>div{animation:hi-bob 2.6s ease-in-out 4.6s infinite}
+.hi-tap{display:block;margin-top:18px;color:#fff3e0;font-size:13px;font-weight:700;opacity:0;animation:hi-blink 1.6s ease-in-out 7s infinite}
+@keyframes hi-in{from{opacity:0}}
+@keyframes hi-twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes hi-rise{to{transform:none;opacity:1}}
+@keyframes hi-light{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:none}}
+@keyframes hi-fly{to{transform:translate(460px,calc(var(--y) - 40px))}}
+@keyframes hi-pop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:none}}
+@keyframes hi-hop{to{opacity:1;transform:none}}
+@keyframes hi-ghost{0%{opacity:0;transform:translateY(30%)}100%{opacity:.95;transform:translateY(-8%)}}
+@keyframes hi-bob{0%,100%{transform:none}50%{transform:translateY(-6%)}}
+@keyframes hi-blink{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){#hwintro *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

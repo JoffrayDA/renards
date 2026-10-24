@@ -1,10 +1,10 @@
 // Cache hors ligne : tout vient du réseau quand il y en a (mises à jour visibles tout de suite), le cache sert hors ligne.
 // GitHub Pages autorise 10 min de cache HTTP : on le contourne (cache "reload" / "no-cache"), sinon un téléphone
 // peut recevoir l'ancienne page juste après une mise à jour.
-const CACHE = "renards-v36";
+const CACHE = "renards-v37";
 const FILES = ["./", "index.html", "cafe.html", "clairiere.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg", "css/cafe.css", "css/clairiere.css", "js/music.js", "js/foxart.js",
-  ...["foxes", "data", "state", "draw", "game", "render", "end", "menus", "map", "main"].map(n => `js/cafe/${n}.js`),
+  ...["foxes", "data", "state", "draw", "game", "render", "end", "menus", "map", "hwintro", "main"].map(n => `js/cafe/${n}.js`),
   ...["data", "state", "scene", "life", "ui", "story", "main"].map(n => `js/clairiere/${n}.js`)];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: "reload" }))))); self.skipWaiting(); });
 self.addEventListener("activate", e => {
