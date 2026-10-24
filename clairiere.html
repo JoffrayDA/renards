@@ -267,6 +267,7 @@ h1 span{color:var(--coral-d)}
 <div class="sheet" id="sheet" hidden><div class="sheet-in" id="sheet-in"></div></div>
 <div class="toast" id="toast" hidden></div>
 
+<script src="js/foxart.js"></script>
 <script>
 /* ---------- données ---------- */
 const ITEMS={
@@ -467,67 +468,8 @@ function simulate(){
 }
 
 /* ---------- dessins kawaii ---------- */
-function foxSVG(f,o={}){
-  const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
-  const c=sil?{b:"#e3d9df",ch:"#e3d9df",e:"#e3d9df",s:"#e3d9df",t:"#e3d9df"}:f.c;
-  const st=sil?"#cbbec6":INK,e=f.ears||1,sc=f.scale||1,dark="#2e2028";
-  const pink=sil?"none":"#f9c0cb";
-  const earPair=(L,R,base)=>[L,R].map((d,i)=>{const [bx,by]=base[i];
-    return `<g class="${i?"earR":""}" style="transform-origin:${bx}px ${by}px"><g transform="translate(${bx} ${by}) scale(${e}) translate(${-bx} ${-by})">${d}</g></g>`}).join("");
-  const ear=(dy,left)=>{const X=x=>left?x:120-x;
-    return `<path d="M${X(33)} ${44+dy} Q${X(30)} ${24+dy} ${X(38)} ${16+dy} Q${X(50)} ${23+dy} ${X(55)} ${36+dy}Z" fill="${c.b}"/>`+(sil?"":`<path d="M${X(37)} ${38+dy} Q${X(36)} ${27+dy} ${X(39.5)} ${22+dy} Q${X(46)} ${27+dy} ${X(49)} ${35+dy}Z" fill="${pink}" stroke="none"/><path d="M${X(38)} ${16.6+dy} Q${X(34.5)} ${19+dy} ${X(33.6)} ${23+dy} Q${X(38)} ${21+dy} ${X(42)} ${19.5+dy}Z" fill="${c.e}" stroke="none"/>`)};
-  const face=(Y,happy)=>`<ellipse cx="60" cy="${Y+6.5}" rx="12.5" ry="7.5" fill="${c.ch}" stroke="none"/>`+(sil?"":
-    (happy?`<path d="M44 ${Y+1} Q48 ${Y-4} 52 ${Y+1} M68 ${Y+1} Q72 ${Y-4} 76 ${Y+1}" fill="none" stroke-width="2.6"/>`
-      :`<g class="eyes" style="transform-origin:60px ${Y}px"><ellipse cx="48" cy="${Y}" rx="2.9" ry="3.5" fill="${dark}" stroke="none"/><ellipse cx="72" cy="${Y}" rx="2.9" ry="3.5" fill="${dark}" stroke="none"/><circle cx="48.9" cy="${Y-1.3}" r=".95" fill="#fff" stroke="none"/><circle cx="72.9" cy="${Y-1.3}" r=".95" fill="#fff" stroke="none"/></g>`)
-    +`<ellipse cx="40" cy="${Y+5}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="80" cy="${Y+5}" rx="4.6" ry="2.6" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="60" cy="${Y+3.6}" rx="2.1" ry="1.5" fill="${dark}" stroke="none"/><path d="M56 ${Y+5.6} Q58 ${Y+8.6} 60 ${Y+5.6} Q62 ${Y+8.6} 64 ${Y+5.6}" fill="none" stroke-width="1.8"/>`);
-  const acc=(top,Y,neck,w)=>{if(sil)return "";return({
-    feuille:`<path d="M64 ${top+2} Q74 ${top-16} 88 ${top-10} Q82 ${top+5} 64 ${top+2}Z" fill="#a9d68f"/><path d="M67 ${top} Q76 ${top-6} 85 ${top-9}" fill="none" stroke="#6f9a60" stroke-width="1.6"/>`,
-    gland:`<path d="M41 ${top+9} Q60 ${top-14} 79 ${top+9} Q60 ${top+3} 41 ${top+9}Z" fill="#c08a5a"/><path d="M60 ${top-5} Q61 ${top-11} 65 ${top-13}" fill="none" stroke-width="2.4"/>`,
-    fleur:`<g transform="translate(84 ${top+5})">${[0,72,144,216,288].map(a=>`<circle cx="${(5.5*Math.cos(a*Math.PI/180)).toFixed(1)}" cy="${(5.5*Math.sin(a*Math.PI/180)).toFixed(1)}" r="4.2" fill="#ffc7d8" stroke-width="1.8"/>`).join("")}<circle r="3" fill="#ffe27a" stroke-width="1.6"/></g>`,
-    flocon:`<g transform="translate(84 ${top+5})" stroke="#9fc3e8" stroke-width="2.4"><path d="M0 -7 V7 M-6 -3.5 L6 3.5 M-6 3.5 L6 -3.5"/></g>`,
-    etoile:`<g transform="translate(60 ${Y-12}) scale(.75)"><path d="M0 -8 l2.6 5.4 5.9.7-4.4 4 1.2 5.9L0 5.1-5.3 8l1.2-5.9-4.4-4 5.9-.7z" fill="#ffe680" stroke-width="2.2"/></g><path d="M100 ${top-2} l1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2z" fill="#fff3a8" stroke-width="1.2"/>`,
-    noeud:`<path d="M60 ${neck} L48 ${neck-7} L48 ${neck+7}Z M60 ${neck} L72 ${neck-7} L72 ${neck+7}Z" fill="#f6a8c8"/><circle cx="60" cy="${neck}" r="3.6" fill="#ec86b0"/>`,
-    echarpe:`<path d="M${60-w} ${neck-4} Q60 ${neck+6} ${60+w} ${neck-4} L${60+w} ${neck+3} Q60 ${neck+13} ${60-w} ${neck+3}Z" fill="#f59a8b"/><path d="M${60+w*.4} ${neck+6} L${62+w*.4} ${neck+18} L${69+w*.4} ${neck+16} L${67+w*.4} ${neck+4}Z" fill="#e88576"/>`,
-    lunettes:`<g fill="rgba(255,255,255,.35)" stroke-width="2.2"><circle cx="48" cy="${Y}" r="7.5"/><circle cx="72" cy="${Y}" r="7.5"/></g><path d="M55.5 ${Y-1} Q60 ${Y-4} 64.5 ${Y-1}" fill="none" stroke-width="2"/>`,
-    parapluie:`<path d="M94 90 Q96 ${top+20} 98 ${top-4}" fill="none" stroke="#8a6a4a" stroke-width="2.6"/><path d="M74 ${top-2} Q98 ${top-32} 122 ${top-2} Q110 ${top-8} 98 ${top-2} Q86 ${top-8} 74 ${top-2}Z" fill="#a9d68f"/><path d="M98 ${top-2} V${top-22}" fill="none" stroke="#6f9a60" stroke-width="1.6"/>`
-,
-    bob:`<path d="M38 ${top+9} Q60 ${top-18} 82 ${top+9}Z" fill="#f7d77a"/><path d="M28 ${top+9} Q60 ${top+18} 92 ${top+9} Q60 ${top+3} 28 ${top+9}Z" fill="#f2c45a"/>`,
-    bonnet:`<path d="M38 ${top+11} Q60 ${top-20} 82 ${top+11}Z" fill="#9ec3ef"/><rect x="36" y="${top+6}" width="48" height="9" rx="4.5" fill="#f4f8fb"/><circle cx="60" cy="${top-11}" r="5.5" fill="#fff"/>`,
-    collier:[-3,-2,-1,0,1,2,3].map(k=>`<circle cx="${(60+k*w/3.6).toFixed(1)}" cy="${(neck+3-k*k*.45).toFixed(1)}" r="2.6" fill="#fff" stroke-width="1.4"/>`).join("")
-  })[f.acc]||""};
-  let body;
-  if(pose==="sleep"){
-    body=`<ellipse cx="64" cy="76" rx="36" ry="17" fill="${c.b}"/>
-    <path d="M98 74 C104 94 70 98 32 92 C24 90 24 85 32 85 C64 88 88 86 92 74Z" fill="${c.b}"/>
-    <path d="M32 92 C24 90 24 85 32 85 C37 85.6 41 86 45 86.4 C44 89.8 39 92 32 92Z" fill="${c.t}"/>
-    ${earPair(`<path d="M26 68 Q20 52 28 47 Q38 53 41 63Z" fill="${c.b}"/>${sil?"":`<path d="M29 64 Q26 55 29.5 51 Q35 55 37 62Z" fill="${pink}" stroke="none"/>`}`,
-      `<path d="M45 61 Q46 46 54 43 Q59 52 58 63Z" fill="${c.b}"/>${sil?"":`<path d="M48 60 Q49 51 53 47.5 Q56 53 55 60Z" fill="${pink}" stroke="none"/>`}`,[[34,64],[52,62]])}
-    <ellipse cx="44" cy="73" rx="20" ry="15" fill="${c.b}"/>
-    <ellipse cx="44" cy="77.5" rx="9" ry="5.2" fill="${c.ch}" stroke="none"/>
-    ${sil?"":`<path d="M34 72 Q37.5 74.5 41 72 M47 72 Q50.5 74.5 54 72" fill="none" stroke-width="2.4"/><ellipse cx="32" cy="77" rx="3.6" ry="2.2" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="56" cy="77" rx="3.6" ry="2.2" fill="#f6a5b4" opacity=".6" stroke="none"/><ellipse cx="44" cy="76" rx="1.8" ry="1.3" fill="${dark}" stroke="none"/>`}`;
-  }else if(pose==="happy"){
-    const top=20,Y=42;
-    body=`<g class="tail" style="transform-origin:82px 82px"><path d="M80 86 C104 86 112 60 99 46 C96 60 90 70 78 74Z" fill="${c.b}"/><path d="M99 46 C106 53 108 62 106 68 C102 63 98 58 95 53 C96 51 97 48 99 46Z" fill="${c.t}"/></g>
-    <path d="M37 90 C30 70 38 55 60 55 C82 55 90 70 83 90 Q60 95 37 90Z" fill="${c.b}"/>
-    <ellipse cx="60" cy="77" rx="11" ry="11" fill="${c.ch}" stroke="none"/>
-    <ellipse cx="51" cy="90" rx="6.5" ry="4.2" fill="${c.s}"/><ellipse cx="69" cy="90" rx="6.5" ry="4.2" fill="${c.s}"/>
-    ${earPair(ear(-15,true),ear(-15,false),[[44,23],[76,23]])}
-    <ellipse cx="60" cy="42" rx="27" ry="22" fill="${c.b}"/>
-    ${face(Y,true)}${acc(top,Y,63,21)}`;
-  }else{
-    const top=35,Y=55;
-    body=`<g class="tail" style="transform-origin:90px 82px"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/></g>
-    ${earPair(ear(0,true),ear(0,false),[[44,38],[76,38]])}
-    <path d="M24 88 C18 60 30 35 60 35 C90 35 102 60 96 88 Q60 95 24 88Z" fill="${c.b}"/>
-    ${face(Y,false)}
-    <ellipse cx="50" cy="89" rx="7" ry="4.4" fill="${c.s}"/><ellipse cx="70" cy="89" rx="7" ry="4.4" fill="${c.s}"/>
-    ${acc(top,Y,74,30)}`;
-  }
-  const zz=pose==="sleep"?`<text class="zz" x="66" y="56" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="74" y="46" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
-  return `<svg viewBox="0 -16 120 116" class="${o.cls||""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})">
-  <ellipse cx="60" cy="92" rx="40" ry="5" fill="#3d2a35" opacity=".14"/>
-  <g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${zz}</g></svg>`;
-}
+// Le dessin est partagé avec le Café : js/foxart.js.
+function foxSVG(f,o={}){return foxArt(f,o)}
 function itemSVG(id,cls="item"){
   const face=(x,y,s=1)=>`<g stroke="none"><circle cx="${x-6*s}" cy="${y}" r="${1.8*s}" fill="#3d2a35"/><circle cx="${x+6*s}" cy="${y}" r="${1.8*s}" fill="#3d2a35"/><ellipse cx="${x-10*s}" cy="${y+3*s}" rx="${3*s}" ry="${1.8*s}" fill="#f6a5b4"/><ellipse cx="${x+10*s}" cy="${y+3*s}" rx="${3*s}" ry="${1.8*s}" fill="#f6a5b4"/></g><path d="M${x-2*s} ${y+2*s} Q${x} ${y+4*s} ${x+2*s} ${y+2*s}" fill="none" stroke-width="1.4"/>`;
   const s={

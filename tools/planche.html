@@ -39,14 +39,13 @@ nav button[aria-pressed=true]{background:#5b4250;color:#fff;border-color:#5b4250
   <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
 <h1>Planche des renards</h1>
-<p>En haut de chaque carte, les poses actuelles ; en dessous, les nouvelles, toutes tirées de la brioche assise.</p>
+<p>Toutes les poses partent de la brioche assise. Ce dessin est celui des deux jeux.</p>
 <div class="talk" id="talk"></div>
 <nav id="nav"></nav>
 <div id="list"></div>
 <script src="../js/cafe/foxes.js"></script>
 <script src="../js/foxart.js"></script>
 <script>
-const OLD=[["sit","assis"],["happy","content"],["sleep","dort"]];
 const NEW=[["sit","assis"],["happy","content"],["sleep","dort"],["lie","couché"],["eat","mange"],["groom","toilette"],["up","regarde en l'air"],["walk","trottine"]];
 const EXPR=[["open","neutre"],["joy","joyeux"],["sad","triste"],["surprise","surpris"],["shy","gêné"]];
 NEW_FOXES.forEach(f=>FOX[f.id]=f);
@@ -56,9 +55,8 @@ function fig(svg,cap,cls=""){return `<figure class="${cls}">${svg}<figcaption>${
 function render(){
   $("nav").innerHTML=Object.keys(GROUPS).map(g=>`<button type="button" aria-pressed="${g===group}" data-g="${g}">${g}</button>`).join("");
   $("list").innerHTML=GROUPS[group].map(id=>{const f=FOX[id];return `<div class="fox" data-id="${id}"><strong>${f.name}</strong>
-    <p class="label">Avant</p><div class="row">${OLD.map(([p,n])=>fig(foxSVG(f,{pose:p}),n)).join("")}</div>
     <p class="label">Portrait (dialogues)</p><div class="row portraits">${EXPR.map(([e,n])=>fig(foxArt(f,{expr:e,portrait:1}),n)).join("")}</div>
-    <p class="label">Après</p><div class="row">${NEW.map(([p,n])=>fig(foxArt(f,{pose:p,frame:walkFrame}),n,p==="walk"?"walk":"")).join("")}</div></div>`}).join("");
+    <p class="label">Poses</p><div class="row">${NEW.map(([p,n])=>fig(foxArt(f,{pose:p,frame:walkFrame}),n,p==="walk"?"walk":"")).join("")}</div></div>`}).join("");
 }
 $("nav").onclick=e=>{const b=e.target.closest("[data-g]");if(b){group=b.dataset.g;render()}};
 render();

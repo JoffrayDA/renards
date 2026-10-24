@@ -1,5 +1,5 @@
 /* Dessin partagé des renards (planche de modèle). Toutes les poses partent de la brioche assise :
-   même silhouette, même visage, même taille. Prototype : pas encore branché sur les jeux. */
+   même silhouette, même visage, même taille. Utilisé par le Café et la Clairière (foxSVG). */
 // Différences de look testées sur la planche avant de toucher aux données des jeux.
 // Roussette (l'héroïne) garde le roux classique ; les autres se distinguent par un motif, pas seulement une couleur.
 const LOOK={
