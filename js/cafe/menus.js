@@ -2,6 +2,17 @@
 /* ---------- menus ---------- */
 function openSheet(h,lock){$("sheet-in").innerHTML=h+(lock?"":`<button class="btn ghost wide" data-close type="button" style="margin-top:10px">Fermer</button>`);$("sheet").hidden=false;$("sheet").dataset.lock=lock?1:"";$("sheet-in").scrollTop=0}
 function closeSheet(){$("sheet").hidden=true}
+/* ---------- accueil : la première fois, Petit Pois présente Roussette et demande son nom ---------- */
+function welcome(){
+  const say=(expr,txt,extra="")=>`<div style="width:150px;margin:0 auto">${foxSVG(FOX.roussette,{pose:"happy"})}</div><div class="talk"><div class="pic">${foxArt(FOX.petitpois,{expr,portrait:1})}</div><div class="txt"><b>Petit Pois</b><span>${txt}</span>${extra||"<small>Touche pour continuer</small>"}</div></div>`;
+  const steps=[()=>say("joy","Coucou ! Ce petit renard, c'est toi ! C'est toi qui tiens le Kitsune Café."),
+    ()=>say("shy","Euh… tu t'appelles comment, déjà ?",`<form class="name" id="wname"><input id="wname-in" maxlength="14" value="Roussette" autocomplete="off" aria-label="Ton nom"><button class="btn" type="submit">C'est moi !</button></form>`),
+    ()=>say("joy",`${ME()} ! Je ne l'oublierai plus. Allez, les premiers clients arrivent !`)];
+  let i=0;const show=()=>{openSheet(steps[i](),1);
+    const f=$("wname");if(f)f.onsubmit=e=>{e.preventDefault();S.name=$("wname-in").value.trim().replace(/\s+/g," ")||"Roussette";save();i++;show()};
+    else $("sheet-in").querySelector(".talk").onclick=()=>{if(++i<steps.length)show();else{closeSheet();dailyBonus()}}};
+  show();
+}
 function dailyBonus(){
   const td=todayStr();if(S.lastDay===td)return;
   const y=new Date(Date.now()-864e5),ys=`${y.getFullYear()}-${y.getMonth()+1}-${y.getDate()}`;
@@ -50,7 +61,7 @@ function hwSheet(){
   const album=HWF.map(f=>`<div class="fc hwc">${foxSVG(f,{pose:"happy"})}${f.name}<em>${S.hwServed[f.id]?"<b style=\"color:#4f9a3e\">Servi !</b>":"À servir"}</em></div>`).join("");
   openSheet(`<h2>Nuit des citrouilles</h2><p class="sub">Jusqu'au 3 novembre, le café fête Halloween ! Les clients viennent <b>déguisés</b> : sers-les pour gagner des <b>bonbons</b> (2 si tu es rapide). Six invités très spéciaux passent en VIP : un fantôme, un vampire, un squelette, un mort-vivant, un épouvantail et une sorcière. Ils paient ×3 et donnent 5 bonbons. Tu as <b>${S.candy} bonbons</b>.</p>
   <p class="sub" style="margin:0 0 6px"><b>Les 5 nuits</b> · tous les clients sont déguisés, les étoiles rapportent des bonbons</p><div class="col" style="margin-bottom:14px">${nights}</div>
-  <p class="sub" style="margin:0 0 6px"><b>Album des invités : ${k} / ${HWF.length}</b> · ${crown?"complet ! Roussette a sa Couronne de citrouilles.":"sers-les tous pour gagner la Couronne de citrouilles de Roussette."}</p><div class="fgrid" style="grid-template-columns:repeat(3,1fr);max-width:380px;margin:0 auto 12px">${album}</div>
+  <p class="sub" style="margin:0 0 6px"><b>Album des invités : ${k} / ${HWF.length}</b> · ${crown?`complet ! ${ME()} a sa Couronne de citrouilles.`:"sers-les tous pour gagner la Couronne de citrouilles de Roussette."}</p><div class="fgrid" style="grid-template-columns:repeat(3,1fr);max-width:380px;margin:0 auto 12px">${album}</div>
   <div class="col"><button class="btn big wide" data-hwshop type="button">Boutique d'Halloween</button><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`);
 }
 // galerie des clients déguisés déjà croisés (visible toute l'année)
@@ -85,7 +96,7 @@ function shop(){
     list=(hw?`<div class="hwbox">${foxSVG(FOX.croquignol,{pose:"happy"})}<p><b>Nuit des citrouilles</b><br>Les clients déguisés donnent des bonbons : 1, ou 2 si tu les sers vite. Les invités d'Halloween en donnent 5. Tu as <b>${S.candy} bonbons</b>.</p></div>`:"")+Object.keys(STYLE).map(k=>`<p class="sub" style="margin:8px 0 4px"><b>${STYLE[k].name}</b></p>`+STYLE[k].items.filter(it=>hw?it.cb||it.album:(!it.cb&&!it.album)||S.own[`st-${k}-${it.id}`]).map(it=>{
       const key=`st-${k}-${it.id}`,own=(!it.c&&!it.cb&&!it.album)||S.own[key],on=styleOf(k).id===it.id;
       const sw=k==="acc"?foxSVG({...FOX.roussette,acc:it.id||undefined},{pose:"happy"}):k==="wall"?`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="22" rx="4" fill="${it.w}" ${K}/>${[[11,11],[23,11],[17,18],[29,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="${it.d}"/>`).join("")}<rect x="4" y="26" width="32" height="10" rx="3" fill="${it.b}" ${K}/></svg>`:`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="10" width="34" height="7" rx="3" fill="${it.t}" ${K}/><rect x="5" y="17" width="30" height="18" fill="${it.f}" ${K}/><rect x="9" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/><rect x="22" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/></svg>`;
-      return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${it.album?`Sers les ${HWF.length} invités d'Halloween pour l'obtenir.`:k==="acc"?"Roussette la porte sur la carte.":"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:it.album?`<span class="owned">Album ${ak} / ${HWF.length}</span>`:it.cb?`<span class="price cnd">${candySVG}${it.cb}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.candy>=it.cb?"":"disabled"}>Acheter</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
+      return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${it.album?`Sers les ${HWF.length} invités d'Halloween pour l'obtenir.`:k==="acc"?`${ME()} la porte sur la carte.`:"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:it.album?`<span class="owned">Album ${ak} / ${HWF.length}</span>`:it.cb?`<span class="price cnd">${candySVG}${it.cb}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.candy>=it.cb?"":"disabled"}>Acheter</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
   }else list=UPG[shopTab].map(u=>{
     const n=lv(u.id),max=u.lv.length,nx=u.lv[n],early=nx&&nx.from&&S.day<nx.from;
     const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";

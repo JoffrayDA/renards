@@ -13,6 +13,8 @@ R.story=R.story||{};R.souv=R.souv||{}; // histoires : étapes finies par renard 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}}
 function canFollow(id){const f=FOX[id];return f&&!f.event&&!WILD[id]&&id!=="roussette"}
 const isRes=id=>!!R.res[id];
+// le nom choisi au Café (Roussette par défaut)
+const ME=()=>(load(CAFEKEY)||{}).name||"Roussette";
 
 /* ---------- arrivées depuis le Café ---------- */
 // au plus un nouveau renard par jour réel, tiré parmi les clients bien servis depuis la dernière arrivée

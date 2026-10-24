@@ -34,12 +34,12 @@ function nextLine(){const el=$("talk");
   el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false}
 $("talk").onclick=nextLine;
 const INTRO=[
-  ["petitpois","joy","Roussette ! Tu es rentrée ! J'ai gardé la maison toute la journée."],
+  ["petitpois","joy",`${ME()} ! Te voilà ! J'ai gardé la maison toute la journée.`],
   ["petitpois","shy","Enfin… j'ai surtout dormi sous le porche."],
   ["petitpois","open","Tu sais, des clients du Café aimeraient bien venir ici, le soir. Si tu les sers bien, ils te suivront peut-être."],
   ["petitpois","surprise","Et dans la forêt, il y a des renards sauvages ! Ils sentent la nourriture de très loin. Essaie de remplir la gamelle."]
 ];
-const arrLines=id=>[[id,"joy",`Bonsoir Roussette ! Ton café m'a tellement plu que je t'ai suivie jusqu'ici. Je peux rester ?`],
+const arrLines=id=>[[id,"joy",`Bonsoir ${ME()} ! Ton café m'a tellement plu que j'ai suivi ta trace jusqu'ici. Je peux rester ?`],
   ["petitpois","joy",`Bienvenue au refuge, ${FOX[id].name} ! Il y a de la place pour tout le monde.`]];
 
 /* ---------- feuilles ---------- */

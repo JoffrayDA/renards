@@ -53,6 +53,8 @@ Halloween, la **Nuit des citrouilles** (branche `halloween`, octobre 2026) : act
 - **Clients déguisés** (`S.costSeen`, `costumesSheet`) : chaque combinaison renard + déguisement croisée est notée et reste visible toute l'année (galerie depuis le carnet et la feuille Halloween). Joffray voulait revoir les déguisés déjà vus.
 - **Quêtes d'Halloween** (`QUESTS` avec `hw:1`, payées en bonbons avec `cdy:1`) : une 4e quête pendant l'événement, retirée ensuite.
 
+**Le nom du joueur** (`S.name`, lu par `ME()` dans les deux jeux, « Roussette » par défaut) : au premier lancement du Café, Petit Pois présente Roussette (« Ce petit renard, c'est toi ») et demande son nom (`welcome`). Une partie déjà commencée garde « Roussette » sans écran. Dans les textes, écrire `${ME()}` plutôt que « Roussette » quand on s'adresse au joueur, et rester neutre en genre (le joueur choisit son nom).
+
 Fonctions clés : `cfgOf(day)` (difficulté, tables `SEED` et `GOALS`), `newDay(d)`, `spawn`, `update(dt)`, `complete` (calcul des gains), `tapStation`, `bake`, `unload`, `endDay`, `openMap`/`renderMap`/`mapLayout` (carte), `daySheet`, `shop`. `S.day` est la plus haute journée atteinte, `G.day` la journée en cours. La sauvegarde est en version 3 (`S.ver`), avec migrations depuis la v1 et la v2 (v3 : Plateau géant et Grand comptoir deviennent des niveaux 2, ajout de `S.style`).
 
 ### Équilibrage

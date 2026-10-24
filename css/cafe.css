@@ -242,3 +242,15 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .spark{animation:spark 1.6s ease-in-out infinite;opacity:0;transform-box:fill-box;transform-origin:center}
 @keyframes spark{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* accueil : Petit Pois présente Roussette */
+.talk{display:flex;gap:10px;align-items:center;background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:8px;box-shadow:0 4px 0 var(--ink);cursor:pointer;animation:up .3s cubic-bezier(.3,1.4,.5,1)}
+.talk .pic{width:74px;flex:none;background:#f3e6dc;border-radius:12px}
+.talk .pic svg{display:block;width:100%}
+.talk b{display:block;font-size:13px}
+.talk span{display:block;font-size:14.5px;line-height:1.35}
+.talk small{display:block;font-size:11px;color:var(--ink-soft);margin-top:2px}
+.talk .txt{flex:1;min-width:0}
+.name{display:flex;gap:8px;margin-top:8px}
+.name .btn{flex:none;padding:6px 12px;font-size:14px}
+.name input{flex:1;min-width:0;font:700 16px "Zen Maru Gothic",sans-serif;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 10px}

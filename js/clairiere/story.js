@@ -4,17 +4,17 @@
 const STORIES={
   petitpois:{title:"Peur du noir",souv:"le gland porte-bonheur",steps:[
     {lv:1,dark:1,hint:"Petit Pois a quelque chose à te dire, le soir venu.",lines:[
-      ["petitpois","shy","Roussette… il commence à faire noir. Tu restes un peu dehors avec moi ?"],
+      ["petitpois","shy",`${ME()}… il commence à faire noir. Tu restes un peu dehors avec moi ?`],
       ["petitpois","sad","Quand les lanternes s'éteignent, la forêt fait des bruits. Crac. Hou-hou."],
       ["petitpois","shy","Je fais semblant de dormir sous le porche, mais je garde un œil ouvert. Les deux, en fait."],
       ["petitpois","open","Tu crois qu'il existe quelqu'un qui n'a jamais peur du noir ?"]]},
     {lv:2,with:"luciole",hint:"Petit Pois aimerait rencontrer quelqu'un qui brille. Quelqu'un passera peut-être bientôt.",lines:[
-      ["petitpois","surprise","Roussette ! Tu as vu Luciole ? Sa queue fait de la lumière. Toute seule !"],
+      ["petitpois","surprise",`${ME()} ! Tu as vu Luciole ? Sa queue fait de la lumière. Toute seule !`],
       ["luciole","joy","Ce n'est rien, je suis née comme ça. C'est même moi qui allume les lanternes, le soir."],
       ["petitpois","shy","Dis… tu pourrais rester près de moi, cette nuit ? Juste un peu ?"],
       ["luciole","open","D'accord, petit. Mais il faudra que tu m'aides à les allumer."]]},
     {lv:3,dark:1,with:"luciole",hint:"Petit Pois s'entraîne avec Luciole. Reviens le soir pour voir.",lines:[
-      ["petitpois","joy","Roussette, regarde ! C'est moi qui ai allumé la grande lanterne !"],
+      ["petitpois","joy",`${ME()}, regarde ! C'est moi qui ai allumé la grande lanterne !`],
       ["luciole","joy","Du premier coup. Je n'avais jamais vu ça."],
       ["petitpois","open","En fait, le noir, c'est juste le moment où les lanternes sont jolies."],
       ["petitpois","shy","Tiens. C'est mon gland porte-bonheur. Je n'en ai plus besoin… enfin, garde-le quand même bien."],

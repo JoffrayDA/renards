@@ -20,6 +20,9 @@ if(S.ver<3){
   if(S.own.comptoir2){S.own.comptoir1=2;delete S.own.comptoir2}
   S.style={wall:"rose",counter:"bois",acc:""};S.ver=3;
 }
+// le nom de la renarde du joueur (Roussette par défaut) ; une partie déjà commencée garde « Roussette » sans écran d'accueil
+if(!S.name&&(S.total||S.served||S.day>1))S.name="Roussette";
+const ME=()=>S.name||"Roussette";
 S.candy=S.candy||0;S.boost=S.boost||{};S.happy=S.happy||{}; // happy : clients servis contents, par renard (ils peuvent suivre Roussette au refuge)
  // bonbons d'Halloween (gardés d'une année sur l'autre)
 S.hwStars=S.hwStars||{};S.hwServed=S.hwServed||{};S.costSeen=S.costSeen||{}; // costSeen["renard:déguisement"] = nombre de visites // étoiles des Nuits, album des invités d'Halloween servis (S.hwKeep : Feu Follet reste)

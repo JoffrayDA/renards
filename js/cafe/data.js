@@ -89,7 +89,7 @@ const STYLE={
     {id:"nuage",name:"Nuage lilas",c:1450,t:"#a99fd8",f:"#e4e0f7",p:"#cbc4ec"},
     {id:"miel",name:"Miel doré",c:2100,t:"#d9a33a",f:"#f6d27a",p:"#e8b94e"},
     {id:"citrouille",name:"Citrouille",cb:40,t:"#5f4f72",f:"#f2a35c",p:"#d9803a"}]},
-  acc:{name:"Tenue de Roussette",items:[
+  acc:{name:"Ta tenue",items:[
     {id:"",name:"Au naturel",c:0},
     {id:"noeud",name:"Petit nœud",c:400},
     {id:"echarpe",name:"Écharpe",c:700},
