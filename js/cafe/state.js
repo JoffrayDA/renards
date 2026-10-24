@@ -20,7 +20,8 @@ if(S.ver<3){
   if(S.own.comptoir2){S.own.comptoir1=2;delete S.own.comptoir2}
   S.style={wall:"rose",counter:"bois",acc:""};S.ver=3;
 }
-S.candy=S.candy||0;S.boost=S.boost||{}; // bonbons d'Halloween (gardés d'une année sur l'autre)
+S.candy=S.candy||0;S.boost=S.boost||{};S.happy=S.happy||{}; // happy : clients servis contents, par renard (ils peuvent suivre Roussette au refuge)
+ // bonbons d'Halloween (gardés d'une année sur l'autre)
 S.hwStars=S.hwStars||{};S.hwServed=S.hwServed||{};S.costSeen=S.costSeen||{}; // costSeen["renard:déguisement"] = nombre de visites // étoiles des Nuits, album des invités d'Halloween servis (S.hwKeep : Feu Follet reste)
 function nightOpen(n){const N=NIGHTS[n-1];return HW&&S.day>N.base&&(n===1||(S.hwStars[n-1]||0)>0)}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}

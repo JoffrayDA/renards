@@ -6,11 +6,12 @@
 
 - `index.html` : accueil, choix entre les deux jeux. C'est aussi la coquille de l'app : écran de démarrage (logo et « Touche pour entrer » tout de suite, Joffray ne voulait pas d'attente ; toucher n'importe où entre et autorise le son), et les jeux s'ouvrent dans un cadre (`#game`, `openGame`/`closeGame`, chargés par `location.replace` pour ne pas polluer l'historique) afin que la musique de l'accueil continue sans redemander de toucher. Dans le cadre, `js/music.js` pilote la musique de l'accueil et le bouton maison referme le jeu ; ouverte seule, une page de jeu garde son propre son.
 - `cafe.html` : **Kitsune Café**, jeu de gestion actif. C'est le jeu principal. Depuis le 22/10/2026, la page ne contient plus que le HTML : le style est dans `css/cafe.css` et le code dans `js/cafe/` (foxes, data, state, draw, game, render, end, menus, map, main), des scripts classiques qui partagent la portée globale et se chargent dans cet ordre. Une fonction appelée au chargement doit être définie dans un fichier précédent (ou le même).
-- `clairiere.html` : **La Clairière**, jeu détente façon Neko Atsume.
+- `clairiere.html` : **La Clairière**, le refuge de Roussette (v2 depuis le 24/10/2026, voir `docs/clairiere-v2.md`). Style dans `css/clairiere.css`, code dans `js/clairiere/` (data, state, scene, life, ui, main), après `js/cafe/foxes.js` (les renards) et `js/foxart.js`.
+- `js/foxart.js` : le dessin des renards (`foxArt`), partagé par les deux jeux (`foxSVG` l'appelle). `tools/planche.html` montre toutes les poses.
 - `manifest.webmanifest`, `sw.js`, `icons/`, `img/` : PWA (installation sur l'écran d'accueil, hors ligne).
 - `tools/balance-bot.py` : bot qui joue au Café pour vérifier l'équilibrage.
 
-Aucune dépendance, aucun build. La Clairière tient encore dans un seul fichier HTML ; le Café est découpé en fichiers (voir plus haut). Seules les polices viennent de Google Fonts (Mochiy Pop One pour les titres, Zen Maru Gothic pour le texte). Les sauvegardes sont en `localStorage` : `cafe-renards-v1` et `clairiere-renards-v1`. Si tu changes leur forme, écris une migration, ne casse pas les parties existantes.
+Aucune dépendance, aucun build. Les deux jeux sont découpés en fichiers (voir plus haut). Seules les polices viennent de Google Fonts (Mochiy Pop One pour les titres, Zen Maru Gothic pour le texte). Les sauvegardes sont en `localStorage` : `cafe-renards-v1` et `clairiere-renards-v2` (l'ancienne `clairiere-renards-v1` reste intacte, on n'en reprend que les renards déjà croisés). Si tu changes leur forme, écris une migration, ne casse pas les parties existantes.
 
 Le service worker sert nos fichiers depuis le réseau d'abord (cache seulement hors ligne) : avant, une page neuve tournait avec un vieux script en cache, et le bouton d'entrée ne marchait plus. **À chaque modification publiée, incrémente aussi `CACHE` dans `sw.js`** (`renards-v1` → `renards-v2`…), sinon les téléphones gardent l'ancienne version.
 
@@ -20,7 +21,7 @@ Découper les gros fichiers HTML en modules (`js/`, `css/`) est bienvenu si ça 
 
 - Les pièces du Café portent une pattoune (`coinSVG`).
 - Kawaii et « dessiné à la main » : contours épais `#5b4250` (variable `INK`), aplats pastel, filtre SVG `#wobble` qui fait trembler légèrement le trait.
-- Renards façon chibi / Neko Atsume : corps rond en brioche, petits yeux en points brillants, museau crème, bouche « ω », joues roses. Trois poses : `sit`, `sleep`, `happy`. Tout est dessiné par `foxSVG(fox, {pose, sil})`, une copie identique dans chaque jeu.
+- Renards façon chibi / Neko Atsume : corps rond en brioche, petits yeux en points brillants, museau crème, bouche « ω », joues roses. Toutes les poses partent de la même brioche : `sit`, `happy`, `sleep`, `lie`, `eat`, `groom` (patte et langue animées), `up`, `walk` ; portraits de dialogue avec `expr` (open, joy, sad, surprise, shy). Un seul fichier, `js/foxart.js` : `foxArt(fox, {pose, sil, expr, portrait})`. Feu Follet garde ses grands yeux dans toutes les expressions.
 - Les 30 renards (`FOXES`) sont communs aux deux jeux : couleurs `c`, accessoire `acc`, rareté `rar` (commun, discret, rare, legend).
 - Vue de dessus pour la Clairière, inspirée de Neko Atsume. Joffray a explicitement demandé ce point de vue.
 - Pas d'emoji dans l'interface, pas de personnages ni d'éléments repris de jeux existants : toutes les créatures sont originales.
@@ -66,11 +67,17 @@ Chaque journée est **la même à chaque essai** : commandes, VIP et arrivées s
 
 Après tout changement de prix, de patience, de pourboire, de recettes ou de rythme, relance `--calibrer`, recopie `SEED` et `GOALS` dans `cafe.html`, puis relance le bot pour vérifier ces cibles.
 
-## Clairière aux Renards (`clairiere.html`)
+## La Clairière (`clairiere.html`)
 
-Jeu idle. On pose des objets sur 9 emplacements et on remplit la gamelle. Les renards passent même page fermée (simulation rattrapée au retour, par pas de 30 s, plafonnée à 48 h) et laissent des glands. Le jeu compte 4 zones (Clairière, Berge, Terrier, Neige) avec chacune ses objets, sa météo (pluie, neige ou rien) et 6 renards. S'y ajoutent les niveaux d'amitié de 1 à 5, avec un souvenir au niveau 3 et des cadeaux ×2 au niveau 5, et deux mini-jeux : Cache-cache et Repas express.
+Refondue le 24/10/2026 (fiche : `docs/clairiere-v2.md`). Le Café, c'est la tension ; la Clairière, le moment pour souffler : désirable, pas addictive. Le soir, Roussette rentre dans sa maison en forêt et des clients la suivent : la Clairière est son refuge, le joueur c'est Roussette. Plus de mini-jeux ni de zones.
 
-Ce jeu est le « moment détente ». Il n'a pas besoin d'être difficile, mais il souffre de problèmes connus, voir ci-dessous.
+- Une scène en plongée (maison, porche, souche, mare, banc, lanternes), jour et nuit en heure réelle, pluie par tranches de 3 h (`rainNow`, la même pour tous). Les renards vivent par petits sauts (`life.js`) : une activité à un endroit, puis ils trottinent au suivant ; sous la pluie, ils filent sous le porche ou dans la maison. Luciole allume les lanternes le soir. 10 renards visibles au plus (`presentIds`).
+- Arrivées : au plus un renard par jour réel (`checkArrival`), tiré parmi les clients servis contents au Café depuis la dernière arrivée (`S.happy` dans la sauvegarde du Café, `R.snap`), plus ceux déjà servis avant le refuge (`R.legacy`). Petit Pois est là dès le début et accueille Roussette (dialogue `INTRO`).
+- Gamelle (`BOWLS`) : croquettes gratuites, baies, poisson, miel en glands. Elle attire les six sauvages (`WILD` : Somnus, Réglisse, Aurore, Marée, Perle, Yéti), qui ne viennent jamais au Café avant ça. Un sauvage laisse une photo (`R.photos`) ; une fois rencontré (`R.met`), il peut venir au Café en VIP (`wildMet` dans `js/cafe/data.js`). Le carnet du Café donne l'indice de la gamelle (décision de Joffray : sinon son carnet ne pouvait jamais être complet).
+- Simulation page fermée par pas de 30 min, 48 h au plus (`simulate`) : glands laissés par les renards installés (`GLANDS_DAY` selon l'amitié), gamelle qui se vide, visites (une par jour au plus). Au retour, « Qui est venu ? » montre les photos.
+- Amitié : un câlin par renard et par jour (toucher le renard), niveaux 1 à 5 (`LV_T`).
+- Carnet du refuge : le grand portrait réunit tout le monde (29 renards, sans Roussette) ; les invités d'Halloween y sont en bonus.
+- Pas encore fait (voir la fiche) : les histoires en 3 étapes et leur boîte de dialogue, le compagnon au Café, Gribouille, Roussette retirée des clients, la fresque, les objets du refuge, le réglage des glands par simulation.
 
 ## Leçons tirées des retours de Joffray
 
@@ -84,7 +91,7 @@ Ce jeu est le « moment détente ». Il n'a pas besoin d'être difficile, mais i
 ## Pistes pour la suite
 
 - Faire tester le Café sur téléphone et ajuster la taille des zones tactiles, la lisibilité des bulles et le rythme.
-- Clairière : Joffray trouve le mode « pas du tout » réussi (22/10/2026), à revoir en profondeur avec lui. Pistes : ralentir l'économie (prix des zones, gains des mini-jeux, limite de parties par jour), ajouter des quêtes du jour et des combinaisons secrètes pour les renards rares.
+- Clairière v2 : écrire les histoires (brainstorming en cours avec Joffray, Gribouille d'abord), puis la suite de `docs/clairiere-v2.md`.
 - Café : événements spéciaux (rush, client mystère), recettes combinées, personnalisation du café, saisons.
 - Musique : faite (`js/music.js`, synthèse Web Audio, aucun fichier). Boîte à musique sur l'accueil, Pique-nique ukulélé sur la carte du café, Coup de feu pendant le service, Forêt enchantée dans la Clairière, Petits fantômes pendant Halloween (carte et Nuits), choix de Joffray. Bouton son [data-sound] mémorisé, toujours en haut à droite (demande de Joffray). Le son ne démarre qu'après un vrai toucher (pointerup, touchend, click), pas sur pointerdown au doigt. Reste à faire : bruitages doux et vibrations.
 - Backend **Firebase** (décidé, pas encore commencé) : sauvegarde cloud, classement, amis, événements live. Connexion : **compte anonyme Firebase dès le lancement, sans écran de connexion**, puis proposition de lier un compte Google au bon moment (changer d'appareil, classement, amis, achat). Ne pas imposer la connexion au démarrage.

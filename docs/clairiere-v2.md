@@ -1,6 +1,6 @@
 # La Clairière, version 2 — fiche de conception
 
-*Rédigée le 24/10/2026 avec Joffray. Rien n'est codé : cette fiche est à relire et valider avant la première ligne.*
+*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Reste : les histoires, le compagnon, Roussette héroïne.*
 
 ## L'intention
 
@@ -153,6 +153,13 @@ Puis **une semaine de test avec la copine de Joffray**. Le critère n'est pas «
 ## Les parties existantes
 
 Nouvelle sauvegarde `clairiere-renards-v2`. L'ancienne (`clairiere-renards-v1`) reste intacte dans le téléphone. On n'en reprend qu'une chose : **les renards déjà rencontrés**, notés « déjà croisés » dans le carnet. L'amitié, les souvenirs et les glands repartent de zéro, puisque les souvenirs viennent maintenant des histoires.
+
+## Décidé pendant le brainstorming du 24/10/2026
+
+- Les six sauvages restent hors du Café tant qu'on ne les a pas rencontrés à la gamelle. Le carnet du Café les montre en silhouette avec l'indice de la gamelle ; une fois rencontrés, ils viennent au Café en VIP.
+- **Gribouille** peint avec sa queue (d'où le bout bleu). Il voudrait peindre tout le monde, mais personne ne tient en place. Étape 1 : il cherche un modèle. Étape 2 : seul un renard endormi tient en place, il faut un coussin. Ensuite, une **fresque** sur le mur de la maison grandit à chaque renard installé.
+- **Le grand portrait**, la fin du jeu : quand tout le monde est réuni (les 29 renards, sauvages et invités d'honneur compris), Gribouille peint la photo de famille. Les invités d'Halloween y figurent en bonus s'ils ont été croisés.
+- Idée pour le Café : un calendrier de connexion sur 7 jours, avec une grosse récompense le 7e (le bonus actuel ne donne que des pièces).
 
 ## Questions encore ouvertes
 

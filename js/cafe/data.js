@@ -126,6 +126,10 @@ const onMenu=(k,d=G&&G.run?G.day:curDay())=>has(k)&&!(REC[k].day>=d);
 const optOn=(o,d=G&&G.run?G.day:curDay())=>!!S.own[o]&&OPTS[o].day<d;
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
+// les six renards sauvages viennent d'abord à la gamelle du refuge ; une fois rencontrés, ils passent au Café en VIP
+const WILD={somnus:"baies",reglisse:"baies",aurore:"baies",maree:"poisson",perle:"poisson",yeti:"miel"};
+const WILD_FOOD={baies:"de baies",poisson:"de poisson",miel:"de miel"};
+function wildMet(){try{const R=JSON.parse(localStorage.getItem("clairiere-renards-v2"));return Object.keys(WILD).filter(id=>R&&R.met&&R.met[id]).map(id=>FOX[id])}catch(e){return[]}}
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
 // « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
 // L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.

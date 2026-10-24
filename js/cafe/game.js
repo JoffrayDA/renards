@@ -34,7 +34,7 @@ function spawn(){
   const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[])];
   let f,vip=false;
   // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
-  if(G.rng()<vipCh){vip=true;const pool=(HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:VIPS).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
+  if(G.rng()<vipCh){vip=true;const pool=(HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:[...VIPS,...wildMet()]).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1)*(G.boost.patience?1.3:1);
@@ -91,7 +91,7 @@ function deliver(c,el){
 function complete(c){
   const frac=Math.max(0,c.pat/c.patMax),base=c.order.reduce((a,o)=>a+itemPrice(itemKey(o)),0);
   let tip=Math.round(base*.45*frac*tipMult()*(G.boost.tips?2:1));
-  if(frac>=.5){G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo);if(G.combo===3)qEvent("combo3")}else G.combo=0;
+  if(frac>=.5){S.happy[c.fox]=(S.happy[c.fox]||0)+1;G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo);if(G.combo===3)qEvent("combo3")}else G.combo=0;
   const cb=G.combo>=3?Math.min(G.combo,6)-1:0;
   let tot=base+tip+cb;if(c.vip){tot*=3;G.vipServed++;qEvent("vip")}
   // la recette (objectif, étoiles) compte le prix payé ; on ne garde en pièces que le bénéfice, et 30 % quand on rejoue
