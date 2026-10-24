@@ -99,13 +99,15 @@ function foxArt(f,o={}){
       // yeux fermés (dodo, toilette) ou levés vers le ciel : on garde museau, joues et bouche du visage normal
       const base=face(Y,true).replace(/<path d="M44 [^"]*" fill="none" stroke-width="2.6"\/>/,"");
       const eyes=mode==="shut"?`<path d="M43.5 ${Y} Q48 ${Y+3.6} 52.5 ${Y} M67.5 ${Y} Q72 ${Y+3.6} 76.5 ${Y}" fill="none" stroke-width="2.4"/>`
+        :gh?`<g class="eyes" style="transform-origin:60px ${Y}px">${[47,73].map(x=>`<ellipse cx="${x}" cy="${Y-2}" rx="4.6" ry="6.2" fill="${dark}" stroke="none"/><circle cx="${x+1.2}" cy="${Y-5.6}" r="1.7" fill="#fff" stroke="none"/><circle cx="${x-1.5}" cy="${Y+1.4}" r=".8" fill="#fff" stroke="none"/>`).join("")}</g>`
         :`<g class="eyes" style="transform-origin:60px ${Y}px"><ellipse cx="48" cy="${Y-1.4}" rx="2.9" ry="3.5" fill="${dark}" stroke="none"/><ellipse cx="72" cy="${Y-1.4}" rx="2.9" ry="3.5" fill="${dark}" stroke="none"/><circle cx="48.6" cy="${Y-3}" r="1.05" fill="#fff" stroke="none"/><circle cx="72.6" cy="${Y-3}" r="1.05" fill="#fff" stroke="none"/></g>`;
       h=base+eyes;
       if(mode==="up")h=h.replace(/<path d="M56 [^"]*"[^>]*\/>/,"")+mouthO(Y);
     }
     if(["sad","surprise","shy"].includes(mode)){
       const noMouth=face(Y,true).replace(/<path d="M44 [^"]*" fill="none" stroke-width="2.6"\/>/,"").replace(/<path d="M56 [^"]*"[^>]*\/>/,"");
-      const dot=(x,y,rx,ry,hl)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${dark}" stroke="none"/><circle cx="${x+.9}" cy="${y-ry*.4}" r="${hl}" fill="#fff" stroke="none"/>`;
+      // Feu Follet garde ses grands yeux brillants dans toutes les expressions
+      const dot=(x,y,rx,ry,hl)=>gh?`<ellipse cx="${x-.9}" cy="${y-.5}" rx="${(rx*1.6).toFixed(1)}" ry="${(ry*1.77).toFixed(1)}" fill="${dark}" stroke="none"/><circle cx="${x+.5}" cy="${(y-ry*.9).toFixed(1)}" r="${(hl*1.8).toFixed(1)}" fill="#fff" stroke="none"/><circle cx="${x-2.4}" cy="${(y+ry*.75).toFixed(1)}" r=".8" fill="#fff" stroke="none"/>`:`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${dark}" stroke="none"/><circle cx="${x+.9}" cy="${y-ry*.4}" r="${hl}" fill="#fff" stroke="none"/>`;
       if(mode==="sad")h=noMouth+dot(48,Y+.6,2.8,3.2,.9)+dot(72,Y+.6,2.8,3.2,.9)
         +`<path d="M42.5 ${Y-6} L51 ${Y-8.6} M77.5 ${Y-6} L69 ${Y-8.6}" fill="none" stroke-width="2"/><path d="M56 ${Y+9} Q60 ${Y+6} 64 ${Y+9}" fill="none" stroke-width="1.8"/><path d="M44 ${Y+5} q-2.6 4 0 5.4 q2.6 -1.4 0 -5.4Z" fill="#9ec3ef" stroke-width="1.2"/>`;
       else if(mode==="surprise")h=noMouth+dot(48,Y-.4,3.6,4.4,1.3)+dot(72,Y-.4,3.6,4.4,1.3)
