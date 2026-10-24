@@ -9,6 +9,7 @@ if(!R||R.ver!==2){
   // les clients déjà servis au Café avant le refuge peuvent suivre Roussette
   const C=load(CAFEKEY);if(C&&C.seen)for(const id in C.seen)if(canFollow(id))R.legacy[id]=1;
 }
+R.story=R.story||{};R.souv=R.souv||{}; // histoires : étapes finies par renard ; souvenirs reçus
 function save(){try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}}
 function canFollow(id){const f=FOX[id];return f&&!f.event&&!WILD[id]&&id!=="roussette"}
 const isRes=id=>!!R.res[id];
@@ -25,12 +26,15 @@ function candidates(){
 }
 function checkArrival(){
   if(R.lastArr===today())return null;
-  const w=candidates(),ids=Object.keys(w);if(!ids.length)return null;
+  // un renard attendu par une histoire passe avant les autres, même sans être venu au Café
+  const need=storyGuest();
+  const w=candidates(),ids=Object.keys(w);if(!ids.length&&!need)return null;
   let r=Math.random()*ids.reduce((a,id)=>a+w[id],0),id=ids[0];
   for(const k of ids){r-=w[k];if(r<=0){id=k;break}}
+  if(need)id=need;
   const C=load(CAFEKEY)||{};
   R.res[id]={at:Date.now(),h:0,pet:""};R.lastArr=today();R.snap={...(C.happy||{})};delete R.legacy[id];
-  R.news.push({k:"arr",id,t:Date.now()});save();return id;
+  R.news.push({k:"arr",id,t:Date.now(),say:need?id:""});save();return id;
 }
 
 /* ---------- simulation ---------- */

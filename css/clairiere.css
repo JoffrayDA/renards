@@ -113,6 +113,7 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 .foxhead h2{margin:0 0 4px}
 .chip{font-size:10.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:999px;background:var(--mint);color:#4f7148}
 .chip.discret{background:var(--peach);color:#a0583a}.chip.rare{background:var(--lav);color:#5e4f9a}.chip.legend{background:#fbe39a;color:#8a6210}
+.story{background:#fff3e2;border-radius:12px;padding:8px 10px;font-size:13px;line-height:1.4}
 .lvl{font-size:13px;font-weight:700;margin-top:6px}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .photo{margin:0;background:#fff;padding:6px 6px 8px;border-radius:6px;box-shadow:0 3px 10px rgba(91,66,80,.18);transform:rotate(-1.2deg)}

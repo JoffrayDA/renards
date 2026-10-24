@@ -1,6 +1,6 @@
 # La Clairière, version 2 — fiche de conception
 
-*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Reste : les histoires, le compagnon, Roussette héroïne.*
+*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Histoire de Petit Pois codée le 24/10/2026 (`js/clairiere/story.js`). Reste : les autres histoires, le compagnon, Roussette héroïne.*
 
 ## L'intention
 
@@ -82,6 +82,35 @@ Chaque renard a **un arc unique, écrit, en 3 étapes**, réparti sur ses niveau
 **Format des histoires : une boîte de dialogue.** En bas de l'écran, le portrait du renard dans un carré à gauche, son texte à droite (« Mince, j'ai perdu mes clés… tu m'aides ? »). Le portrait change d'expression selon la réplique : il faut donc des expressions en plus des poses (neutre, joyeux, triste, surpris, gêné).
 
 **Règle : on récompense le retour, on ne punit jamais l'absence.** Un renard ne dépérit pas parce que l'app est restée fermée. Le public peut être mineur, et Google y fait attention pour les jeux familiaux.
+
+### Petit Pois : « Peur du noir »
+
+Ressort : Petit Pois suit Roussette partout parce qu'il a peur de rester seul la nuit. Son histoire demande un **moment** (la nuit), un **autre renard** (Luciole) et du **temps**. Elle explique aussi pourquoi il aide au Café.
+
+Petit Pois ouvre le jeu : ses étapes demandent l'amitié 1, 2 et 3 (au lieu de 2, 3, 4), pour que l'histoire tienne dans la semaine de test. « Le soir » veut dire crépuscule ou nuit (18 h à 6 h). Une seule étape d'histoire par jour réel ; l'accueil compte pour le premier jour. Pour tester : `clairiere.html?heure=22`.
+
+**Étape 1, amitié 1, le soir** :
+- `shy` « Roussette… il commence à faire noir. Tu restes un peu dehors avec moi ? »
+- `sad` « Quand les lanternes s'éteignent, la forêt fait des bruits. Crac. Hou-hou. »
+- `shy` « Je fais semblant de dormir sous le porche, mais je garde un œil ouvert. Les deux, en fait. »
+- `open` « Tu crois qu'il existe quelqu'un qui n'a jamais peur du noir ? »
+
+**Étape 2, amitié 2, Luciole installée au refuge**. Luciole n'a pas besoin du Café : dès l'étape 1 finie, elle est l'arrivée du lendemain (« J'ai vu de la lumière chez toi… ») :
+- `surprise` « Roussette ! Tu as vu Luciole ? Sa queue fait de la lumière. Toute seule ! »
+- `luciole` `joy` « Ce n'est rien, je suis née comme ça. C'est même moi qui allume les lanternes, le soir. »
+- `shy` « Dis… tu pourrais rester près de moi, cette nuit ? Juste un peu ? »
+- `luciole` `open` « D'accord, petit. Mais il faudra que tu m'aides à les allumer. »
+
+**Étape 3, amitié 3, le soir, Luciole présente** :
+- `joy` « Roussette, regarde ! C'est moi qui ai allumé la grande lanterne ! »
+- `luciole` `joy` « Du premier coup. Je n'avais jamais vu ça. »
+- `open` « En fait, le noir, c'est juste le moment où les lanternes sont jolies. »
+- `shy` « Tiens. C'est mon gland porte-bonheur. Je n'en ai plus besoin… enfin, garde-le quand même bien. »
+- `joy` « Et maintenant que je n'ai plus peur de rentrer tard, je peux t'aider au Café ! »
+
+**Fin** : souvenir **le gland porte-bonheur**. Petit Pois est le compagnon par défaut ; cette fin débloque le choix du compagnon (on peut ensuite le remplacer par un autre renard dont l'histoire est terminée). Ensuite, Luciole et Petit Pois sont souvent ensemble près des lanternes le soir.
+
+**Petites envies, après l'histoire** : « Une histoire avant de dormir ? » (la nuit), « On fait la course jusqu'à la mare ? », « J'ai trouvé un gland plus gros que ma tête ! »
 
 ## Économie : les glands, en beaucoup plus rare
 

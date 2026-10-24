@@ -20,7 +20,7 @@ function tapFox(f){
   if(f.wild){bubble(f,"un renard sauvage, il mange !");return}
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
-  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur)")}
+  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur)");if(r===2)setTimeout(storyCheck,2000)}
   else bubble(f,what);
 }
 
@@ -87,7 +87,7 @@ function carnet(){
 }
 function foxSheet(id){
   const f=FOX[id],r=R.res[id],M=metIds(),s=status(id,M),show=s.ok||s.seen;
-  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p><button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`);
+  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`);
 }
 
 /* ---------- nouvelles au retour ---------- */
@@ -95,7 +95,7 @@ function foxSheet(id){
 function showNews(){
   const wild=R.news.filter(n=>n.k==="wild"&&!n.live),arr=R.news.filter(n=>n.k==="arr");
   R.news=[];save();
-  const next=()=>{if(arr.length){const id=arr.shift().id;syncFoxes();talk(arrLines(id),next)}};
+  const next=()=>{if(arr.length){const n=arr.shift();syncFoxes();talk(n.say&&GUEST_LINES[n.say]||arrLines(n.id),next)}else storyCheck()};
   if(wild.length){
     openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence, ${wild.length>1?"des renards sauvages sont passés":"un renard sauvage est passé"} à la gamelle.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG({id:n.id,bowl:R.photos.find(p=>p.t===n.t)?.bowl||WILD[n.id]})}<figcaption><b>${FOX[n.id].name}</b>${n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
     afterSheet=next;

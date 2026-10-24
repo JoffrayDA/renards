@@ -3,7 +3,9 @@ const scn={lamps:{L:false,R:false},rain:false,phase:""};
 
 /* ---------- moments de la journée (heure réelle) et météo ---------- */
 const PH={aube:{sky:["#ffd2bd","#fde9d8"],tint:"#ffb7a0",a:.12,name:"Aube"},jour:{sky:["#bfe0f2","#e9f5ee"],tint:"#fff",a:0,name:"Journée"},crepu:{sky:["#b99ad6","#f7c1a0"],tint:"#8a6ab0",a:.22,name:"Crépuscule"},nuit:{sky:["#252b62","#47467f"],tint:"#262c6a",a:.45,name:"Nuit"}};
-const phaseNow=()=>{const h=new Date().getHours();return h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit"};
+// ?heure=22 force l'heure, pour tester
+const QH=new URLSearchParams(location.search).get("heure"),hourNow=()=>QH!=null?+QH:new Date().getHours();
+const phaseNow=()=>{const h=hourNow();return h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit"};
 const dark=()=>["crepu","nuit"].includes(phaseNow());
 // il pleut par tranches de 3 heures, environ une fois sur trois ; la même pluie pour tout le monde au même moment
 function rainNow(){const d=new Date(),k=d.getFullYear()*1e6+(d.getMonth()+1)*1e4+d.getDate()*10+Math.floor(d.getHours()/3);
