@@ -52,6 +52,7 @@ function hwIntro(done){
     </div>
     ${ghosts}${flies}`;
   document.body.appendChild(el);
-  let gone=false;const end=()=>{if(gone)return;gone=true;el.classList.add("hi-out");setTimeout(()=>{el.remove();if(done)done()},350)};
+  if(MUSIC.jingle)MUSIC.jingle("hwintro");
+  let gone=false;const end=()=>{if(gone)return;gone=true;if(MUSIC.jingleEnd)MUSIC.jingleEnd();el.classList.add("hi-out");setTimeout(()=>{el.remove();if(done)done()},350)};
   el.addEventListener("click",end);
 }

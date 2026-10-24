@@ -13,7 +13,7 @@ const MUSIC=(()=>{
       const a=e.target.closest("a.home");if(a){e.preventDefault();host.closeGame()}});
     const st=document.createElement("style");st.textContent=H.css;document.head.appendChild(st);
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},get on(){return H.on},get current(){return H.current}};
+    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
   }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
   const hz=m=>440*Math.pow(2,(m-69)/12);
@@ -128,7 +128,44 @@ const MUSIC=(()=>{
         melody((m,tt)=>I.box(m+12,tt,.15,1),this.mel,b,t,B)}}
   };
 
+  /* ---------- jingles : courtes musiques calées sur une animation, puis le morceau voulu reprend ---------- */
+  // voix de fantôme (thérémine) : glisse d'une note à l'autre avec un vibrato
+  function glide(m1,m2,t,dur,v=.08){const o=osc("sine",hz(m1),t,t+dur+.3);o.frequency.setValueAtTime(hz(m1),t);o.frequency.exponentialRampToValueAtTime(hz(m2),t+dur*.45);
+    const lfo=osc("sine",6,t,t+dur+.3),lg=C.createGain();lg.gain.value=hz(m2)*.012;lfo.connect(lg);lg.connect(o.frequency);
+    const g=C.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.25);g.gain.setValueAtTime(v,t+dur-.3);g.gain.linearRampToValueAtTime(0,t+dur+.2);o.connect(g);out(g,.6)}
+  // vent : bruit filtré dont la bande monte puis redescend
+  function wind(t,dur,v=.05){const bp=filt("bandpass",400,5);bp.frequency.setValueAtTime(380,t);bp.frequency.linearRampToValueAtTime(950,t+dur*.5);bp.frequency.linearRampToValueAtTime(450,t+dur);
+    const g=C.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+dur*.3);g.gain.linearRampToValueAtTime(0,t+dur);noiseSrc(t,t+dur+.1).connect(bp);bp.connect(g);out(g,.5)}
+  const JINGLES={
+    // Nuit des citrouilles (js/cafe/hwintro.js) : les temps suivent ceux de l'animation
+    hwintro:{len:10,play(t){
+      const B=60/104;
+      I.pad([45,52,57,60],t,4.6,.03);wind(t,2.6);wind(t+1.9,2.2,.035);                       // nuit, vent
+      [69,72,76,81].forEach((m,i)=>I.box(m,t+.3+i*.3,.13,1.6));                               // la lune se lève
+      [76,79,83,88].forEach((m,i)=>{I.marimba(m,t+1.6+i*.3,.2);I.wood(t+1.6+i*.3,.05)});      // les citrouilles s'allument
+      for(let i=0;i<14;i++)I.pizz(84-(i%7)*2+(i>6?1:0),t+2+i*.11,.09);                        // l'essaim de chauves-souris
+      wind(t+2,1.6,.04);
+      glide(69,76,t+3.3,1.5);glide(76,72,t+4.8,.6,.05);                                        // Feu Follet : « ouuuh »
+      [4.2,4.35,4.5].forEach((x,i)=>{I.marimba([64,67,71][i],t+x,.18);I.wood(t+x,.08)});        // les invités sautent
+      const T=t+5.3;                                                                            // le titre
+      I.kick(T,.45);I.openhat(T,.06);I.stab([57,60,64,69],T,.06);I.bass(45,T,1.4,.24);
+      melody((m,tt)=>I.box(m+12,tt,.15,1.1),[[[76,.5],[77,.5],[76,.5],[75,.5],[76,1],[72,1]]],0,T+.3,B);
+      melody((m,tt)=>I.box(m+12,tt,.15,1.1),[[[71,1],[72,.5],[74,.5],[76,2]]],0,T+.3+4*B,B);
+      for(let i=0;i<8;i++)I.box(93-i*2+(i%2?3:0),T+.35+i*.11,.05,.6);                           // pluie de bonbons
+      for(let i=0;i<4;i++)I.pizz([45,52,48,52][i],T+.3+i*B,.18);
+      [[53,57,60],[52,56,59]].forEach((c,i)=>I.pad(c,T+.3+i*2*B,2*B,.022));
+      const E=T+.3+6*B;I.pad([45,52,57,59,64],E,2.2,.03);I.box(81,E,.12,2.4);I.box(88,E+.15,.08,2.4);I.bass(33,E,2.2,.2)  // accord final
+    }}
+  };
+  let jtimer=null;
+  function jingle(id){const J=JINGLES[id];if(!J||!on||!unlocked)return;init();if(C.state==="suspended")C.resume();
+    stop();cur="jingle:"+id;bus=newBus();J.play(C.currentTime+.08);
+    clearTimeout(jtimer);jtimer=setTimeout(()=>{jtimer=null;if(cur==="jingle:"+id){cur=null;if(on&&wanted)play(wanted)}},J.len*1000)}
+  // l'animation est passée avant la fin : fondu, puis le morceau voulu
+  function jingleEnd(){if(!jtimer)return;clearTimeout(jtimer);jtimer=null;if(cur&&cur.startsWith("jingle:")){stop();if(on&&wanted)play(wanted)}}
+
   function play(id){
+    clearTimeout(jtimer);jtimer=null;
     init();if(C.state==="suspended")C.resume();
     stop();const tr=TRACKS[id];if(!tr)return;cur=id;bus=newBus();
     const B=60/tr.bpm,len=tr.beats*B;let next=C.currentTime+.1,bar=0;
@@ -160,7 +197,7 @@ const MUSIC=(()=>{
   const css=".snd{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fffaf2;border:2px solid #ead9cc;box-shadow:0 3px 0 #ead9cc;flex:none;cursor:pointer;padding:0;touch-action:manipulation}.snd svg{display:block}";
   st.textContent=css;document.head.appendChild(st);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-  return{play,stop,volume,want,setOn,paint,icon,css,unlock,tracks:TRACKS,get current(){return cur},get on(){return on}};
+  return{play,stop,volume,want,setOn,paint,icon,css,unlock,jingle,jingleEnd,tracks:TRACKS,get current(){return cur},get on(){return on}};
 })();
 // visible par les jeux ouverts dans le cadre de l'accueil (une const n'est pas une propriété de window)
 window.MUSIC=MUSIC;
