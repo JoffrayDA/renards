@@ -233,6 +233,8 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .it.nlock{opacity:.6}
 .it.bon{background:#e3f2d6}
 .nst2{color:var(--gold-d);font-size:13px;letter-spacing:1px}.nst2 em{color:#d8ccd4;font-style:normal}
+/* téléphone avec les options (lait, chantilly) : le plateau tient en largeur, sans le mot « Plateau » */
+@media (max-width:520px){.tray:has(.tps){gap:5px;padding:6px 8px}.tray:has(.tps) .tl{display:none}.tray:has(.tps) .ts{min-width:30px}.tps{gap:4px;flex:none}.tp{padding:3px 4px 2px}.tp svg{width:24px;height:24px}.tp em{font-size:9.5px}}
 @media (max-width:520px){.scene{aspect-ratio:7/5}.ki{width:46px;height:46px}.kb{padding:8px 3px 8px}.cust{width:23%}.ts{width:40px}.tray small{display:none}.pill.day{padding:3px 9px}}
 /* la queue de Luciole est une vraie petite lumière (js/foxart.js) */
 .lumi{animation:lumi 1.8s ease-in-out infinite}
