@@ -1,6 +1,6 @@
 # La Clairière, version 2 — fiche de conception
 
-*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Histoire de Petit Pois codée le 24/10/2026 (`js/clairiere/story.js`). Compagnon codé le 25/10/2026. Reste : les autres histoires, Roussette héroïne (le nom choisi est fait).*
+*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Histoire de Petit Pois codée le 24/10/2026 (`js/clairiere/story.js`). Compagnon codé le 25/10/2026. Histoires de Mitaine et Gribouille le 25/10/2026. Reste : la page « c'est toi » du carnet ; ensuite, le test avec la copine de Joffray.*
 
 ## L'intention
 
@@ -112,6 +112,13 @@ Petit Pois ouvre le jeu : ses étapes demandent l'amitié 1, 2 et 3 (au lieu de 
 
 **Petites envies, après l'histoire** : « Une histoire avant de dormir ? » (la nuit), « On fait la course jusqu'à la mare ? », « J'ai trouvé un gland plus gros que ma tête ! »
 
+### Mitaine : « La moufle perdue » et Gribouille : « Le modèle »
+
+Codées le 25/10/2026, texte complet dans `js/clairiere/story.js`. Les deux utilisent une nouvelle condition, **la pluie** (`rain`).
+
+- **Mitaine** (amitié 1, 2 sous la pluie, 3 le soir) : elle a perdu la moufle rouge au flocon tricotée par sa grand-mère ; la pluie fait apparaître un fil de laine sur la mare qui mène au porche ; c'est Petit Pois qui dormait dedans. Elle la lui laisse et te donne l'autre : souvenir **la moufle au flocon**.
+- **Gribouille** (amitié 1, 2 sous la pluie, 3 le soir) : il veut peindre tout le monde mais personne ne tient en place ; il dessine sur les vitres embuées, mais les choses ne suffisent pas ; la nuit, les renards endormis tiennent en place. Souvenir **le portrait de Petit Pois endormi**, et l'annonce de la fresque. Gribouille entre dans `FOXES` et remplace Roussette parmi les clients du Café (`REG`) ; le carnet du Café ne compte plus Roussette.
+
 ## Économie : les glands, en beaucoup plus rare
 
 Les glands restent la monnaie de la Clairière, séparée des pièces du Café. Le problème de la v1 n'était pas les glands, mais leur rythme : visites accélérées et mini-jeux en donnaient beaucoup trop.
@@ -192,6 +199,6 @@ Nouvelle sauvegarde `clairiere-renards-v2`. L'ancienne (`clairiere-renards-v1`) 
 
 ## Questions encore ouvertes
 
-1. **Gribouille** : son histoire.
+1. ~~Gribouille : son histoire~~ (écrite le 25/10/2026).
 2. **Les chiffres des glands** : gains par jour, prix des objets et des gamelles, à fixer par simulation.
 3. **Les objets du refuge** : la liste complète, en partant de ceux que les histoires demandent.

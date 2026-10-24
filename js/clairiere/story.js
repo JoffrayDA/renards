@@ -19,6 +19,36 @@ const STORIES={
       ["petitpois","open","En fait, le noir, c'est juste le moment où les lanternes sont jolies."],
       ["petitpois","shy","Tiens. C'est mon gland porte-bonheur. Je n'en ai plus besoin… enfin, garde-le quand même bien."],
       ["petitpois","joy","Et maintenant que je n'ai plus peur de rentrer tard, je peux t'aider au Café !"]]}
+  ]},
+  mitaine:{title:"La moufle perdue",souv:"la moufle au flocon",steps:[
+    {lv:1,hint:"Mitaine cherche quelque chose partout.",lines:[
+      ["mitaine","sad",`Bonsoir ${ME()}… Tu n'aurais pas vu une moufle ? Rouge, avec un petit flocon brodé.`],
+      ["mitaine","shy","Ma grand-mère me l'a tricotée. J'ai encore l'autre, mais une moufle toute seule, ça ne sert à rien."],
+      ["mitaine","open","Si tu la vois, tu me diras ? Je vais chercher du côté de la mare."]]},
+    {lv:2,rain:1,hint:"Mitaine guette la mare. Un jour de pluie, peut-être…",lines:[
+      ["mitaine","surprise",`${ME()} ! Avec la pluie, il y a un fil de laine rouge qui flotte sur la mare !`],
+      ["mitaine","open","Il part vers le porche… Quelqu'un a dû traîner ma moufle par ici."],
+      ["mitaine","shy","Je n'ose pas fouiller sous le porche. C'est là que les autres dorment."]]},
+    {lv:3,dark:1,hint:"Le fil de laine mène sous le porche. Reviens le soir, quand tout le monde dort.",lines:[
+      ["petitpois","shy","Euh… Mitaine ? Je crois que je dors dedans depuis une semaine."],
+      ["mitaine","surprise","Ma moufle ! Tu en as fait un sac de couchage ?"],
+      ["petitpois","sad","Elle est toute chaude… Pardon."],
+      ["mitaine","joy","Garde-la, va. Elle te va mieux qu'à ma patte."],
+      ["mitaine","open",`Et toi, ${ME()}, prends l'autre. Comme ça, on en a chacun une.`]]}
+  ]},
+  gribouille:{title:"Le modèle",souv:"le portrait de Petit Pois endormi",steps:[
+    {lv:1,hint:"Gribouille a envie de te parler peinture.",lines:[
+      ["gribouille","joy",`Bonjour ${ME()} ! Je suis peintre. Enfin, je peins avec ma queue : tu vois le bout bleu ?`],
+      ["gribouille","sad","Je voudrais faire le portrait de tout le monde, mais personne ne tient en place."],
+      ["gribouille","shy","Même toi, tu bouges tout le temps. Ce n'est pas un reproche… Si, un peu."]]},
+    {lv:2,rain:1,hint:"Gribouille attend que les vitres soient embuées. Un jour de pluie…",lines:[
+      ["gribouille","surprise","Il pleut ! Les vitres de la maison sont toutes embuées : c'est mon papier préféré !"],
+      ["gribouille","joy","Regarde, j'ai dessiné la mare, la souche et une lanterne. Les choses, ça ne bouge pas."],
+      ["gribouille","open","Mais il me manque un vrai modèle. Quelqu'un qui reste immobile très, très longtemps…"]]},
+    {lv:3,dark:1,hint:"Gribouille cherche un modèle qui ne bouge pas. Reviens le soir pour voir.",lines:[
+      ["gribouille","surprise",`${ME()}, j'ai trouvé ! La nuit, tout le monde dort. Ils tiennent en place !`],
+      ["gribouille","open","J'ai peint Petit Pois roulé en boule. Il n'a pas bougé une moustache."],
+      ["gribouille","joy","Tiens, c'est pour toi. Et bientôt, je peindrai un grand tableau sur le mur de la maison, avec tout le monde dedans."]]}
   ]}
 };
 // renards qui arrivent pour une histoire, avec leur propre dialogue d'arrivée
@@ -27,7 +57,7 @@ const GUEST_LINES={
 };
 
 const storyStep=id=>{const S=STORIES[id],n=R.story[id]||0;return S&&n<S.steps.length?S.steps[n]:null};
-const stepReady=(id,st)=>isRes(id)&&lvOf(R.res[id].h)>=st.lv&&(!st.dark||dark())&&(!st.with||isRes(st.with));
+const stepReady=(id,st)=>isRes(id)&&lvOf(R.res[id].h)>=st.lv&&(!st.dark||dark())&&(!st.rain||scn.rain)&&(!st.with||isRes(st.with));
 // le renard qu'une histoire attend : il arrive en priorité, dès l'étape précédente finie
 function storyGuest(){for(const id in STORIES){const st=storyStep(id);if(st&&st.with&&isRes(id)&&(R.story[id]||0)>0&&!isRes(st.with))return st.with}return null}
 

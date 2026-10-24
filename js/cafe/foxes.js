@@ -37,6 +37,9 @@ FOXES.push(
   {id:"aurore",zone:"neige",name:"Aurore",rar:"rare",food:3,likes:["igloo"],gift:[24,36],goldP:.45,acc:"flocon",c:{b:"#f2c6e0",ch:"#fff8fc",e:"#b07ab0",s:"#b07ab0",t:"#d8e8ff"},bio:"Son pelage change de couleur la nuit."},
   {id:"yeti",zone:"neige",name:"Yéti",rar:"legend",food:4,likes:["chocolat"],gift:[45,70],goldP:1,goldN:4,acc:"bonnet",ears:.8,c:{b:"#f4f4f6",ch:"#ffffff",e:"#c8c8d0",s:"#b8b8c4",t:"#ffffff"},bio:"Gros, doux et très discret. Personne n'y croit."}
 );
+// Gribouille, le 30e renard : il remplace Roussette parmi les clients (Roussette, c'est le joueur)
+// Il dessine sur les vitres embuées ; béret, taches de peinture, bout de la queue trempé dans le bleu comme un pinceau.
+FOXES.push({id:"gribouille",name:"Gribouille",rar:"commun",acc:"beret",mark:"peinture",c:{b:"#d6a6b8",ch:"#fff6f8",e:"#8a5a6e",s:"#8a5a6e",t:"#7cb8e0"},bio:"Dessine du bout de la patte sur les vitres embuées, les jours de pluie."});
 // invités d'Halloween (Café seulement) : ils viennent en VIP pendant la Nuit des citrouilles et donnent 5 bonbons
 FOXES.push(
   {id:"feufollet",event:"halloween",name:"Feu Follet",rar:"legend",ghost:true,acc:"spectre",c:{b:"#e9eefc",ch:"#ffffff",e:"#aab6e2",s:"#c9d3f2",t:"#ffffff"},bio:"Un renard fantôme. Il traverse les murs, mais il dit toujours bonjour."},

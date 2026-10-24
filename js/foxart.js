@@ -11,11 +11,8 @@ const LOOK={
   givre:{c:{b:"#dfeaf6",ch:"#ffffff",e:"#9fb6cf",s:"#9fb6cf",t:"#ffffff"},mark:"neige"},
   luciole:{mark:"lueur"}
 };
-// Nouveaux renards, en essai sur la planche avant d'entrer dans FOXES.
-// Gribouille : dessine sur les vitres embuées ; béret, taches de peinture, et le bout de la queue trempé dans le bleu comme un pinceau.
-const NEW_FOXES=[
-  {id:"gribouille",name:"Gribouille",rar:"commun",acc:"beret",mark:"peinture",c:{b:"#d6a6b8",ch:"#fff6f8",e:"#8a5a6e",s:"#8a5a6e",t:"#7cb8e0"},bio:"Dessine du bout de la patte sur les vitres embuées, les jours de pluie."}
-];
+// Nouveaux renards en essai sur la planche avant d'entrer dans FOXES (Gribouille y est entré le 25/10/2026).
+const NEW_FOXES=[];
 function foxArt(f,o={}){
   if(LOOK[f.id])f={...f,...LOOK[f.id]};
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
