@@ -1,6 +1,6 @@
 # La Clairière, version 2 — fiche de conception
 
-*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Histoire de Petit Pois codée le 24/10/2026 (`js/clairiere/story.js`). Compagnon codé le 25/10/2026. Histoires de Mitaine et Gribouille le 25/10/2026. Reste : la page « c'est toi » du carnet ; ensuite, le test avec la copine de Joffray.*
+*Rédigée le 24/10/2026 avec Joffray. Codé le 24/10/2026 : la planche, la scène, la vie par petits sauts, les arrivées, la gamelle et la simulation (étapes 1 à 4). Histoire de Petit Pois codée le 24/10/2026 (`js/clairiere/story.js`). Compagnon codé le 25/10/2026. Histoires de Mitaine et Gribouille le 25/10/2026. Histoires refaites le 26/10/2026 (une à la fois, en une visite, repères « ! » et journal, Gribouille en dernier ; voir CLAUDE.md, section Clairière). Reste : les histoires des autres renards, la page « c'est toi » du carnet ; ensuite, le test avec la copine de Joffray.*
 
 ## L'intention
 

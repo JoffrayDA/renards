@@ -22,7 +22,8 @@ function syncTogether(){const T=(load(CAFEKEY)||{}).together||{},got=[];
 const ME=()=>(load(CAFEKEY)||{}).name||"Roussette";
 
 /* ---------- arrivées depuis le Café ---------- */
-// au plus un nouveau renard par jour réel, tiré parmi les clients bien servis depuis la dernière arrivée
+// une fois toutes les histoires finies (story.js) : au plus un nouveau renard par jour réel,
+// tiré parmi les clients bien servis depuis la dernière arrivée
 function candidates(){
   const C=load(CAFEKEY)||{},happy=C.happy||{},w={};
   for(const id of new Set([...Object.keys(happy),...Object.keys(R.legacy)])){
@@ -32,16 +33,13 @@ function candidates(){
   return w;
 }
 function checkArrival(){
-  if(R.lastArr===today())return null;
-  // un renard attendu par une histoire passe avant les autres, même sans être venu au Café
-  const need=storyGuest();
-  const w=candidates(),ids=Object.keys(w);if(!ids.length&&!need)return null;
+  if(R.lastArr===today()||!chainDone())return null;
+  const w=candidates(),ids=Object.keys(w);if(!ids.length)return null;
   let r=Math.random()*ids.reduce((a,id)=>a+w[id],0),id=ids[0];
   for(const k of ids){r-=w[k];if(r<=0){id=k;break}}
-  if(need)id=need;
   const C=load(CAFEKEY)||{};
   R.res[id]={at:Date.now(),h:0,pet:""};R.lastArr=today();R.snap={...(C.happy||{})};delete R.legacy[id];
-  R.news.push({k:"arr",id,t:Date.now(),say:need?id:""});save();return id;
+  R.news.push({k:"arr",id,t:Date.now()});save();return id;
 }
 
 /* ---------- simulation ---------- */

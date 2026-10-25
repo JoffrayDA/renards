@@ -7,22 +7,22 @@ simulate(false);
 const togGot=syncTogether();
 drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
 syncFoxes();
-checkArrival();
+chainTick(false);checkArrival();
 renderHud();
 $("b-bowl").innerHTML=acornSVG()+"Gamelle";
-$("b-bowl").onclick=bowlSheet;$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;
+$("b-bowl").onclick=bowlSheet;$("goal").onclick=journal;$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
-// (l'accueil compte comme le moment d'histoire du jour : la première étape attend le lendemain)
-if(!R.intro)talk(INTRO,()=>{R.intro=1;R.stepDay=today();save();showNews()});else showNews();
+if(!R.intro)talk(INTRO,()=>{R.intro=1;save();showNews()});else showNews();
+renderStory();
 log(togGot.length?togGot.map(([id,n])=>`${FOX[id].name} a passé ${n} journée${n>1?"s":""} avec toi au Café : +${n} cœur${n>1?"s":""}.`).join(" "):Object.keys(R.res).length>1?"Bienvenue au refuge.":"Petit Pois t'attendait.");
 
 setInterval(tick,100);
-// toutes les 30 s : simulation (glands, gamelle, sauvages), arrivée du jour, moment de la journée, pluie
+// toutes les 30 s : simulation (glands, gamelle, sauvages), arrivées, moment de la journée, pluie
 setInterval(()=>{
   const seen=simulate(true);
   for(const id of seen){const n=R.news.find(x=>x.k==="wild"&&x.id===id&&x.live);wildVisit(id,R.photos[R.photos.length-1].bowl);toast(n&&n.first?`Un renard sauvage ! ${FOX[id].name} s'approche de la gamelle.`:`${FOX[id].name} revient manger à la gamelle.`)}
   R.news=R.news.filter(x=>!(x.k==="wild"&&x.live));
-  checkArrival();if(R.news.some(x=>x.k==="arr")&&$("talk").hidden&&$("sheet").hidden)showNews();else storyCheck();
+  chainTick(true);checkArrival();if(R.news.some(x=>x.k==="arr")&&$("talk").hidden&&$("sheet").hidden)showNews();else renderStory();
   if(phaseNow()!==scn.phase)drawBg();
   const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}
   if(!foxes.some(f=>f.walk))syncFoxes();

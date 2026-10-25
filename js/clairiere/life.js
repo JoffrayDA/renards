@@ -7,10 +7,10 @@ const foxes=[];
 function presentIds(){
   const ids=Object.keys(R.res);if(ids.length<=MAXHERE)return ids;
   const block=R.bowl&&R.bowl.type==="croquettes"&&R.here?R.here.block:Math.floor(Date.now()/(4*36e5));
-  if(R.here&&R.here.block===block)return R.here.ids.filter(isRes).concat(ids.filter(id=>!R.here.ids.includes(id))).slice(0,MAXHERE);
+  if(R.here&&R.here.block===block)return [...new Set([...storyFoxes(),...R.here.ids.filter(isRes),...ids])].slice(0,MAXHERE);
   const r=rng(block%2147483646+1),pool=ids.slice();for(let i=pool.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  // les nouveaux venus du jour sont toujours là
-  const fresh=ids.filter(id=>Date.now()-R.res[id].at<864e5),pick=[...new Set([...fresh,...pool])].slice(0,MAXHERE);
+  // ceux de l'histoire en cours et les nouveaux venus du jour sont toujours là
+  const fresh=ids.filter(id=>Date.now()-R.res[id].at<864e5),pick=[...new Set([...storyFoxes(),...fresh,...pool])].slice(0,MAXHERE);
   R.here={block,ids:pick};save();return pick;
 }
 
@@ -28,6 +28,7 @@ function draw(f){
   const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
   if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
   else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
+  if(!f.wild&&isTarget(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`); // l'histoire attend ce renard
   f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);
 }
 // la lumière de Luciole passe au-dessus du voile de la nuit : elle suit le bout de sa queue
@@ -83,7 +84,9 @@ function tick(){
   const now=Date.now();
   for(const f of foxes.slice()){
     if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
-    if(f.inside){if(!scn.rain&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${FOX[f.id].name} ressort de la maison.`)}}continue}
+    // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
+    if(f.inside){if((!scn.rain||isTarget(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${FOX[f.id].name} ressort de la maison.`)}}continue}
+    if(now>f.until&&isTarget(f.id)){f.until=now+5000;continue}
     if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
   }
   const f1=Math.floor(now/200)%2===1;for(const f of foxes)if(f.walk)f.el.classList.toggle("f1",f1);

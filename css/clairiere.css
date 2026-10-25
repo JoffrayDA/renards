@@ -123,3 +123,21 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 .photo b{display:block;color:var(--ink);font-size:13px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--card);color:var(--ink);border:2px solid var(--line);padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;max-width:min(92vw,440px);text-align:center;z-index:30;box-shadow:0 8px 24px rgba(91,66,80,.2);animation:up .3s ease-out}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* histoires : signe au-dessus de ce qu'il faut toucher, objectif sous la scène */
+.mark{position:absolute;left:50%;top:-14%;transform:translateX(-50%);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#ffd36a;border:2.5px solid var(--ink);box-shadow:0 2px 0 var(--ink);font:900 15px/1 "Mochiy Pop One",system-ui;color:var(--ink);font-style:normal;pointer-events:none;animation:markhop 1s ease-in-out infinite}
+@keyframes markhop{50%{transform:translateX(-50%) translateY(-5px)}}
+.hot{position:absolute;width:15%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;padding:0;border-radius:50%;background:radial-gradient(rgba(255,230,140,.75),rgba(255,230,140,0) 68%);cursor:pointer;pointer-events:auto;z-index:600;animation:hotpulse 1.4s ease-in-out infinite}
+.hot[hidden]{display:none}
+.hot .mark{top:-30%}
+@keyframes hotpulse{50%{background-size:130% 130%;filter:brightness(1.15)}}
+.goal{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:var(--card);border:2.5px solid var(--ink);border-radius:14px;padding:7px 12px;box-shadow:0 3px 0 var(--ink);font:inherit;color:var(--ink);cursor:pointer}
+.goal[hidden]{display:none}
+.goal span{flex:1;font-size:14px;line-height:1.3}
+.goal b{display:block;font-size:11.5px;color:var(--ink-soft)}
+.goal i{font-style:normal;font-weight:900;font-size:20px}
+.opt.now{background:#fff3e2;border-radius:14px}
+.opt.unseen{opacity:.6}
+.dots{display:flex;gap:4px;margin:3px 0}
+.dots i{width:9px;height:9px;border-radius:50%;border:2px solid var(--ink);background:#fff}
+.dots i.on{background:#ffd36a}
+.markin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#ffd36a;border:2px solid var(--ink);font-size:11px}

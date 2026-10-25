@@ -17,26 +17,27 @@ let bubT;
 function bubble(f,txt){const b=document.querySelector(".bubble")||document.createElement("div");b.className="bubble";
   b.innerHTML=`${FOX[f.id].name}<small>${txt}</small>`;b.style.cssText=pc(Math.max(50,Math.min(350,f.x)),f.y-58);$("scene").appendChild(b);clearTimeout(bubT);bubT=setTimeout(()=>b.remove(),2600)}
 function tapFox(f){
+  if(!f.wild&&storyTap(f.id))return;
   if(f.wild){bubble(f,"un renard sauvage, il mange !");return}
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
-  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur)");if(r===2)setTimeout(storyCheck,2000)}
+  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur)")}
   else bubble(f,what);
 }
 
 /* ---------- boîte de dialogue ---------- */
-// portrait à gauche, texte à droite ; on touche pour passer à la réplique suivante
+// portrait à gauche, texte à droite ; on touche pour passer à la réplique suivante ; "me", c'est Roussette (le joueur)
 let talkQ=[],talkDone=null;
 function talk(lines,done){talkQ=lines.slice();talkDone=done||null;nextLine()}
 function nextLine(){const el=$("talk");
   if(!talkQ.length){el.hidden=true;const d=talkDone;talkDone=null;if(d)d();return}
-  const [id,expr,txt]=talkQ.shift(),f=FOX[id];
+  const [id,expr,txt]=talkQ.shift(),f=id==="me"?{...FOX.roussette,name:ME()}:FOX[id];
   el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false}
 $("talk").onclick=nextLine;
 const INTRO=[
   ["petitpois","joy",`${ME()} ! Te voilà ! J'ai gardé la maison toute la journée.`],
   ["petitpois","shy","Enfin… j'ai surtout dormi sous le porche."],
-  ["petitpois","open","Tu sais, des clients du Café aimeraient bien venir ici, le soir. Si tu les sers bien, ils te suivront peut-être."],
+  ["petitpois","open","Tu sais, d'autres renards vont venir vivre ici. Chacun a son histoire, tu verras."],
   ["petitpois","surprise","Et dans la forêt, il y a des renards sauvages ! Ils sentent la nourriture de très loin. Essaie de remplir la gamelle."]
 ];
 const arrLines=id=>[[id,"joy",`Bonsoir ${ME()} ! Ton café m'a tellement plu que j'ai suivi ta trace jusqu'ici. Je peux rester ?`],
@@ -75,7 +76,8 @@ function status(id,M){
   const f=FOX[id];
   if(R.res[id])return {ok:1,txt:`Au refuge · ${LV_N[lvOf(R.res[id].h)]}`};
   if(WILD[id])return R.met[id]?{ok:1,txt:"Sauvage · vient à la gamelle"}:{ok:0,txt:`Vit dans ${WILD_HINT[WILD[id]]}. Une gamelle de ${BOWLS[WILD[id]].name.toLowerCase()} l'attirera peut-être.`};
-  if(M.cafe.has(id))return {ok:0,seen:1,txt:"Croisé au Café. Sers-le bien, il te suivra peut-être."};
+  if(STORIES[id])return {ok:0,seen:M.cafe.has(id),txt:"Viendra au refuge pour son histoire."};
+  if(M.cafe.has(id))return {ok:0,seen:1,txt:chainDone()?"Croisé au Café. Sers-le bien, il te suivra peut-être.":"Croisé au Café. Il viendra au refuge après les histoires."};
   const guest={zaza:"Printemps",flocon:"Été",noisette:"Automne",comete:"Hiver"}[id];
   if(guest)return {ok:0,txt:`Invité d'honneur du Café : ★★★ sur tout le ${guest}.`};
   return {ok:0,txt:M.old.has(id)?"Déjà croisé dans l'ancienne clairière. Retrouve-le au Café.":"Pas encore venu au Café."};
@@ -97,7 +99,7 @@ function foxSheet(id){
 function showNews(){
   const wild=R.news.filter(n=>n.k==="wild"&&!n.live),arr=R.news.filter(n=>n.k==="arr");
   R.news=[];save();
-  const next=()=>{if(arr.length){const n=arr.shift();syncFoxes();talk(n.say&&GUEST_LINES[n.say]||arrLines(n.id),next)}else storyCheck()};
+  const next=()=>{if(arr.length){const n=arr.shift();syncFoxes();talk(arrLines(n.id),next)}else renderStory()};
   if(wild.length){
     openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence, ${wild.length>1?"des renards sauvages sont passés":"un renard sauvage est passé"} à la gamelle.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG({id:n.id,bowl:R.photos.find(p=>p.t===n.t)?.bowl||WILD[n.id]})}<figcaption><b>${FOX[n.id].name}</b>${n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
     afterSheet=next;
