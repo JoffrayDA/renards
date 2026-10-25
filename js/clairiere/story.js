@@ -158,10 +158,11 @@ function storyTap(at){const c=cur();if(!c||!$("talk").hidden||!$("sheet").hidden
   hotEl.hidden=true;
   syncFoxes();
   talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
-    R.beat[c.id]=c.n+1;
+    R.beat[c.id]=c.n+1;R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
-    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=Date.now()+GAP;toast(`Souvenir reçu : ${STORIES[c.id].souv}.`)}
-    save();renderStory();
+    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=Date.now()+GAP;R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
+    else toast("+3 glands");
+    save();renderStory();renderHud();
   });
   return true;
 }
@@ -171,13 +172,11 @@ const hotEl=document.createElement("button");hotEl.className="hot";hotEl.type="b
 hotEl.innerHTML=`<i class="mark">!</i>`;
 hotEl.onpointerdown=e=>{e.stopPropagation();const c=cur();if(c)storyTap(c.b.at)};
 $("actors").appendChild(hotEl);
-const nextTime=t=>{const d=new Date(t),h=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}).replace(":"," h ");
-  return today(t)===today()?`vers ${h}`:`demain vers ${h}`};
 function goalText(){const c=cur();
   if(c)return {t:`${STORIES[c.id].title} · ${c.n+1} sur ${beats(c.id).length}`,g:c.b.goal};
   const id=ORDER.find(k=>!storyDone(k));
   if(!id)return {t:"Histoires",g:"Toutes les histoires sont finies. D'autres arrivent bientôt."};
-  return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${nextTime(R.nextAt)}.`:`Un nouveau renard arrivera ${nextTime(R.nextAt)}.`};
+  return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter dans quelques heures.`:"Un nouveau renard arrivera dans quelques heures."};
 }
 function renderStory(){
   const c=cur();

@@ -1,7 +1,7 @@
 /* La Clairière : interface (compteurs, bulles, dialogues, gamelle, carnet, photos). */
 function acornSVG(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><g filter="url(#wobble)" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"><path d="M5 10 Q5 21 12 22 Q19 21 19 10Z" fill="#d9a06a"/><path d="M3.5 10.5 Q12 2 20.5 10.5 Q12 13 3.5 10.5Z" fill="#a9785a"/><path d="M12 6 q1 -3 3 -4" fill="none"/></g></svg>`}
 const heartsHTML=h=>{const l=lvOf(h);return `<span class="hs5" aria-label="Amitié ${l} sur 5">${"♥".repeat(l)}<i>${"♥".repeat(5-l)}</i></span>`};
-function renderHud(){$("glands").textContent=R.glands;drawBowl()}
+function renderHud(){$("glands").textContent=R.glands;drawBowl();drawDrops()}
 function log(t){$("log").textContent=t}
 let toastT;function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
 
@@ -12,6 +12,18 @@ bowlEl.onpointerdown=e=>{e.stopPropagation();bowlSheet()};
 function drawBowl(){const v=foxes.find(f=>f.wild&&f.food);
   bowlEl.style.cssText=pc(240,268)+";z-index:269";bowlEl.innerHTML=bowlSVG(v?v.food:R.bowl&&R.bowl.type)}
 
+/* ---------- glands dans l'herbe ---------- */
+// les glands rapportés par les renards (R.pend) traînent dans l'herbe : 6 tas au plus, on les touche pour les ramasser
+const DROPS=[[122,352],[284,296],[48,336],[236,424],[340,452],[148,470]],dropEls=[];
+function drawDrops(){const n=Math.min(DROPS.length,R.pend||0);
+  DROPS.forEach(([x,y],i)=>{let el=dropEls[i];
+    if(!el){el=dropEls[i]=document.createElement("button");el.className="drop";el.type="button";el.setAttribute("aria-label","Des glands");el.innerHTML=acornSVG();
+      el.style.cssText=pc(x,y)+`;z-index:${y}`;el.onpointerdown=e=>{e.stopPropagation();pickDrop(i)};$("actors").appendChild(el)}
+    el.hidden=i>=n})}
+function pickDrop(i){const n=Math.min(DROPS.length,R.pend||0);if(!n)return;const v=Math.ceil(R.pend/n);
+  R.pend-=v;R.glands+=v;save();$("glands").textContent=R.glands;drawDrops();
+  const [x,y]=DROPS[i],p=document.createElement("div");p.className="plus";p.textContent=`+${v}`;p.style.cssText=pc(x,y-14);$("scene").appendChild(p);setTimeout(()=>p.remove(),900)}
+
 /* ---------- bulles ---------- */
 let bubT;
 function bubble(f,txt){const b=document.querySelector(".bubble")||document.createElement("div");b.className="bubble";
@@ -21,7 +33,7 @@ function tapFox(f){
   if(f.wild){bubble(f,"un renard sauvage, il mange !");return}
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
-  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur)")}
+  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);renderHud();bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur, +1 gland)")}
   else bubble(f,what);
 }
 
@@ -58,7 +70,7 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
 function hoursLeft(){if(!R.bowl)return "";const h=(R.bowl.until-Date.now())/36e5;return h>=1?`encore ${Math.round(h)} h`:"presque vide"}
 function bowlSheet(){
   const cur=R.bowl?`<p class="sub">Dans la gamelle : <b>${BOWLS[R.bowl.type].name}</b>, ${hoursLeft()}. En remplir une autre remplace ce qu'il y a dedans.</p>`:`<p class="sub">La gamelle est vide.</p>`;
-  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name}</strong><span>${B.desc} Dure ${B.hours} h.</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price?"disabled":""}>${B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Un sauvage passe souvent quand tu n'es pas là. Il laisse une photo de lui en train de manger : c'est la seule trace de son passage.</p>`);
+  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name}</strong><span>${B.desc} Dure ${B.hours} h.</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price?"disabled":""}>${B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Un sauvage passe souvent quand tu n'es pas là. Il laisse une photo de lui en train de manger : c'est la seule trace de son passage.</p><p class="sub"><b>Gagner des glands :</b> chaque renard du refuge en rapporte quelques-uns par jour (plus il t'aime, plus il en rapporte) ; ils t'attendent dans l'herbe, touche-les pour les ramasser. Un câlin par jour et par renard en donne un, et les histoires en donnent aussi.</p>`);
 }
 function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price)return;
   R.glands-=B.price;R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();

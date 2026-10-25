@@ -49,7 +49,7 @@ function simulate(live){
   while(t+STEP<=now){
     t+=STEP;
     for(const id in R.res)R.gf+=GLANDS_DAY[lvOf(R.res[id].h)]/48;
-    if(R.gf>=1){const n=Math.floor(R.gf);R.glands+=n;R.gf-=n}
+    if(R.gf>=1){const n=Math.floor(R.gf);R.pend=(R.pend||0)+n;R.gf-=n} // laissés dans l'herbe, à ramasser
     if(R.bowl&&t>R.bowl.until)R.bowl=null;
     const B=R.bowl&&BOWLS[R.bowl.type];
     if(B&&B.p&&R.wildDay!==today(t)&&Math.random()<B.p){
@@ -65,9 +65,9 @@ function simulate(live){
 }
 
 /* ---------- amitié ---------- */
-// une caresse par jour et par renard installé
+// une caresse par jour et par renard installé : un cœur et un gland
 function pet(id){const r=R.res[id];if(!r||r.pet===today())return 0;
-  const a=lvOf(r.h);r.h++;r.pet=today();save();return lvOf(r.h)>a?2:1}
+  const a=lvOf(r.h);r.h++;r.pet=today();R.glands++;save();return lvOf(r.h)>a?2:1}
 
 /* ---------- rencontres (pour le carnet et le grand portrait) ---------- */
 function metIds(){
