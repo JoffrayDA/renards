@@ -7,107 +7,84 @@
    at : un renard, "@endroit" (TG) ou "*" (n'importe quel autre renard du refuge). goal : ce qu'il faut faire pour ce moment.
    "me" parle : c'est Roussette, avec le nom choisi au Café. */
 const GAP=3*36e5;
-const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"}};
+const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
+  leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
 const ORDER=["petitpois","mitaine","luciole","gaston","gribouille"];
+// game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ; peu de texte, ça doit bouger
 const STORIES={
   petitpois:{title:"Peur du noir",souv:"le gland porte-bonheur",beats:[
     {at:"petitpois",goal:"Petit Pois a quelque chose à te dire.",lines:[
-      ["petitpois","shy",`Dis, ${ME()}… quand il commence à faire noir, je n'aime pas trop ça.`],
-      ["petitpois","sad","Quand les lanternes s'éteignent, la forêt fait des bruits. Crac. Hou-hou."],
-      ["petitpois","shy","Je fais semblant de dormir sous le porche, mais je garde un œil ouvert. Les deux, en fait."],
-      ["petitpois","open","Tu crois qu'il existe quelqu'un qui n'a jamais peur du noir ?"],
-      ["me","open","Quelqu'un qui brille, peut-être… Je vais regarder du côté des lanternes."]]},
-    {at:"@lampL",arrive:"luciole",goal:"Cherche quelqu'un qui brille, près des lanternes.",lines:[
-      ["luciole","open","Oh ! Bonjour. J'ai vu de la lumière chez toi, alors je suis venue voir. Je m'appelle Luciole."],
-      ["luciole","joy","Ma queue brille toute seule, je suis née comme ça. C'est pratique pour allumer les lanternes."],
-      ["me","joy","Viens, quelqu'un aimerait beaucoup te rencontrer."]]},
-    {at:"petitpois",goal:"Présente Luciole à Petit Pois.",lines:[
-      ["petitpois","surprise",`${ME()} ! Tu as vu Luciole ? Sa queue fait de la lumière. Toute seule !`],
-      ["luciole","joy","Ce n'est rien. C'est même moi qui allume les lanternes, le soir."],
-      ["petitpois","shy","Dis… tu pourrais rester près de moi, cette nuit ? Juste un peu ?"],
-      ["luciole","open","D'accord, petit. Mais il faudra que tu m'aides à les allumer. Viens, je vais te montrer."]]},
+      ["petitpois","shy",`${ME()}… le noir, je déteste. Ça fait crac. Hou-hou.`],
+      ["petitpois","open","Tu crois qu'il existe quelqu'un qui n'a jamais peur ?"],
+      ["me","open","Quelqu'un qui brille, peut-être… Je vais voir aux lanternes."]]},
+    {at:"@lampL",arrive:"luciole",game:{k:"catch",say:"Des lucioles ! Attrape-les toutes !",win:"Toutes attrapées ! Mais… qui arrive là ?"},goal:"Cherche quelqu'un qui brille, près des lanternes.",lines:[
+      ["luciole","surprise","Hé ! Doucement avec mes amies !"],
+      ["luciole","joy","Moi, c'est Luciole. Ma queue brille toute seule. Pratique, non ?"],
+      ["me","joy","Viens vite, quelqu'un doit absolument te rencontrer."]]},
+    {at:"petitpois",after:[["petitpois","lampR"]],goal:"Présente Luciole à Petit Pois.",lines:[
+      ["petitpois","surprise","Ta queue… elle fait de la lumière ?!"],
+      ["luciole","joy","Viens, petit. Je vais t'apprendre à allumer les lanternes."]]},
     {at:"luciole",lamps:1,goal:"Va voir Luciole et Petit Pois aux lanternes.",lines:[
-      ["petitpois","joy",`${ME()}, regarde ! C'est moi qui ai allumé la grande lanterne !`],
-      ["luciole","joy","Du premier coup. Je n'avais jamais vu ça."],
+      ["petitpois","joy","J'ai allumé la grande lanterne ! Du premier coup !"],
       ["petitpois","open","En fait, le noir, c'est juste le moment où les lanternes sont jolies."],
-      ["petitpois","shy","Tiens. C'est mon gland porte-bonheur. Je n'en ai plus besoin… enfin, garde-le quand même bien."],
-      ["petitpois","joy","Et maintenant que je n'ai plus peur de rentrer tard, je peux t'aider au Café !"]]}
+      ["petitpois","shy","Tiens, mon gland porte-bonheur. Et maintenant, je peux t'aider au Café !"]]}
   ]},
   mitaine:{title:"La moufle perdue",souv:"la moufle au flocon",beats:[
     {at:"mitaine",goal:"Mitaine vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["mitaine","sad",`Bonjour ${ME()}… Tu n'aurais pas vu une moufle ? Rouge, avec un petit flocon brodé.`],
-      ["mitaine","shy","Ma grand-mère me l'a tricotée. J'ai encore l'autre, mais une moufle toute seule, ça ne sert à rien."],
-      ["mitaine","open","Tu pourrais regarder du côté de la mare ? Moi, je cherche par ici."]]},
-    {at:"@pond",goal:"Cherche la moufle au bord de la mare.",lines:[
-      ["me","surprise","Un fil de laine rouge flotte sur la mare… Il file tout droit vers le porche."]]},
-    {at:"@porch",goal:"Suis le fil de laine jusqu'au porche.",lines:[
-      ["me","surprise","Le fil passe sous Petit Pois… qui dort roulé dans quelque chose de rouge."]]},
+      ["mitaine","sad",`${ME()} ! Tu n'as pas vu ma moufle ? Rouge, avec un flocon brodé.`],
+      ["mitaine","shy","C'est ma grand-mère qui l'a tricotée. Elle a peut-être roulé dans les feuilles…"]]},
+    {at:"@leaves",game:{k:"search",item:"wool",say:"Fouille le tas de feuilles !",win:"Un fil de laine rouge !"},goal:"Cherche la moufle dans le tas de feuilles.",lines:[
+      ["me","surprise","Le fil file tout droit vers le porche… et passe sous Petit Pois."]]},
     {at:"petitpois",sleep:1,goal:"Réveille Petit Pois, tout doucement.",lines:[
       ["petitpois","shy","Euh… Mitaine ? Je crois que je dors dedans depuis une semaine."],
-      ["mitaine","surprise","Ma moufle ! Tu en as fait un sac de couchage ?"],
-      ["petitpois","sad","Elle est toute chaude… Pardon."],
       ["mitaine","joy","Garde-la, va. Elle te va mieux qu'à ma patte."],
       ["mitaine","open",`Et toi, ${ME()}, prends l'autre. Comme ça, on en a chacun une.`]]}
   ]},
-  gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
-    {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["gribouille","joy",`Bonjour ${ME()} ! Je suis peintre. Enfin, je peins avec ma queue : tu vois le bout bleu ?`],
-      ["gribouille","open","On m'a dit qu'ici, il y avait plein de renards. Je voudrais tous les peindre !"],
-      ["gribouille","shy","Tu pourrais demander à quelqu'un de poser pour moi ? Moi, ils me fuient dès que je sors mes couleurs."]]},
-    {at:"*",leave:1,goal:"Demande à un renard de poser pour Gribouille.",lines:id=>[
-      [id,"surprise","Poser ? Pour un tableau ? Oh, quelle bonne idée !"],
-      [id,"joy","…Mais j'ai un petit creux. Je reviens tout de suite, promis !"],
-      ["me","sad",`Et hop, plus de ${FOX[id].name}. Essayons avec quelqu'un d'autre.`]]},
-    {at:"*",goal:"Essaie avec un autre renard.",lines:id=>[
-      [id,"joy","D'accord, je ne bouge plus. Promis."],
-      [id,"shy","…"],
-      [id,"surprise","Atchoum ! Pardon. Ça me chatouillait le museau."],
-      ["me","sad","Raté. Gribouille va être déçu…"]]},
-    {at:"gribouille",goal:"Retourne voir Gribouille.",lines:[
-      ["gribouille","sad","Personne ne tient en place, hein ? Je m'en doutais."],
-      ["me","open","Tout seul, on s'ennuie vite. Mais tous ensemble, on se tiendrait sage, non ?"],
-      ["gribouille","surprise","Tous ensemble… Un grand portrait de tout le refuge ! Appelle tout le monde devant la maison !"]]},
-    {at:"@porch",gather:1,goal:"Appelle tout le monde devant la maison.",lines:[
-      ["me","joy","Tout le monde devant la maison ! Gribouille fait notre portrait !"],
-      ["petitpois","joy","Je me mets devant ! Non, derrière. Non, devant !"],
-      ["gribouille","joy","Parfait. Ne bougez plus… Encore un peu… Voilà !"]]},
-    {at:"gribouille",goal:"Va voir le tableau de Gribouille.",lines:[
-      ["gribouille","joy",`Regarde, ${ME()} : tout le refuge, au complet.`],
-      ["petitpois","surprise","Mais… tu n'es pas dessus, toi !"],
-      ["gribouille","shy","Le peintre, on ne le voit jamais. C'est normal."],
-      ["petitpois","open","Prête-moi ta queue. Là, dans le coin. Voilà : toi."],
-      ["gribouille","joy","Il est tout de travers… C'est le plus beau morceau du tableau. Tiens, il est pour toi."]]}
-  ]},
   luciole:{title:"Une lumière de plus",souv:"le bocal de lumière",beats:[
     {at:"luciole",goal:"Luciole a une idée.",lines:[
-      ["luciole","open",`${ME()}, j'ai compté les lanternes du refuge : six. Et nous, on est de plus en plus nombreux.`],
-      ["luciole","shy","J'aimerais que chacun ait sa petite lumière. Mais il faudrait un endroit où la poser."],
-      ["me","open","Sur la souche, peut-être ?"]]},
-    {at:"@stump",goal:"Trouve un endroit pour une nouvelle lumière : la souche ?",lines:[
-      ["me","joy","Tu poses un vieux bocal sur la souche. Il n'attend plus que sa lumière."]]},
-    {at:"luciole",goal:"Dis à Luciole que le bocal est prêt.",lines:[
-      ["luciole","surprise","Un bocal ! Attends, je souffle dedans…"],
-      ["luciole","joy","Voilà. Une lumière qui ne s'éteint pas, même quand je dors."],
-      ["luciole","shy","Garde-le près de toi. Comme ça, il y aura toujours un peu de moi au refuge."]]}
+      ["luciole","open","Six lanternes, et on est de plus en plus nombreux. Il en faut une de plus !"],
+      ["luciole","shy","Un vieux bocal est coincé dans le grand arbre. Tu peux le décrocher ?"]]},
+    {at:"@tree",game:{k:"shake",item:"jar",say:"Secoue le grand arbre !",win:"Le bocal est tombé !"},goal:"Fais tomber le bocal du grand arbre.",lines:[
+      ["me","joy","Pas une fissure. Il n'attend plus que sa lumière."]]},
+    {at:"luciole",lamps:1,goal:"Apporte le bocal à Luciole.",lines:[
+      ["luciole","surprise","Attends, je souffle dedans…"],
+      ["luciole","joy","Voilà : une lumière qui ne s'éteint jamais, même quand je dors. Elle est pour toi."]]}
   ]},
   gaston:{title:"Le poisson de la mare",souv:"le bouchon de pêche",beats:[
-    {at:"gaston",goal:"Gaston veut te demander quelque chose.",lines:[
-      ["gaston","open",`${ME()}, je pêche depuis toujours. Et je n'ai jamais rien attrapé. Rien de rien.`],
-      ["gaston","shy","Il paraît qu'un poisson vit dans ta mare. Tu pourrais aller voir ?"]]},
-    {at:"@pond",goal:"Va voir s'il y a un poisson dans la mare.",lines:[
-      ["me","surprise","Sous les nénuphars, un tout petit poisson orange te regarde avec de grands yeux."]]},
-    {at:"gaston",goal:"Raconte à Gaston ce que tu as vu.",lines:[
-      ["gaston","surprise","Un vrai poisson ? Dans ta mare ? J'y vais !"],
-      ["gaston","joy","…Je l'ai eu ! Mon tout premier !"],
-      ["gaston","sad","Mais il me regardait avec de si grands yeux… Je l'ai remis à l'eau."],
-      ["gaston","open","Au fond, ce que j'aime, c'est attendre au bord de l'eau. Tiens, mon bouchon de pêche : je n'en aurai plus besoin."]]}
+    {at:"gaston",after:[["gaston","pond"]],goal:"Gaston veut te demander quelque chose.",lines:[
+      ["gaston","sad",`${ME()}, je pêche depuis toujours. Jamais rien attrapé. Rien de rien.`],
+      ["gaston","open","Il paraît qu'un poisson vit dans ta mare. Tu essaies ? Moi, je porte malheur."]]},
+    {at:"@pond",game:{k:"fish",say:"Touche l'eau dès que le bouchon plonge !",win:"Un poisson !"},goal:"Pêche dans la mare avec Gaston.",lines:[
+      ["gaston","surprise","Tu l'as eu ! Un vrai poisson, tout orange !"],
+      ["gaston","sad","Il nous regarde avec de si grands yeux… On le remet à l'eau ?"],
+      ["gaston","joy","Au fond, ce que j'aime, c'est attendre au bord de l'eau avec quelqu'un. Tiens, mon bouchon de pêche."]]}
+  ]},
+  gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
+    {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["gribouille","joy",`Bonjour ${ME()} ! Je peins avec ma queue : tu vois le bout bleu ?`],
+      ["gribouille","shy","Je voudrais peindre tout le monde, mais ils me fuient dès que je sors mes couleurs. Tu m'aides ?"]]},
+    {at:"*",leave:1,goal:"Demande à un renard de poser pour Gribouille.",lines:id=>[
+      [id,"joy","Poser ? Avec plaisir !"],
+      [id,"surprise","…Oh, un papillon ! Je reviens !"],
+      ["me","sad",`Et hop, plus de ${FOX[id].name}. Essayons avec quelqu'un d'autre.`]]},
+    {at:"*",game:{k:"still",say:"Chasse les mouches, sinon il éternue !",win:"Ne bouge plus… Voilà !"},goal:"Essaie avec un autre renard.",lines:id=>[
+      ["gribouille","joy",`Un portrait de ${FOX[id].name} ! Mon premier !`],
+      ["gribouille","sad","Mais un renard tout seul sur un tableau, ça fait un peu triste…"],
+      ["me","open","Et si on vous peignait tous ensemble ?"],
+      ["gribouille","surprise","Le grand portrait ! Appelle tout le monde devant la maison !"]]},
+    {at:"@porch",gather:1,game:{k:"still",all:1,say:"Tout le monde pose ! Chasse les mouches !",win:"Ne bougez plus… Voilà !"},goal:"Appelle tout le monde devant la maison.",lines:[
+      ["petitpois","surprise","Mais… Gribouille, tu n'es pas dessus, toi !"],
+      ["gribouille","shy","Le peintre, on ne le voit jamais. C'est normal."]]},
+    {at:"gribouille",goal:"Va voir le tableau de Gribouille.",lines:[
+      ["petitpois","open","Prête-moi ta queue. Là, dans le coin. Voilà : toi."],
+      ["gribouille","joy","Tout de travers… C'est le plus beau morceau du tableau. Tiens, il est pour toi."]]}
   ]}
 };
 
 /* ---------- reprise des anciennes histoires (une étape par jour) ---------- */
 // étapes finies de l'ancienne version -> moments finis de la nouvelle
-if(!R.beat){const MIG={petitpois:[0,1,3,4],mitaine:[0,1,2,4]};R.beat={};
+if(!R.beat){const MIG={petitpois:[0,1,3,4],mitaine:[0,1,2,3]};R.beat={};
   for(const id in MIG)if(R.story[id])R.beat[id]=MIG[id][Math.min(3,R.story[id])];
   R.nextAt=0;save()}
 R.who=R.who||{};
@@ -148,7 +125,7 @@ function gather(){syncFoxes();const near=SPOTS.filter(s=>!s.bowl).sort((a,b)=>Ma
 
 /* ---------- jouer un moment ---------- */
 // appelé quand on touche un renard ou un endroit ; vrai si c'était le moment attendu
-function storyTap(at){const c=cur();if(!c||!$("talk").hidden||!$("sheet").hidden)return false;
+function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet").hidden)return false;
   if(at.startsWith("@")?c.b.at!==at:!isTarget(at))return false;
   const b=c.b;
   if(b.arrive)bringIn(b.arrive,SPOT[b.at.slice(1)]||SPOT.g3);
@@ -157,13 +134,15 @@ function storyTap(at){const c=cur();if(!c||!$("talk").hidden||!$("sheet").hidden
   if(b.at==="*")(R.who[c.id]=R.who[c.id]||{})[c.n]=at;
   hotEl.hidden=true;
   syncFoxes();
-  talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
-    R.beat[c.id]=c.n+1;R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
+  const go=()=>talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
+    R.beat[c.id]=c.n+1;
+    for(const [fid,sp] of b.after||[]){const f=foxes.find(x=>x.id===fid&&!x.wild);if(f&&!f.walk&&!f.inside)goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
     if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=Date.now()+GAP;R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
     else toast("+3 glands");
     save();renderStory();renderHud();
   });
+  if(b.game)playGame({...b.game,target:at},go);else go();
   return true;
 }
 
