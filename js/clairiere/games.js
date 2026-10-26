@@ -17,8 +17,14 @@ const ITEM={
   snail:`<path d="M-16 10 q2 -6 10 -6 h18 q6 0 6 6Z" fill="#cfe0a6" ${O}/><circle cx="2" cy="-2" r="11" fill="#f2c45a" ${O}/><path d="M2 -2 m-5 0 a5 5 0 1 1 5 5" fill="none" stroke="${INK}" stroke-width="2"/><path d="M-12 4 l-4 -10 M-9 4 l-1 -10" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`,
   cone:`<ellipse rx="10" ry="15" fill="#a9785a" ${O}/><path d="M-8 -6 l8 5 l8 -5 M-9 3 l9 5 l9 -5 M-6 11 l6 3 l6 -3" fill="none" stroke="#7a5440" stroke-width="2"/>`,
   pebble:`<ellipse rx="15" ry="10" fill="#cfc6c0" ${O}/><path d="M-7 -3 q4 -3 9 -1" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`,
-  fish:`<path d="M-16 0 q14 -14 28 0 q-14 14 -28 0Z M12 0 l10 -8 v16Z" fill="#f59a5b" ${O}/><circle cx="-8" cy="-2" r="2.2" fill="${INK}"/>`
+  fish:`<path d="M-16 0 q14 -14 28 0 q-14 14 -28 0Z M12 0 l10 -8 v16Z" fill="#f59a5b" ${O}/><circle cx="-8" cy="-2" r="2.2" fill="${INK}"/>`,
+  boot:`<path d="M-12 -16 h14 v18 h14 q6 0 6 8 v4 h-34Z" fill="#8a6a5a" ${O}/><path d="M-12 -10 h14" stroke="${INK}" stroke-width="2"/>`,
+  algae:`<path d="M-10 14 q-6 -12 2 -20 q6 -8 0 -14 M0 14 q6 -10 -2 -18 q-4 -8 4 -14 M10 14 q-4 -10 4 -16" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/>`,
+  twig:`<path d="M-18 6 L18 -6 M2 0 l6 -10 M-6 3 l-4 8" fill="none" stroke="#a9785a" stroke-width="4" stroke-linecap="round"/>`,
+  leaf:`<path d="M-16 4 Q0 -18 16 -4 Q0 12 -16 4Z" fill="#b5d68f" ${O}/><path d="M-12 3 Q0 -2 12 -3" fill="none" stroke="#6f9a60" stroke-width="2"/>`
 };
+
+const JUNK=[["boot","Une vieille botte… Raté !"],["algae","Des algues. Beurk."],["twig","Une brindille."],["leaf","Une feuille toute mouillée."],["pebble","Un caillou. Pas de chance !"]];
 
 /* ---------- le moteur ---------- */
 let gameOn=false;
@@ -31,9 +37,13 @@ function playGame(g,done){
     later:(f,ms)=>{timers.push(setTimeout(()=>{if(!over)f()},ms))},
     clear:()=>{timers.forEach(clearTimeout);timers=[]},
     loop:f=>{let last=performance.now();const fr=now=>{if(over)return;f(Math.max(0,Math.min(.05,(now-last)/1000)));last=now;raf=requestAnimationFrame(fr)};raf=requestAnimationFrame(fr)},
+    // pêche libre : on enchaîne les lancers et on rentre quand on veut
+    close:()=>{over=true;api.clear();cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;done()},
     win:t=>{if(api.won)return;api.won=true;api.clear();api.say(t);
       setTimeout(()=>{over=true;cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;done()},1400)}};
   el.onpointerdown=e=>{if(!api.won&&api.tap)api.tap(e)};
+  if(g.free){const x=document.createElement("button");x.className="btn pclose";x.type="button";x.textContent="Rentrer";
+    x.onpointerdown=e=>{e.stopPropagation();api.close()};el.appendChild(x)}
   el.hidden=false;GAMES[g.k](g,api);
 }
 
@@ -55,7 +65,7 @@ const GAMES={
     const bob=sv.querySelector("#bob"),rip=sv.querySelector("#rip"),ex=sv.querySelector("#excl"),sh=sv.querySelector("#shadow");
     let st="wait";
     const dip=(y,back)=>{bob.style.transform=`translateY(${y}px)`;if(back)A.later(()=>bob.style.transform="",170)};
-    const start=()=>{A.clear();st="wait";bob.style.transform="";rip.setAttribute("opacity",0);ex.setAttribute("opacity",0);
+    const start=()=>{A.clear();st="wait";bob.style.opacity=1;bob.style.transform="";rip.setAttribute("opacity",0);ex.setAttribute("opacity",0);
       A.say(g.say||"Touche l'eau dès que le bouchon plonge !");
       sh.style.transform=`translate(${(Math.random()-.5)*120}px,40px)`;A.later(()=>sh.style.transform="translate(0,12px)",400);
       let nib=1+Math.floor(Math.random()*3);
@@ -65,7 +75,12 @@ const GAMES={
       step()};
     A.tap=()=>{
       if(st==="wait"){st="miss";A.clear();bob.style.transform="";A.say("Trop tôt ! Le poisson a eu peur. Encore une fois !");A.later(start,1300)}
-      else if(st==="bite"){st="won";ex.setAttribute("opacity",0);bob.style.opacity=0;const c=sv.querySelector("#catch");c.setAttribute("opacity",1);c.classList.add("leap");A.win(g.win||"Attrapé !")}};
+      else if(st==="bite"){st="won";ex.setAttribute("opacity",0);bob.style.opacity=0;const c=sv.querySelector("#catch");
+        // pêche libre : un poisson une fois sur dix, sinon ce qui traîne au fond de la mare
+        const it=g.free&&Math.random()>=.1?JUNK[Math.floor(Math.random()*JUNK.length)][0]:"fish";
+        c.innerHTML=`<g transform="translate(200 250)">${ITEM[it]}</g>`;c.setAttribute("opacity",1);replay(c,"leap");
+        if(!g.free)A.win(g.win||"Attrapé !");
+        else{A.say(it==="fish"?g.onFish():JUNK.find(j=>j[0]===it)[1]);A.later(()=>{c.setAttribute("opacity",0);c.classList.remove("leap");bob.style.opacity=1;start()},1700)}}};
     start();
   },
 

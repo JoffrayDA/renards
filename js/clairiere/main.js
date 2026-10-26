@@ -1,5 +1,5 @@
 /* La Clairière : démarrage et boucles. */
-$("ic-g").innerHTML=acornSVG();
+$("ic-g").innerHTML=acornSVG();$("ic-f").innerHTML=fishSVG();$("actors").appendChild(pondEl);
 $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});
 $("actors").appendChild(bowlEl);
 scn.rain=rainNow();

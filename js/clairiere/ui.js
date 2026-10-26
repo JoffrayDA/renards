@@ -1,7 +1,15 @@
 /* La Clairière : interface (compteurs, bulles, dialogues, gamelle, carnet, photos). */
 function acornSVG(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><g filter="url(#wobble)" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"><path d="M5 10 Q5 21 12 22 Q19 21 19 10Z" fill="#d9a06a"/><path d="M3.5 10.5 Q12 2 20.5 10.5 Q12 13 3.5 10.5Z" fill="#a9785a"/><path d="M12 6 q1 -3 3 -4" fill="none"/></g></svg>`}
 const heartsHTML=h=>{const l=lvOf(h);return `<span class="hs5" aria-label="Amitié ${l} sur 5">${"♥".repeat(l)}<i>${"♥".repeat(5-l)}</i></span>`};
-function renderHud(){$("glands").textContent=R.glands;drawBowl();drawDrops()}
+function renderHud(){$("glands").textContent=R.glands;$("fishc").hidden=!R.fish;$("fishn").textContent=R.fish;drawBowl();drawDrops()}
+const fishSVG=()=>`<svg viewBox="-24 -16 48 32" aria-hidden="true"><g filter="url(#wobble)">${ITEM.fish}</g></svg>`;
+
+/* ---------- la mare : pêche quand on veut ---------- */
+const pondEl=document.createElement("button");pondEl.className="pondbtn";pondEl.type="button";pondEl.setAttribute("aria-label","Pêcher dans la mare");
+pondEl.style.cssText=pc(96,424)+";z-index:300";
+pondEl.onpointerdown=e=>{e.stopPropagation();if(storyTap("@pond"))return;if(gameOn||!$("talk").hidden||!$("sheet").hidden)return;
+  playGame({k:"fish",free:1,say:"Touche l'eau dès que le bouchon plonge !",onFish:()=>{R.fish++;save();renderHud();
+    return R.fish>=NEED_FISH?`Un poisson ! Tu en as ${R.fish} : de quoi remplir la gamelle.`:`Un poisson ! ${R.fish} sur ${NEED_FISH} pour la gamelle.`}},()=>{})};
 function log(t){$("log").textContent=t}
 let toastT;function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
 
@@ -70,10 +78,10 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
 function hoursLeft(){if(!R.bowl)return "";const h=(R.bowl.until-Date.now())/36e5;return h>=1?`encore ${Math.round(h)} h`:"presque vide"}
 function bowlSheet(){
   const cur=R.bowl?`<p class="sub">Dans la gamelle : <b>${BOWLS[R.bowl.type].name}</b>, ${hoursLeft()}. En remplir une autre remplace ce qu'il y a dedans.</p>`:`<p class="sub">La gamelle est vide.</p>`;
-  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name}</strong><span>${B.desc} Dure ${B.hours} h.</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price?"disabled":""}>${B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Un sauvage passe souvent quand tu n'es pas là. Il laisse une photo de lui en train de manger : c'est la seule trace de son passage.</p><p class="sub"><b>Gagner des glands :</b> chaque renard du refuge en rapporte quelques-uns par jour (plus il t'aime, plus il en rapporte) ; ils t'attendent dans l'herbe, touche-les pour les ramasser. Un câlin par jour et par renard en donne un, et les histoires en donnent aussi.</p>`);
+  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name}</strong><span>${B.desc} Dure ${B.hours} h.</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Un sauvage passe souvent quand tu n'es pas là. Il laisse une photo de lui en train de manger : c'est la seule trace de son passage.</p><p class="sub"><b>Pêcher :</b> touche la mare quand tu veux. Un poisson de temps en temps, et beaucoup de vieilles bottes.</p><p class="sub"><b>Gagner des glands :</b> chaque renard du refuge en rapporte quelques-uns par jour (plus il t'aime, plus il en rapporte) ; ils t'attendent dans l'herbe, touche-les pour les ramasser. Un câlin par jour et par renard en donne un, et les histoires en donnent aussi.</p>`);
 }
-function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price)return;
-  R.glands-=B.price;R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();
+function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))return;
+  R.glands-=B.price;R.fish-=B.fish||0;R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();
   log(k==="croquettes"?"La gamelle est pleine de croquettes.":`${B.name} dans la gamelle. Qui va venir ?`)}
 
 function photoSVG(p){const f=FOX[p.id];

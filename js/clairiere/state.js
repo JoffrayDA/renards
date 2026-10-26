@@ -9,6 +9,7 @@ if(!R||R.ver!==2){
   // les clients déjà servis au Café avant le refuge peuvent suivre Roussette
   const C=load(CAFEKEY);if(C&&C.seen)for(const id in C.seen)if(canFollow(id))R.legacy[id]=1;
 }
+R.fish=R.fish||0; // poissons pêchés dans la mare, pour la gamelle de poisson
 R.story=R.story||{};R.souv=R.souv||{}; // histoires : étapes finies par renard ; souvenirs reçus
 function save(){try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}}
 function canFollow(id){const f=FOX[id];return f&&!f.event&&!WILD[id]&&id!=="roussette"}

@@ -36,11 +36,12 @@ const PLACE={p1:"sous le porche",p2:"sous le porche",p3:"sous le porche",p4:"sou
 const MAXHERE=10; // renards visibles en même temps dans la scène
 
 /* ---------- gamelles ---------- */
-// p : chance de visite d'un sauvage par pas de 30 min tant que la gamelle est pleine
+// p : chance de visite d'un sauvage par pas de 30 min tant que la gamelle est pleine ; fish : poissons à pêcher à la place des glands
+const NEED_FISH=5;
 const BOWLS={
   croquettes:{name:"Croquettes",price:0,hours:8,p:0,col:"#c98a5a",desc:"Gratuites. Tes renards restent dans la clairière au lieu de partir en balade."},
   baies:{name:"Baies des bois",price:30,hours:12,p:.06,col:"#8a6ac0",desc:"Peut attirer un sauvage du sous-bois."},
-  poisson:{name:"Poisson",price:30,hours:12,p:.06,col:"#9ec3ef",desc:"Peut attirer un sauvage de la rivière."},
+  poisson:{name:"Poisson",price:0,fish:5,hours:12,p:.06,col:"#9ec3ef",desc:"Peut attirer un sauvage de la rivière. Se remplit avec 5 poissons pêchés dans la mare."},
   miel:{name:"Rayon de miel",price:120,hours:24,p:.04,col:"#f2c45a",desc:"Le seul mets qui tente un très gros renard des neiges."}
 };
 // les six sauvages ne viennent jamais au Café avant d'être passés par la gamelle
