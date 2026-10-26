@@ -6,7 +6,9 @@
    R.who[id][i] = le renard touché pour un moment « * » (pour relire l'histoire).
    at : un renard, "@endroit" (TG) ou "*" (n'importe quel autre renard du refuge). goal : ce qu'il faut faire pour ce moment.
    "me" parle : c'est Roussette, avec le nom choisi au Café. */
-const GAP=3*36e5;
+// ?vite=1 : le renard suivant arrive tout de suite (pour tester)
+const GAP=new URLSearchParams(location.search).has("vite")?0:3*36e5;
+if(!GAP)R.nextAt=0;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
