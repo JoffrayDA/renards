@@ -6,14 +6,14 @@ scn.rain=rainNow();
 simulate(false);
 const togGot=syncTogether();
 drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
-syncFoxes();drawObjs();fillBasket();
+syncFoxes();drawObjs();fillObjs();
 chainTick(false);checkArrival();
 renderHud();
 $("b-bowl").innerHTML=acornSVG()+"Gamelle";
 $("b-bowl").onclick=bowlSheet;$("goal").onclick=journal;$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;$("b-obj").onclick=objSheet;
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
 if(!R.intro)talk(INTRO,()=>{R.intro=1;save();showNews()});else showNews();
-renderStory();
+renderStory();envieTick();
 log(togGot.length?togGot.map(([id,n])=>`${FOX[id].name} a passé ${n} journée${n>1?"s":""} avec toi au Café : +${n} cœur${n>1?"s":""}.`).join(" "):Object.keys(R.res).length>1?"Bienvenue au refuge.":"Petit Pois t'attendait.");
 
 setInterval(tick,100);
@@ -26,6 +26,7 @@ setInterval(()=>{
   if(phaseNow()!==scn.phase)drawBg();
   const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}
   if(!foxes.some(f=>f.walk))syncFoxes();
+  envieTick();
   renderHud();
 },30000);
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){simulate(false);renderHud();if($("talk").hidden&&$("sheet").hidden)showNews()}});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){simulate(false);renderHud();if($("talk").hidden&&$("sheet").hidden)showNews();envieTick()}});

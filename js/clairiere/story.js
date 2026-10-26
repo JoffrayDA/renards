@@ -267,6 +267,7 @@ hotEl.onpointerdown=e=>{e.stopPropagation();const c=cur();if(c)storyTap(c.b.at)}
 $("actors").appendChild(hotEl);
 function goalText(){const c=cur();
   if(c)return {t:`${STORIES[c.id].title} · ${c.n+1} sur ${beats(c.id).length}`,g:c.b.goal};
+  const e=envGoal();if(e)return e; // pas d'histoire en cours : la petite envie du moment
   const id=nextId();
   if(!id)return {t:"Histoires",g:storyDone(LAST)?"Toutes les histoires sont finies.":"La suite des histoires arrive bientôt."};
   const w=R.nextAt>Date.now()?(new Date(R.nextAt).getDate()===new Date().getDate()?"ce matin":"demain matin"):"bientôt";
@@ -275,12 +276,11 @@ function goalText(){const c=cur();
 function renderStory(){
   const c=cur();
   storyKey=c?c.id+c.n:"";
-  for(const f of foxes)if(!f.wild){const t=isTarget(f.id),m=f.el.querySelector(".mark");
+  for(const f of foxes)if(!f.wild){const t=isTarget(f.id);
     if(t&&f.inside)f.until=0;
     if(isHidden(f.id)&&!f.inside&&!f.walk){f.inside=true;f.walk=null;f.el.classList.add("inside");drawGlow()}
     if(t&&c.b.sleep&&!f.walk&&f.pose!=="sleep"){f.pose="sleep";f.until=Date.now()+6e5;draw(f)}
-    else if(t&&!m){f.el.querySelector(".want")?.remove();f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`)}
-    else if(!t&&m){m.remove();if(wantsHug(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="want">${HEART}</i>`)}
+    else setBadge(f);
   }
   const s=c&&c.b.at.startsWith("@")&&TG[c.b.at.slice(1)];
   hotEl.hidden=!s;if(s){hotEl.style.cssText=pc(s.x,s.y);hotEl.setAttribute("aria-label",s.name)}

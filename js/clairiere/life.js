@@ -27,10 +27,9 @@ function removeFox(f){f.el.remove();if(f.light)f.light.remove();foxes.splice(fox
 function draw(f){
   const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
   if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
-  else if(f.spot&&f.spot.basket)f.el.innerHTML=`<div class="flip">${basketSVG(f.id)}</div>`; // la sieste dans le panier (objets.js)
+  else if(objOf(f.spot))f.el.innerHTML=`<div class="flip">${objOf(f.spot).svg(f.id)}</div>`; // dans un objet du refuge (objets.js)
   else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
-  if(!f.wild&&isTarget(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`); // l'histoire attend ce renard
-  else if(!f.wild&&wantsHug(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="want">${HEART}</i>`); // pas encore de câlin aujourd'hui
+  setBadge(f); // « ! » de l'histoire, « … » d'une petite envie ou cœur du câlin (envies.js)
   f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);drawObjs();
 }
 // la lumière de Luciole passe au-dessus du voile de la nuit : elle suit le bout de sa queue
@@ -51,7 +50,7 @@ function settle(f){
   if(sp.lamp&&f.id==="luciole"&&dark()&&!scn.lamps[sp.lamp]){scn.lamps[sp.lamp]=true;drawGlow();log("Luciole allume les lanternes.")}
   f.walk=null;f.until=Date.now()+(f.pose==="sleep"?16000:7000)+Math.random()*12000;
   if(f.wild)f.until=Date.now()+14000;
-  if(sp.basket){f.pose="sleep";f.until=Date.now()+30000+Math.random()*30000} // une vraie sieste dans le panier
+  if(objOf(sp)){f.pose=objOf(sp).pose;f.until=Date.now()+30000+Math.random()*30000} // un long moment dans un objet du refuge
   draw(f);
 }
 const taken=sp=>foxes.some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
@@ -80,9 +79,9 @@ function choose(f){
   if(f.id==="luciole"&&dark()){const l=free.find(s=>s.lamp&&!scn.lamps[s.lamp]);if(l)return l}
   // de temps en temps, un renard va grignoter à la gamelle quand il y a des croquettes
   if(R.bowl&&R.bowl.type==="croquettes"&&!taken(SPOT.bowl)&&Math.random()<.25)return SPOT.bowl;
-  // le panier attire les renards pour la sieste
-  if(SPOT.basket&&!taken(SPOT.basket)&&f.spot!==SPOT.basket&&!isTarget(f.id)&&Math.random()<.2)return SPOT.basket;
-  const pool=free.filter(s=>!s.lamp||f.id==="luciole");
+  // les objets du refuge attirent les renards
+  const ob=free.filter(s=>s.obj);if(ob.length&&!objOf(f.spot)&&!isTarget(f.id)&&Math.random()<.25)return ob[Math.floor(Math.random()*ob.length)];
+  const pool=free.filter(s=>(!s.lamp||f.id==="luciole")&&!s.obj);
   return pool[Math.floor(Math.random()*pool.length)]||null;
 }
 function tick(){
@@ -91,7 +90,7 @@ function tick(){
     if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
     // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
     if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${FOX[f.id].name} ressort de la maison.`)}}continue}
-    if(now>f.until&&isTarget(f.id)){f.until=now+5000;continue}
+    if(now>f.until&&(isTarget(f.id)||envHold(f))){f.until=now+5000;continue}
     if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
   }
   const f1=Math.floor(now/200)%2===1;for(const f of foxes)if(f.walk)f.el.classList.toggle("f1",f1);
@@ -100,7 +99,7 @@ function tick(){
 function syncFoxes(){
   const want=presentIds();
   for(const f of foxes.slice())if(!f.wild&&!want.includes(f.id))removeFox(f);
-  const free=()=>SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp);
+  const free=()=>SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj);
   for(const id of want)if(!foxes.some(f=>f.id===id)){const fs=free();makeFox(id,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}
 }
 // un sauvage vient manger pendant qu'on regarde

@@ -47,6 +47,7 @@ function bubble(f,txt){const b=document.querySelector(".bubble")||document.creat
 function tapFox(f){
   if(!f.wild&&storyTap(f.id))return;
   if(f.wild){bubble(f,"un renard sauvage, il mange !");return}
+  if(envieTap(f))return; // une petite envie (envies.js)
   if(snapObj(f))return; // un renard dans un objet : la photo d'abord
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
@@ -95,12 +96,12 @@ function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))ret
   log(k==="croquettes"?"La gamelle est pleine de croquettes.":`${B.name} dans la gamelle. Qui va venir ?`)}
 
 function photoSVG(p){const f=FOX[p.id];
-  if(p.obj)return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(0 -6)">${basketSVG(p.id).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`;
+  if(p.obj)return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(0 -6)">${(OBJS[p.obj]||OBJS.panier).svg(p.id).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`;
   return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(18 10) scale(.7)">${foxArt(f,{pose:"eat"}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g><g transform="translate(36 63) scale(1.2)">${bowlSVG(p.bowl).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`}
 const fmtDate=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" à "+new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 function photos(){
   const ps=R.photos.slice().reverse();
-  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p><div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${FOX[p.id].name}</b>${p.obj?"Dans le panier, le ":""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
+  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p><div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${FOX[p.id].name}</b>${p.obj?`${(OBJS[p.obj]||OBJS.panier).in}, le `:""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
 }
 
 function status(id,M){
