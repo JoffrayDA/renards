@@ -14,7 +14,7 @@ if(VITE)R.nextAt=0;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","gribouille"];
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","libellule","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
@@ -160,6 +160,35 @@ const STORIES={
     {at:"@pond",game:{k:"order",who:"moka",n:10,time:10,win:"Gagné ! Moka arrive… en retard."},goal:"Fais la course avec Moka jusqu'à la mare.",lines:[
       ["moka","joy","Battu ! Comme d'habitude. Au moins, je suis à l'heure pour perdre."],
       ["moka","shy","Tiens, ma montre. Elle retarde de dix minutes… C'est peut-être pour ça."]]}
+  ]},
+  // une histoire d'amour (demande de Joffray) : Gaston, qui n'a jamais rien attrapé, et Libellule, qui regarde l'eau
+  libellule:{title:"Les oreilles rouges",souv:"le poème mordillé",beats:[
+    {at:"libellule",after:[["libellule","pond"]],goal:"Libellule vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["libellule","open","Bonjour… Chut. Regarde la mare : quand l'eau est calme, on voit le ciel dedans."],
+      ["libellule","shy","Je pourrais la regarder toute la journée. Tu restes un peu ?"]]},
+    {at:"gaston",goal:"Gaston a l'air tout bizarre. Va voir ce qu'il a.",lines:[
+      ["gaston","shy",`${ME()}… Qui est-ce, au bord de la mare ?`],
+      ["me","joy","Libellule. Elle regarde l'eau, comme toi."],
+      ["gaston","sad","Je n'ose plus pêcher. Si je ne prends encore rien, devant elle…"],
+      ["gaston","surprise","Et mes oreilles deviennent toutes rouges ! Elles sont rouges ? Ne réponds pas."],
+      ["gaston","shy","J'ai écrit un poème, cette nuit. Viens, je l'ai caché près du banc."]]},
+    {at:"@bench",game:{k:"catch",thing:"page",n:4,say:"Un coup de vent ! Rattrape les pages du poème !"},goal:"Retrouve le poème de Gaston près du banc.",lines:[
+      ["gaston","joy","Toutes les pages ! Merci…"],
+      ["grignote","joy","Mmm… ça sent le poème d'amour. C'est ce qu'il y a de meilleur."],
+      ["gaston","surprise","Grignote ! Tu as mangé la fin !"],
+      ["gaston","sad","Tant pis. Tu peux le lui porter ? Moi, je n'ose pas."]]},
+    {at:"libellule",after:[["gaston","g7"]],goal:"Porte le poème à Libellule, au bord de la mare.",lines:[
+      ["libellule","surprise","Un poème ? Pour moi ?"],
+      ["libellule","open","« Tu regardes l'eau, moi je te regarde. Ton reflet est le plus joli des poissons… »"],
+      ["libellule","shy","…et après, c'est tout mordillé. Il est de qui ?"],
+      ["me","open","D'un pêcheur qui n'a jamais rien attrapé."],
+      ["libellule","joy","Un bob sur la tête, des oreilles toutes rouges ? Dis-lui de venir pêcher avec moi."]]},
+    {at:"@pond",game:{k:"fish",say:"Aide Gaston : touche l'eau dès que le bouchon plonge !",win:"Un poisson !"},after:[["gaston","bench1"],["libellule","bench2"]],goal:"Gaston et Libellule pêchent ensemble. Va les voir à la mare.",lines:[
+      ["gaston","surprise","Un poisson… Mon premier poisson ! Devant elle !"],
+      ["libellule","joy","Il est magnifique. Presque aussi rouge que tes oreilles."],
+      ["gaston","shy","On le remet à l'eau ? Comme ça, on pourra revenir le voir. Ensemble."],
+      ["libellule","shy","Ensemble."],
+      ["gaston","joy",`Tiens, ${ME()}, le poème. Sans la fin. Je crois qu'on va l'écrire à deux.`]]}
   ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
