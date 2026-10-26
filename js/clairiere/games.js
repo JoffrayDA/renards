@@ -276,7 +276,7 @@ const GAMES={
   /* Le jeu des coussins (Pantoufle) : le renard se cache sous un des coussins du porche, les coussins se mélangent,
      il faut toucher le bon. 3 manches, de plus en plus rapides. Raté : on voit où il était, et on refait la manche. */
   cushion(g,A){
-    const sv=A.sv,id=g.who||g.target,name=FOX[id].name,RD=g.rounds||[[3,3,.62],[3,6,.46],[4,8,.38]],Y=338,
+    const sv=A.sv,id=g.who||g.target,name=FOX[id].name,RD=g.rounds||[[3,4,.5],[3,7,.36],[4,9,.3]],Y=338,
       COL=["#f6b3c4","#9ec3ef","#f2d27a"],LOOT=[["wool","une pelote de laine"],["cone","une pomme de pin"],["leaf","une feuille"],["pebble","un caillou"]];
     let r=0,st="show",cs=[],under=null,sw=null,q=[];
     sv.innerHTML=`<rect width="400" height="480" fill="#bcd99a"/><g filter="url(#wobble)">
