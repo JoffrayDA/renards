@@ -168,9 +168,9 @@ const GAMES={
   },
 
   /* Fouiller : des tas de feuilles ; l'objet est sous celui qui frémit de temps en temps (le vent fait bouger tous les tas,
-     ça ne compte pas). Deux essais ; raté deux fois, l'objet file sous un autre tas. */
+     ça ne compte pas). Trois essais ; raté trois fois, l'objet file sous un autre tas. */
   search(g,A){
-    const sv=A.sv,P=[[88,150],[206,128],[322,166],[136,262],[272,284],[80,388],[214,402],[330,380]],tries=g.tries||2,
+    const sv=A.sv,P=[[88,150],[206,128],[322,166],[136,262],[272,284],[80,388],[214,402],[330,380]],tries=g.tries||3,
       gags=[["snail","Un escargot. Il n'a rien vu."],["cone","Une pomme de pin. Pas ça…"],["pebble","Un caillou tout lisse."],["leaf","Rien que des feuilles."]];
     let good=0,left=tries,st="look",gen=0;
     sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${Array.from({length:30},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="its"></g><g id="piles"></g>`;
