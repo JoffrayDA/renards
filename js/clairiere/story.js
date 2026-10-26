@@ -67,10 +67,10 @@ const STORIES={
   ]},
   galette:{title:"Le record de ricochets",souv:"le caillou plat porte-bonheur",beats:[
     {at:"galette",after:[["galette","pond"]],goal:"Galette vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["galette","joy",`Salut ${ME()} ! Quatre rebonds : c'est mon record de ricochets. Personne ne l'a jamais battu.`],
+      ["galette","joy",`Salut ${ME()} ! Trois rebonds : c'est mon record de ricochets. Personne ne l'a jamais battu.`],
       ["galette","open","Ta mare a l'air parfaite. Tu relèves le défi ?"]]},
-    {at:"@pond",game:{k:"ricochet",need:5},goal:"Bats le record de Galette à la mare.",lines:[
-      ["galette","surprise","Cinq rebonds ?! Tu as battu mon record !"],
+    {at:"@pond",game:{k:"ricochet",need:4},goal:"Bats le record de Galette à la mare.",lines:[
+      ["galette","surprise","Quatre rebonds d'affilée ?! Tu as battu mon record !"],
       ["galette","joy","Tiens, mon caillou plat porte-bonheur. Il te revient. Mais je veux ma revanche !"]]}
   ]},
   pantoufle:{title:"Le renard du dedans",souv:"la pantoufle en laine",beats:[

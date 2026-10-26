@@ -10,7 +10,7 @@ pondEl.style.cssText=pc(96,424)+";z-index:300";
 const canFish=()=>STORIES.gaston&&storyDone("gaston");
 pondEl.onpointerdown=e=>{e.stopPropagation();if(storyTap("@pond"))return;if(gameOn||!$("talk").hidden||!$("sheet").hidden)return;
   if(!canFish()){log("La mare est calme. Il faudrait une canne à pêche…");return}
-  playGame({k:"fish",free:1,say:"Touche l'eau dès que le bouchon plonge !",onFish:()=>{R.fish++;save();renderHud();
+  playGame({k:"fish",free:1,need:NEED_FISH,have:()=>R.fish,onFish:()=>{R.fish++;save();renderHud();
     return R.fish>=NEED_FISH?`Un poisson ! Tu en as ${R.fish} : de quoi remplir la gamelle.`:`Un poisson ! ${R.fish} sur ${NEED_FISH} pour la gamelle.`}},()=>{})};
 function log(t){$("log").textContent=t}
 let toastT;function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}

@@ -33,7 +33,6 @@ function playGame(g,done){
   const el=$("play");let timers=[],raf=0,over=false;gameOn=true;
   el.innerHTML=`<svg viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg><div class="psay" aria-live="polite"></div>`;
   const sv=el.firstChild,sayEl=el.lastChild;
-  if(g.k==="fish")sayEl.classList.add("low"); // à la pêche, la berge et la canne sont en haut
   const api={sv,won:false,tap:null,
     say:t=>{sayEl.textContent=t;replay(sayEl,"pop")},
     later:(f,ms)=>{timers.push(setTimeout(()=>{if(!over)f()},ms))},
@@ -50,48 +49,83 @@ function playGame(g,done){
 }
 
 const GAMES={
-  /* Pêche : Roussette pêche depuis la berge. Une ombre approche ; elle grignote (ploc, petit rond : pas encore !),
-     puis mord : le bouchon coule, gros remous, « ! » et vibration. Il faut toucher tout de suite. */
+  /* Pêche : vue depuis le ponton, Roussette au premier plan, la rive d'en face et ses reflets, l'heure réelle.
+     Une ombre de poisson approche ; elle grignote (ploc, petit rond : pas encore !), puis mord : le bouchon coule,
+     gros remous, « ! » et vibration ; il faut toucher tout de suite. La prise saute hors de l'eau et s'affiche sur une carte. */
   fish(g,A){
-    const sv=A.sv,BX=210,BY=270;
-    sv.innerHTML=`<rect width="400" height="480" fill="#a9d3e6"/>
-      <path d="M120 210 q30 -10 60 0 M250 350 q24 -8 48 0 M130 420 q20 -6 40 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
-      <g filter="url(#wobble)">${[[60,200,28],[340,320,34],[90,410,24]].map(([x,y,r])=>`<path d="M${x} ${y} m-${r} 0 a${r} ${r*.62} 0 1 0 ${2*r} 0 a${r} ${r*.62} 0 1 0 -${2*r} 0 M${x} ${y} l${r*.9} -${r*.35}" fill="#8fca7a" ${O}/>`).join("")}</g>
-      <ellipse id="shadow" cx="${BX}" cy="${BY+30}" rx="24" ry="10" fill="#4f7f96" opacity=".4" style="transition:transform 1.6s ease-in-out"/>
+    const sv=A.sv,BX=262,BY=318,night=dark(),ph=PH[phaseNow()];
+    const W0=night?"#4a5f96":"#c4e6f2",W1=night?"#26355f":"#7fbad6",TR=night?["#4f6f78","#3e5d66"]:["#9cc796","#7fb27f"],R0=new Array(14).fill(0).map((_,i)=>[i*34-10+(i%2)*12,104+(i%3)*8,22+(i*7)%12]);
+    sv.innerHTML=`<defs>
+        <linearGradient id="fsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ph.sky[0]}"/><stop offset="1" stop-color="${ph.sky[1]}"/></linearGradient>
+        <linearGradient id="fwat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${W0}"/><stop offset="1" stop-color="${W1}"/></linearGradient>
+        <radialGradient id="fglow"><stop offset="0" stop-color="#fff6c8" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient>
+        <radialGradient id="fray"><stop offset="0" stop-color="#ffe9a6"/><stop offset="1" stop-color="#ffe9a6" stop-opacity="0"/></radialGradient></defs>
+      <rect width="400" height="160" fill="url(#fsky)"/>
+      ${night?`<circle cx="320" cy="52" r="20" fill="#fff4cf"/><circle cx="312" cy="46" r="5" fill="#f1e2b0"/>${[[40,30],[120,58],[200,24],[260,70],[370,22],[90,90]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#fff8d0"/>`).join("")}`
+        :`<circle cx="320" cy="52" r="22" fill="#fff3b8" opacity=".9"/>${[[70,46],[200,30]].map(([x,y])=>`<path d="M${x} ${y} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff" opacity=".85"/>`).join("")}`}
+      <rect y="150" width="400" height="330" fill="url(#fwat)"/>
+      <g opacity="${night?.25:.22}">${R0.map(([x,y,r])=>`<ellipse cx="${x}" cy="${300-y+20}" rx="${r}" ry="${r*.55}" fill="${TR[1]}"/>`).join("")}</g>
+      <g filter="url(#wobble)">${R0.map(([x,y,r],i)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${TR[i%2]}" ${O}/>`).join("")}
+        <path d="M-10 132 Q100 118 200 128 Q300 116 410 130 L410 158 Q300 150 200 158 Q100 150 -10 158Z" fill="${night?"#5d7d64":"#a9cf8a"}" ${O}/>
+        ${[[36,150],[150,154],[300,150]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="11" ry="5" fill="#d9d2c6" ${O}/>`).join("")}</g>
+      ${night?`<ellipse cx="320" cy="228" rx="14" ry="4" fill="#fff4cf" opacity=".5" class="shim"/><ellipse cx="320" cy="246" rx="9" ry="3" fill="#fff4cf" opacity=".35" class="shim" style="animation-delay:.7s"/>`:""}
+      ${[[80,196,40],[180,230,56],[320,206,36],[120,286,48],[340,280,40],[60,360,30]].map(([x,y,w],i)=>`<path class="shim" style="animation-delay:${(i*.45).toFixed(2)}s" d="M${x-w/2} ${y} q${w/4} -5 ${w/2} 0 t${w/2} 0" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>`).join("")}
+      ${[[150,208],[300,250],[210,380],[360,340]].map(([x,y],i)=>`<path class="twk" style="animation-delay:${i*.6}s" d="M${x} ${y-6} q1 5 6 6 q-5 1 -6 6 q-1 -5 -6 -6 q5 -1 6 -6Z" fill="#fff"/>`).join("")}
+      <g filter="url(#wobble)">
+        ${[[70,214,22,.5],[350,232,26,.5],[44,300,34,.55],[352,388,38,.55],[150,262,16,.45]].map(([x,y,r,k])=>`<path d="M${x} ${y} m-${r} 0 a${r} ${r*k} 0 1 0 ${2*r} 0 a${r} ${r*k} 0 1 0 -${2*r} 0 M${x} ${y} l${r*.92} -${r*k*.5}" fill="${night?"#5f8f6a":"#8fca7a"}" ${O}/>`).join("")}
+        <g transform="translate(350 380)"><path d="M0 -4 q-10 -16 0 -24 q10 8 0 24Z M0 -4 q-18 -6 -16 -18 q12 0 16 18Z M0 -4 q18 -6 16 -18 q-12 0 -16 18Z" fill="#f6b3c4" ${O}/><circle cy="-8" r="3.4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g></g>
+      <g id="shadow" style="transition:transform 1.8s ease-in-out,opacity .4s"><g class="swim" opacity="${night?.5:.38}"><ellipse cx="${BX}" cy="${BY+28}" rx="22" ry="8" fill="${night?"#14203f":"#3f6f86"}"/><path d="M${BX+18} ${BY+28} l14 -8 v16Z" fill="${night?"#14203f":"#3f6f86"}" class="tail"/></g></g>
       <g id="rips"></g>
-      <g filter="url(#wobble)"><path d="M0 0 H400 V96 Q300 124 200 108 Q100 124 0 96Z" fill="#bcd99a" ${O}/>
-      <path d="M330 104 l-6 -40 M346 100 l2 -46 M372 104 l6 -38" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/></g>
-      ${foxAt("roussette",86,122,96,{pose:"sit"})}
-      <path d="M112 84 Q150 30 196 26" fill="none" stroke="#a9785a" stroke-width="5" stroke-linecap="round"/>
-      <path id="line" d="M196 26 Q${BX+4} 140 ${BX} ${BY-12}" fill="none" stroke="#fff" stroke-width="1.8"/>
-      <g id="bob" class="bob"><g filter="url(#wobble)"><circle cx="${BX}" cy="${BY}" r="13" fill="#fff" ${O}/><path d="M${BX-13} ${BY} a13 13 0 0 1 26 0Z" fill="#e0564f" ${O}/><path d="M${BX} ${BY-13} v-6" ${O}/></g></g>
-      <g id="excl" opacity="0"><circle cx="${BX+40}" cy="${BY-44}" r="17" fill="#ffd36a" stroke="${INK}" stroke-width="3"/><text x="${BX+40}" y="${BY-36}" text-anchor="middle" font-size="22" font-weight="900" fill="${INK}">!</text></g>
-      <g id="card" opacity="0"></g>`;
-    const bob=sv.querySelector("#bob"),rips=sv.querySelector("#rips"),ex=sv.querySelector("#excl"),sh=sv.querySelector("#shadow"),card=sv.querySelector("#card");
+      <path id="line" d="M238 196 Q${BX+6} 250 ${BX} ${BY-16}" fill="none" stroke="#fff" stroke-width="1.6" opacity=".9"/>
+      <g id="bob" style="transition:transform .14s ease-out,opacity .2s"><g class="bobidle"><ellipse cx="${BX}" cy="${BY+12}" rx="18" ry="4" fill="#fff" opacity=".35"/>
+        <g filter="url(#wobble)"><path d="M${BX-15} ${BY} a15 15 0 0 0 30 0Z" fill="#fff" ${O}/><path d="M${BX-15} ${BY} a15 15 0 0 1 30 0Z" fill="#e0564f" ${O}/><path d="M${BX-15} ${BY} h30" stroke="${INK}" stroke-width="2.4"/><path d="M${BX} ${BY-15} v-7" ${O}/><circle cx="${BX-5}" cy="${BY-7}" r="2.6" fill="#fff" stroke="none"/></g></g></g>
+      <g class="sway" style="transform-origin:372px 480px">${[[362,300],[378,280],[392,310]].map(([x,y])=>`<path d="M${x} 480 Q${x-4} ${(y+480)/2} ${x} ${y}" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/><rect x="${x-4.5}" y="${y-4}" width="9" height="26" rx="4.5" fill="#a9785a" stroke="${INK}" stroke-width="2.4"/>`).join("")}</g>
+      <g class="dfly"><g transform="translate(0 0)"><path d="M0 0 h18" stroke="#6aa6c9" stroke-width="3.4" stroke-linecap="round"/><ellipse class="wing" cx="7" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><ellipse class="wing" cx="11" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><circle cx="19" cy="0" r="3" fill="#6aa6c9" stroke="${INK}" stroke-width="1.4"/></g></g>
+      ${night?[[60,240],[180,190],[300,300],[120,340]].map(([x,y],i)=>`<circle class="ff" style="animation-delay:${-i*1.3}s" cx="${x}" cy="${y}" r="9" fill="url(#fglow)"/>`).join(""):""}
+      <g filter="url(#wobble)"><path d="M-10 404 L196 392 L222 480 L-10 480Z" fill="#d9a777" ${O}/>
+        ${[418,438,458].map((y,i)=>`<path d="M-10 ${y} L${200+i*7} ${y-4+i}" stroke="#c08a5c" stroke-width="2.2"/>`).join("")}
+        <rect x="184" y="388" width="14" height="92" rx="4" fill="#b58460" ${O}/><path d="M8 410 l8 6 M120 400 l6 6" stroke="#a9704e" stroke-width="2.4" stroke-linecap="round"/></g>
+      ${foxAt("roussette",98,462,138,{pose:"sit"})}
+      <g filter="url(#wobble)"><path d="M118 444 L238 196" stroke="#a9785a" stroke-width="5.5" stroke-linecap="round"/><path d="M118 444 L134 411" stroke="#d9a06a" stroke-width="9" stroke-linecap="round"/>
+        <circle cx="140" cy="402" r="8" fill="#e3dccf" ${O}/><circle cx="140" cy="402" r="2.4" fill="${INK}"/></g>
+      <g id="excl" opacity="0"><circle cx="${BX+42}" cy="${BY-48}" r="18" fill="#ffd36a" stroke="${INK}" stroke-width="3"/><text x="${BX+42}" y="${BY-39}" text-anchor="middle" font-size="23" font-weight="900" fill="${INK}">!</text></g>
+      <g id="hud"></g><g id="leap"></g><g id="card"></g>`;
+    const bob=sv.querySelector("#bob"),rips=sv.querySelector("#rips"),ex=sv.querySelector("#excl"),sh=sv.querySelector("#shadow"),card=sv.querySelector("#card"),leap=sv.querySelector("#leap"),hud=sv.querySelector("#hud");
+    // pêche libre : cinq petits poissons en haut, qui se remplissent
+    const drawHud=()=>{if(!g.free)return;const n=Math.min(g.need,g.have());
+      hud.innerHTML=`<g transform="translate(200 82)"><rect x="-96" y="-17" width="192" height="34" rx="17" fill="#fffaf2" opacity=".92" stroke="${INK}" stroke-width="2.4"/>
+        ${Array.from({length:g.need},(_,i)=>`<g transform="translate(${(i-(g.need-1)/2)*34} 0) scale(.62)" opacity="${i<n?1:.28}">${ITEM.fish}</g>`).join("")}</g>`};
     let st="wait";
-    const ring=(r,w)=>{const e=grp(rips,`<ellipse cx="${BX}" cy="${BY+4}" rx="${r}" ry="${r*.36}" fill="none" stroke="#fff" stroke-width="${w}" class="ring"/>`);setTimeout(()=>e.remove(),800)};
-    const start=()=>{A.clear();st="wait";card.setAttribute("opacity",0);sh.style.opacity="";bob.style.opacity=1;bob.style.transform="";ex.setAttribute("opacity",0);
+    const ring=(r,w,d=0)=>A.later(()=>{const e=grp(rips,`<ellipse cx="${BX}" cy="${BY+6}" rx="${r}" ry="${r*.34}" fill="none" stroke="#fff" stroke-width="${w}" class="ring"/>`);setTimeout(()=>e.remove(),800)},d);
+    const drops=(n,sp)=>{const e=grp(rips,Array.from({length:n},(_,i)=>{const a=-Math.PI*(.15+.7*i/(n-1));return `<circle class="drop" style="--dx:${(Math.cos(a)*sp).toFixed(0)}px;--dy:${(Math.sin(a)*sp).toFixed(0)}px" cx="${BX}" cy="${BY}" r="${3+(i%2)*1.5}" fill="#fff"/>`}).join(""));setTimeout(()=>e.remove(),700)};
+    const start=()=>{A.clear();st="wait";card.innerHTML="";leap.innerHTML="";bob.style.opacity=1;bob.style.transform="";ex.setAttribute("opacity",0);sh.style.opacity="";drawHud();
       A.say(g.say||"Attends que le bouchon coule, puis touche vite !");
-      // l'ombre arrive de loin et tourne autour du bouchon
-      const a=Math.random()*6.3;sh.style.transition="none";sh.style.transform=`translate(${Math.cos(a)*170}px,${Math.sin(a)*120+60}px)`;
+      // l'ombre arrive de loin et vient tourner sous le bouchon
+      const a=Math.random()*6.3;sh.style.transition="none";sh.style.transform=`translate(${(Math.cos(a)*170).toFixed(0)}px,${(Math.abs(Math.sin(a))*90+30).toFixed(0)}px)`;
       A.later(()=>{sh.style.transition="";sh.style.transform="translate(0,0)"},60);
       let nib=1+Math.floor(Math.random()*3);
-      const step=()=>{if(nib-->0)A.later(()=>{ring(14,2);bob.style.transform="translateY(3px)";A.later(()=>bob.style.transform="",140);A.say("Ploc… elle grignote. Pas encore !");A.later(step,0)},900+Math.random()*900);
-        else A.later(()=>{st="bite";bob.style.transform="translateY(22px)";bob.style.opacity=.35;ring(20,3.4);ring(40,2.4);ex.setAttribute("opacity",1);A.say("Ça mord ! Touche vite !");
+      const step=()=>{if(nib-->0)A.later(()=>{ring(16,2.2);bob.style.transform="translateY(4px)";A.later(()=>bob.style.transform="",150);A.say("Ploc… ça grignote. Pas encore !");A.later(step,0)},900+Math.random()*900);
+        else A.later(()=>{st="bite";bob.style.transform="translateY(24px)";bob.style.opacity=.3;ring(22,3.6);ring(44,2.6,120);ring(66,1.8,240);drops(7,40);ex.setAttribute("opacity",1);replay(ex,"popin");A.say("Ça mord ! Touche vite !");
           try{navigator.vibrate&&navigator.vibrate(90)}catch(e){}
-          A.later(()=>{if(st==="bite"){st="miss";ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";A.say("Trop tard… elle a filé. On relance !");A.later(start,1400)}},1150)},800+Math.random()*1000)};
-      A.later(step,1200)};
-    // la prise s'affiche sur une petite carte
-    const show=(it,txt)=>{card.innerHTML=`<g transform="translate(${BX} 250)"><rect x="-90" y="-62" width="180" height="124" rx="22" fill="#fffaf2" stroke="${INK}" stroke-width="3"/>
-      <g transform="translate(0 -12) scale(2.2)">${ITEM[it]}</g><text y="46" text-anchor="middle" font-size="15" font-weight="900" fill="${INK}">${txt}</text></g>`;card.setAttribute("opacity",1);replay(card,"popin")};
+          A.later(()=>{if(st==="bite"){st="miss";ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";sh.style.opacity=0;A.say("Trop tard… il a filé. On relance !");A.later(start,1400)}},1150)},800+Math.random()*1000)};
+      A.later(step,1400)};
+    // la prise saute hors de l'eau, puis s'affiche sur une carte
+    const show=(it,name,sub,fish)=>{
+      leap.innerHTML=`<g transform="translate(${BX} ${BY})"><g class="jumpout"><g transform="scale(1.4)">${ITEM[it]}</g></g></g>`;drops(9,56);ring(30,3);ring(54,2,140);
+      drawHud();A.later(()=>{leap.innerHTML="";const slots=fish&&g.free?`<g transform="translate(0 92)">${Array.from({length:g.need},(_,i)=>`<g transform="translate(${(i-(g.need-1)/2)*28} 0) scale(.5)" opacity="${i<Math.min(g.need,g.have())?1:.25}">${ITEM.fish}</g>`).join("")}</g>`:"";
+        card.innerHTML=`<g transform="translate(200 236)"><g class="spin">${Array.from({length:12},(_,i)=>`<path d="M0 0 L${(Math.cos(i*Math.PI/6-.12)*170).toFixed(0)} ${(Math.sin(i*Math.PI/6-.12)*170).toFixed(0)} L${(Math.cos(i*Math.PI/6+.12)*170).toFixed(0)} ${(Math.sin(i*Math.PI/6+.12)*170).toFixed(0)}Z" fill="#fff3c4" opacity="${fish?.75:.4}"/>`).join("")}</g>
+          <g class="cardin"><rect x="-104" y="-76" width="208" height="${fish&&g.free?190:160}" rx="26" fill="#fffaf2" stroke="${INK}" stroke-width="3.4"/>
+          <circle cy="-18" r="44" fill="url(#fray)"/><g transform="translate(0 -18) scale(2.4)">${ITEM[it]}</g>
+          <text y="46" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="18" fill="${INK}">${name}</text>
+          <text y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#8f7a86">${sub}</text>${slots}</g></g>`},520)};
     A.tap=()=>{
-      if(st==="wait"){st="miss";A.clear();bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*200}px,40px)`;A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1400)}
+      if(st==="wait"){st="miss";A.clear();bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*220}px,60px)`;ring(16,2);A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1500)}
       else if(st==="bite"){st="won";ex.setAttribute("opacity",0);bob.style.opacity=0;sh.style.opacity=0;
         // pêche libre : un poisson une fois sur dix, sinon ce qui traîne au fond de la mare
-        const j=g.free&&Math.random()>=.1?JUNK[Math.floor(Math.random()*JUNK.length)]:null,it=j?j[0]:"fish";
-        show(it,j?j[2]:"Un poisson !");
-        if(!g.free)A.win(g.win||"Attrapé !");
-        else{A.say(j?j[1]:g.onFish());A.later(start,1900)}}};
+        const j=g.free&&Math.random()>=.1?JUNK[Math.floor(Math.random()*JUNK.length)]:null;
+        if(j){show(j[0],j[2],j[1],false);A.say("Ce n'est pas un poisson… On relance ?");A.later(start,2300)}
+        else if(!g.free){show("fish","Un poisson !","Tout orange, avec de grands yeux.",true);A.win(g.win||"Attrapé !")}
+        else{const t=g.onFish();show("fish","Un poisson !",g.have()>=g.need?"De quoi remplir la gamelle !":`${g.have()} sur ${g.need} pour la gamelle`,true);A.say(t);A.later(start,2600)}}};
     start();
   },
 
@@ -149,27 +183,32 @@ const GAMES={
       b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`+(page?` rotate(${(Math.sin(b.a*3)*25).toFixed(0)})`:""))}});
   },
 
-  /* Ricochets : un curseur va et vient ; plus on lance près du milieu, plus le caillou rebondit. */
+  /* Ricochets : un toucher par rebond, quand le curseur passe dans la petite zone verte ; il accélère à chaque rebond.
+     Un raté et le caillou coule : on recommence. Il faut need rebonds d'affilée. */
   ricochet(g,A){
-    const sv=A.sv,need=g.need||5,X0=40,WG=320;let t=0,st="aim";
+    const sv=A.sv,need=g.need||4,X0=40,WG=320,HALF=16;let t=0,k=0,per=.9,st="aim";
     sv.innerHTML=`<rect width="400" height="480" fill="#bfe0f2"/><g filter="url(#wobble)"><path d="M0 170 Q100 150 200 164 Q300 150 400 170 V200 H0Z" fill="#8dbd86" ${O}/></g>
       <rect y="196" width="400" height="200" fill="#a9d3e6"/><path d="M60 240 q30 -8 60 0 M220 300 q26 -8 52 0 M120 350 q24 -6 48 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
-      <rect y="392" width="400" height="88" fill="#d9c6a4"/><g id="rings"></g>
-      <circle id="stone" cx="40" cy="300" r="9" fill="#cfc6c0" stroke="${INK}" stroke-width="2.6" style="transition:transform .14s linear"/>
+      <rect y="392" width="400" height="88" fill="#d9c6a4"/><g id="rings"></g><g id="pips"></g>
+      <circle id="stone" cx="40" cy="300" r="9" fill="#cfc6c0" stroke="${INK}" stroke-width="2.6" style="transition:transform .16s ease-out,opacity .3s"/>
       <rect x="${X0}" y="420" width="${WG}" height="24" rx="12" fill="#f6b3a8" stroke="${INK}" stroke-width="3"/>
-      <rect x="${200-44}" y="423" width="88" height="18" fill="#f6d77a"/><rect x="${200-26}" y="423" width="52" height="18" fill="#a9d68f"/>
+      <rect x="${200-HALF}" y="423" width="${2*HALF}" height="18" fill="#a9d68f"/>
       <rect id="cur" x="${X0}" y="412" width="8" height="40" rx="4" fill="${INK}"/>`;
-    const cur=sv.querySelector("#cur"),stone=sv.querySelector("#stone"),rings=sv.querySelector("#rings");
-    A.say(g.say||`Lance quand le curseur est dans le vert : ${need} rebonds !`);
-    const pos=()=>(1-Math.cos(t*Math.PI/.9))/2;
+    const cur=sv.querySelector("#cur"),stone=sv.querySelector("#stone"),rings=sv.querySelector("#rings"),pips=sv.querySelector("#pips");
+    const drawPips=()=>pips.innerHTML=Array.from({length:need},(_,i)=>`<circle cx="${200+(i-(need-1)/2)*30}" cy="118" r="10" fill="${i<k?"#a9d68f":"#fff"}" stroke="${INK}" stroke-width="2.6"/>`).join("");
+    const reset=()=>{k=0;per=.9;t=0;st="aim";stone.style.transform="";stone.style.opacity=1;rings.innerHTML="";drawPips();A.say(g.say||`Touche dans le vert à chaque rebond : ${need} d'affilée !`)};
+    const pos=()=>(1-Math.cos(t*Math.PI/per))/2;
     A.loop(dt=>{if(st!=="aim")return;t+=dt;cur.setAttribute("x",(X0+pos()*WG-4).toFixed(1))});
-    A.tap=()=>{if(st!=="aim")return;st="throw";const d=Math.abs(pos()-.5)/.5,n=Math.max(1,Math.min(6,Math.round(6-d*9)));
-      rings.innerHTML="";let i=0;
-      const hop=()=>{if(i>=n){stone.style.opacity=0;
-          if(n>=need)A.win(g.win||`${n} rebonds !`);else{A.say(`${n} rebond${n>1?"s":""}… Il en faut ${need}. Encore !`);A.later(()=>{st="aim";stone.style.transform="";stone.style.opacity=1;rings.innerHTML=""},1300)}return}
-        const x=60+(i+1)*48,y=300-i*12;stone.style.transform=`translate(${x-40}px,${y-300-26}px)`;
-        A.later(()=>{stone.style.transform=`translate(${x-40}px,${y-300}px)`;grp(rings,`<ellipse cx="${x}" cy="${y+6}" rx="14" ry="5" fill="none" stroke="#fff" stroke-width="3" class="ring"/>`);i++;A.later(hop,140)},140)};
-      hop()};
+    A.tap=()=>{if(st!=="aim")return;
+      const x=X0+pos()*WG,y=300-k*10;
+      if(Math.abs(x-200)<=HALF+2){k++;drawPips();const sx=40+k*62;
+        stone.style.transform=`translate(${sx-40}px,${y-300-24}px)`;
+        A.later(()=>{stone.style.transform=`translate(${sx-40}px,${y-300}px)`;grp(rings,`<ellipse cx="${sx}" cy="${y+6}" rx="14" ry="5" fill="none" stroke="#fff" stroke-width="3" class="ring"/>`)},160);
+        if(k>=need){st="done";A.win(g.win||`${k} rebonds !`)}
+        else{per=Math.max(.5,per-.12);t=per;A.say(`${k} rebond${k>1?"s":""}… encore !`)}}
+      else{st="sink";stone.style.opacity=0;grp(rings,`<ellipse cx="${40+k*62+30}" cy="${y+8}" rx="18" ry="6" fill="none" stroke="#fff" stroke-width="3" class="ring"/>`);
+        A.say(k?`Plouf ! ${k} rebond${k>1?"s":""} seulement. On recommence !`:"Plouf ! Raté. On recommence !");A.later(reset,1300)}};
+    reset();
   },
 
   /* Cache-cache : le renard pointe le museau aux fenêtres, à la porte, derrière le pot… il faut le toucher. */
