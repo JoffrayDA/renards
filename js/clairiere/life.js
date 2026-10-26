@@ -27,10 +27,11 @@ function removeFox(f){f.el.remove();if(f.light)f.light.remove();foxes.splice(fox
 function draw(f){
   const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
   if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
+  else if(f.spot&&f.spot.basket)f.el.innerHTML=`<div class="flip">${basketSVG(f.id)}</div>`; // la sieste dans le panier (objets.js)
   else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
   if(!f.wild&&isTarget(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`); // l'histoire attend ce renard
   else if(!f.wild&&wantsHug(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="want">${HEART}</i>`); // pas encore de câlin aujourd'hui
-  f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);
+  f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);drawObjs();
 }
 // la lumière de Luciole passe au-dessus du voile de la nuit : elle suit le bout de sa queue
 function moveLight(f,dur){if(!f.light)return;const L=f.light,g=f.glowAt||[107,64],left=f.el.classList.contains("left");
@@ -50,6 +51,7 @@ function settle(f){
   if(sp.lamp&&f.id==="luciole"&&dark()&&!scn.lamps[sp.lamp]){scn.lamps[sp.lamp]=true;drawGlow();log("Luciole allume les lanternes.")}
   f.walk=null;f.until=Date.now()+(f.pose==="sleep"?16000:7000)+Math.random()*12000;
   if(f.wild)f.until=Date.now()+14000;
+  if(sp.basket){f.pose="sleep";f.until=Date.now()+30000+Math.random()*30000} // une vraie sieste dans le panier
   draw(f);
 }
 const taken=sp=>foxes.some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
@@ -78,6 +80,8 @@ function choose(f){
   if(f.id==="luciole"&&dark()){const l=free.find(s=>s.lamp&&!scn.lamps[s.lamp]);if(l)return l}
   // de temps en temps, un renard va grignoter à la gamelle quand il y a des croquettes
   if(R.bowl&&R.bowl.type==="croquettes"&&!taken(SPOT.bowl)&&Math.random()<.25)return SPOT.bowl;
+  // le panier attire les renards pour la sieste
+  if(SPOT.basket&&!taken(SPOT.basket)&&f.spot!==SPOT.basket&&!isTarget(f.id)&&Math.random()<.2)return SPOT.basket;
   const pool=free.filter(s=>!s.lamp||f.id==="luciole");
   return pool[Math.floor(Math.random()*pool.length)]||null;
 }

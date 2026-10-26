@@ -6,11 +6,11 @@ scn.rain=rainNow();
 simulate(false);
 const togGot=syncTogether();
 drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
-syncFoxes();
+syncFoxes();drawObjs();fillBasket();
 chainTick(false);checkArrival();
 renderHud();
 $("b-bowl").innerHTML=acornSVG()+"Gamelle";
-$("b-bowl").onclick=bowlSheet;$("goal").onclick=journal;$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;
+$("b-bowl").onclick=bowlSheet;$("goal").onclick=journal;$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;$("b-obj").onclick=objSheet;
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
 if(!R.intro)talk(INTRO,()=>{R.intro=1;save();showNews()});else showNews();
 renderStory();

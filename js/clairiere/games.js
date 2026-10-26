@@ -9,7 +9,7 @@ const grp=(p,html,a={})=>{const g=mk(p,"g",a);g.innerHTML=html;return g};
 const replay=(e,c)=>{e.classList.remove(c);void e.getBoundingClientRect();e.classList.add(c)};
 // un renard dessiné dans le SVG du jeu, centré en (x, y) sur une largeur w
 const faceAt=(id,x,y,w,expr="joy")=>foxArt(FOX[id],{portrait:1,expr}).replace(/^<svg/,`<svg x="${x-w/2}" y="${y-w/2}" width="${w}" height="${w}"`);
-const foxAt=(id,x,y,w,o={pose:"sit"})=>foxArt(FOX[id],o).replace(/^<svg/,`<svg x="${x-w/2}" y="${y-w*.97}" width="${w}" height="${w*.97}"`);
+const foxAt=(id,x,y,w,o={pose:"sit"})=>foxArt(typeof id==="string"?FOX[id]:id,o).replace(/^<svg/,`<svg x="${x-w/2}" y="${y-w*.97}" width="${w}" height="${w*.97}"`);
 // suivre le doigt dans le jeu : f(point dans le repère 400 × 480, doigt posé ?, "down" | "move")
 const svPt=(sv,e)=>{const p=sv.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(sv.getScreenCTM().inverse())};
 function drag(A,f){const sv=A.sv;let down=false;sv.style.touchAction="none";
@@ -60,22 +60,26 @@ const GAMES={
      Une ombre de poisson approche ; elle grignote (ploc, petit rond : pas encore !), puis mord : le bouchon coule,
      gros remous, « ! » et vibration ; il faut toucher tout de suite. La prise saute hors de l'eau et s'affiche sur une carte. */
   fish(g,A){
-    const sv=A.sv,BX=262,BY=318,night=dark(),ph=PH[phaseNow()];
-    const W0=night?"#4a5f96":"#c4e6f2",W1=night?"#26355f":"#7fbad6",TR=night?["#4f6f78","#3e5d66"]:["#9cc796","#7fb27f"],R0=new Array(14).fill(0).map((_,i)=>[i*34-10+(i%2)*12,104+(i%3)*8,22+(i*7)%12]);
+    const sv=A.sv,BX=262,BY=318,night=dark(),ph=PH[phaseNow()],wet=scn.rain;
+    // sous la pluie (jour ou nuit) : ciel couvert, gouttes et ronds dans l'eau, sans soleil, lune ni lucioles
+    const SKY=wet?(night?["#1f2540","#3a4062"]:["#a3b1bf","#d2dae0"]):ph.sky,r7=rng(7);
+    const CLOUDS=`${[[20,38,42],[96,26,50],[176,40,44],[256,24,52],[336,38,48],[410,26,42]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${night?"#2b3152":"#bcc6cf"}"/>`).join("")}${[[60,70,30],[150,76,34],[240,68,30],[330,74,34]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${night?"#343b60":"#c9d2da"}"/>`).join("")}`;
+    const RAINFX=`<g pointer-events="none">${Array.from({length:12},()=>`<ellipse class="rrip" style="animation-delay:${(-r7()*1.4).toFixed(2)}s" cx="${(20+r7()*360).toFixed(0)}" cy="${(175+r7()*290).toFixed(0)}" rx="11" ry="3.6" fill="none" stroke="#fff" stroke-width="1.6" opacity=".8"/>`).join("")}<g stroke="${night?"rgba(200,215,255,.55)":"rgba(255,255,255,.75)"}" stroke-width="1.7" stroke-linecap="round">${Array.from({length:48},()=>`<path class="rd" style="animation-duration:${(.55+r7()*.3).toFixed(2)}s;animation-delay:${(-r7()).toFixed(2)}s" d="M${(r7()*440).toFixed(0)} -20 l-2 14"/>`).join("")}</g></g>`;
+    const W0=night?"#4a5f96":wet?"#aac6d2":"#c4e6f2",W1=night?"#26355f":wet?"#6f9cb2":"#7fbad6",TR=night?["#4f6f78","#3e5d66"]:["#9cc796","#7fb27f"],R0=new Array(14).fill(0).map((_,i)=>[i*34-10+(i%2)*12,104+(i%3)*8,22+(i*7)%12]);
     sv.innerHTML=`<defs>
-        <linearGradient id="fsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ph.sky[0]}"/><stop offset="1" stop-color="${ph.sky[1]}"/></linearGradient>
+        <linearGradient id="fsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SKY[0]}"/><stop offset="1" stop-color="${SKY[1]}"/></linearGradient>
         <linearGradient id="fwat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${W0}"/><stop offset="1" stop-color="${W1}"/></linearGradient>
         <radialGradient id="fglow"><stop offset="0" stop-color="#fff6c8" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient>
         <radialGradient id="fray"><stop offset="0" stop-color="#ffe9a6"/><stop offset="1" stop-color="#ffe9a6" stop-opacity="0"/></radialGradient></defs>
       <rect width="400" height="160" fill="url(#fsky)"/>
-      ${night?`<circle cx="320" cy="52" r="20" fill="#fff4cf"/><circle cx="312" cy="46" r="5" fill="#f1e2b0"/>${[[40,30],[120,58],[200,24],[260,70],[370,22],[90,90]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#fff8d0"/>`).join("")}`
+      ${wet?CLOUDS:night?`<circle cx="320" cy="52" r="20" fill="#fff4cf"/><circle cx="312" cy="46" r="5" fill="#f1e2b0"/>${[[40,30],[120,58],[200,24],[260,70],[370,22],[90,90]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#fff8d0"/>`).join("")}`
         :`<circle cx="320" cy="52" r="22" fill="#fff3b8" opacity=".9"/>${[[70,46],[200,30]].map(([x,y])=>`<path d="M${x} ${y} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff" opacity=".85"/>`).join("")}`}
       <rect y="150" width="400" height="330" fill="url(#fwat)"/>
       <g opacity="${night?.25:.22}">${R0.map(([x,y,r])=>`<ellipse cx="${x}" cy="${300-y+20}" rx="${r}" ry="${r*.55}" fill="${TR[1]}"/>`).join("")}</g>
       <g filter="url(#wobble)">${R0.map(([x,y,r],i)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${TR[i%2]}" ${O}/>`).join("")}
         <path d="M-10 132 Q100 118 200 128 Q300 116 410 130 L410 158 Q300 150 200 158 Q100 150 -10 158Z" fill="${night?"#5d7d64":"#a9cf8a"}" ${O}/>
         ${[[36,150],[150,154],[300,150]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="11" ry="5" fill="#d9d2c6" ${O}/>`).join("")}</g>
-      ${night?`<ellipse cx="320" cy="228" rx="14" ry="4" fill="#fff4cf" opacity=".5" class="shim"/><ellipse cx="320" cy="246" rx="9" ry="3" fill="#fff4cf" opacity=".35" class="shim" style="animation-delay:.7s"/>`:""}
+      ${night&&!wet?`<ellipse cx="320" cy="228" rx="14" ry="4" fill="#fff4cf" opacity=".5" class="shim"/><ellipse cx="320" cy="246" rx="9" ry="3" fill="#fff4cf" opacity=".35" class="shim" style="animation-delay:.7s"/>`:""}
       ${[[80,196,40],[180,230,56],[320,206,36],[120,286,48],[340,280,40],[60,360,30]].map(([x,y,w],i)=>`<path class="shim" style="animation-delay:${(i*.45).toFixed(2)}s" d="M${x-w/2} ${y} q${w/4} -5 ${w/2} 0 t${w/2} 0" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>`).join("")}
       ${[[150,208],[300,250],[210,380],[360,340]].map(([x,y],i)=>`<path class="twk" style="animation-delay:${i*.6}s" d="M${x} ${y-6} q1 5 6 6 q-5 1 -6 6 q-1 -5 -6 -6 q5 -1 6 -6Z" fill="#fff"/>`).join("")}
       <g filter="url(#wobble)">
@@ -88,8 +92,8 @@ const GAMES={
           <path d="M${BX} ${BY-24} v-9" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${BX}" cy="${BY-35}" r="3.4" fill="#ffd36a" stroke="${INK}" stroke-width="2"/>
           <path d="M${BX-4.5} ${BY-5} q0 -6 3 -11" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></g></g></g>
       <g class="sway" style="transform-origin:372px 480px">${[[362,300],[378,280],[392,310]].map(([x,y])=>`<path d="M${x} 480 Q${x-4} ${(y+480)/2} ${x} ${y}" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/><rect x="${x-4.5}" y="${y-4}" width="9" height="26" rx="4.5" fill="#a9785a" stroke="${INK}" stroke-width="2.4"/>`).join("")}</g>
-      <g class="dfly"><g transform="translate(0 0)"><path d="M0 0 h18" stroke="#6aa6c9" stroke-width="3.4" stroke-linecap="round"/><ellipse class="wing" cx="7" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><ellipse class="wing" cx="11" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><circle cx="19" cy="0" r="3" fill="#6aa6c9" stroke="${INK}" stroke-width="1.4"/></g></g>
-      ${night?[[60,240],[180,190],[300,300],[120,340]].map(([x,y],i)=>`<circle class="ff" style="animation-delay:${-i*1.3}s" cx="${x}" cy="${y}" r="9" fill="url(#fglow)"/>`).join(""):""}
+      <g class="dfly"${wet?' display="none"':""}><g transform="translate(0 0)"><path d="M0 0 h18" stroke="#6aa6c9" stroke-width="3.4" stroke-linecap="round"/><ellipse class="wing" cx="7" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><ellipse class="wing" cx="11" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><circle cx="19" cy="0" r="3" fill="#6aa6c9" stroke="${INK}" stroke-width="1.4"/></g></g>
+      ${night&&!wet?[[60,240],[180,190],[300,300],[120,340]].map(([x,y],i)=>`<circle class="ff" style="animation-delay:${-i*1.3}s" cx="${x}" cy="${y}" r="9" fill="url(#fglow)"/>`).join(""):""}
       <g filter="url(#wobble)"><path d="M-10 404 L196 392 L222 480 L-10 480Z" fill="#d9a777" ${O}/>
         ${[418,438,458].map((y,i)=>`<path d="M-10 ${y} L${200+i*7} ${y-4+i}" stroke="#c08a5c" stroke-width="2.2"/>`).join("")}
         <rect x="184" y="388" width="14" height="92" rx="4" fill="#b58460" ${O}/><path d="M8 410 l8 6 M120 400 l6 6" stroke="#a9704e" stroke-width="2.4" stroke-linecap="round"/></g>
@@ -98,7 +102,7 @@ const GAMES={
         <g filter="url(#wobble)"><path d="M118 444 L238 196" stroke="#a9785a" stroke-width="5.5" stroke-linecap="round"/><path d="M118 444 L134 411" stroke="#d9a06a" stroke-width="9" stroke-linecap="round"/>
         <circle cx="140" cy="402" r="8" fill="#e3dccf" ${O}/><circle cx="140" cy="402" r="2.4" fill="${INK}"/></g></g></g>
       <g id="excl" opacity="0"><circle cx="${BX+42}" cy="${BY-48}" r="18" fill="#ffd36a" stroke="${INK}" stroke-width="3"/><text x="${BX+42}" y="${BY-39}" text-anchor="middle" font-size="23" font-weight="900" fill="${INK}">!</text></g>
-      <g id="hud"></g><g id="leap"></g><g id="card"></g>`;
+      ${wet?RAINFX:""}<g id="hud"></g><g id="leap"></g><g id="card"></g>`;
     const angler=sv.querySelector("#angler"),rod=sv.querySelector("#rod");
     // la canne plie quand ça mord ; on ferre : Roussette se penche en arrière et tire (fort si ça mord, un petit coup sinon)
     const pull=hard=>{rod.classList.remove("tug");replay(rod,hard?"pull":"nudge");replay(angler,hard?"lean":"flinch")};
