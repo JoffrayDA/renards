@@ -23,7 +23,15 @@ const OBJS={
       return `<svg viewBox="0 -16 120 116" aria-hidden="true"><ellipse cx="60" cy="100" rx="36" ry="5" fill="#3d2a35" opacity=".14"/>
   <g ${O} filter="url(#wobble)"><ellipse cx="60" cy="70" rx="36" ry="7" fill="#7a4a35"/>${id?fl(88,70,30,-1):fl(60,70,40,1)}</g>
   ${id?foxIn(id,"happy"):""}
-  <g ${O} filter="url(#wobble)"><path d="M22 68 H98 V80 H22Z" fill="#e0855c"/><path d="M27 80 L35 100 H85 L93 80Z" fill="#d07450"/><path d="M40 88 q8 3 14 0" fill="none" stroke="#b55d3c" stroke-width="2"/></g></svg>`}}
+  <g ${O} filter="url(#wobble)"><path d="M22 68 H98 V80 H22Z" fill="#e0855c"/><path d="M27 80 L35 100 H85 L93 80Z" fill="#d07450"/><path d="M40 88 q8 3 14 0" fill="none" stroke="#b55d3c" stroke-width="2"/></g></svg>`}},
+  // caché dedans : seuls les oreilles et les yeux dépassent (pas de feuille qui flotte au-dessus)
+  feuilles:{name:"Grand tas de feuilles",price:30,pose:"sit",in:"Dans les feuilles",spot:{id:"leafpile",x:350,y:452,poses:["sit"],obj:"feuilles"},thumb:"0 54 120 50",
+    desc:"Des feuilles d'automne, rouges et dorées, bien gonflées. Parfait pour se cacher… presque.",
+    svg:id=>{const leaf=(x,y,r,col)=>`<path transform="translate(${x} ${y}) rotate(${r})" d="M0 -7 Q6 -2 0 7 Q-6 -2 0 -7Z" fill="${col}" stroke-width="1.8"/>`;
+      return `<svg viewBox="0 -16 120 116" aria-hidden="true"><ellipse cx="60" cy="98" rx="52" ry="5" fill="#3d2a35" opacity=".14"/>
+  ${id?foxIn(id,"sit"):""}
+  <g ${O} filter="url(#wobble)"><path d="M2 100 Q6 ${id?78:72} 30 ${id?75:70} Q42 ${id?68:62} 60 ${id?72:64} Q78 ${id?68:62} 92 ${id?75:70} Q114 ${id?78:72} 118 100Z" fill="#e7a356"/>
+    ${[[18,78,20,"#d9693f"],[34,68,-30,"#f2c45a"],[50,82,60,"#c9583a"],[68,70,10,"#f2c45a"],[86,80,-50,"#d9693f"],[100,74,40,"#e98a4a"],[28,90,80,"#f2c45a"],[76,90,-20,"#c9583a"],[56,94,30,"#e98a4a"]].map(([x,y,r,c])=>leaf(x,id?y+(100-y)*.35:y,r,c)).join("")}</g></svg>`}}
 };
 for(const k in OBJS)PLACE[OBJS[k].spot.id]=OBJS[k].in.toLowerCase();
 const objOf=sp=>sp&&sp.obj&&OBJS[sp.obj];
@@ -38,7 +46,7 @@ function drawObjs(){
   for(const k in R.obj){const o=OBJS[k],sp=o.spot;let el=objEls[k];
     if(!el){el=objEls[k]=document.createElement("button");el.className="obj";el.type="button";el.setAttribute("aria-label",o.name);
       el.style.cssText=pc(sp.x,sp.y)+`;z-index:${sp.y}`;el.innerHTML=o.svg();
-      el.onpointerdown=e=>{e.stopPropagation();log(o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
+      el.onpointerdown=e=>{e.stopPropagation();log(o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":k==="feuilles"?"Rien ne bouge dans les feuilles… pour l'instant. Les renards adorent s'y cacher quand il fait beau.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
       $("actors").appendChild(el)}
     el.hidden=foxes.some(f=>f.spot===sp&&!f.walk)}
 }
