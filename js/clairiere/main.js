@@ -10,7 +10,7 @@ syncFoxes();drawObjs();fillObjs();
 chainTick(false);checkArrival();
 renderHud();
 $("b-bowl").innerHTML=acornSVG()+"Gamelle";
-$("b-bowl").onclick=bowlSheet;$("goal").onclick=journal;$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;$("b-obj").onclick=objSheet;
+$("b-bowl").onclick=bowlSheet;$("goal").onclick=()=>{if(!cur()&&envieGoal())return;journal()};$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;$("b-obj").onclick=objSheet;
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
 if(!R.intro)talk(INTRO,()=>{R.intro=1;save();showNews()});else showNews();
 renderStory();envieTick();

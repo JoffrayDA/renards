@@ -111,6 +111,13 @@ function envieTick(){
   setBadge(f);renderStory();log(`${FOX[f.id].name} a une petite envie. Touche-le pour savoir laquelle.`);
 }
 
+// ce renard est attendu par l'envie du moment (lui, ou l'ami à aller chercher)
+function envWants(id){const c=envCur();return !!c&&(c.id===id||c.friend===id)}
+// toucher la ligne du bas lance l'envie, même si le renard est caché ou loin (filet de sécurité)
+function envieGoal(){const c=envCur();if(!c)return false;const f=envFox(c.step==="go"&&ENVIES[c.k].friend?c.friend:c.id);
+  if(!f){R.env.cur=null;save();renderStory();return false}
+  if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;const sp=SPOTS.find(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj);if(sp)goTo(f,sp);drawGlow()}
+  return envieTap(f)}
 // le signe au-dessus d'un renard : « ! » (histoire), « … » (petite envie), cœur (câlin du jour)
 const DOTS=`<svg viewBox="0 0 24 14" aria-hidden="true"><circle cx="5" cy="7" r="2.4"/><circle cx="12" cy="7" r="2.4"/><circle cx="19" cy="7" r="2.4"/></svg>`;
 function envBadge(id){const c=envCur();return !!c&&((c.step==="ask"&&c.id===id)||(c.step==="go"&&c.friend===id))}

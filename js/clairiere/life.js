@@ -74,7 +74,10 @@ function choose(f){
   if(scn.rain){
     const cov=free.filter(s=>s.cov);
     if(f.spot&&f.spot.cov)return Math.random()<.85?null:cov[0]||null;
-    return cov.length?cov[Math.floor(Math.random()*cov.length)]:"door";
+    if(cov.length)return cov[Math.floor(Math.random()*cov.length)];
+    // le renard d'une petite envie reste dehors, même mouillé : sinon on ne peut plus le toucher
+    if(envWants(f.id)){const o=free.filter(s=>!s.lamp&&!s.obj);return o[Math.floor(Math.random()*o.length)]||null}
+    return "door";
   }
   if(phaseNow()==="nuit"&&houseOpen()&&!isTarget(f.id)&&Math.random()<.35)return "door"; // la nuit, on rentre dormir près du feu (maison.js)
   if(f.id==="luciole"&&dark()){const l=free.find(s=>s.lamp&&!scn.lamps[s.lamp]);if(l)return l}
@@ -90,7 +93,7 @@ function tick(){
   for(const f of foxes.slice()){
     if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
     // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
-    if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${FOX[f.id].name} ressort de la maison.`)}}continue}
+    if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id)||envWants(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${FOX[f.id].name} ressort de la maison.`)}}continue}
     if(now>f.until&&(isTarget(f.id)||envHold(f)||storyStay(f.id))){f.until=now+5000;continue}
     if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
   }
