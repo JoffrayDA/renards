@@ -108,8 +108,8 @@ function shop(){
 function carnet(){
   const list=FOXES.filter(f=>f.id!=="roussette");
   const rows=list.map(f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
-    const show=n||(f.event&&HW); // pendant Halloween, ses invités sont montrés même pas encore venus
-    return `<div class="fc${c?" vipc":f.event?" hwc":""}">${foxSVG(f,{sil:!show})}${show||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur":`★★★ au ${c.name}`):f.event&&!HW?"Vient à Halloween":WILD[f.id]?`Sauvage : une gamelle ${WILD_FOOD[WILD[f.id]]} au refuge l'attirera`:"Pas encore venu"}</em></div>`}).join("");
+    const show=n||(f.event&&HW)||(c&&S.guest[f.id]); // invités d'Halloween pendant l'événement, invités d'honneur débloqués : montrés même pas encore venus
+    return `<div class="fc${c?" vipc":f.event?" hwc":""}">${foxSVG(f,{sil:!show})}${show||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur : viendra bientôt en VIP":`★★★ au ${c.name}`):f.event&&!HW?"Vient à Halloween":WILD[f.id]?`Sauvage : une gamelle ${WILD_FOOD[WILD[f.id]]} au refuge l'attirera`:"Pas encore venu"}</em></div>`}).join("");
   openSheet(`<h2>Carnet des clients</h2><p class="sub">${list.filter(f=>S.seen[f.id]).length} / ${list.length} clients rencontrés. Les invités d'honneur viennent quand une saison entière est en ★★★.</p><div class="fgrid">${rows}</div>${Object.keys(S.costSeen).length||HW?`<div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`:""}`);
 }
 function pauseMenu(){if(!G||!G.run)return;G.paused=1;openSheet(`<h2>Pause</h2><p class="sub">Les clients t'attendent sagement.</p><div class="col"><button class="btn big wide" data-act="resume" type="button">Reprendre</button><button class="btn ghost wide" data-act="quit" type="button">Abandonner la journée</button></div>`,true)}

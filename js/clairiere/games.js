@@ -25,7 +25,7 @@ const ITEM={
   leaf:`<path d="M-16 4 Q0 -18 16 -4 Q0 12 -16 4Z" fill="#b5d68f" ${O}/><path d="M-12 3 Q0 -2 12 -3" fill="none" stroke="#6f9a60" stroke-width="2"/>`
 };
 
-const JUNK=[["boot","Une vieille botte… Raté !"],["algae","Des algues. Beurk."],["twig","Une brindille."],["leaf","Une feuille toute mouillée."],["pebble","Un caillou. Pas de chance !"]];
+const JUNK=[["boot","Une vieille botte… Raté !","Vieille botte"],["algae","Des algues. Beurk.","Algues"],["twig","Une brindille. Bon.","Brindille"],["leaf","Une feuille toute mouillée.","Feuille mouillée"],["pebble","Un caillou. Pas de chance !","Caillou"]];
 
 /* ---------- le moteur ---------- */
 let gameOn=false;
@@ -33,6 +33,7 @@ function playGame(g,done){
   const el=$("play");let timers=[],raf=0,over=false;gameOn=true;
   el.innerHTML=`<svg viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg><div class="psay" aria-live="polite"></div>`;
   const sv=el.firstChild,sayEl=el.lastChild;
+  if(g.k==="fish")sayEl.classList.add("low"); // à la pêche, la berge et la canne sont en haut
   const api={sv,won:false,tap:null,
     say:t=>{sayEl.textContent=t;replay(sayEl,"pop")},
     later:(f,ms)=>{timers.push(setTimeout(()=>{if(!over)f()},ms))},
@@ -49,39 +50,48 @@ function playGame(g,done){
 }
 
 const GAMES={
-  /* Pêche : le bouchon frétille (pas encore !), puis plonge : il faut toucher tout de suite. */
+  /* Pêche : Roussette pêche depuis la berge. Une ombre approche ; elle grignote (ploc, petit rond : pas encore !),
+     puis mord : le bouchon coule, gros remous, « ! » et vibration. Il faut toucher tout de suite. */
   fish(g,A){
-    const sv=A.sv;
-    sv.innerHTML=`<rect width="400" height="480" fill="#a9d3e6"/><g filter="url(#wobble)">
-      <path d="M0 0 H400 V70 Q300 96 200 80 Q100 96 0 70Z" fill="#bcd99a" ${O}/>
-      ${[[70,170,30],[330,330,36],[90,400,26]].map(([x,y,r])=>`<path d="M${x} ${y} m-${r} 0 a${r} ${r*.62} 0 1 0 ${2*r} 0 a${r} ${r*.62} 0 1 0 -${2*r} 0 M${x} ${y} l${r*.9} -${r*.35}" fill="#8fca7a" ${O}/>`).join("")}
-      <path d="M20 88 l-6 -40 M34 84 l2 -46 M372 88 l6 -38" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/></g>
-      <path d="M120 200 q30 -10 60 0 M230 330 q24 -8 48 0 M150 420 q20 -6 40 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
-      <ellipse id="shadow" cx="200" cy="300" rx="22" ry="9" fill="#5f8fa6" opacity=".35"/>
-      <g id="rip" opacity="0"><ellipse cx="200" cy="258" rx="26" ry="9" fill="none" stroke="#fff" stroke-width="3"/><ellipse cx="200" cy="258" rx="44" ry="15" fill="none" stroke="#fff" stroke-width="2" opacity=".6"/></g>
-      <path d="M200 0 L200 236" stroke="#fff" stroke-width="1.6" opacity=".8"/>
-      <g id="bob" class="bob"><g filter="url(#wobble)"><circle cx="200" cy="250" r="13" fill="#fff" ${O}/><path d="M187 250 a13 13 0 0 1 26 0Z" fill="#e0564f" ${O}/><path d="M200 237 v-8" ${O}/></g></g>
-      <g id="excl" opacity="0"><circle cx="236" cy="214" r="15" fill="#ffd36a" stroke="${INK}" stroke-width="3"/><text x="236" y="221" text-anchor="middle" font-size="20" font-weight="900" fill="${INK}">!</text></g>
-      <g id="catch" opacity="0"><g transform="translate(200 250)">${ITEM.fish}</g></g>`;
-    const bob=sv.querySelector("#bob"),rip=sv.querySelector("#rip"),ex=sv.querySelector("#excl"),sh=sv.querySelector("#shadow");
+    const sv=A.sv,BX=210,BY=270;
+    sv.innerHTML=`<rect width="400" height="480" fill="#a9d3e6"/>
+      <path d="M120 210 q30 -10 60 0 M250 350 q24 -8 48 0 M130 420 q20 -6 40 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
+      <g filter="url(#wobble)">${[[60,200,28],[340,320,34],[90,410,24]].map(([x,y,r])=>`<path d="M${x} ${y} m-${r} 0 a${r} ${r*.62} 0 1 0 ${2*r} 0 a${r} ${r*.62} 0 1 0 -${2*r} 0 M${x} ${y} l${r*.9} -${r*.35}" fill="#8fca7a" ${O}/>`).join("")}</g>
+      <ellipse id="shadow" cx="${BX}" cy="${BY+30}" rx="24" ry="10" fill="#4f7f96" opacity=".4" style="transition:transform 1.6s ease-in-out"/>
+      <g id="rips"></g>
+      <g filter="url(#wobble)"><path d="M0 0 H400 V96 Q300 124 200 108 Q100 124 0 96Z" fill="#bcd99a" ${O}/>
+      <path d="M330 104 l-6 -40 M346 100 l2 -46 M372 104 l6 -38" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/></g>
+      ${foxAt("roussette",86,122,96,{pose:"sit"})}
+      <path d="M112 84 Q150 30 196 26" fill="none" stroke="#a9785a" stroke-width="5" stroke-linecap="round"/>
+      <path id="line" d="M196 26 Q${BX+4} 140 ${BX} ${BY-12}" fill="none" stroke="#fff" stroke-width="1.8"/>
+      <g id="bob" class="bob"><g filter="url(#wobble)"><circle cx="${BX}" cy="${BY}" r="13" fill="#fff" ${O}/><path d="M${BX-13} ${BY} a13 13 0 0 1 26 0Z" fill="#e0564f" ${O}/><path d="M${BX} ${BY-13} v-6" ${O}/></g></g>
+      <g id="excl" opacity="0"><circle cx="${BX+40}" cy="${BY-44}" r="17" fill="#ffd36a" stroke="${INK}" stroke-width="3"/><text x="${BX+40}" y="${BY-36}" text-anchor="middle" font-size="22" font-weight="900" fill="${INK}">!</text></g>
+      <g id="card" opacity="0"></g>`;
+    const bob=sv.querySelector("#bob"),rips=sv.querySelector("#rips"),ex=sv.querySelector("#excl"),sh=sv.querySelector("#shadow"),card=sv.querySelector("#card");
     let st="wait";
-    const dip=(y,back)=>{bob.style.transform=`translateY(${y}px)`;if(back)A.later(()=>bob.style.transform="",170)};
-    const start=()=>{A.clear();st="wait";bob.style.opacity=1;bob.style.transform="";rip.setAttribute("opacity",0);ex.setAttribute("opacity",0);
-      A.say(g.say||"Touche l'eau dès que le bouchon plonge !");
-      sh.style.transform=`translate(${(Math.random()-.5)*120}px,40px)`;A.later(()=>sh.style.transform="translate(0,12px)",400);
+    const ring=(r,w)=>{const e=grp(rips,`<ellipse cx="${BX}" cy="${BY+4}" rx="${r}" ry="${r*.36}" fill="none" stroke="#fff" stroke-width="${w}" class="ring"/>`);setTimeout(()=>e.remove(),800)};
+    const start=()=>{A.clear();st="wait";card.setAttribute("opacity",0);sh.style.opacity="";bob.style.opacity=1;bob.style.transform="";ex.setAttribute("opacity",0);
+      A.say(g.say||"Attends que le bouchon coule, puis touche vite !");
+      // l'ombre arrive de loin et tourne autour du bouchon
+      const a=Math.random()*6.3;sh.style.transition="none";sh.style.transform=`translate(${Math.cos(a)*170}px,${Math.sin(a)*120+60}px)`;
+      A.later(()=>{sh.style.transition="";sh.style.transform="translate(0,0)"},60);
       let nib=1+Math.floor(Math.random()*3);
-      const step=()=>{if(nib-->0)A.later(()=>{dip(5,1);A.later(step,0)},800+Math.random()*900);
-        else A.later(()=>{st="bite";dip(20);rip.setAttribute("opacity",1);ex.setAttribute("opacity",1);
-          A.later(()=>{if(st==="bite"){st="miss";A.say("Trop tard… il a filé. Encore une fois !");A.later(start,1300)}},950)},700+Math.random()*900)};
-      step()};
+      const step=()=>{if(nib-->0)A.later(()=>{ring(14,2);bob.style.transform="translateY(3px)";A.later(()=>bob.style.transform="",140);A.say("Ploc… elle grignote. Pas encore !");A.later(step,0)},900+Math.random()*900);
+        else A.later(()=>{st="bite";bob.style.transform="translateY(22px)";bob.style.opacity=.35;ring(20,3.4);ring(40,2.4);ex.setAttribute("opacity",1);A.say("Ça mord ! Touche vite !");
+          try{navigator.vibrate&&navigator.vibrate(90)}catch(e){}
+          A.later(()=>{if(st==="bite"){st="miss";ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";A.say("Trop tard… elle a filé. On relance !");A.later(start,1400)}},1150)},800+Math.random()*1000)};
+      A.later(step,1200)};
+    // la prise s'affiche sur une petite carte
+    const show=(it,txt)=>{card.innerHTML=`<g transform="translate(${BX} 250)"><rect x="-90" y="-62" width="180" height="124" rx="22" fill="#fffaf2" stroke="${INK}" stroke-width="3"/>
+      <g transform="translate(0 -12) scale(2.2)">${ITEM[it]}</g><text y="46" text-anchor="middle" font-size="15" font-weight="900" fill="${INK}">${txt}</text></g>`;card.setAttribute("opacity",1);replay(card,"popin")};
     A.tap=()=>{
-      if(st==="wait"){st="miss";A.clear();bob.style.transform="";A.say("Trop tôt ! Le poisson a eu peur. Encore une fois !");A.later(start,1300)}
-      else if(st==="bite"){st="won";ex.setAttribute("opacity",0);bob.style.opacity=0;const c=sv.querySelector("#catch");
+      if(st==="wait"){st="miss";A.clear();bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*200}px,40px)`;A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1400)}
+      else if(st==="bite"){st="won";ex.setAttribute("opacity",0);bob.style.opacity=0;sh.style.opacity=0;
         // pêche libre : un poisson une fois sur dix, sinon ce qui traîne au fond de la mare
-        const it=g.free&&Math.random()>=.1?JUNK[Math.floor(Math.random()*JUNK.length)][0]:"fish";
-        c.innerHTML=`<g transform="translate(200 250)">${ITEM[it]}</g>`;c.setAttribute("opacity",1);replay(c,"leap");
+        const j=g.free&&Math.random()>=.1?JUNK[Math.floor(Math.random()*JUNK.length)]:null,it=j?j[0]:"fish";
+        show(it,j?j[2]:"Un poisson !");
         if(!g.free)A.win(g.win||"Attrapé !");
-        else{A.say(it==="fish"?g.onFish():JUNK.find(j=>j[0]===it)[1]);A.later(()=>{c.setAttribute("opacity",0);c.classList.remove("leap");bob.style.opacity=1;start()},1700)}}};
+        else{A.say(j?j[1]:g.onFish());A.later(start,1900)}}};
     start();
   },
 

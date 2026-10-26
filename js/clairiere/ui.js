@@ -101,7 +101,7 @@ function status(id,M){
   if(STORIES[id])return {ok:0,seen:M.cafe.has(id),txt:"Viendra au refuge pour son histoire."};
   if(M.cafe.has(id))return {ok:0,seen:1,txt:chainDone()?"Croisé au Café. Sers-le bien, il te suivra peut-être.":"Croisé au Café. Il viendra au refuge après les histoires."};
   const guest={zaza:"Printemps",flocon:"Été",noisette:"Automne",comete:"Hiver"}[id];
-  if(guest)return {ok:0,txt:`Invité d'honneur du Café : ★★★ sur tout le ${guest}.`};
+  if(guest)return (load(CAFEKEY)||{guest:{}}).guest?.[id]?{ok:0,seen:1,txt:"Invité d'honneur du Café. Il viendra au refuge après les histoires."}:{ok:0,txt:`Invité d'honneur du Café : ★★★ sur tout le ${guest}.`};
   return {ok:0,txt:M.old.has(id)?"Déjà croisé dans l'ancienne clairière. Retrouve-le au Café.":"Pas encore venu au Café."};
 }
 function carnet(){

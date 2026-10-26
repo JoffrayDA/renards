@@ -191,3 +191,4 @@ h1{white-space:nowrap}
 @keyframes pud{40%{transform:scale(1.08);filter:brightness(1.2)}}
 .play .splash{animation:splash .5s ease-out forwards}
 @keyframes splash{to{transform:translateY(-18px);opacity:0}}
+.psay.low{top:auto;bottom:58px}
