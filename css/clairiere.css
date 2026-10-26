@@ -180,3 +180,14 @@ h1{white-space:nowrap}
 @media (max-width:420px){.purse{gap:5px}.coin{padding:3px 9px 3px 4px}.brand #logo svg{width:34px;height:34px}h1{font-size:19px}}
 .brand h1{overflow:hidden;text-overflow:ellipsis;min-width:0}
 @media (max-width:400px){.brand #logo{display:none}h1{font-size:17px}}
+.play .ring{animation:ring .7s ease-out forwards;transform-box:fill-box;transform-origin:center}
+@keyframes ring{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+.play .peek{transform-box:fill-box;transform-origin:50% 100%;animation:peek .22s cubic-bezier(.3,1.6,.5,1);cursor:pointer}
+@keyframes peek{from{transform:translateY(30px) scale(.4);opacity:0}}
+.play .peek.hide{transition:transform .2s,opacity .2s;transform:translateY(24px) scale(.5);opacity:0}
+.play .peek.hit{transition:transform .2s,opacity .25s;transform:scale(1.3);opacity:0}
+.play .pud{cursor:pointer;transform-box:fill-box;transform-origin:center}
+.play .pud.flash{animation:pud .35s ease-out}
+@keyframes pud{40%{transform:scale(1.08);filter:brightness(1.2)}}
+.play .splash{animation:splash .5s ease-out forwards}
+@keyframes splash{to{transform:translateY(-18px);opacity:0}}

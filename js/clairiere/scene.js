@@ -53,8 +53,8 @@ function bgSVG(){
   s+=`<g ${O}>${[[300,336,"#f2a35c"],[318,330,"#e8794e"],[338,334,"#f6c065"],[310,340,"#e98a5a"],[330,342,"#f2a35c"]].map(([x,y,c],i)=>`<path d="M${x-14} ${y} Q${x} ${y-14} ${x+14} ${y} Q${x} ${y+6} ${x-14} ${y}Z" fill="${c}" transform="rotate(${[-12,8,-4,14,-8][i]} ${x} ${y})"/>`).join("")}</g>`;
   // la mare
   s+=`<ellipse cx="96" cy="424" rx="62" ry="24" fill="#a9d3e6" ${O}/><path d="M60 420 q14 -6 28 0 M98 432 q12 -5 24 0" fill="none" stroke="#e4f3f9" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="72" cy="430" rx="10" ry="4.5" fill="#8fca7a" ${O}/><path d="M38 418 l-4 -18 M44 414 l0 -20 M150 416 l3 -16" fill="none" stroke="#6f9a60" stroke-width="3" stroke-linecap="round"/>`;
-  // la canne à pêche plantée au bord : on peut pêcher
-  s+=`<path d="M150 440 L132 384" stroke="#a9785a" stroke-width="3.4" stroke-linecap="round"/><path d="M132 384 Q118 398 116 418" fill="none" stroke="#fff" stroke-width="1.4"/><circle cx="116" cy="420" r="3.4" fill="#e0564f" stroke="${INK}" stroke-width="1.6"/>`;
+  // la canne à pêche plantée au bord (après l'histoire de Gaston) : on peut pêcher
+  if(storyDone("gaston"))s+=`<path d="M150 440 L132 384" stroke="#a9785a" stroke-width="3.4" stroke-linecap="round"/><path d="M132 384 Q118 398 116 418" fill="none" stroke="#fff" stroke-width="1.4"/><circle cx="116" cy="420" r="3.4" fill="#e0564f" stroke="${INK}" stroke-width="1.6"/>`;
   // le banc
   s+=`<rect x="266" y="406" width="6" height="12" fill="#a9785a" ${O}/><rect x="328" y="406" width="6" height="12" fill="#a9785a" ${O}/><rect x="260" y="396" width="80" height="12" rx="3" fill="#d9a777" ${O}/><path d="M262 402 H338" stroke="#c08a5c" stroke-width="1.8"/>`;
   s+=`</g>`;

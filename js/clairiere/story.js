@@ -8,10 +8,11 @@
    "me" parle : c'est Roussette, avec le nom choisi au Café. */
 const GAP=3*36e5;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
-  leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"}};
+  leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","gribouille"];
-// game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ; peu de texte, ça doit bouger
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","gribouille"];
+// game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
+// hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
   petitpois:{title:"Peur du noir",souv:"le gland porte-bonheur",beats:[
     {at:"petitpois",goal:"Petit Pois a quelque chose à te dire.",lines:[
@@ -51,14 +52,63 @@ const STORIES={
       ["luciole","surprise","Attends, je souffle dedans…"],
       ["luciole","joy","Voilà : une lumière qui ne s'éteint jamais, même quand je dors. Elle est pour toi."]]}
   ]},
-  gaston:{title:"Le poisson de la mare",souv:"le bouchon de pêche",beats:[
+  gaston:{title:"Le poisson de la mare",souv:"la vieille canne de Gaston",beats:[
     {at:"gaston",after:[["gaston","pond"]],goal:"Gaston veut te demander quelque chose.",lines:[
       ["gaston","sad",`${ME()}, je pêche depuis toujours. Jamais rien attrapé. Rien de rien.`],
       ["gaston","open","Il paraît qu'un poisson vit dans ta mare. Tu essaies ? Moi, je porte malheur."]]},
     {at:"@pond",game:{k:"fish",say:"Touche l'eau dès que le bouchon plonge !",win:"Un poisson !"},goal:"Pêche dans la mare avec Gaston.",lines:[
       ["gaston","surprise","Tu l'as eu ! Un vrai poisson, tout orange !"],
       ["gaston","sad","Il nous regarde avec de si grands yeux… On le remet à l'eau ?"],
-      ["gaston","joy","Au fond, ce que j'aime, c'est attendre au bord de l'eau avec quelqu'un. Tiens, mon bouchon de pêche."]]}
+      ["gaston","joy","Au fond, ce que j'aime, c'est attendre au bord de l'eau avec quelqu'un."],
+      ["gaston","open","Tiens, ma vieille canne. Pêche quand tu veux : un poisson de temps en temps, et beaucoup de vieilles bottes !"]]}
+  ]},
+  galette:{title:"Le record de ricochets",souv:"le caillou plat porte-bonheur",beats:[
+    {at:"galette",after:[["galette","pond"]],goal:"Galette vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["galette","joy",`Salut ${ME()} ! Quatre rebonds : c'est mon record de ricochets. Personne ne l'a jamais battu.`],
+      ["galette","open","Ta mare a l'air parfaite. Tu relèves le défi ?"]]},
+    {at:"@pond",game:{k:"ricochet",need:5},goal:"Bats le record de Galette à la mare.",lines:[
+      ["galette","surprise","Cinq rebonds ?! Tu as battu mon record !"],
+      ["galette","joy","Tiens, mon caillou plat porte-bonheur. Il te revient. Mais je veux ma revanche !"]]}
+  ]},
+  pantoufle:{title:"Le renard du dedans",souv:"la pantoufle en laine",beats:[
+    {at:"@porch",hide:1,goal:"Quelqu'un s'est glissé dans ta maison. Va voir à la porte.",lines:[
+      ["pantoufle","shy","Chut ! Je ne suis pas là."],
+      ["me","open","Pantoufle ? Tu ne veux pas sortir un peu ?"],
+      ["pantoufle","sad","Dehors, il y a du vent, des feuilles, des gens. Ici, il y a un coussin."]]},
+    {at:"@porch",hide:1,game:{k:"whack",who:"pantoufle",need:5,win:"Trouvé ! Et… il est dehors !"},after:[["pantoufle","p2"]],goal:"Joue à cache-cache avec Pantoufle.",lines:[
+      ["pantoufle","joy","Hi hi ! Encore une !"],
+      ["pantoufle","surprise","Oh… Je suis dehors. Je ne m'en suis même pas rendu compte."]]},
+    {at:"pantoufle",goal:"Va voir Pantoufle sous le porche.",lines:[
+      ["pantoufle","open","Dehors, ce n'est pas si mal. Surtout sous le porche."],
+      ["pantoufle","shy","Tiens, ma pantoufle en laine. J'en ai une autre… quelque part dedans."]]}
+  ]},
+  grignote:{title:"Les pages envolées",souv:"la dernière page",beats:[
+    {at:"grignote",goal:"Grignote vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["grignote","sad","J'avais un livre magnifique. J'ai lu une page… puis je l'ai mangée. Puis une autre."],
+      ["grignote","shy","Il me restait la fin, mais le vent l'a emportée vers le banc ! Tu m'aides ?"]]},
+    {at:"@bench",game:{k:"catch",thing:"page",n:6,say:"Attrape les pages avant que le vent les emporte !"},goal:"Rattrape les pages de Grignote, près du banc.",lines:[
+      ["me","joy","Six pages, un peu froissées… et la fin de l'histoire !"]]},
+    {at:"grignote",goal:"Rapporte les pages à Grignote.",lines:[
+      ["grignote","surprise","La fin ! … Le petit renard rentre chez lui, et tout le monde l'attend. Comme ici."],
+      ["grignote","shy","Celle-là, je ne la mangerai pas. Garde-la pour moi ?"]]}
+  ]},
+  brindille:{title:"Une écharpe pour chacun",souv:"l'écharpe tricotée",beats:[
+    {at:"brindille",goal:"Mamie Brindille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["brindille","joy",`Bonjour, ma petite pelote. Je tricote une écharpe pour chaque renard du refuge.`],
+      ["brindille","sad","Mais un écureuil m'a chipé ma laine. Il l'a cachée dans le grand arbre, ce chenapan."]]},
+    {at:"@tree",game:{k:"shake",item:"wool",say:"Secoue le grand arbre !",win:"La pelote est tombée !"},goal:"Récupère la pelote dans le grand arbre.",lines:[
+      ["me","joy","La pelote, toute entière. Enfin… presque. L'écureuil s'en est fait un nid."]]},
+    {at:"brindille",goal:"Rapporte la pelote à Mamie Brindille.",lines:[
+      ["brindille","joy","Merci, ma petite pelote. Clic, clac, clic… Voilà !"],
+      ["brindille","open","La première écharpe est pour toi. Les autres, j'ai le temps : je suis la doyenne, pas la plus pressée."]]}
+  ]},
+  plouf:{title:"La danse des flaques",souv:"les petites bottes de pluie",beats:[
+    {at:"plouf",goal:"Plouf vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["plouf","joy",`${ME()} ! Tu connais la danse des flaques ? Je saute, tu répètes !`],
+      ["plouf","open","Pas de pluie ? Pas grave, je viens d'en faire avec l'arrosoir."]]},
+    {at:"plouf",game:{k:"simon",who:"plouf",rounds:[3,4,5]},goal:"Danse dans les flaques avec Plouf.",lines:[
+      ["plouf","joy","Regarde-nous : deux éponges ! C'est le plus beau des compliments."],
+      ["plouf","shy","Tiens, mes petites bottes de pluie. Moi, je préfère les pattes mouillées."]]}
   ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
@@ -98,6 +148,8 @@ function cur(){if(!R.intro)return null;const id=ORDER.find(k=>!storyDone(k));if(
 // renards qui peuvent répondre à un moment « * » : les autres renards du refuge, pas celui d'avant
 function anyOk(c,fid){if(!isRes(fid)||WILD[fid]||fid===c.id)return false;const prev=(R.who[c.id]||{})[c.n-1];
   return fid!==prev||!foxes.some(f=>!f.wild&&f.id!==c.id&&f.id!==prev)}
+// le renard de l'histoire caché dans la maison (Pantoufle)
+function isHidden(fid){const c=cur();return !!c&&c.id===fid&&!!c.b.hide}
 function isTarget(fid){const c=cur();return !!c&&(c.b.at===fid||(c.b.at==="*"&&anyOk(c,fid)))}
 // renards qui doivent être dans la scène pour l'histoire
 function storyFoxes(){const c=cur();return c?[c.id,"petitpois",c.b.at].filter(isRes):[]}
@@ -109,7 +161,8 @@ function chainTick(live){const id=ORDER.find(k=>!storyDone(k)),c=cur();
   if(R.intro&&(c?c.id+c.n:"")!==storyKey)renderStory(); // l'attente d'un renard déjà là vient de finir
   if(!R.intro||!id||isRes(id)||Date.now()<(R.nextAt||0))return;
   R.res[id]={at:Date.now(),h:0,pet:""};save();
-  if(live){const f=makeFox(id,null),fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp);setTimeout(()=>goTo(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3),60);toast(`${FOX[id].name} arrive au refuge !`)}
+  // celui qui se cache (Pantoufle) file droit dans la maison
+  if(live){const f=makeFox(id,null),fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp);setTimeout(()=>goTo(f,beats(id)[0].hide?"door":fs[Math.floor(Math.random()*fs.length)]||SPOT.g3),60);toast(`${FOX[id].name} arrive au refuge !`)}
   renderStory();
 }
 // un renard qui vient pendant l'histoire (Luciole) entre par la forêt et va à l'endroit voulu
@@ -136,8 +189,10 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
   syncFoxes();
   const go=()=>talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
     R.beat[c.id]=c.n+1;
-    for(const [fid,sp] of b.after||[]){const f=foxes.find(x=>x.id===fid&&!x.wild);if(f&&!f.walk&&!f.inside)goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
+    for(const [fid,sp] of b.after||[]){const f=foxes.find(x=>x.id===fid&&!x.wild);if(!f||f.walk)continue;
+      if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;drawGlow()}goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
+    if(c.id==="gaston"&&storyDone("gaston")){drawBg();log("La pêche est ouverte : touche la mare quand tu veux.")}
     if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=Date.now()+GAP;R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
     else toast("+3 glands");
     save();renderStory();renderHud();
@@ -162,6 +217,7 @@ function renderStory(){
   storyKey=c?c.id+c.n:"";
   for(const f of foxes)if(!f.wild){const t=isTarget(f.id),m=f.el.querySelector(".mark");
     if(t&&f.inside)f.until=0;
+    if(isHidden(f.id)&&!f.inside&&!f.walk){f.inside=true;f.walk=null;f.el.classList.add("inside");drawGlow()}
     if(t&&c.b.sleep&&!f.walk&&f.pose!=="sleep"){f.pose="sleep";f.until=Date.now()+6e5;draw(f)}
     else if(t&&!m)f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`);else if(!t&&m)m.remove();
   }

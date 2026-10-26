@@ -8,6 +8,7 @@ const grp=(p,html,a={})=>{const g=mk(p,"g",a);g.innerHTML=html;return g};
 // relance une animation CSS déjà jouée
 const replay=(e,c)=>{e.classList.remove(c);void e.getBoundingClientRect();e.classList.add(c)};
 // un renard dessiné dans le SVG du jeu, centré en (x, y) sur une largeur w
+const faceAt=(id,x,y,w,expr="joy")=>foxArt(FOX[id],{portrait:1,expr}).replace(/^<svg/,`<svg x="${x-w/2}" y="${y-w/2}" width="${w}" height="${w}"`);
 const foxAt=(id,x,y,w,o={pose:"sit"})=>foxArt(FOX[id],o).replace(/^<svg/,`<svg x="${x-w/2}" y="${y-w*.97}" width="${w}" height="${w*.97}"`);
 
 /* ---------- objets trouvés ---------- */
@@ -120,20 +121,84 @@ const GAMES={
 
   /* Attraper : des lucioles volent dans tous les sens ; on les touche une à une. */
   catch(g,A){
-    const sv=A.sv,n=g.n||5;let got=0;
-    sv.innerHTML=`<defs><radialGradient id="lg"><stop offset="0" stop-color="#fff6a0"/><stop offset=".35" stop-color="#ffe46a" stop-opacity=".8"/><stop offset="1" stop-color="#ffe46a" stop-opacity="0"/></radialGradient></defs>
+    const sv=A.sv,n=g.n||5,page=g.thing==="page";let got=0;
+    sv.innerHTML=page?`<rect width="400" height="480" fill="#bfe0f2"/><path d="M0 300 Q100 280 200 296 Q300 280 400 300 V480 H0Z" fill="#bcd99a"/>
+      ${[[60,90],[300,60],[200,140]].map(([x,y])=>`<path d="M${x} ${y} q20 -18 40 0 q16 -10 30 4 q-35 10 -70 -4Z" fill="#fff" opacity=".9"/>`).join("")}`:`<defs><radialGradient id="lg"><stop offset="0" stop-color="#fff6a0"/><stop offset=".35" stop-color="#ffe46a" stop-opacity=".8"/><stop offset="1" stop-color="#ffe46a" stop-opacity="0"/></radialGradient></defs>
       <rect width="400" height="480" fill="#3a3f78"/><path d="M0 330 Q100 300 200 320 Q300 300 400 330 V480 H0Z" fill="#4b6a5a"/>
       ${Array.from({length:18},(_,i)=>`<circle cx="${(i*97)%400}" cy="${(i*53)%260}" r="1.4" fill="#fff8d0" opacity=".8"/>`).join("")}`;
     const bugs=Array.from({length:n},()=>{const b={x:60+Math.random()*280,y:80+Math.random()*300,a:Math.random()*6.3,s:70+Math.random()*50};
-      b.el=grp(sv,`<circle r="30" fill="url(#lg)"/><circle r="5" fill="#fffbe0"/><circle r="26" fill="transparent"/>`);
+      b.el=grp(sv,page?`<g filter="url(#wobble)"><rect x="-13" y="-16" width="26" height="32" rx="3" fill="#fffaf0" stroke="${INK}" stroke-width="2.4"/><path d="M-8 -9 h16 M-8 -3 h16 M-8 3 h11 M-8 9 h14" stroke="#cdb9ad" stroke-width="2"/></g><circle r="26" fill="transparent"/>`
+        :`<circle r="30" fill="url(#lg)"/><circle r="5" fill="#fffbe0"/><circle r="26" fill="transparent"/>`);
       b.el.style.cursor="pointer";
       b.el.onpointerdown=e=>{e.stopPropagation();if(b.got||A.won)return;b.got=1;got++;b.el.classList.add("caught");setTimeout(()=>b.el.remove(),400);
-        if(got===n)A.win(g.win||"Toutes attrapées !");else A.say(`${got} sur ${n}… encore !`)};
+        if(got===n)A.win(g.win||(page?"Toutes les pages !":"Toutes attrapées !"));else A.say(`${got} sur ${n}… encore !`)};
       return b});
     A.say(g.say||`Attrape les ${n} lucioles !`);
     A.loop(dt=>{for(const b of bugs){if(b.got)continue;b.a+=(Math.random()-.5)*4*dt;b.x+=Math.cos(b.a)*b.s*dt;b.y+=Math.sin(b.a)*b.s*dt;
       if(b.x<30||b.x>370)b.a=Math.PI-b.a;if(b.y<60||b.y>420)b.a=-b.a;b.x=Math.max(30,Math.min(370,b.x));b.y=Math.max(60,Math.min(420,b.y));
-      b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`)}});
+      b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`+(page?` rotate(${(Math.sin(b.a*3)*25).toFixed(0)})`:""))}});
+  },
+
+  /* Ricochets : un curseur va et vient ; plus on lance près du milieu, plus le caillou rebondit. */
+  ricochet(g,A){
+    const sv=A.sv,need=g.need||5,X0=40,WG=320;let t=0,st="aim";
+    sv.innerHTML=`<rect width="400" height="480" fill="#bfe0f2"/><g filter="url(#wobble)"><path d="M0 170 Q100 150 200 164 Q300 150 400 170 V200 H0Z" fill="#8dbd86" ${O}/></g>
+      <rect y="196" width="400" height="200" fill="#a9d3e6"/><path d="M60 240 q30 -8 60 0 M220 300 q26 -8 52 0 M120 350 q24 -6 48 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
+      <rect y="392" width="400" height="88" fill="#d9c6a4"/><g id="rings"></g>
+      <circle id="stone" cx="40" cy="300" r="9" fill="#cfc6c0" stroke="${INK}" stroke-width="2.6" style="transition:transform .14s linear"/>
+      <rect x="${X0}" y="420" width="${WG}" height="24" rx="12" fill="#f6b3a8" stroke="${INK}" stroke-width="3"/>
+      <rect x="${200-44}" y="423" width="88" height="18" fill="#f6d77a"/><rect x="${200-26}" y="423" width="52" height="18" fill="#a9d68f"/>
+      <rect id="cur" x="${X0}" y="412" width="8" height="40" rx="4" fill="${INK}"/>`;
+    const cur=sv.querySelector("#cur"),stone=sv.querySelector("#stone"),rings=sv.querySelector("#rings");
+    A.say(g.say||`Lance quand le curseur est dans le vert : ${need} rebonds !`);
+    const pos=()=>(1-Math.cos(t*Math.PI/.9))/2;
+    A.loop(dt=>{if(st!=="aim")return;t+=dt;cur.setAttribute("x",(X0+pos()*WG-4).toFixed(1))});
+    A.tap=()=>{if(st!=="aim")return;st="throw";const d=Math.abs(pos()-.5)/.5,n=Math.max(1,Math.min(6,Math.round(6-d*9)));
+      rings.innerHTML="";let i=0;
+      const hop=()=>{if(i>=n){stone.style.opacity=0;
+          if(n>=need)A.win(g.win||`${n} rebonds !`);else{A.say(`${n} rebond${n>1?"s":""}… Il en faut ${need}. Encore !`);A.later(()=>{st="aim";stone.style.transform="";stone.style.opacity=1;rings.innerHTML=""},1300)}return}
+        const x=60+(i+1)*48,y=300-i*12;stone.style.transform=`translate(${x-40}px,${y-300-26}px)`;
+        A.later(()=>{stone.style.transform=`translate(${x-40}px,${y-300}px)`;grp(rings,`<ellipse cx="${x}" cy="${y+6}" rx="14" ry="5" fill="none" stroke="#fff" stroke-width="3" class="ring"/>`);i++;A.later(hop,140)},140)};
+      hop()};
+  },
+
+  /* Cache-cache : le renard pointe le museau aux fenêtres, à la porte, derrière le pot… il faut le toucher. */
+  whack(g,A){
+    const sv=A.sv,need=g.need||5,id=g.who||g.target,H=[[136,170],[264,170],[200,300],[70,360],[330,360]];let k=0,last=-1;
+    sv.innerHTML=`<rect width="400" height="480" fill="#bcd99a"/><g filter="url(#wobble)">
+      <path d="M40 90 L360 90 L360 330 L40 330Z" fill="#f0c99a" ${O}/>${[120,150,180,210,240,270,300].map(y=>`<path d="M42 ${y} H358" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
+      <path d="M20 96 L200 20 L380 96Z" fill="#d98b7a" ${O}/>
+      <rect x="96" y="130" width="80" height="78" rx="8" fill="#6a4434" ${O}/><rect x="224" y="130" width="80" height="78" rx="8" fill="#6a4434" ${O}/>
+      <path d="M160 330 V250 Q200 220 240 250 V330Z" fill="#6a4434" ${O}/>
+      <path d="M40 330 L60 400 L82 400 L100 330Z" fill="#e8794e" ${O}/><circle cx="330" cy="352" r="40" fill="#8dbd86" ${O}/></g><g id="pk"></g>
+      <g filter="url(#wobble)"><path d="M92 206 H180 M220 206 H308" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M38 360 Q70 344 104 360 L98 372 H44Z" fill="#e8794e" ${O}/><path d="M290 380 Q330 350 372 380 Q330 396 290 380Z" fill="#7fb27f" ${O}/></g>`;
+    const pk=sv.querySelector("#pk");
+    A.say(g.say||`${FOX[id].name} joue à cache-cache : touche-le quand il se montre !`);
+    const peek=()=>{let h;do h=Math.floor(Math.random()*H.length);while(h===last);last=h;const [x,y]=H[h];
+      const p=grp(pk,faceAt(id,x,y,80,"joy")+`<circle cx="${x}" cy="${y}" r="42" fill="transparent"/>`,{class:"peek"});
+      p.onpointerdown=e=>{e.stopPropagation();if(A.won||p.dataset.hit)return;p.dataset.hit=1;k++;p.classList.add("hit");
+        if(k>=need)A.win(g.win||"Trouvé !");else A.say(`Trouvé ! ${k} sur ${need}… il se recache !`)};
+      A.later(()=>{p.classList.add("hide");A.later(()=>p.remove(),250)},950-Math.min(250,k*50));
+      A.later(peek,1150-Math.min(250,k*50))};
+    A.later(peek,700);
+  },
+
+  /* La danse des flaques : le renard saute dans des flaques, il faut refaire la même suite. */
+  simon(g,A){
+    const sv=A.sv,id=g.who||g.target,P=[[110,230],[290,230],[110,390],[290,390]],COL=["#9ec3ef","#b7a6e6","#9fd8c4","#f3b9c8"],L=g.rounds||[3,4,5];
+    let r=0,seq=[],idx=0,st="show";
+    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${P.map(([x,y],i)=>`<g class="pud" data-i="${i}"><ellipse cx="${x}" cy="${y}" rx="70" ry="34" fill="${COL[i]}" stroke="${INK}" stroke-width="3"/><path d="M${x-40} ${y-6} q20 -8 40 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`).join("")}<g id="hopper" style="transition:transform .28s cubic-bezier(.3,1.5,.5,1)">${foxAt(id,0,0,90)}</g>`;
+    const hopper=sv.querySelector("#hopper"),puds=[...sv.querySelectorAll(".pud")];
+    const splash=i=>{replay(puds[i],"flash");const [x,y]=P[i];const s=grp(sv,`<g class="splash">${[-30,-12,12,30].map(dx=>`<circle cx="${x+dx}" cy="${y-10}" r="5" fill="#fff"/>`).join("")}</g>`);setTimeout(()=>s.remove(),500)};
+    const jump=i=>{const [x,y]=P[i];hopper.style.transform=`translate(${x}px,${y+8}px)`;A.later(()=>splash(i),200)};
+    hopper.style.transform="translate(200px,316px)";
+    const show=()=>{st="show";idx=0;A.say(`Regarde bien ${FOX[id].name}…`);seq.forEach((p,i)=>A.later(()=>jump(p),600+i*650));
+      A.later(()=>{hopper.style.transform="translate(200px,316px)";st="input";A.say("À toi ! Saute dans les mêmes flaques.")},600+seq.length*650+300)};
+    const round=()=>{seq=[];for(let i=0;i<L[r];i++){let p;do p=Math.floor(Math.random()*4);while(p===seq[i-1]);seq.push(p)}show()};
+    puds.forEach((pd,i)=>pd.onpointerdown=e=>{e.stopPropagation();if(st!=="input"||A.won)return;splash(i);
+      if(i!==seq[idx]){st="show";A.say(`Raté ! ${FOX[id].name} recommence.`);A.later(show,900);return}
+      if(++idx===seq.length){r++;if(r>=L.length)A.win(g.win||"Parfait !");else{st="show";A.say("Bravo ! Une flaque de plus…");A.later(round,900)}}});
+    round();
   },
 
   /* Ne bouge plus : Gribouille peint ; des mouches viennent chatouiller le museau du modèle, il faut les chasser. */
