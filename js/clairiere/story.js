@@ -11,6 +11,12 @@
 const VITE=/[?&]vite=1/.test(location.search);
 function nextMorning(){const d=new Date(Date.now()+6*36e5);if(d.getHours()>=6)d.setDate(d.getDate()+1);d.setHours(6,0,0,0);return d.getTime()}
 if(VITE)R.nextAt=0;
+// une scène sous la pluie (rain:1 dans un moment ; la fin de Pain d'épice et Brioche, Joffray : « il faut absolument qu'il pleuve ») :
+// il pleut pendant le moment et encore 3 min après ; les renards de stay restent où ils sont, même sous la pluie
+let rainTill=0,stayIds=[],stayTill=0;
+function storyRain(){const c=cur();return !!(c&&c.b.rain)||Date.now()<rainTill}
+function storyStay(id){const c=cur();return !!(c&&c.b.stay&&c.b.stay.includes(id))||(Date.now()<stayTill&&stayIds.includes(id))}
+function syncRain(){const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}}
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
@@ -188,7 +194,7 @@ const STORIES={
       ["libellule","surprise","La lune… dans la mare. Toute ronde."],
       ["libellule","joy","Je te donne mon galet le plus lisse. Il est calme comme l'eau ce soir."]]}
   ]},
-  brioche:{title:"Moitié-moitié",souv:"la recette du goûter à deux",beats:[
+  brioche:{title:"Moitié-moitié",souv:"la recette du goûter à deux",cast:["painepice"],beats:[
     {at:"brioche",goal:"Brioche vient d'arriver au refuge. Va lui dire bonjour.",lines:[
       ["brioche","joy",`Bonjour ${ME()} ! Un soir, j'ai vu des lanternes au loin. J'ai marché, marché…`],
       ["brioche","shy","Et puis il y avait cette odeur. Cannelle, miel, four chaud. Je l'ai suivie jusqu'ici."],
@@ -202,10 +208,12 @@ const STORIES={
     {at:"@tree",game:{k:"basket",n:8,win:"Assez pour un gâteau à deux étages !"},after:[["painepice","bench1"]],goal:"Ramasse des pommes pour le gâteau de Pain d'épice.",lines:[
       ["painepice","joy","Un étage pour elle, un étage pour moi. Et le biscuit en cœur, dessus."],
       ["painepice","shy","Tu peux lui dire de venir sur le banc ? Moi, mes pattes tremblent."]]},
-    {at:"brioche",after:[["brioche","bench2"]],goal:"Dis à Brioche que quelqu'un l'attend sur le banc.",lines:[
+    {at:"brioche",stay:["painepice"],after:[["brioche","bench2"]],goal:"Dis à Brioche que quelqu'un l'attend sur le banc.",lines:[
       ["me","joy","Quelqu'un t'attend sur le banc. Avec un gâteau."],
       ["brioche","surprise","Un gâteau ? Pour moi ?"]]},
-    {at:"@bench",goal:"Va voir Pain d'épice et Brioche sur le banc.",lines:[
+    {at:"@bench",rain:1,stay:["painepice","brioche"],goal:"Va voir Pain d'épice et Brioche sur le banc.",lines:[
+      ["painepice","sad","Il pleut… Le gâteau va être tout mouillé."],
+      ["brioche","joy","Tant pis. On reste là."],
       ["painepice","shy","J'ai… gardé un biscuit au chaud. Depuis longtemps. Pour quelqu'un."],
       ["brioche","surprise","Cannelle, miel… C'est toi, l'odeur que j'ai suivie !"],
       ["painepice","joy","Et c'est moi qui ai allumé les lanternes. Enfin, avec un peu d'aide."],
@@ -263,7 +271,7 @@ function anyOk(c,fid){if(!isRes(fid)||WILD[fid]||fid===c.id)return false;const p
 function isHidden(fid){const c=cur();return !!c&&c.id===fid&&!!c.b.hide}
 function isTarget(fid){const c=cur();return !!c&&(c.b.at===fid||(c.b.at==="*"&&anyOk(c,fid)))}
 // renards qui doivent être dans la scène pour l'histoire
-function storyFoxes(){const c=cur();return c?[c.id,"petitpois",c.b.at].filter(isRes):[]}
+function storyFoxes(){const c=cur();return c?[c.id,"petitpois",c.b.at,...(STORIES[c.id].cast||[])].filter(isRes):[]}
 
 /* ---------- le prochain renard ---------- */
 // il arrive par la forêt dès que l'attente est finie ; page fermée, il est déjà là au retour
@@ -299,14 +307,14 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
   hotEl.hidden=true;
   syncFoxes();
   const go=()=>talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
-    R.beat[c.id]=c.n+1;
+    R.beat[c.id]=c.n+1;if(b.rain)rainTill=Date.now()+18e4;if(b.stay){stayIds=b.stay;stayTill=Date.now()+18e4}
     for(const [fid,sp] of b.after||[]){const f=foxes.find(x=>x.id===fid&&!x.wild);if(!f||f.walk)continue;
       if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;drawGlow()}goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
     if(c.id==="gaston"&&storyDone("gaston")){drawBg();log("La pêche est ouverte : touche la mare quand tu veux.")}
     if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
     else toast("+3 glands");
-    save();renderStory();renderHud();
+    save();renderStory();renderHud();syncRain();
   });
   if(b.game)playGame({...b.game,target:at},go);else go();
   return true;

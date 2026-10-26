@@ -90,7 +90,7 @@ function tick(){
     if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
     // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
     if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${FOX[f.id].name} ressort de la maison.`)}}continue}
-    if(now>f.until&&(isTarget(f.id)||envHold(f))){f.until=now+5000;continue}
+    if(now>f.until&&(isTarget(f.id)||envHold(f)||storyStay(f.id))){f.until=now+5000;continue}
     if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
   }
   const f1=Math.floor(now/200)%2===1;for(const f of foxes)if(f.walk)f.el.classList.toggle("f1",f1);
