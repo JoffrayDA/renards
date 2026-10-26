@@ -41,10 +41,10 @@ FOXES.push(
 // Il dessine sur les vitres embuées ; béret, taches de peinture, bout de la queue trempé dans le bleu comme un pinceau.
 FOXES.push({id:"gribouille",name:"Gribouille",rar:"commun",acc:"beret",mark:"peinture",c:{b:"#d6a6b8",ch:"#fff6f8",e:"#8a5a6e",s:"#8a5a6e",t:"#7cb8e0"},bio:"Dessine du bout de la patte sur les vitres embuées, les jours de pluie."});
 // Copeau et Sésame (26/10/2026) : seulement pour la Clairière (refuge:1), jamais clients du Café (le Café les écarte : REG, VIPS et carnet).
-// Copeau, le bricoleur, répare la porte de la maison puis l'agrandit ; Sésame, bleu nuit, porte la clé qui l'ouvre.
+// Copeau, le bricoleur, répare la porte de la maison puis l'agrandit ; Sésame, bleu nuit, perd toutes ses clés, dont celle de la maison.
 FOXES.push(
   {id:"copeau",refuge:1,name:"Copeau",rar:"rare",acc:"ceinture",c:{b:"#d9a066",ch:"#fff4e4",e:"#7a4a2a",s:"#7a4a2a",t:"#fff4e4"},bio:"Bricoleur. Répare tout ce qui grince, tout ce qui coince, tout ce qui penche."},
-  {id:"sesame",refuge:1,name:"Sésame",rar:"rare",acc:"cle",c:{b:"#5f6a9a",ch:"#eef0fb",e:"#2f3660",s:"#2f3660",t:"#f2e6b8"},bio:"Porte une clé dorée depuis toujours. Cherchait sa porte."}
+  {id:"sesame",refuge:1,name:"Sésame",rar:"rare",acc:"cle",c:{b:"#5f6a9a",ch:"#eef0fb",e:"#2f3660",s:"#2f3660",t:"#f2e6b8"},bio:"Perd toutes ses clés. Retrouve parfois la mauvaise."}
 );
 // invités d'Halloween (Café seulement) : ils viennent en VIP pendant la Nuit des citrouilles et donnent 5 bonbons
 FOXES.push(

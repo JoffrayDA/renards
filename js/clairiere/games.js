@@ -19,6 +19,7 @@ function drag(A,f){const sv=A.sv;let down=false;sv.style.touchAction="none";
 
 /* ---------- objets trouvés ---------- */
 const ITEM={
+  key:`<path d="M-4 -12 q-8 -6 -12 0 q4 4 12 0Z M4 -12 q8 -6 12 0 q-4 4 -12 0Z" fill="#e2546e" ${O}/><circle cy="-6" r="8" fill="#f2c45a" ${O}/><circle cy="-6" r="3" fill="#fff8dc" stroke="${INK}" stroke-width="1.8"/><path d="M0 2 V18 M0 12 h6 M0 17 h5" fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"/><path d="M0 2 V18 M0 12 h6 M0 17 h5" fill="none" stroke="#f2c45a" stroke-width="3" stroke-linecap="round"/>`,
   jar:`<path d="M-11 -17 h22 v6 h-22Z" fill="#c9a08a" ${O}/><rect x="-14" y="-12" width="28" height="30" rx="9" fill="#e4f3f9" fill-opacity=".85" ${O}/><path d="M-7 -5 q-2 8 0 14" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,
   wool:`<path d="M10 4 q16 6 26 -4 q8 -8 18 0" fill="none" stroke="#e0564f" stroke-width="3" stroke-linecap="round"/><circle r="13" fill="#e0564f" ${O}/><path d="M-9 -6 q9 4 16 -2 M-11 2 q10 5 20 -1 M-6 9 q6 2 12 -2" fill="none" stroke="#b83c38" stroke-width="2.2" stroke-linecap="round"/>`,
   snail:`<path d="M-16 10 q2 -6 10 -6 h18 q6 0 6 6Z" fill="#cfe0a6" ${O}/><circle cx="2" cy="-2" r="11" fill="#f2c45a" ${O}/><path d="M2 -2 m-5 0 a5 5 0 1 1 5 5" fill="none" stroke="${INK}" stroke-width="2"/><path d="M-12 4 l-4 -10 M-9 4 l-1 -10" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`,
@@ -202,7 +203,7 @@ const GAMES={
       if(i===good){st="won";shown(i,g.item||"wool");A.win(g.win||"Trouvé !");return}
       const [gi,t]=gags[Math.floor(Math.random()*gags.length)];shown(i,gi);left--;
       if(left>0)A.say(`${t} Encore ${left} essai${left>1?"s":""} !`);
-      else{st="lost";piles[good].pile.classList.add("gone");shown(good,g.item||"wool");A.say("Raté ! La laine était là… et elle file sous un autre tas. On recommence !");A.later(round,2200)}};
+      else{st="lost";piles[good].pile.classList.add("gone");shown(good,g.item||"wool");A.say("Raté ! C'était là… et ça file sous un autre tas. On recommence !");A.later(round,2200)}};
     round();
   },
 

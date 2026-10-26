@@ -70,8 +70,8 @@ const MINE={
     {k:"copain",ask:"Va me chercher un modèle. N'importe qui. Il faut juste qu'il ne bouge pas.",thx:"Ne bougez plus… Voilà. {ami} a un nez de patate. C'est de l'art."}],
   copeau:[{k:"copain",ask:"Tu peux m'appeler {ami} ? Je dois prendre ses mesures. Pour un lit. Surprise !",thx:"Parfait. Un lit sur mesure pour {ami}, à la fin de la semaine. Peut-être."},
     {k:"feuilles",ask:"J'ai besoin de feuilles sèches pour caler une étagère. Tu m'en fais un tas ?",thx:"Calée ! Elle ne penche plus. Enfin, presque plus."}],
-  sesame:[{k:"conte",ask:"Raconte-moi l'histoire d'une clé qui cherchait sa porte. Je la connais, mais j'aime l'entendre.",tale:["Il était une fois une petite clé qui avait fait le tour de la forêt…","…et la porte qu'elle cherchait l'attendait au milieu d'une clairière, pleine de renards."],thx:"C'est la plus belle fin. Parce que c'est la vraie."},
-    {k:"lucioles",ask:"Le soir, j'aime une lumière dorée, comme ma clé. Tu m'en attrapes une ?",thx:"Elles sont de la même couleur. On dirait qu'elles se connaissent."}],
+  sesame:[{k:"feuilles",ask:"J'ai encore perdu une clé. Je ne sais plus laquelle. Tu me fais un tas de feuilles ? Je vais chercher dedans.",thx:"Pas de clé. Mais j'ai retrouvé une chaussette de Mamie Brindille."},
+    {k:"lucioles",ask:"Une luciole dorée, ça éclaire bien le sol. Tu m'en attrapes une ? J'ai perdu… quelque chose.",thx:"Ma clé de boîte aux lettres ! Elle était dans ma poche. Depuis le début."}],
   marquis:[{k:"panier",ask:"Ce panier a-t-il une couverture ? Je ne m'assois que sur du moelleux, vois-tu.",thx:"Acceptable. Tout à fait acceptable. Zzz."}],
   zaza:[{k:"flaques",ask:"J'entends chaque goutte. Tu sautes dans les flaques ? Je veux entendre la musique.",thx:"Do, mi, sol… Tu sautes juste !"}],
   flocon:[{k:"lucioles",ask:"Une lumière dorée, quelque part dans le noir… Tu me la montres ?",thx:"Je pourrais la regarder jusqu'au matin."}],
@@ -122,7 +122,7 @@ function envGoal(){const c=envCur();if(!c)return null;const E=envDef(c),n=FOX[c.
   if(c.step==="ask")return {t:"Petite envie",g:`${n} a une petite envie : touche-le.`};
   if(E.friend)return {t:"Petite envie",g:`Va chercher ${FOX[c.friend].name} pour ${n}.`};
   if(E.basket)return {t:"Petite envie",g:`${n} fait la sieste dans le panier : va le voir.`};
-  return {t:"Petite envie",g:`${n} : ${E.goal}.`}}
+  return {t:"Petite envie",g:`${n} : ${E.goal}. Touche-le pour commencer.`}}
 
 // le renard de l'envie reste là où il doit être (dans le panier) tant qu'on n'est pas venu le voir
 function envHold(f){const c=envCur();return !!c&&c.step==="go"&&c.id===f.id&&ENVIES[c.k].basket&&f.spot===SPOT.basket&&!scn.rain}
@@ -141,6 +141,10 @@ function envieTap(f){const c=envCur();if(!c||gameOn)return false;const E=envDef(
       const a=envFox(c.id);for(const [x,sp] of [[a,SPOT.bench1],[f,SPOT.bench2]])if(x&&!x.walk){if(x.inside){x.inside=false;x.el.classList.remove("inside");x.x=DOOR.x;x.y=DOOR.y}if(x.spot!==sp)goTo(x,sp)}
       envieDone(c)});return true}
   if(c.step==="go"&&E.basket&&f.id===c.id&&f.spot===SPOT.basket){snapObj(f);envieDone(c);return true}
+  // jeu ou histoire du soir interrompus (Joffray était bloqué sur « sauter dans les flaques ») : on relance en touchant le renard
+  if(c.step==="go"&&f.id===c.id&&(E.game||E.tale)){
+    if(E.game)playGame({...E.game,target:c.id},()=>envieDone(c));else talk(E.tale.map(t=>["me","open",t]),()=>envieDone(c));
+    return true}
   return false}
 
 // l'envie est faite : merci, +5 glands et un cœur

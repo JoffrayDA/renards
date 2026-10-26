@@ -234,28 +234,29 @@ const STORIES={
       ["copeau","surprise","…Mais elle ne s'ouvre toujours pas. Il y a une serrure. Et pas de clé."],
       ["petitpois","sad","Personne n'a jamais eu la clé…"]]},
     {at:"copeau",goal:"Copeau réfléchit devant la porte.",lines:[
-      ["copeau","open","Une serrure comme ça, je n'en ai vu qu'une fois. La clé pendait au cou d'une renarde bleue comme la nuit."],
-      ["copeau","shy","Elle passe parfois dans la forêt, le soir. Elle cherche une porte."],
+      ["copeau","open","Une serrure comme ça, je n'en ai vu qu'une fois. Chez un renard bleu comme la nuit, qui habitait ici il y a longtemps."],
+      ["copeau","shy","Il perdait toutes ses clés. Toutes. Il passe encore dans la forêt, le soir, à chercher par terre."],
       ["copeau","joy","En attendant, garde ce clou. Le premier que j'ai planté ici. Ça porte bonheur."]]}
   ]},
-  sesame:{title:"Une patte chacun",souv:"le double de la clé dorée",cast:["copeau"],beats:[
-    {at:"sesame",goal:"Une renarde bleu nuit est arrivée. Va lui dire bonjour.",lines:[
-      ["sesame","open",`Bonsoir, ${ME()}. Un renard qui sent la sciure m'a dit qu'une porte attendait sa clé.`],
-      ["sesame","shy","Je porte cette clé depuis que je suis toute petite. Je n'ai jamais trouvé sa porte."],
-      ["me","joy","Je crois qu'elle est juste là."]]},
-    {at:"@porch",goal:"Essaie la clé de Sésame dans la serrure.",lines:[
-      ["sesame","surprise","Elle entre… elle tourne… mais ça bloque."],
-      ["sesame","open","Ma grand-mère disait : cette porte s'ouvre pour une famille, pas pour une clé."],
-      ["copeau","joy","Une famille ? On en a une, ici ! Appelle tout le monde !"]]},
-    {at:"@porch",gather:1,goal:"Appelle tout le monde devant la maison.",lines:[
-      ["sesame","open","Tout le monde est là ? Alors on pousse ensemble. Une patte chacun."],
-      ["petitpois","joy","Même moi ? Même les petites pattes ?"],
-      ["sesame","joy","Surtout les petites pattes."],
-      ["sesame","surprise","…Clic."]]},
-    {at:"sesame",goal:"La porte est ouverte ! Va voir Sésame.",lines:[
+  // Sésame perd tout le temps ses clés (idée de Joffray) : celle de la maison aussi, il y a longtemps
+  sesame:{title:"La clé perdue",souv:"la clé de la maison",cast:["copeau"],beats:[
+    {at:"sesame",goal:"Un renard bleu nuit fouille l'herbe. Va lui dire bonjour.",lines:[
+      ["sesame","surprise",`Oh ! Bonsoir, ${ME()}. Tu n'aurais pas vu une clé ? Dorée, avec un ruban rouge ?`],
+      ["me","open","…Celle que tu as autour du cou ?"],
+      ["sesame","shy","Ah. Oui. Non ! Celle-là, c'est la clé de ma boîte aux lettres. Que j'ai perdue."],
+      ["sesame","sad","Je perds toutes mes clés. Celle de cette maison, je l'ai perdue il y a très longtemps, quand j'habitais ici. Depuis, la porte est fermée."]]},
+    {at:"@leaves",game:{k:"search",item:"key",say:"Sésame perd souvent ses clés dans les feuilles. Fouille !",win:"Une clé !"},goal:"Cherche la clé de Sésame dans le tas de feuilles.",lines:[
+      ["sesame","joy","Une clé ! … Ah non. C'est celle de mon ancien cabanon. Je la cherchais depuis trois hivers."],
+      ["sesame","open","La clé de la maison brillait plus. Beaucoup plus."],
+      ["copeau","surprise","Ce qui brille… La pie du grand arbre ramasse tout ce qui brille !"]]},
+    {at:"@tree",game:{k:"shake",item:"key",catch:1,say:"Secoue le grand arbre ! Rattrape la clé avant qu'elle tombe !",win:"Rattrapée au vol !"},goal:"Fais tomber le trésor de la pie, dans le grand arbre.",lines:[
+      ["sesame","surprise","C'est elle ! La clé de la maison ! Avec mes initiales gravées dessus !"],
+      ["copeau","joy","Les gonds sont neufs, la serrure est huilée. À toi l'honneur."]]},
+    {at:"@porch",goal:"Ouvre la porte avec Sésame.",lines:[
+      ["sesame","shy","Elle tourne… Clic."],
       ["sesame","joy","Une cheminée, un tapis, et de la place pour tout le monde. Bienvenue chez toi."],
       ["copeau","open","Un peu petit, quand même. Je vais pouvoir agrandir tout ça…"],
-      ["sesame","shy",`Tiens, ${ME()}, le double de la clé. Ce soir, on dort tous près du feu. Touche la porte pour entrer.`]]}
+      ["sesame","open",`Tiens, ${ME()}, garde la clé. Moi, je la perdrais avant ce soir. Touche la porte pour entrer.`]]}
   ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
