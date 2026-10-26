@@ -1,14 +1,13 @@
 /* La Clairière : les histoires. Voir docs/clairiere-v2.md, « Les histoires ».
    Une seule histoire à la fois, dans l'ordre d'ORDER. Le renard arrive pour son histoire (ou elle démarre s'il est déjà là),
-   quelques heures après la fin de la précédente (GAP). Une histoire est une suite de moments : un renard ou un endroit
+   dès la fin de la précédente (GAP, à 0). Une histoire est une suite de moments : un renard ou un endroit
    porte un signe, on le touche, le dialogue se joue, et le moment suivant s'ouvre aussitôt. Ni amitié, ni météo, ni attente.
    R.beat[id] = moments finis ; R.souv[id] = souvenir reçu ; R.nextAt = quand la prochaine histoire peut commencer ;
    R.who[id][i] = le renard touché pour un moment « * » (pour relire l'histoire).
    at : un renard, "@endroit" (TG) ou "*" (n'importe quel autre renard du refuge). goal : ce qu'il faut faire pour ce moment.
    "me" parle : c'est Roussette, avec le nom choisi au Café. */
-// ?vite=1 : le renard suivant arrive tout de suite (pour tester) ; retenu sur l'appareil, ?vite=0 l'enlève
-const VITE=(()=>{const q=new URLSearchParams(location.search).get("vite");try{if(q==="0")localStorage.removeItem("clairiere-vite");else if(q!=null)localStorage.setItem("clairiere-vite","1");return !!localStorage.getItem("clairiere-vite")}catch(e){return q!=null&&q!=="0"}})();
-const GAP=VITE?0:3*36e5;
+// plus d'attente entre deux renards (choix de Joffray, 26/10/2026) : on garde GAP pour pouvoir en remettre une
+const GAP=0;
 if(!GAP)R.nextAt=0;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
@@ -96,21 +95,21 @@ const STORIES={
       ["grignote","surprise","La fin ! … Le petit renard rentre chez lui, et tout le monde l'attend. Comme ici."],
       ["grignote","shy","Celle-là, je ne la mangerai pas. Garde-la pour moi ?"]]}
   ]},
-  brindille:{title:"Une écharpe pour chacun",souv:"l'écharpe tricotée",beats:[
+  brindille:{title:"Les chaussettes dépareillées",souv:"les chaussettes au gland brodé",beats:[
     {at:"brindille",goal:"Mamie Brindille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["brindille","joy",`Bonjour, ma petite pelote. Je tricote une écharpe pour chaque renard du refuge.`],
-      ["brindille","sad","Mais un écureuil m'a chipé ma laine. Il l'a cachée dans le grand arbre, ce chenapan."]]},
-    {at:"@tree",game:{k:"shake",item:"wool",say:"Secoue le grand arbre !",win:"La pelote est tombée !"},goal:"Récupère la pelote dans le grand arbre.",lines:[
-      ["me","joy","La pelote, toute entière. Enfin… presque. L'écureuil s'en est fait un nid."]]},
-    {at:"brindille",goal:"Rapporte la pelote à Mamie Brindille.",lines:[
-      ["brindille","joy","Merci, ma petite pelote. Clic, clac, clic… Voilà !"],
-      ["brindille","open","La première écharpe est pour toi. Les autres, j'ai le temps : je suis la doyenne, pas la plus pressée."]]}
+      ["brindille","joy",`Bonjour, ma petite pelote. J'ai tricoté des chaussettes pour tout le refuge.`],
+      ["brindille","sad","Je les avais mises à sécher près du banc, et le vent les a toutes mélangées. À mon âge, je n'y vois plus très clair."]]},
+    {at:"@bench",game:{k:"memory",win:"Toutes les paires !"},goal:"Refais les paires de chaussettes près du banc.",lines:[
+      ["me","joy","Six paires, bien rangées ! Le vent n'a qu'à bien se tenir."]]},
+    {at:"brindille",goal:"Rapporte les chaussettes à Mamie Brindille.",lines:[
+      ["brindille","joy","Toutes en paires ! Merci, ma petite pelote."],
+      ["brindille","open","Tiens, celles avec un gland brodé sont pour toi. Les autres, je les donnerai cet hiver : je suis la doyenne, pas la plus pressée."]]}
   ]},
   plouf:{title:"La danse des flaques",souv:"les petites bottes de pluie",beats:[
     {at:"plouf",goal:"Plouf vient d'arriver au refuge. Va lui dire bonjour.",lines:[
       ["plouf","joy",`${ME()} ! Tu connais la danse des flaques ? Je saute, tu répètes !`],
       ["plouf","open","Pas de pluie ? Pas grave, je viens d'en faire avec l'arrosoir."]]},
-    {at:"plouf",game:{k:"simon",who:"plouf",rounds:[3,4,5]},goal:"Danse dans les flaques avec Plouf.",lines:[
+    {at:"plouf",game:{k:"simon",who:"plouf",rounds:[3,4,5,6,7]},goal:"Danse dans les flaques avec Plouf.",lines:[
       ["plouf","joy","Regarde-nous : deux éponges ! C'est le plus beau des compliments."],
       ["plouf","shy","Tiens, mes petites bottes de pluie. Moi, je préfère les pattes mouillées."]]}
   ]},

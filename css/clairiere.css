@@ -172,6 +172,12 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 @keyframes fall{to{transform:translateY(230px)}}
 .play .pile{cursor:pointer;transition:transform .45s ease-out,opacity .45s}
 .play .pile.gone{transform:translateY(-40px) scale(1.4);opacity:0;pointer-events:none}
+.play .mflip{transform-box:fill-box;transform-origin:center}
+.play .flipc{animation:flipc .28s ease-in-out}
+@keyframes flipc{50%{transform:scaleX(0)}}
+.play .mcard.done .face rect{fill:#e6f4d8}
+.play .mcard.done .mflip{animation:mdone .4s ease-out}
+@keyframes mdone{40%{transform:scale(1.12)}}
 .play .pin{transform-box:fill-box;transform-origin:50% 90%}
 .play .shiv{animation:shiv .45s ease-in-out}
 @keyframes shiv{20%{transform:rotate(-7deg) scale(1.05)}40%{transform:rotate(6deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(3deg)}}

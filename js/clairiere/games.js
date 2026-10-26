@@ -325,17 +325,54 @@ const GAMES={
     start();
   },
 
-  /* La danse des flaques : le renard saute dans des flaques, il faut refaire la même suite. */
+  /* Les chaussettes dépareillées (Mamie Brindille) : un memory. On voit toutes les chaussettes un instant,
+     puis on les retourne deux par deux pour refaire les paires. À mi-chemin, un coup de vent mélange celles qui restent. */
+  memory(g,A){
+    const sv=A.sv,SK=[["#e0564f","stripe"],["#9ec3ef","dot"],["#a9d68f","heart"],["#f2d27a","star"],["#c9a6ff","stripe"],["#ffb36a","dot"]],K=SK.length,
+      XY=i=>[72+(i%3)*128,120+Math.floor(i/3)*96];
+    let open=[],found=0,lock=true,blown=false;
+    const MOT={stripe:`<path d="M-10 -14 H10 M-10 -5 H10" stroke="#fff" stroke-width="3.4"/>`,dot:`<circle cx="-4" cy="-15" r="2.6" fill="#fff"/><circle cx="4" cy="-6" r="2.6" fill="#fff"/><circle cx="-3" cy="3" r="2.6" fill="#fff"/>`,
+      heart:`<path d="M0 -2 C-8 -7 -9 -12 -6 -15 Q-3 -17 0 -13 Q3 -17 6 -15 C9 -12 8 -7 0 -2Z" fill="#fff"/>`,star:`<path d="M0 -17 l2.6 5.4 5.8 .8 -4.2 4 1 5.8 -5.2 -2.8 -5.2 2.8 1 -5.8 -4.2 -4 5.8 -.8Z" fill="#fff"/>`};
+    const sock=([c,m])=>`<g filter="url(#wobble)"><path d="M-10 -26 H10 V6 H20 Q28 6 28 14 Q28 22 20 22 H-2 Q-10 22 -10 14Z" fill="${c}" ${O}/><rect x="-12" y="-31" width="24" height="9" rx="3" fill="#fffaf2" ${O}/></g>${MOT[m]}`;
+    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${Array.from({length:24},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="cards"></g>`;
+    const box=sv.querySelector("#cards"),deck=[...Array(K).keys(),...Array(K).keys()].sort(()=>Math.random()-.5);
+    const cards=deck.map((k,i)=>{const c={k,slot:i,up:false,done:false};
+      c.el=grp(box,`<g class="mflip"><g class="back"><rect x="-56" y="-43" width="112" height="86" rx="16" fill="#f6b3c4" stroke="${INK}" stroke-width="3"/>
+        <path d="M-36 -18 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8 M-36 6 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/></g>
+        <g class="face" style="display:none"><rect x="-56" y="-43" width="112" height="86" rx="16" fill="#fffaf2" stroke="${INK}" stroke-width="3"/><g transform="translate(-6 4) scale(1.15)">${sock(SK[k])}</g></g></g>`,{class:"mcard","data-k":k});
+      c.el.style.cursor="pointer";const [x,y]=XY(i);c.el.style.transform=`translate(${x}px,${y}px)`;
+      c.el.onpointerdown=e=>{e.stopPropagation();pick(c)};return c});
+    const turn=(c,up)=>{c.up=up;const f=c.el.firstChild;replay(f,"flipc");
+      setTimeout(()=>{f.querySelector(".face").style.display=up?"":"none";f.querySelector(".back").style.display=up?"none":""},140)};
+    // un coup de vent : les chaussettes pas encore rangées changent de place
+    const blow=()=>{blown=true;lock=true;A.say("Un coup de vent ! Les chaussettes ont bougé…");
+      const left=cards.filter(c=>!c.done),slots=left.map(c=>c.slot).sort(()=>Math.random()-.5);
+      left.forEach((c,i)=>{c.slot=slots[i];const [x,y]=XY(c.slot);c.el.style.transition="transform .7s cubic-bezier(.5,0,.3,1.3)";c.el.style.transform=`translate(${x}px,${y}px)`});
+      A.later(()=>{left.forEach(c=>c.el.style.transition="");lock=false;A.say("Retrouve les paires qui restent !")},800)};
+    const pick=c=>{if(lock||c.up||c.done||A.won)return;turn(c,true);open.push(c);if(open.length<2)return;
+      const [a,b]=open;open=[];lock=true;
+      if(a.k===b.k){a.done=b.done=true;found++;A.later(()=>{a.el.classList.add("done");b.el.classList.add("done");
+          if(found===K)return A.win(g.win||"Toutes les paires !");
+          if(found===3&&!blown)return blow();
+          lock=false;A.say(`Une paire ! ${found} sur ${K}.`)},350)}
+      else A.later(()=>{turn(a,false);turn(b,false);lock=false;A.say("Pas pareilles… Retourne-les deux par deux.")},850)};
+    // on voit toutes les chaussettes un instant
+    A.say(g.say||"Regarde bien les chaussettes…");
+    A.later(()=>cards.forEach(c=>turn(c,true)),300);
+    A.later(()=>{cards.forEach(c=>turn(c,false));lock=false;A.say("Retrouve les paires : touche deux chaussettes pareilles !")},2600);
+  },
+
+  /* La danse des flaques : le renard saute dans des flaques, il faut refaire la même suite. Chaque flaque a sa note (do, mi, sol, do). */
   simon(g,A){
-    const sv=A.sv,id=g.who||g.target,P=[[110,230],[290,230],[110,390],[290,390]],COL=["#9ec3ef","#b7a6e6","#9fd8c4","#f3b9c8"],L=g.rounds||[3,4,5];
+    const sv=A.sv,id=g.who||g.target,P=[[110,230],[290,230],[110,390],[290,390]],COL=["#9ec3ef","#b7a6e6","#9fd8c4","#f3b9c8"],L=g.rounds||[3,4,5],NOTE=[72,76,79,84],STEP=g.step||520;
     let r=0,seq=[],idx=0,st="show";
-    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${P.map(([x,y],i)=>`<g class="pud" data-i="${i}"><ellipse cx="${x}" cy="${y}" rx="70" ry="34" fill="${COL[i]}" stroke="${INK}" stroke-width="3"/><path d="M${x-40} ${y-6} q20 -8 40 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`).join("")}<g id="hopper" style="transition:transform .28s cubic-bezier(.3,1.5,.5,1)">${foxAt(id,0,0,90)}</g>`;
+    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${P.map(([x,y],i)=>`<g class="pud" data-i="${i}"><ellipse cx="${x}" cy="${y}" rx="70" ry="34" fill="${COL[i]}" stroke="${INK}" stroke-width="3"/><path d="M${x-40} ${y-6} q20 -8 40 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`).join("")}<g id="hopper" style="transition:transform .22s cubic-bezier(.3,1.5,.5,1)">${foxAt(id,0,0,90)}</g>`;
     const hopper=sv.querySelector("#hopper"),puds=[...sv.querySelectorAll(".pud")];
-    const splash=i=>{replay(puds[i],"flash");const [x,y]=P[i];const s=grp(sv,`<g class="splash">${[-30,-12,12,30].map(dx=>`<circle cx="${x+dx}" cy="${y-10}" r="5" fill="#fff"/>`).join("")}</g>`);setTimeout(()=>s.remove(),500)};
-    const jump=i=>{const [x,y]=P[i];hopper.style.transform=`translate(${x}px,${y+8}px)`;A.later(()=>splash(i),200)};
+    const splash=i=>{replay(puds[i],"flash");try{MUSIC.note(NOTE[i])}catch(e){}const [x,y]=P[i];const s=grp(sv,`<g class="splash">${[-30,-12,12,30].map(dx=>`<circle cx="${x+dx}" cy="${y-10}" r="5" fill="#fff"/>`).join("")}</g>`);setTimeout(()=>s.remove(),500)};
+    const jump=i=>{const [x,y]=P[i];hopper.style.transform=`translate(${x}px,${y+8}px)`;A.later(()=>splash(i),170)};
     hopper.style.transform="translate(200px,316px)";
-    const show=()=>{st="show";idx=0;A.say(`Regarde bien ${FOX[id].name}…`);seq.forEach((p,i)=>A.later(()=>jump(p),600+i*650));
-      A.later(()=>{hopper.style.transform="translate(200px,316px)";st="input";A.say("À toi ! Saute dans les mêmes flaques.")},600+seq.length*650+300)};
+    const show=()=>{st="show";idx=0;A.say(`Regarde bien ${FOX[id].name}…`);seq.forEach((p,i)=>A.later(()=>jump(p),500+i*STEP));
+      A.later(()=>{hopper.style.transform="translate(200px,316px)";st="input";A.say("À toi ! Saute dans les mêmes flaques.")},500+seq.length*STEP+250)};
     const round=()=>{seq=[];for(let i=0;i<L[r];i++){let p;do p=Math.floor(Math.random()*4);while(p===seq[i-1]);seq.push(p)}show()};
     puds.forEach((pd,i)=>pd.onpointerdown=e=>{e.stopPropagation();if(st!=="input"||A.won)return;splash(i);
       if(i!==seq[idx]){st="show";A.say(`Raté ! ${FOX[id].name} recommence.`);A.later(show,900);return}

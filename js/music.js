@@ -13,7 +13,7 @@ const MUSIC=(()=>{
       const a=e.target.closest("a.home");if(a){e.preventDefault();host.closeGame()}});
     const st=document.createElement("style");st.textContent=H.css;document.head.appendChild(st);
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
+    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
   }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
   const hz=m=>440*Math.pow(2,(m-69)/12);
@@ -162,6 +162,10 @@ const MUSIC=(()=>{
     stop();cur="jingle:"+id;bus=newBus();J.play(C.currentTime+.08);
     clearTimeout(jtimer);jtimer=setTimeout(()=>{jtimer=null;if(cur==="jingle:"+id){cur=null;if(on&&wanted)play(wanted)}},J.len*1000)}
   // l'animation est passée avant la fin : fondu, puis le morceau voulu
+  // une note de piano toute douce (les flaques de Plouf), par-dessus la musique
+  function note(m){if(!on||!unlocked)return;init();if(C.state==="suspended")C.resume();const t=C.currentTime+.01;
+    const g=gain(t,.006,.16,1.1);g.connect(master);const s=C.createGain();s.gain.value=.25;g.connect(s);s.connect(rev);
+    osc("triangle",hz(m),t,t+1.3).connect(g);const g2=gain(t,.004,.07,.4);g2.connect(g);osc("sine",hz(m)*2,t,t+.6).connect(g2)}
   function jingleEnd(){if(!jtimer)return;clearTimeout(jtimer);jtimer=null;if(cur&&cur.startsWith("jingle:")){stop();if(on&&wanted)play(wanted)}}
 
   function play(id){
@@ -197,7 +201,7 @@ const MUSIC=(()=>{
   const css=".snd{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fffaf2;border:2px solid #ead9cc;box-shadow:0 3px 0 #ead9cc;flex:none;cursor:pointer;padding:0;touch-action:manipulation}.snd svg{display:block}";
   st.textContent=css;document.head.appendChild(st);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-  return{play,stop,volume,want,setOn,paint,icon,css,unlock,jingle,jingleEnd,tracks:TRACKS,get current(){return cur},get on(){return on}};
+  return{play,stop,volume,want,setOn,paint,icon,css,unlock,jingle,jingleEnd,note,tracks:TRACKS,get current(){return cur},get on(){return on}};
 })();
 // visible par les jeux ouverts dans le cadre de l'accueil (une const n'est pas une propriété de window)
 window.MUSIC=MUSIC;
