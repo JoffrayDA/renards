@@ -121,10 +121,10 @@ function envieGoal(){const c=envCur();if(!c)return false;const f=envFox(c.step==
 // le signe au-dessus d'un renard : « ! » (histoire), « … » (petite envie), cœur (câlin du jour)
 const DOTS=`<svg viewBox="0 0 24 14" aria-hidden="true"><circle cx="5" cy="7" r="2.4"/><circle cx="12" cy="7" r="2.4"/><circle cx="19" cy="7" r="2.4"/></svg>`;
 function envBadge(id){const c=envCur();return !!c&&((c.step==="ask"&&c.id===id)||(c.step==="go"&&c.friend===id))}
-function setBadge(f){f.el.querySelectorAll(".mark,.want,.envie").forEach(e=>e.remove());if(f.wild)return;
-  if(isTarget(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`);
-  else if(envBadge(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="envie">${DOTS}</i>`);
-  else if(wantsHug(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="want">${HEART}</i>`)}
+function setBadge(f){const B=f.badge;B.innerHTML="";if(f.wild)return;
+  if(isTarget(f.id))B.innerHTML=`<i class="mark">!</i>`;
+  else if(envBadge(f.id))B.innerHTML=`<i class="envie">${DOTS}</i>`;
+  else if(wantsHug(f.id))B.innerHTML=`<i class="want">${HEART}</i>`;moveBadge(f)}
 function envGoal(){const c=envCur();if(!c)return null;const E=envDef(c),n=FOX[c.id].name;
   if(c.step==="ask")return {t:"Petite envie",g:`${n} a une petite envie : touche-le.`};
   if(E.friend)return {t:"Petite envie",g:`Va chercher ${FOX[c.friend].name} pour ${n}.`};

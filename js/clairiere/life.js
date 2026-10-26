@@ -19,11 +19,12 @@ function makeFox(id,spot,o={}){
   const f={id,el,spot:null,pose:"sit",x:0,y:0,until:0,walk:null,inside:false,wild:!!o.wild};
   el.onpointerdown=e=>{e.stopPropagation();tapFox(f)};
   foxes.push(f);$("actors").appendChild(el);
+  f.badge=document.createElement("div");f.badge.className="fbadge";$("lights").appendChild(f.badge); // ses signes, au-dessus de la nuit
   if((LOOK[id]||{}).mark==="lueur"){f.light=document.createElement("div");f.light.className="flight";f.light.innerHTML=`<i><svg viewBox="-50 -50 100 100" aria-hidden="true">${[[9,-12,1.3,0],[-12,-5,1,.5],[7,11,.9,1],[-6,10,.8,1.4],[14,2,.7,.8],[-2,-16,.7,1.1]].map(([x,y,k,d])=>`<path class="spark" style="animation-delay:${d}s" d="M${x} ${y-4*k} q${.8*k} ${3.2*k} ${4*k} ${4*k} q${-3.2*k} ${.8*k} ${-4*k} ${4*k} q${-.8*k} ${-3.2*k} ${-4*k} ${-4*k} q${3.2*k} ${-.8*k} ${4*k} ${-4*k}Z" fill="#fffbe0"/>`).join("")}</svg></i>`;$("lights").appendChild(f.light)}
   if(spot)place(f,spot);else{f.x=EDGE.x;f.y=EDGE.y;el.style.cssText+=";"+pc(EDGE.x,EDGE.y)}
   return f;
 }
-function removeFox(f){f.el.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
+function removeFox(f){f.el.remove();f.badge.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
 function draw(f){
   const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
   if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
@@ -33,12 +34,14 @@ function draw(f){
   f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);drawObjs();
 }
 // la lumière de Luciole passe au-dessus du voile de la nuit : elle suit le bout de sa queue
-function moveLight(f,dur){if(!f.light)return;const L=f.light,g=f.glowAt||[107,64],left=f.el.classList.contains("left");
+// ses signes suivent le renard (même boîte, même trajet), et disparaissent quand il est dans la maison
+function moveBadge(f,dur){const B=f.badge;if(!B)return;if(dur!=null)B.style.transitionDuration=dur+"s";B.style.left=f.x/W*100+"%";B.style.top=f.y/H*100+"%";B.classList.toggle("off",f.inside)}
+function moveLight(f,dur){moveBadge(f,dur);if(!f.light)return;const L=f.light,g=f.glowAt||[107,64],left=f.el.classList.contains("left");
   L.classList.toggle("off",!dark()||f.inside);
   if(dur!=null)L.style.transitionDuration=dur+"s";
   L.style.left=f.x/W*100+"%";L.style.top=f.y/H*100+"%";
   const i=L.firstChild;i.style.left=(left?120-g[0]:g[0])/120*100+"%";i.style.top=(g[1]+16)/116*100+"%"}
-function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";if(f.light)f.light.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.y);settle(f)}
+function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";f.badge.style.transitionDuration="0s";if(f.light)f.light.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.y);settle(f)}
 // choisit une pose qui va avec l'endroit, l'heure et la pluie
 function settle(f){
   const sp=f.spot;let poses=sp.poses.slice();

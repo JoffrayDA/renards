@@ -2,7 +2,7 @@
 function acornSVG(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><g filter="url(#wobble)" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"><path d="M5 10 Q5 21 12 22 Q19 21 19 10Z" fill="#d9a06a"/><path d="M3.5 10.5 Q12 2 20.5 10.5 Q12 13 3.5 10.5Z" fill="#a9785a"/><path d="M12 6 q1 -3 3 -4" fill="none"/></g></svg>`}
 const HEART=`<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20 C4 14 1.5 10 1.5 6.5 A5 5 0 0 1 12 4.5 A5 5 0 0 1 22.5 6.5 C22.5 10 20 14 12 20Z" fill="#f48aa6" stroke="#5b4250" stroke-width="2.2" stroke-linejoin="round"/><path d="M5.5 7 q.5 -2 2.5 -2.4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`;
 // câlin : le renard frotte sa tête comme un chat, des petits cœurs s'envolent
-function hugFx(f){f.el.querySelector(".want")?.remove();f.el.classList.remove("hug");void f.el.offsetWidth;f.el.classList.add("hug");
+function hugFx(f){f.badge.querySelector(".want")?.remove();f.el.classList.remove("hug");void f.el.offsetWidth;f.el.classList.add("hug");
   clearTimeout(f.hugT);f.hugT=setTimeout(()=>f.el.classList.remove("hug"),1700);
   for(let i=0;i<5;i++){const h=document.createElement("i");h.className="lovep";h.innerHTML=HEART;
     h.style.cssText=pc(f.x+(i-2)*8,f.y-38)+`;animation-delay:${(i*.16).toFixed(2)}s;--dx:${(i-2)*14}px`;$("scene").appendChild(h);setTimeout(()=>h.remove(),2400)}}
@@ -75,7 +75,7 @@ const arrLines=id=>[[id,"joy",`Bonsoir ${ME()} ! Ton café m'a tellement plu que
 
 /* ---------- feuilles ---------- */
 let afterSheet=null; // ce qui se passe quand on ferme la feuille (par exemple le dialogue d'arrivée)
-function openSheet(h){$("sheet-in").innerHTML=h+`<button class="btn ghost close" data-close type="button">Fermer</button>`;$("sheet").hidden=false;$("sheet-in").scrollTop=0}
+function openSheet(h,back){$("sheet-in").innerHTML=`<button class="btn ghost sheetback" ${back?`data-go="${back}"`:"data-close"} type="button">‹ Retour</button>`+h+`<button class="btn ghost close" data-close type="button">Fermer</button>`;$("sheet").hidden=false;$("sheet-in").scrollTop=0}
 function closeSheet(){$("sheet").hidden=true;const d=afterSheet;afterSheet=null;if(d)d()}
 $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"))return closeSheet();
   const b=e.target.closest("button");if(!b)return;
@@ -124,7 +124,7 @@ function carnet(){
 }
 function foxSheet(id){
   const f=FOX[id],r=R.res[id],M=metIds(),s=status(id,M),show=s.ok||s.seen;
-  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`);
+  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`,"carnet");
 }
 
 /* ---------- nouvelles au retour ---------- */

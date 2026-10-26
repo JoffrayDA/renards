@@ -36,7 +36,7 @@ const STORIES={
       ["me","joy","Viens vite, quelqu'un doit absolument te rencontrer."]]},
     {at:"petitpois",after:[["petitpois","lampR"]],goal:"Présente Luciole à Petit Pois.",lines:[
       ["petitpois","surprise","Ta queue… elle fait de la lumière ?!"],
-      ["luciole","joy","Viens, petit. Je vais t'apprendre à allumer les lanternes."]]},
+      ["luciole","joy","Viens, Petit Pois. Je vais t'apprendre à allumer les lanternes."]]},
     {at:"luciole",lamps:1,goal:"Va voir Luciole et Petit Pois aux lanternes.",lines:[
       ["petitpois","joy","J'ai allumé la grande lanterne ! Du premier coup !"],
       ["petitpois","open","En fait, le noir, c'est juste le moment où les lanternes sont jolies."],
@@ -361,7 +361,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
 const hotEl=document.createElement("button");hotEl.className="hot";hotEl.type="button";hotEl.hidden=true;
 hotEl.innerHTML=`<i class="mark">!</i>`;
 hotEl.onpointerdown=e=>{e.stopPropagation();const c=cur();if(c)storyTap(c.b.at)};
-$("actors").appendChild(hotEl);
+$("lights").appendChild(hotEl); // au-dessus du voile de la nuit, comme les signes des renards
 function goalText(){const c=cur();
   if(c)return {t:`${STORIES[c.id].title} · ${c.n+1} sur ${beats(c.id).length}`,g:c.b.goal};
   const e=envGoal();if(e)return e; // pas d'histoire en cours : la petite envie du moment
