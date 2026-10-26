@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copeau et Sésame</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+h2{font-size:15px;margin:18px 0 8px}
+p{margin:0 0 12px;opacity:.8}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+figure{margin:0;background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:8px}
+figure svg{display:block;width:100%}
+figcaption{font-size:13px;font-weight:700;text-align:center;margin-top:4px}
+figcaption span{display:block;font-weight:400;font-size:12px;opacity:.65}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Copeau et Sésame (essai)</h1>
+<p>Deux nouveaux renards, seulement pour la Clairière. Même brioche que les autres (js/foxart.js).</p>
+<div id="out"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const copeau={id:"copeau",name:"Copeau",c:{b:"#d9a066",ch:"#fff4e4",e:"#7a4a2a",s:"#7a4a2a",t:"#fff4e4"}};
+const sesameA={id:"sesame",name:"Sésame",acc:"cle",c:{b:"#ead29a",ch:"#fffaf0",e:"#a8864a",s:"#a8864a",t:"#fffaf0"}};
+const sesameB={id:"sesame",name:"Sésame",acc:"cle",c:{b:"#5f6a9a",ch:"#eef0fb",e:"#2f3660",s:"#2f3660",t:"#f2e6b8"}};
+const fig=(f,o,t,s)=>`<figure>${foxArt(f,o)}<figcaption>${t}<span>${s}</span></figcaption></figure>`;
+const poses=(f,t)=>["sit","happy","walk","sleep"].map(p=>fig(f,{pose:p},t,p)).join("")+fig(f,{expr:"joy",portrait:1},t,"portrait");
+document.getElementById("out").innerHTML=
+  `<h2>Copeau, version A : ceinture à outils</h2><div class="row">${poses({...copeau,acc:"ceinture"},"Copeau A")}</div>`+
+  `<h2>Copeau, version B : crayon sur l'oreille et copeau bouclé sur la tête</h2><div class="row">${poses({...copeau,acc:"crayon"},"Copeau B")}</div>`+
+  `<h2>Sésame : une petite clé dorée au ruban</h2><div class="row">${fig(sesameA,{},"Sésame 1","couleur sésame doré")+fig(sesameB,{},"Sésame 2","bleu nuit, queue dorée")+fig(sesameA,{expr:"joy",portrait:1},"Sésame 1","portrait")+fig(sesameB,{expr:"joy",portrait:1},"Sésame 2","portrait")}</div>`;
+</script>
+</body>
+</html>
