@@ -16,7 +16,8 @@ if(VITE)R.nextAt=0;
 let rainTill=0,stayIds=[],stayTill=0;
 function storyRain(){const c=cur();return !!(c&&c.b.rain)||Date.now()<rainTill}
 function storyStay(id){const c=cur();return !!(c&&c.b.stay&&c.b.stay.includes(id))||(Date.now()<stayTill&&stayIds.includes(id))}
-function syncRain(){const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}}
+function syncRain(){const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}else drawGlow()}
+const storyPeek=()=>storyRain()&&scn.rain;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.

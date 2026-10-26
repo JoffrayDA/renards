@@ -24,7 +24,7 @@ setInterval(()=>{
   R.news=R.news.filter(x=>!(x.k==="wild"&&x.live));
   chainTick(true);checkArrival();if(R.news.some(x=>x.k==="arr")&&$("talk").hidden&&$("sheet").hidden)showNews();else renderStory();
   if(phaseNow()!==scn.phase)drawBg();
-  const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}
+  const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}else if(rainTill&&!storyRain()){rainTill=0;drawGlow()} // fin de la scène sous la pluie : plus personne aux fenêtres
   if(!foxes.some(f=>f.walk))syncFoxes();
   envieTick();
   renderHud();

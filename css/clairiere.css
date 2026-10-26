@@ -268,3 +268,10 @@ h1{white-space:nowrap}
 .envie{position:absolute;left:50%;top:-12%;display:grid;place-items:center;width:30px;height:22px;border-radius:12px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 0 var(--ink);pointer-events:none;transform:translateX(-50%);animation:markhop 1.4s ease-in-out infinite}
 .envie::after{content:"";position:absolute;left:5px;bottom:-7px;width:6px;height:6px;border-radius:50%;background:#fff;border:2px solid var(--ink)}
 .envie svg{width:18px;display:block;fill:var(--ink)}
+
+/* scène sous la pluie : des têtes qui regardent par les fenêtres */
+#glow .peek{animation:peek 3.6s ease-in-out infinite}
+@keyframes peek{0%,100%{transform:translateY(3px)}40%,70%{transform:translateY(-1px)}}
+#glow .blink{transform-box:fill-box;transform-origin:center;animation:blink 3.4s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@media (prefers-reduced-motion:reduce){#glow .peek,#glow .blink{animation:none}}

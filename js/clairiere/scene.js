@@ -68,6 +68,7 @@ function glowSVG(){
     s+=[166,236].map(x=>`<circle cx="${x}" cy="141" r="26" fill="#ffe08a" opacity=".22"/>`).join("");
     s+=`<path d="M188 142 Q195 136 202 137 V202 H188Z" fill="#ffe08a" opacity=".35"/>`;
   }
+  if(storyPeek())s+=peekSVG();
   if(phaseNow()==="nuit"){const r=rng(5);for(let i=0;i<16;i++)s+=`<circle cx="${(r()*400).toFixed(1)}" cy="${(r()*60).toFixed(1)}" r="${(.8+r()*1.2).toFixed(1)}" fill="#fff8d0" opacity=".8"/>`;
     if(!scn.rain)for(let i=0;i<7;i++)s+=`<circle class="fly" style="animation-delay:${(-r()*5).toFixed(1)}s" cx="${(30+r()*340).toFixed(1)}" cy="${(260+r()*190).toFixed(1)}" r="2" fill="#fff6a0"/>`}
   // renards à l'intérieur : des silhouettes derrière les vitres
@@ -77,6 +78,12 @@ function glowSVG(){
   return s;
 }
 function drawBg(){scn.phase=phaseNow();if(!dark())scn.lamps={L:false,R:false};$("bg").innerHTML=bgSVG();drawGlow();foxes.forEach(f=>moveLight(f));const ph=PH[scn.phase];$("tint").style.backgroundColor=ph.tint;$("tint").style.opacity=ph.a;drawPills()}
+// pendant une scène sous la pluie (Pain d'épice et Brioche), les autres regardent par les fenêtres : ombres de têtes et yeux qui clignent
+// (idée de Joffray) ; une tête par carreau du bas, qui monte et descend doucement
+function peekSVG(){const lit=dark(),head=lit?"#5b4250":"#7d6670",eye=lit?"#fff6c8":"#fffaf2";
+  return [[146,0],[164,1.3],[218,.6],[236,2]].map(([x,d],i)=>`<g clip-path="url(#pk${i})"><clipPath id="pk${i}"><rect x="${x+1}" y="141" width="17" height="17"/></clipPath>
+    <g class="peek" style="animation-delay:${-d}s"><path d="M${x+3} 152 l2 -7 l3 4 h3 l3 -4 l2 7 Z" fill="${head}"/><ellipse cx="${x+9.5}" cy="155" rx="7" ry="5.5" fill="${head}"/>
+    <g class="blink" style="animation-delay:${-d*1.7}s"><circle cx="${x+7}" cy="153.5" r="1.3" fill="${eye}"/><circle cx="${x+12}" cy="153.5" r="1.3" fill="${eye}"/></g></g></g>`).join("")}
 function drawGlow(){$("glow").innerHTML=glowSVG()}
 function drawPills(){$("phase").textContent=PH[phaseNow()].name+(scn.rain?" · il pleut":"")}
 
