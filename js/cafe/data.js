@@ -107,8 +107,8 @@ const ALLUP=[...UPG.equip,...UPG.deco];
 const lvDesc=(u,n)=>u.lv[Math.max(0,n-1)].d;
 const SPOTX={2:[31,69],3:[20,50,80],4:[14,38,62,86]};
 // clients ordinaires ; Roussette n'en fait plus partie : c'est le joueur
-const REG=[...FOXES.filter(f=>f.rar==="commun"&&f.id!=="roussette"),...FOXES.filter(f=>f.rar==="discret")];
-const VIPS=FOXES.filter(f=>f.rar==="discret");
+const REG=[...FOXES.filter(f=>f.rar==="commun"&&f.id!=="roussette"&&!f.refuge),...FOXES.filter(f=>f.rar==="discret"&&!f.refuge)];
+const VIPS=FOXES.filter(f=>f.rar==="discret"&&!f.refuge);
 const QUESTS=[
   {k:"serve",r:"cafe",n:18,t:"Sers 18 cafés",g:40},{k:"serve",r:"croissant",n:18,t:"Sers 18 croissants",g:40},
   {k:"serve",r:"the",n:18,t:"Sers 18 thés",g:45},{k:"serve",r:"cookie",n:20,t:"Sers 20 cookies",g:55},

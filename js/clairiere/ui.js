@@ -81,6 +81,7 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.buy)buyBowl(b.dataset.buy);
   else if(b.dataset.obj)buyObj(b.dataset.obj);
+  else if(b.dataset.house)buildHouse(b.dataset.house);
   else if(b.dataset.fox)foxSheet(b.dataset.fox);
   else if(b.dataset.reread)reread(b.dataset.reread);
   else if(b.dataset.buddy){R.buddy=b.dataset.buddy;save();toast(`${FOX[R.buddy].name} t'accompagnera au Café.`);foxSheet(R.buddy)}

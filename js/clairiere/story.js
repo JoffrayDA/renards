@@ -21,7 +21,7 @@ const storyPeek=()=>storyRain()&&scn.rain;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","gribouille"];
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","copeau","sesame","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
@@ -221,6 +221,41 @@ const STORIES={
       ["brioche","shy","On partage ? Moitié-moitié."],
       ["painepice","joy","Moitié-moitié. Et le goûter de demain aussi."],
       ["brioche","joy",`Tiens, ${ME()}, la recette. Pour deux. C'est grâce à toi.`]]}
+  ]},
+  // la maison (demande de Joffray) : Copeau répare la porte coincée, Sésame l'ouvre ; ensuite on y entre (maison.js) et Copeau l'agrandit
+  copeau:{title:"La porte coincée",souv:"le clou porte-bonheur",beats:[
+    {at:"copeau",goal:"Copeau vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["copeau","joy",`Bonjour ${ME()} ! Copeau, bricoleur. Je répare tout ce qui grince, tout ce qui coince, tout ce qui penche.`],
+      ["copeau","surprise","Et cette porte… Elle est coincée depuis combien de temps ?"],
+      ["me","shy","Depuis toujours. On vit dehors, sous le porche."],
+      ["copeau","open","Dehors ? Avec une maison juste là ? Viens, on s'en occupe."]]},
+    {at:"@porch",game:{k:"nails",n:5,time:12,say:"Les gonds sont tout rouillés. Plante les clous neufs : trois coups chacun !",win:"Tac, tac, tac ! Des gonds tout neufs."},goal:"Aide Copeau à réparer la porte de la maison.",lines:[
+      ["copeau","joy","Elle ne grince plus du tout. Écoute ce silence !"],
+      ["copeau","surprise","…Mais elle ne s'ouvre toujours pas. Il y a une serrure. Et pas de clé."],
+      ["petitpois","sad","Personne n'a jamais eu la clé…"]]},
+    {at:"copeau",goal:"Copeau réfléchit devant la porte.",lines:[
+      ["copeau","open","Une serrure comme ça, je n'en ai vu qu'une fois. La clé pendait au cou d'une renarde bleue comme la nuit."],
+      ["copeau","shy","Elle passe parfois dans la forêt, le soir. Elle cherche une porte."],
+      ["copeau","joy","En attendant, garde ce clou. Le premier que j'ai planté ici. Ça porte bonheur."]]}
+  ]},
+  sesame:{title:"Une patte chacun",souv:"le double de la clé dorée",cast:["copeau"],beats:[
+    {at:"sesame",goal:"Une renarde bleu nuit est arrivée. Va lui dire bonjour.",lines:[
+      ["sesame","open",`Bonsoir, ${ME()}. Un renard qui sent la sciure m'a dit qu'une porte attendait sa clé.`],
+      ["sesame","shy","Je porte cette clé depuis que je suis toute petite. Je n'ai jamais trouvé sa porte."],
+      ["me","joy","Je crois qu'elle est juste là."]]},
+    {at:"@porch",goal:"Essaie la clé de Sésame dans la serrure.",lines:[
+      ["sesame","surprise","Elle entre… elle tourne… mais ça bloque."],
+      ["sesame","open","Ma grand-mère disait : cette porte s'ouvre pour une famille, pas pour une clé."],
+      ["copeau","joy","Une famille ? On en a une, ici ! Appelle tout le monde !"]]},
+    {at:"@porch",gather:1,goal:"Appelle tout le monde devant la maison.",lines:[
+      ["sesame","open","Tout le monde est là ? Alors on pousse ensemble. Une patte chacun."],
+      ["petitpois","joy","Même moi ? Même les petites pattes ?"],
+      ["sesame","joy","Surtout les petites pattes."],
+      ["sesame","surprise","…Clic."]]},
+    {at:"sesame",goal:"La porte est ouverte ! Va voir Sésame.",lines:[
+      ["sesame","joy","Une cheminée, un tapis, et de la place pour tout le monde. Bienvenue chez toi."],
+      ["copeau","open","Un peu petit, quand même. Je vais pouvoir agrandir tout ça…"],
+      ["sesame","shy",`Tiens, ${ME()}, le double de la clé. Ce soir, on dort tous près du feu. Touche la porte pour entrer.`]]}
   ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[

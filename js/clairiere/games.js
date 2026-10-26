@@ -477,6 +477,36 @@ const GAMES={
     reset();
   },
 
+  /* Les clous (Copeau) : la porte de la maison et ses gonds rouillés ; chaque clou neuf s'enfonce en trois coups de marteau,
+     avant la fin du temps. Le marteau tape là où on touche. */
+  nails(g,A){
+    const sv=A.sv,N=g.n||5,T=g.time||12;let st="play",left=T,ns=[];
+    sv.innerHTML=`<rect width="400" height="480" fill="#d9b98c"/>${[0,1,2,3,4,5,6,7].map(i=>`<path d="M0 ${30+i*60} H400" stroke="#c49a68" stroke-width="3"/>`).join("")}
+      <g filter="url(#wobble)"><rect x="100" y="70" width="200" height="360" rx="14" fill="#b9814a" ${O}/>${[140,180,220,260].map(x=>`<path d="M${x} 74 V426" stroke="#9a6a3c" stroke-width="2.4"/>`).join("")}
+      ${[120,330].map(y=>`<rect x="92" y="${y}" width="96" height="34" rx="6" fill="#a9a2a0" ${O}/><path d="M100 ${y+8} l14 4 M130 ${y+22} l18 -6 M160 ${y+10} l12 6" stroke="#c9763c" stroke-width="2.4" opacity=".7"/>`).join("")}
+      <circle cx="270" cy="250" r="9" fill="#f2c45a" ${O}/><path d="M270 256 v14" stroke="${INK}" stroke-width="4" stroke-linecap="round"/></g>
+      <g id="nl"></g><g id="ham" opacity="0"><g transform="rotate(-30)"><rect x="-4" y="-2" width="8" height="46" rx="3" fill="#c99a6a" stroke="${INK}" stroke-width="2.4"/><rect x="-18" y="-14" width="36" height="16" rx="4" fill="#9aa0aa" stroke="${INK}" stroke-width="2.6"/></g></g>
+      <rect x="40" y="456" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="458" width="316" height="8" rx="4" fill="#f2a35c"/>`;
+    const box=sv.querySelector("#nl"),bar=sv.querySelector("#bar"),ham=sv.querySelector("#ham");
+    // les clous plantés sur les deux gonds
+    const SP=[[110,126],[150,128],[176,148],[112,340],[146,352],[178,336],[128,142],[160,344]];
+    const nailSVG=k=>k>=3?`<circle r="6" fill="#c9ccd2" stroke="${INK}" stroke-width="2"/><path d="M-3 -3 l6 6" stroke="#fff" stroke-width="1.6"/>`
+      :`<ellipse cx="0" cy="${4+k*3}" rx="5" ry="2.4" fill="#3d2a35" opacity=".2"/><rect x="-2.4" y="${-26+k*8}" width="4.8" height="${28-k*8}" fill="#c9ccd2" stroke="${INK}" stroke-width="1.8"/><ellipse cx="0" cy="${-27+k*8}" rx="8" ry="3.4" fill="#dfe2e8" stroke="${INK}" stroke-width="2"/>`;
+    const reset=()=>{box.innerHTML="";st="play";left=T;
+      ns=SP.slice().sort(()=>Math.random()-.5).slice(0,N).map(([x,y])=>{const n={x,y,k:0,el:grp(box,"",{transform:`translate(${x} ${y})`})};n.el.innerHTML=nailSVG(0);return n});
+      A.say(g.say||`Plante les ${N} clous : trois coups chacun !`)};
+    A.tap=e=>{if(st!=="play")return;const p=svPt(sv,e);
+      ham.setAttribute("transform",`translate(${p.x.toFixed(0)} ${(p.y-6).toFixed(0)})`);ham.setAttribute("opacity",1);replay(ham.firstChild,"shk");
+      const n=ns.filter(n=>n.k<3).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
+      if(!n||Math.hypot(n.x-p.x,n.y-p.y)>40){A.say("Aïe, à côté ! Vise la tête du clou.");return}
+      n.k++;n.el.innerHTML=nailSVG(n.k);if(navigator.vibrate)navigator.vibrate(15);
+      const left3=ns.filter(n=>n.k<3).length;
+      if(!left3){st="won";A.win(g.win||"Tous les clous sont plantés !")}else if(n.k>=3)A.say(`Plus que ${left3} !`)};
+    A.loop(dt=>{if(st!=="play")return;left-=dt;bar.setAttribute("width",(316*Math.max(0,left)/T).toFixed(1));
+      if(left<=0){st="lost";A.say("Trop tard, la porte a encore glissé de ses gonds… On recommence !");A.later(reset,1500)}});
+    reset();
+  },
+
   /* La course (Moka) : des pierres numérotées ; on saute dessus dans l'ordre avant que Moka arrive au drapeau. */
   order(g,A){
     const sv=A.sv,id=g.who||g.target,N=g.n||10,T=g.time||10;let k=0,t=0,st="play",ps=[];

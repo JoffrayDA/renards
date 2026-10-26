@@ -76,6 +76,7 @@ function choose(f){
     if(f.spot&&f.spot.cov)return Math.random()<.85?null:cov[0]||null;
     return cov.length?cov[Math.floor(Math.random()*cov.length)]:"door";
   }
+  if(phaseNow()==="nuit"&&houseOpen()&&!isTarget(f.id)&&Math.random()<.35)return "door"; // la nuit, on rentre dormir près du feu (maison.js)
   if(f.id==="luciole"&&dark()){const l=free.find(s=>s.lamp&&!scn.lamps[s.lamp]);if(l)return l}
   // de temps en temps, un renard va grignoter à la gamelle quand il y a des croquettes
   if(R.bowl&&R.bowl.type==="croquettes"&&!taken(SPOT.bowl)&&Math.random()<.25)return SPOT.bowl;

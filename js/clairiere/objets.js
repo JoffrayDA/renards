@@ -61,7 +61,7 @@ function fillObjs(){if(scn.rain)return;
 function snapObj(f){const o=objOf(f.spot);if(!o||f.walk)return false;const k=f.spot.obj;
   if(R.photos.some(p=>p.obj===k&&p.id===f.id))return false;
   R.photos.push({id:f.id,obj:k,t:Date.now()});save();
-  const fl=document.createElement("div");fl.className="flash";$("scene").appendChild(fl);setTimeout(()=>fl.remove(),700);
+  const fl=document.createElement("div");fl.className="snapflash";$("scene").appendChild(fl);setTimeout(()=>fl.remove(),700);
   toast(`Clic ! ${FOX[f.id].name} ${o.in.toLowerCase()}. La photo est dans l'album.`);return true}
 
 function objSheet(){

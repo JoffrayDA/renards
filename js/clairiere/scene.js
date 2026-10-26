@@ -95,9 +95,17 @@ function bowlSVG(type,n=3){const B=type&&BOWLS[type];
   return `<svg viewBox="0 0 40 24" aria-hidden="true"><g filter="url(#wobble)">${food}<path d="M3 9 Q4 22 20 22 Q36 22 37 9Z" fill="#f59a8b" ${O}/><ellipse cx="20" cy="9" rx="17" ry="4" fill="none" ${O}/></g></svg>`}
 
 /* ---------- pluie ---------- */
-const cv=$("rain"),cx=cv.getContext("2d");let drops=[],lastT=performance.now(),raining=false;
-function sizeRain(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;cx.setTransform(d,0,0,d,0,0);drops=Array.from({length:90},()=>({x:Math.random()*r.width,y:Math.random()*r.height,v:260+Math.random()*160}))}
+const cv=$("rain"),cx=cv.getContext("2d");let drops=[],splashes=[],lastT=performance.now(),raining=false;
+// chaque goutte tombe jusqu'à un point du sol (vue de dessus) et y fait une petite éclaboussure (Joffray : la pluie ne touchait pas le sol)
+const newDrop=(w,h,y)=>({x:Math.random()*w*1.1,y:y??-10-Math.random()*h*.3,v:260+Math.random()*160,g:h*(.4+Math.random()*.6)});
+function sizeRain(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;cx.setTransform(d,0,0,d,0,0);drops=Array.from({length:90},()=>newDrop(r.width,r.height,Math.random()*r.height*.4));splashes=[]}
 function startRain(){if(raining||matchMedia("(prefers-reduced-motion: reduce)").matches)return;raining=true;lastT=performance.now();requestAnimationFrame(rainLoop)}
 function rainLoop(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;const w=cv.width/(devicePixelRatio||1),h=cv.height/(devicePixelRatio||1);cx.clearRect(0,0,w,h);
-  if(scn.rain){cx.strokeStyle="rgba(214,232,255,.75)";cx.lineWidth=1.6;cx.lineCap="round";cx.beginPath();for(const d of drops){d.y+=d.v*dt;d.x-=d.v*dt*.12;if(d.y>h){d.y=-10;d.x=Math.random()*w*1.1}cx.moveTo(d.x,d.y);cx.lineTo(d.x+1.4,d.y-11)}cx.stroke()}
+  if(scn.rain){cx.strokeStyle="rgba(214,232,255,.75)";cx.lineWidth=1.6;cx.lineCap="round";cx.beginPath();
+    for(const d of drops){d.y+=d.v*dt;d.x-=d.v*dt*.12;if(d.y>=d.g){splashes.push({x:d.x,y:d.g,t:0});Object.assign(d,newDrop(w,h))}cx.moveTo(d.x,d.y);cx.lineTo(d.x+1.4,d.y-11)}cx.stroke();
+    // éclaboussures : un petit rond qui s'élargit et deux gouttelettes qui rebondissent
+    cx.lineWidth=1.3;splashes=splashes.filter(s=>(s.t+=dt)<.4);
+    for(const s of splashes){const k=s.t/.4,a=(1-k)*.8,r=1.5+k*7;
+      cx.strokeStyle=`rgba(225,238,255,${a.toFixed(2)})`;cx.beginPath();cx.ellipse(s.x,s.y,r,r*.4,0,0,Math.PI*2);cx.stroke();
+      if(k<.6){cx.fillStyle=`rgba(235,244,255,${a.toFixed(2)})`;const hop=Math.sin(k/.6*Math.PI)*5;cx.beginPath();cx.arc(s.x-3-k*5,s.y-hop,1.1,0,Math.PI*2);cx.arc(s.x+3+k*5,s.y-hop,1.1,0,Math.PI*2);cx.fill()}}}
   if(scn.rain)requestAnimationFrame(rainLoop);else raining=false}

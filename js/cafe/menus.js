@@ -106,7 +106,7 @@ function shop(){
   const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
 }
 function carnet(){
-  const list=FOXES.filter(f=>f.id!=="roussette");
+  const list=FOXES.filter(f=>f.id!=="roussette"&&!f.refuge); // Copeau et Sésame ne vivent qu'à la Clairière
   const rows=list.map(f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
     const show=n||(f.event&&HW)||(c&&S.guest[f.id]); // invités d'Halloween pendant l'événement, invités d'honneur débloqués : montrés même pas encore venus
     return `<div class="fc${c?" vipc":f.event?" hwc":""}">${foxSVG(f,{sil:!show})}${show||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur : viendra bientôt en VIP":`★★★ au ${c.name}`):f.event&&!HW?"Vient à Halloween":WILD[f.id]?`Sauvage : une gamelle ${WILD_FOOD[WILD[f.id]]} au refuge l'attirera`:"Pas encore venu"}</em></div>`}).join("");
