@@ -10,6 +10,12 @@ const replay=(e,c)=>{e.classList.remove(c);void e.getBoundingClientRect();e.clas
 // un renard dessiné dans le SVG du jeu, centré en (x, y) sur une largeur w
 const faceAt=(id,x,y,w,expr="joy")=>foxArt(FOX[id],{portrait:1,expr}).replace(/^<svg/,`<svg x="${x-w/2}" y="${y-w/2}" width="${w}" height="${w}"`);
 const foxAt=(id,x,y,w,o={pose:"sit"})=>foxArt(FOX[id],o).replace(/^<svg/,`<svg x="${x-w/2}" y="${y-w*.97}" width="${w}" height="${w*.97}"`);
+// suivre le doigt dans le jeu : f(point dans le repère 400 × 480, doigt posé ?, "down" | "move")
+const svPt=(sv,e)=>{const p=sv.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(sv.getScreenCTM().inverse())};
+function drag(A,f){const sv=A.sv;let down=false;sv.style.touchAction="none";
+  sv.addEventListener("pointerdown",e=>{down=true;f(svPt(sv,e),true,"down")});
+  sv.addEventListener("pointermove",e=>{if(down||e.pointerType==="mouse")f(svPt(sv,e),down,"move")});
+  for(const k of ["pointerup","pointercancel","pointerleave"])sv.addEventListener(k,()=>{down=false})}
 
 /* ---------- objets trouvés ---------- */
 const ITEM={
@@ -45,6 +51,7 @@ function playGame(g,done){
   el.onpointerdown=e=>{if(!api.won&&api.tap)api.tap(e)};
   if(g.free){const x=document.createElement("button");x.className="btn pclose";x.type="button";x.textContent="Rentrer";
     x.onpointerdown=e=>{e.stopPropagation();api.close()};el.appendChild(x)}
+  el.__api=api; // pour les tests
   el.hidden=false;GAMES[g.k](g,api);
 }
 
@@ -360,6 +367,158 @@ const GAMES={
     A.say(g.say||"Regarde bien les chaussettes…");
     A.later(()=>cards.forEach(c=>turn(c,true)),300);
     A.later(()=>{cards.forEach(c=>turn(c,false));lock=false;A.say("Retrouve les paires : touche deux chaussettes pareilles !")},2600);
+  },
+
+  /* Le panier (Biscuit) : des pommes tombent du grand arbre, on glisse le panier du doigt pour les rattraper.
+     Une véreuse fait perdre une pomme ; trois belles pommes par terre et on recommence. */
+  basket(g,A){
+    const sv=A.sv,n=g.n||8,miss=g.miss||3;let got=0,lost=0,bx=200,tx=200,next=.6,st="play",fr=[];
+    const APPLE=`<circle r="13" fill="#e0564f" ${O}/><path d="M0 -12 q2 -6 6 -8" stroke="${INK}" stroke-width="2.4" fill="none"/><path d="M3 -16 q8 -4 10 2 q-6 3 -10 -2Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.8"/><path d="M-7 -4 q2 -4 6 -4" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
+      ROT=`<circle r="13" fill="#a68a52" ${O}/><circle cx="-4" cy="2" r="3" fill="#6f5a34"/><circle cx="5" cy="-4" r="2.2" fill="#6f5a34"/><path d="M5 3 q7 -3 9 4 q-5 3 -9 -4Z" fill="#f3b9c8" stroke="${INK}" stroke-width="1.6"/><circle cx="11" cy="4" r="1" fill="${INK}"/>`;
+    sv.innerHTML=`<rect width="400" height="480" fill="#bfe0f2"/><rect y="400" width="400" height="80" fill="#bcd99a"/>
+      <g filter="url(#wobble)">${[[60,40,70],[170,20,80],[290,30,76],[380,60,60],[110,90,56],[240,96,60]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}</g>
+      ${[[50,80],[140,60],[210,110],[300,70],[360,100],[100,120]].map(([x,y])=>`<g transform="translate(${x} ${y}) scale(.7)">${APPLE}</g>`).join("")}
+      <g id="fr"></g><g id="bk"><g filter="url(#wobble)"><path d="M-48 -24 H48 L38 20 H-38Z" fill="#d9a777" ${O}/><path d="M-44 -8 H44 M-41 6 H41" stroke="#b07a50" stroke-width="2.4"/><rect x="-52" y="-30" width="104" height="10" rx="5" fill="#c08a5c" ${O}/></g></g>`;
+    const box=sv.querySelector("#fr"),bk=sv.querySelector("#bk");
+    drag(A,p=>{tx=Math.max(50,Math.min(350,p.x))});
+    const reset=()=>{got=0;lost=0;fr.forEach(f=>f.el.remove());fr=[];next=.8;st="play";A.say(g.say||`Rattrape ${n} pommes avec le panier ! Pas les véreuses.`)};
+    A.loop(dt=>{bx+=(tx-bx)*Math.min(1,dt*14);bk.setAttribute("transform",`translate(${bx.toFixed(1)} 430)`);if(st!=="play")return;
+      if((next-=dt)<=0){next=Math.max(.45,.9-got*.05);const bad=Math.random()<.22;fr.push({x:40+Math.random()*320,y:100,vy:80+got*10+Math.random()*40,bad,el:grp(box,bad?ROT:APPLE)})}
+      for(const f of fr){f.vy+=170*dt;f.y+=f.vy*dt;
+        if(f.y>=398&&f.y<=432&&Math.abs(f.x-bx)<48){f.done=1;f.el.remove();
+          if(f.bad){got=Math.max(0,got-1);A.say(`Beurk, une véreuse ! ${got} sur ${n}.`)}
+          else{got++;if(got>=n){st="won";A.win(g.win||"Le panier est plein !");return}A.say(`${got} sur ${n} !`)}continue}
+        if(f.y>480){f.done=1;f.el.remove();if(f.bad)continue;lost++;
+          if(lost>=miss){st="lost";A.say(`${miss} pommes par terre… On recommence !`);A.later(reset,1400);return}
+          A.say(`Raté ! Encore ${miss-lost} chance${miss-lost>1?"s":""}.`);continue}
+        f.el.setAttribute("transform",`translate(${f.x.toFixed(1)} ${f.y.toFixed(1)})`)}
+      fr=fr.filter(f=>!f.done)});
+    reset();
+  },
+
+  /* Le tas de feuilles (Cannelle) : on pousse les feuilles du doigt jusqu'au tas, avant que le vent se lève. */
+  rake(g,A){
+    const sv=A.sv,N=g.n||16,T=g.time||20,PX=200,PY=260;let st="play",left=T,lv=[],last=null;
+    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${Array.from({length:26},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}
+      <ellipse cx="${PX}" cy="${PY}" rx="70" ry="46" fill="#e8d3a8" stroke="#b9925e" stroke-width="3" stroke-dasharray="8 7"/><g id="lv"></g>
+      <rect x="40" y="456" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="458" width="316" height="8" rx="4" fill="#f2a35c"/>`;
+    const box=sv.querySelector("#lv"),bar=sv.querySelector("#bar"),COL=["#f2a35c","#e8794e","#f6c065","#e0564f"];
+    const LEAF=c=>`<path d="M-15 0 Q-4 -13 15 0 Q-4 11 -15 0Z" fill="${c}" stroke="${INK}" stroke-width="2.2"/><path d="M-11 0 H11" stroke="${INK}" stroke-width="1.4" opacity=".5"/>`;
+    const reset=()=>{box.innerHTML="";st="play";left=T;
+      lv=Array.from({length:N},(_,i)=>{let x,y;do{x=30+Math.random()*340;y=90+Math.random()*340}while(Math.hypot(x-PX,(y-PY)*1.4)<120);
+        return {x,y,r:Math.random()*360,in:false,el:grp(box,LEAF(COL[i%COL.length]))}});
+      A.say(g.say||"Pousse les feuilles jusqu'au tas avec ton doigt !")};
+    drag(A,(p,down,type)=>{if(type==="down"||!down||st!=="play"){last=down?p:null;return}
+      if(last){const dx=p.x-last.x,dy=p.y-last.y;for(const l of lv)if(!l.in&&Math.hypot(l.x-p.x,l.y-p.y)<46){l.x+=dx;l.y+=dy;l.r+=dx}}last=p});
+    A.loop(dt=>{if(st!=="play")return;left-=dt;bar.setAttribute("width",(316*Math.max(0,left)/T).toFixed(1));
+      let k=0;for(const l of lv){
+        if(!l.in&&Math.hypot(l.x-PX,(l.y-PY)*1.3)<56){l.in=true;l.x=PX+(Math.random()-.5)*70;l.y=PY+(Math.random()-.5)*30;box.appendChild(l.el)}
+        if(l.in)k++;l.el.setAttribute("transform",`translate(${l.x.toFixed(1)} ${l.y.toFixed(1)}) rotate(${l.r.toFixed(0)})`)}
+      if(k>=N){st="won";A.win(g.win||"Un tas tout moelleux !");return}
+      if(left<=0){st="lost";A.say("Le vent se lève et éparpille tout… On recommence !");A.later(reset,1500)}});
+    reset();
+  },
+
+  /* La lanterne dans le brouillard (Charbon) : on promène la lumière du doigt ; il faut rester un instant sur le renard
+     caché parmi les cailloux, sans aller trop vite, sinon il prend peur et file ailleurs. */
+  lantern(g,A){
+    const sv=A.sv,id=g.who||g.target,S=[[70,170],[200,150],[330,180],[110,280],[250,270],[360,300],[60,400],[180,410],[300,420]];
+    let lx=200,ly=240,v=0,pt=0,hold=0,cool=0,st="look",slot=Math.floor(Math.random()*S.length);
+    const ROCK=k=>`<g filter="url(#wobble)"><path d="M-30 18 Q-34 -10 -12 -18 ${k%2?"l4 -12 l6 10 l8 -10 l4 12":""} Q30 -16 32 18Z" fill="#8f8790" ${O}/></g><path d="M-16 -6 q6 -4 12 -2" stroke="#b5aeb6" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    sv.innerHTML=`<defs><radialGradient id="lgh"><stop offset="0" stop-color="#000"/><stop offset=".6" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient>
+        <radialGradient id="lwarm"><stop offset="0" stop-color="#ffe9a6" stop-opacity=".45"/><stop offset="1" stop-color="#ffe9a6" stop-opacity="0"/></radialGradient>
+        <mask id="lm"><rect width="400" height="480" fill="#fff"/><circle id="hole" r="86" fill="url(#lgh)"/></mask></defs>
+      <rect width="400" height="480" fill="#56627a"/><rect y="100" width="400" height="380" fill="#5f7d68"/>
+      <g id="things">${S.map((_,i)=>`<g class="rk" data-i="${i}">${ROCK(i)}</g>`).join("")}<g id="cfox">${foxAt(id,0,22,70,{pose:"sit"})}</g></g>
+      <circle id="warm" r="90" fill="url(#lwarm)"/><rect width="400" height="480" fill="#1c2236" opacity=".99" mask="url(#lm)"/>
+      <g id="lamp"><path d="M0 -50 v10" stroke="${INK}" stroke-width="3"/><rect x="-9" y="-40" width="18" height="22" rx="5" fill="#ffe9a6" stroke="${INK}" stroke-width="2.6"/></g>`;
+    const hole=sv.querySelector("#hole"),warm=sv.querySelector("#warm"),lamp=sv.querySelector("#lamp"),cf=sv.querySelector("#cfox"),rks=[...sv.querySelectorAll(".rk")];
+    const place=()=>{let r=0;S.forEach(([x,y],i)=>{if(i===slot)cf.setAttribute("transform",`translate(${x} ${y})`);else rks[r++].setAttribute("transform",`translate(${x} ${y})`)});
+      rks[S.length-1].setAttribute("opacity",0)};
+    const light=()=>{for(const e of [hole,warm]){e.setAttribute("cx",lx.toFixed(0));e.setAttribute("cy",ly.toFixed(0))}lamp.setAttribute("transform",`translate(${lx.toFixed(0)} ${ly.toFixed(0)})`)};
+    drag(A,(p,down)=>{const now=performance.now(),d=Math.hypot(p.x-lx,p.y-ly);if(pt&&now>pt)v=v*.6+.4*d/((now-pt)/1000);pt=now;lx=p.x;ly=p.y;light()});
+    A.say(g.say||`Quelqu'un se cache dans le brouillard… Promène doucement la lanterne !`);
+    A.loop(dt=>{if(st!=="look")return;v*=Math.pow(.02,dt);cool-=dt;const [fx,fy]=S[slot],d=Math.hypot(lx-fx,ly-fy);
+      if(d<90&&v>420&&cool<=0){let j;do j=Math.floor(Math.random()*S.length);while(j===slot||Math.hypot(S[j][0]-lx,S[j][1]-ly)<160);
+        slot=j;place();cool=1;hold=0;A.say("Trop vite ! Il a eu peur et s'est caché ailleurs. Doucement…");return}
+      if(d<56){hold+=dt;if(hold>.7){st="won";cf.classList.add("popin");A.win(g.win||"Trouvé !")}}else hold=Math.max(0,hold-dt)});
+    place();light();
+  },
+
+  /* Le parapluie-feuille (Brume) : un renard se promène sous la pluie ; on garde la feuille au-dessus de lui du doigt. */
+  umbrella(g,A){
+    const sv=A.sv,id=g.who||g.target,D=g.time||12,wet=g.wet||3;let st,t,w,ux=200,tx=200,fxx=200,drops=[],acc=0;
+    sv.innerHTML=`<rect width="400" height="480" fill="#a9bccd"/><g filter="url(#wobble)">${[[60,30,60],[170,14,70],[290,26,66],[390,40,50]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#7d8ea3" ${O}/>`).join("")}</g>
+      <rect y="440" width="400" height="40" fill="#8fb07f"/><g id="dr"></g><g id="wf"><g id="wfi">${foxAt(id,0,0,84,{pose:"walk"})}</g></g>
+      <g id="umb"><path d="M0 -4 V22 q0 8 -8 8" fill="none" stroke="#7a5a4a" stroke-width="4" stroke-linecap="round"/><g filter="url(#wobble)"><path d="M-64 4 Q-46 -36 0 -40 Q46 -36 64 4 Q32 -6 0 4 Q-32 -6 -64 4Z" fill="#7fb27f" ${O}/></g><path d="M0 -36 V2 M0 -18 l-22 8 M0 -18 l22 8" stroke="#5f8f5c" stroke-width="2.2" fill="none"/></g>
+      <rect x="40" y="456" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="458" width="0" height="8" rx="4" fill="#9ec3ef"/>`;
+    const dr=sv.querySelector("#dr"),wf=sv.querySelector("#wf"),wfi=sv.querySelector("#wfi"),umb=sv.querySelector("#umb"),bar=sv.querySelector("#bar");
+    drag(A,p=>{tx=Math.max(40,Math.min(360,p.x))});
+    const reset=()=>{st="play";t=0;w=0;drops.forEach(d=>d.el.remove());drops=[];A.say(g.say||`Garde la feuille au-dessus de ${FOX[id].name} !`)};
+    A.loop(dt=>{ux+=(tx-ux)*Math.min(1,dt*16);umb.setAttribute("transform",`translate(${ux.toFixed(1)} 336)`);if(st!=="play")return;
+      t+=dt;bar.setAttribute("width",(316*Math.min(1,t/D)).toFixed(1));
+      const nx=200+Math.sin(t*.75)*110+Math.sin(t*1.7)*30,dir=nx>=fxx?1:-1;fxx=nx;
+      wf.setAttribute("transform",`translate(${fxx.toFixed(1)} 444)`);wfi.setAttribute("transform",`scale(${dir} 1)`);
+      acc+=dt*(16+t*1.5);while(acc>=1){acc--;drops.push({x:Math.random()*400,y:-10,el:grp(dr,`<path d="M0 0 v14" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>`)})}
+      // on teste le passage entre deux images : à faible cadence, une goutte sauterait par-dessus la feuille
+      for(const d of drops){const y0=d.y;d.y+=440*dt;
+        if(y0<340&&d.y>=318&&Math.abs(d.x-ux)<62){d.done=1;d.el.remove();continue}
+        if(y0<420&&d.y>=376&&Math.abs(d.x-fxx)<24){d.done=1;d.el.remove();w++;
+          if(w>=wet){st="lost";A.say(`${FOX[id].name} est trempé ! On recommence.`);A.later(reset,1400);return}
+          A.say(`Une goutte sur ${FOX[id].name} ! Encore ${wet-w} et il est trempé.`);continue}
+        if(d.y>470){d.done=1;d.el.remove();continue}
+        d.el.setAttribute("transform",`translate(${d.x.toFixed(1)} ${d.y.toFixed(1)})`)}
+      drops=drops.filter(d=>!d.done);
+      if(t>=D){st="won";A.win(g.win||"Pas une goutte !")}});
+    reset();
+  },
+
+  /* La course (Moka) : des pierres numérotées ; on saute dessus dans l'ordre avant que Moka arrive au drapeau. */
+  order(g,A){
+    const sv=A.sv,id=g.who||g.target,N=g.n||10,T=g.time||10;let k=0,t=0,st="play",ps=[];
+    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>
+      <path d="M40 132 H360" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M40 132 H360" stroke="#d9c6a4" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10"/>
+      <path d="M360 132 V100" stroke="${INK}" stroke-width="3"/><path d="M360 100 l22 7 l-22 7Z" fill="#e0564f" stroke="${INK}" stroke-width="2.4"/>
+      <g id="rme">${faceAt("roussette",0,0,40)}</g><g id="rmo">${faceAt(id,0,0,40)}</g><g id="st"></g>`;
+    const box=sv.querySelector("#st"),me=sv.querySelector("#rme"),mo=sv.querySelector("#rmo");
+    const reset=()=>{box.innerHTML="";k=0;t=0;st="play";const P=[];
+      while(P.length<N){const x=44+Math.random()*312,y=190+Math.random()*256;if(P.every(([a,b])=>Math.hypot(a-x,b-y)>66))P.push([x,y])}
+      ps=P.map(([x,y],i)=>{const e=grp(box,`<g><g filter="url(#wobble)"><ellipse rx="28" ry="22" fill="#d9d2c6" ${O}/></g><text y="8" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="22" fill="${INK}">${i+1}</text><circle r="32" fill="transparent"/></g>`,{transform:`translate(${x.toFixed(0)} ${y.toFixed(0)})`,class:"stone"});
+        e.style.cursor="pointer";e.onpointerdown=ev=>{ev.stopPropagation();hit(i,e)};return e});
+      A.say(g.say||`Saute sur les pierres de 1 à ${N}, avant que ${FOX[id].name} arrive au drapeau !`)};
+    const hit=(i,e)=>{if(st!=="play")return;
+      if(i!==k){replay(e.firstChild,"nope");A.say(`Pas celle-là ! Cherche le ${k+1}.`);return}
+      k++;e.classList.add("done");if(k>=N){st="won";A.win(g.win||"Gagné !")}else A.say(`${k} ! Maintenant le ${k+1}.`)};
+    A.loop(dt=>{if(st==="play")t+=dt;me.setAttribute("transform",`translate(${(40+320*k/N).toFixed(1)} 132)`);mo.setAttribute("transform",`translate(${(40+320*Math.min(1,t/T)).toFixed(1)} 132)`);
+      if(st==="play"&&t>=T){st="lost";A.say(`${FOX[id].name} est arrivé le premier ! On recommence.`);A.later(reset,1500)}});
+    reset();
+  },
+
+  /* Le grand portrait (fin de l'histoire de Gribouille) : le tableau de tout le refuge ; Petit Pois y ajoute Gribouille
+     dans le coin, de travers. On touche pour continuer. */
+  portrait(g,A){
+    const sv=A.sv,ids=Object.keys(R.res).filter(i=>!WILD[i]&&i!=="gribouille"),n=Math.max(1,ids.length);
+    const cols=Math.ceil(Math.sqrt(n*1.8)),rows=Math.ceil(n/cols),cw=292/cols,ch=170/rows,sz=Math.min(cw*1.15,ch*1.25,96);
+    let st="look";
+    sv.innerHTML=`<rect width="400" height="480" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
+      <path d="M110 340 L70 470 M290 340 L330 470 M200 340 V470" stroke="#a9785a" stroke-width="10" stroke-linecap="round"/>
+      <defs><clipPath id="pc"><rect x="46" y="66" width="308" height="268" rx="4"/></clipPath><clipPath id="gr"><rect id="grr" x="250" y="250" width="0" height="110"/></clipPath></defs>
+      <rect x="34" y="54" width="332" height="292" rx="10" fill="#c08a5c" stroke="${INK}" stroke-width="3.4"/>
+      <g clip-path="url(#pc)"><rect x="46" y="66" width="308" height="268" fill="#cfe6f5"/><circle cx="310" cy="106" r="22" fill="#fff3b8"/>
+        ${[[60,120],[150,96],[230,128]].map(([x,y])=>`<path d="M${x} ${y} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff"/>`).join("")}
+        <path d="M46 200 Q150 180 250 196 Q320 186 354 196 V334 H46Z" fill="#b5d68f"/>
+        ${Array.from({length:14},(_,i)=>`<path d="M${50+i*22} ${206+(i%3)*4} q8 -6 16 0" stroke="#8dbd86" stroke-width="3" fill="none" stroke-linecap="round"/>`).join("")}
+        ${ids.map((fid,i)=>{const r=Math.floor(i/cols),c=i%cols,inRow=Math.min(cols,n-r*cols);return foxAt(fid,200+(c-(inRow-1)/2)*cw,170+ch*(r+1)+6,sz,{pose:"sit"})}).join("")}
+        <g clip-path="url(#gr)"><g transform="translate(312 330) rotate(-14)">${foxAt("gribouille",0,0,70,{pose:"happy"})}</g></g></g>
+      <g id="brush" opacity="0"><path d="M0 0 q-10 -30 -40 -44" stroke="#f2a35c" stroke-width="10" stroke-linecap="round" fill="none"/><circle r="8" fill="#6aa6c9" stroke="${INK}" stroke-width="2.4"/></g>
+      ${foxAt("petitpois",64,470,96,{pose:"happy"})}`;
+    const grr=sv.querySelector("#grr"),br=sv.querySelector("#brush");
+    A.say(g.say||"Le grand portrait du refuge…");
+    let t=0;A.later(()=>{st="paint";A.say("Petit Pois ajoute Gribouille dans le coin…");br.setAttribute("opacity",1)},1600);
+    A.loop(dt=>{if(st!=="paint")return;t+=dt;const k=Math.min(1,t/2.2);grr.setAttribute("width",(110*k).toFixed(1));
+      br.setAttribute("transform",`translate(${(262+96*k).toFixed(1)} ${(300+Math.sin(t*14)*16).toFixed(1)})`);
+      if(k>=1){st="done";br.setAttribute("opacity",0);A.say("Voilà : tout le refuge. Touche pour continuer.")}});
+    A.tap=()=>{if(st==="done")A.win(g.win||"Le grand portrait est fini !")};
   },
 
   /* La danse des flaques : le renard saute dans des flaques, il faut refaire la même suite. Chaque flaque a sa note (do, mi, sol, do). */

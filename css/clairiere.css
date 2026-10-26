@@ -172,6 +172,10 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 @keyframes fall{to{transform:translateY(230px)}}
 .play .pile{cursor:pointer;transition:transform .45s ease-out,opacity .45s}
 .play .pile.gone{transform:translateY(-40px) scale(1.4);opacity:0;pointer-events:none}
+.play .stone{transition:opacity .2s}
+.play .stone.done{opacity:.35;pointer-events:none}
+.play .nope{transform-box:fill-box;transform-origin:center;animation:nope .35s}
+@keyframes nope{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .play .mflip{transform-box:fill-box;transform-origin:center}
 .play .flipc{animation:flipc .28s ease-in-out}
 @keyframes flipc{50%{transform:scaleX(0)}}

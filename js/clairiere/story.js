@@ -1,18 +1,20 @@
 /* La Clairière : les histoires. Voir docs/clairiere-v2.md, « Les histoires ».
    Une seule histoire à la fois, dans l'ordre d'ORDER. Le renard arrive pour son histoire (ou elle démarre s'il est déjà là),
-   dès la fin de la précédente (GAP, à 0). Une histoire est une suite de moments : un renard ou un endroit
+   le matin qui suit la fin de la précédente (nextMorning). Une histoire est une suite de moments : un renard ou un endroit
    porte un signe, on le touche, le dialogue se joue, et le moment suivant s'ouvre aussitôt. Ni amitié, ni météo, ni attente.
    R.beat[id] = moments finis ; R.souv[id] = souvenir reçu ; R.nextAt = quand la prochaine histoire peut commencer ;
    R.who[id][i] = le renard touché pour un moment « * » (pour relire l'histoire).
    at : un renard, "@endroit" (TG) ou "*" (n'importe quel autre renard du refuge). goal : ce qu'il faut faire pour ce moment.
    "me" parle : c'est Roussette, avec le nom choisi au Café. */
-// plus d'attente entre deux renards (choix de Joffray, 26/10/2026) : on garde GAP pour pouvoir en remettre une
-const GAP=0;
-if(!GAP)R.nextAt=0;
+// un renard par jour (décidé avec Joffray le 26/10/2026) : le suivant arrive au matin (6 h), au moins 6 h après la fin ;
+// les deux premières histoires s'enchaînent pour accrocher ; ?vite=1 pour tester sans attendre
+const VITE=/[?&]vite=1/.test(location.search);
+function nextMorning(){const d=new Date(Date.now()+6*36e5);if(d.getHours()>=6)d.setDate(d.getDate()+1);d.setHours(6,0,0,0);return d.getTime()}
+if(VITE)R.nextAt=0;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","gribouille"];
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
@@ -113,6 +115,52 @@ const STORIES={
       ["plouf","joy","Regarde-nous : deux éponges ! C'est le plus beau des compliments."],
       ["plouf","shy","Tiens, mes petites bottes de pluie. Moi, je préfère les pattes mouillées."]]}
   ]},
+  biscuit:{title:"La tarte aux pommes",souv:"la première part de tarte",beats:[
+    {at:"biscuit",goal:"Biscuit vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["biscuit","joy",`${ME()} ! Je veux faire une tarte aux pommes pour tout le refuge.`],
+      ["biscuit","open","Le grand arbre en est plein. Je secoue, tu rattrapes ?"]]},
+    {at:"@tree",game:{k:"basket",n:8,win:"Huit belles pommes !"},goal:"Rattrape les pommes sous le grand arbre.",lines:[
+      ["me","joy","Huit pommes, pas une seule véreuse !"]]},
+    {at:"biscuit",goal:"Apporte les pommes à Biscuit.",lines:[
+      ["biscuit","joy","Un peu de beurre, un peu de sucre… et hop, au four !"],
+      ["biscuit","shy","Tiens, la première part. C'est toujours la meilleure."]]}
+  ]},
+  cannelle:{title:"Le lit de feuilles",souv:"la feuille d'érable dorée",beats:[
+    {at:"cannelle",sleep:1,goal:"Cannelle s'est endormie dans l'herbe. Réveille-la doucement.",lines:[
+      ["cannelle","shy","Mmh… Je dormais. Je dors souvent."],
+      ["cannelle","sad","Mais ici, l'herbe pique. Il me faudrait un vrai lit de feuilles…"]]},
+    {at:"@leaves",game:{k:"rake",win:"Un tas tout moelleux !"},goal:"Fais un grand tas de feuilles pour Cannelle.",lines:[
+      ["me","joy","Le plus beau tas de feuilles de la forêt."]]},
+    {at:"cannelle",after:[["cannelle","leaves"]],goal:"Montre le tas de feuilles à Cannelle.",lines:[
+      ["cannelle","joy","Oh… Il sent l'automne. Je pourrais y dormir pour toujours."],
+      ["cannelle","shy","Tiens, la feuille dorée du dessus. Bonne nuit !"]]}
+  ]},
+  charbon:{title:"Gris dans le gris",souv:"le morceau de charbon à dessiner",beats:[
+    {at:"@lampL",hide:1,goal:"Le brouillard est tombé. Prends une lanterne.",game:{k:"lantern",who:"charbon",win:"Trouvé ! Un petit renard tout gris…"},after:[["charbon","lampL"]],lines:[
+      ["charbon","shy","Je… je me suis perdu. Gris dans le gris, personne ne me voit jamais."],
+      ["me","joy","Moi, je t'ai vu. Viens près des lanternes."]]},
+    {at:"charbon",goal:"Va voir Charbon près des lanternes.",lines:[
+      ["charbon","joy","Près de la lumière, je suis presque argenté."],
+      ["charbon","open","Tiens, un morceau de charbon. Ça dessine très bien… Garde-le pour un peintre, un jour."]]}
+  ]},
+  brume:{title:"Le parapluie-feuille",souv:"la goutte de rosée qui ne sèche jamais",beats:[
+    {at:"brume",goal:"Brume vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["brume","open",`Bonjour ${ME()}. Je ne sors jamais sans mon parapluie-feuille.`],
+      ["brume","sad","Mais Petit Pois est parti chercher des champignons… et un nuage le suit ! Prends mon parapluie, vite."]]},
+    {at:"petitpois",game:{k:"umbrella",who:"petitpois",win:"Pas une goutte !"},goal:"Abrite Petit Pois avec le parapluie-feuille.",lines:[
+      ["petitpois","joy","Je suis tout sec ! Et j'ai trouvé trois champignons."]]},
+    {at:"brume",goal:"Rends son parapluie à Brume.",lines:[
+      ["brume","joy","Tu tiens un parapluie mieux que moi."],
+      ["brume","shy","Tiens, une goutte de rosée que je garde depuis longtemps. Elle ne sèche jamais."]]}
+  ]},
+  moka:{title:"Toujours en retard",souv:"la montre qui retarde",beats:[
+    {at:"moka",goal:"Moka vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["moka","surprise",`Oh ! ${ME()} ! Je suis en retard… Pour quoi, déjà ?`],
+      ["moka","joy","Je sais ! Une course jusqu'à la mare. Cette fois, c'est moi qui gagne."]]},
+    {at:"@pond",game:{k:"order",who:"moka",n:10,time:10,win:"Gagné ! Moka arrive… en retard."},goal:"Fais la course avec Moka jusqu'à la mare.",lines:[
+      ["moka","joy","Battu ! Comme d'habitude. Au moins, je suis à l'heure pour perdre."],
+      ["moka","shy","Tiens, ma montre. Elle retarde de dix minutes… C'est peut-être pour ça."]]}
+  ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
       ["gribouille","joy",`Bonjour ${ME()} ! Je peins avec ma queue : tu vois le bout bleu ?`],
@@ -128,9 +176,10 @@ const STORIES={
       ["gribouille","surprise","Le grand portrait ! Appelle tout le monde devant la maison !"]]},
     {at:"@porch",gather:1,game:{k:"still",all:1,say:"Tout le monde pose ! Chasse les mouches !",win:"Ne bougez plus… Voilà !"},goal:"Appelle tout le monde devant la maison.",lines:[
       ["petitpois","surprise","Mais… Gribouille, tu n'es pas dessus, toi !"],
-      ["gribouille","shy","Le peintre, on ne le voit jamais. C'est normal."]]},
-    {at:"gribouille",goal:"Va voir le tableau de Gribouille.",lines:[
-      ["petitpois","open","Prête-moi ta queue. Là, dans le coin. Voilà : toi."],
+      ["gribouille","shy","Le peintre, on ne le voit jamais. C'est normal."],
+      ["petitpois","open","Prête-moi ta queue, Gribouille. J'ai une idée."]]},
+    {at:"gribouille",game:{k:"portrait"},goal:"Va voir le tableau de Gribouille.",lines:[
+      ["petitpois","joy","Là, dans le coin. Un peu de travers… Voilà : toi."],
       ["gribouille","joy","Tout de travers… C'est le plus beau morceau du tableau. Tiens, il est pour toi."]]}
   ]}
 };
@@ -145,8 +194,15 @@ R.who=R.who||{};
 const beats=id=>STORIES[id].beats;
 const storyDone=id=>(R.beat[id]||0)>=beats(id).length;
 const chainDone=()=>ORDER.every(storyDone);
+// Gribouille vient en tout dernier, le 30e renard (demande de Joffray) : son histoire attend que tous les autres
+// renards aient fini la leur, même celles qui ne sont pas encore écrites
+const LAST="gribouille",OTHERS=FOXES.filter(f=>!f.event&&f.id!=="roussette"&&f.id!==LAST).map(f=>f.id);
+const lastReady=()=>OTHERS.every(id=>STORIES[id]&&storyDone(id));
+const nextId=()=>ORDER.find(k=>!storyDone(k)&&(k!==LAST||lastReady()));
+// arrivé trop tôt (avant le 26/10/2026) : il repart, il reviendra en dernier
+if(isRes(LAST)&&!storyDone(LAST)&&!lastReady()){delete R.res[LAST];delete R.beat[LAST];delete R.who[LAST];save()}
 // l'histoire en cours et le moment attendu (null si on attend le prochain renard)
-function cur(){if(!R.intro)return null;const id=ORDER.find(k=>!storyDone(k));if(!id||!isRes(id))return null;
+function cur(){if(!R.intro)return null;const id=nextId();if(!id||!isRes(id))return null;
   const n=R.beat[id]||0;if(!n&&Date.now()<(R.nextAt||0))return null;return {id,n,b:beats(id)[n]}}
 // renards qui peuvent répondre à un moment « * » : les autres renards du refuge, pas celui d'avant
 function anyOk(c,fid){if(!isRes(fid)||WILD[fid]||fid===c.id)return false;const prev=(R.who[c.id]||{})[c.n-1];
@@ -160,7 +216,7 @@ function storyFoxes(){const c=cur();return c?[c.id,"petitpois",c.b.at].filter(is
 /* ---------- le prochain renard ---------- */
 // il arrive par la forêt dès que l'attente est finie ; page fermée, il est déjà là au retour
 let storyKey="";
-function chainTick(live){const id=ORDER.find(k=>!storyDone(k)),c=cur();
+function chainTick(live){const id=nextId(),c=cur();
   if(R.intro&&(c?c.id+c.n:"")!==storyKey)renderStory(); // l'attente d'un renard déjà là vient de finir
   if(!R.intro||!id||isRes(id)||Date.now()<(R.nextAt||0))return;
   R.res[id]={at:Date.now(),h:0,pet:""};save();
@@ -196,7 +252,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
       if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;drawGlow()}goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
     if(c.id==="gaston"&&storyDone("gaston")){drawBg();log("La pêche est ouverte : touche la mare quand tu veux.")}
-    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=Date.now()+GAP;R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
+    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
     else toast("+3 glands");
     save();renderStory();renderHud();
   });
@@ -211,9 +267,10 @@ hotEl.onpointerdown=e=>{e.stopPropagation();const c=cur();if(c)storyTap(c.b.at)}
 $("actors").appendChild(hotEl);
 function goalText(){const c=cur();
   if(c)return {t:`${STORIES[c.id].title} · ${c.n+1} sur ${beats(c.id).length}`,g:c.b.goal};
-  const id=ORDER.find(k=>!storyDone(k));
-  if(!id)return {t:"Histoires",g:"Toutes les histoires sont finies. D'autres arrivent bientôt."};
-  return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter dans quelques heures.`:"Un nouveau renard arrivera dans quelques heures."};
+  const id=nextId();
+  if(!id)return {t:"Histoires",g:storyDone(LAST)?"Toutes les histoires sont finies.":"La suite des histoires arrive bientôt."};
+  const w=R.nextAt>Date.now()?(new Date(R.nextAt).getDate()===new Date().getDate()?"ce matin":"demain matin"):"bientôt";
+  return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
 }
 function renderStory(){
   const c=cur();
@@ -233,12 +290,12 @@ function renderStory(){
 
 /* ---------- le journal des histoires ---------- */
 function journal(){
-  const c=cur(),nextId=ORDER.find(k=>!storyDone(k));
+  const c=cur(),nx=nextId();
   const row=id=>{const S=STORIES[id],n=R.beat[id]||0,N=beats(id).length,f=FOX[id];
     if(storyDone(id))return `<div class="opt"><span class="thumb">${foxArt(f,{expr:"joy",portrait:1})}</span><div class="txt"><strong>${S.title}</strong><span>${f.name} · terminée. Souvenir : ${R.souv[id]||S.souv}.</span></div><button class="btn ghost" data-reread="${id}" type="button">Relire</button></div>`;
     const dots=`<span class="dots">${Array.from({length:N},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
     if(c&&c.id===id)return `<div class="opt now"><span class="thumb">${foxArt(f,{expr:"open",portrait:1})}</span><div class="txt"><strong>${S.title}</strong>${dots}<span>${c.b.goal}</span></div></div>`;
-    if(id===nextId)return `<div class="opt"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>${isRes(id)?S.title:"???"}</strong><span>${goalText().g}</span></div></div>`;
+    if(id===nx)return `<div class="opt"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>${isRes(id)?S.title:"???"}</strong><span>${goalText().g}</span></div></div>`;
     return `<div class="opt unseen"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>???</strong><span>${isRes(id)?`${f.name} te racontera son histoire plus tard.`:"Une histoire à venir."}</span></div></div>`};
   openSheet(`<h2>Les histoires</h2><p class="sub">Une histoire à la fois. Touche le renard ou l'endroit qui porte un <b class="markin">!</b> pour avancer.</p>${ORDER.map(row).join("")}`);
 }
