@@ -49,7 +49,7 @@ const STORIES={
     {at:"luciole",goal:"Luciole a une idée.",lines:[
       ["luciole","open","Six lanternes, et on est de plus en plus nombreux. Il en faut une de plus !"],
       ["luciole","shy","Un vieux bocal est coincé dans le grand arbre. Tu peux le décrocher ?"]]},
-    {at:"@tree",game:{k:"shake",item:"jar",say:"Secoue le grand arbre !",win:"Le bocal est tombé !"},goal:"Fais tomber le bocal du grand arbre.",lines:[
+    {at:"@tree",game:{k:"shake",item:"jar",catch:1,say:"Secoue le grand arbre !",win:"Rattrapé au vol ! Pas une fissure."},goal:"Fais tomber le bocal du grand arbre.",lines:[
       ["me","joy","Pas une fissure. Il n'attend plus que sa lumière."]]},
     {at:"luciole",lamps:1,goal:"Apporte le bocal à Luciole.",lines:[
       ["luciole","surprise","Attends, je souffle dedans…"],
@@ -77,9 +77,10 @@ const STORIES={
     {at:"@porch",hide:1,goal:"Quelqu'un s'est glissé dans ta maison. Va voir à la porte.",lines:[
       ["pantoufle","shy","Chut ! Je ne suis pas là."],
       ["me","open","Pantoufle ? Tu ne veux pas sortir un peu ?"],
-      ["pantoufle","sad","Dehors, il y a du vent, des feuilles, des gens. Ici, il y a un coussin."]]},
-    {at:"@porch",hide:1,game:{k:"whack",who:"pantoufle",need:5,win:"Trouvé ! Et… il est dehors !"},after:[["pantoufle","p2"]],goal:"Joue à cache-cache avec Pantoufle.",lines:[
-      ["pantoufle","joy","Hi hi ! Encore une !"],
+      ["pantoufle","sad","Dehors, il y a du vent, des feuilles, des gens. Ici, il y a un coussin."],
+      ["me","joy","Des coussins ? J'ai un jeu pour toi. Je les pose sur le porche…"]]},
+    {at:"@porch",hide:1,game:{k:"cushion",who:"pantoufle",win:"Trouvé trois fois ! Et… vous êtes dehors !"},after:[["pantoufle","p2"]],goal:"Propose un jeu des coussins à Pantoufle, devant la porte.",lines:[
+      ["pantoufle","joy","Hi hi ! Le jeu des coussins, c'est mon préféré !"],
       ["pantoufle","surprise","Oh… Je suis dehors. Je ne m'en suis même pas rendu compte."]]},
     {at:"pantoufle",goal:"Va voir Pantoufle sous le porche.",lines:[
       ["pantoufle","open","Dehors, ce n'est pas si mal. Surtout sous le porche."],

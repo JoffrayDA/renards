@@ -112,7 +112,7 @@ const GAMES={
       const step=()=>{if(nib-->0)A.later(()=>{ring(16,2.2);bob.style.transform="translateY(4px)";A.later(()=>bob.style.transform="",150);A.say("Ploc… ça grignote. Pas encore !");A.later(step,0)},900+Math.random()*900);
         else A.later(()=>{st="bite";bob.style.transform="translateY(24px)";bob.style.opacity=.3;ring(22,3.6);ring(44,2.6,120);ring(66,1.8,240);drops(7,40);ex.setAttribute("opacity",1);replay(ex,"popin");rod.classList.add("tug");A.say("Ça mord ! Touche vite !");
           try{navigator.vibrate&&navigator.vibrate(90)}catch(e){}
-          A.later(()=>{if(st==="bite"){st="miss";rod.classList.remove("tug");ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";sh.style.opacity=0;A.say("Trop tard… il a filé. On relance !");A.later(start,1400)}},1150)},800+Math.random()*1000)};
+          A.later(()=>{if(st==="bite"){st="miss";rod.classList.remove("tug");ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";sh.style.opacity=0;A.say("Trop tard… il a filé. On relance !");A.later(start,1400)}},500)},800+Math.random()*1000)};
       A.later(step,1400)};
     // la prise saute hors de l'eau, puis s'affiche sur une carte
     const show=(it,name,sub,fish)=>{
@@ -134,38 +134,65 @@ const GAMES={
     start();
   },
 
-  /* Secouer l'arbre : chaque toucher fait tomber des feuilles ; au bout de quelques coups, l'objet tombe. */
+  /* Secouer l'arbre : chaque toucher fait tomber des feuilles ; au bout de quelques coups, l'objet tombe.
+     Avec catch : il tombe au milieu de pommes de pin, il faut le toucher en l'air avant qu'il se casse par terre. */
   shake(g,A){
-    const sv=A.sv,n=g.n||7;let k=0;
+    const sv=A.sv,n=g.n||7,it=g.item||"jar";let k=0,st="shake",dn=0;
     sv.innerHTML=`<rect width="400" height="480" fill="#bfe0f2"/><rect y="380" width="400" height="100" fill="#bcd99a"/>
       <g filter="url(#wobble)"><path d="M178 470 Q186 380 180 260 L222 260 Q216 380 226 470Z" fill="#a9785a" ${O}/></g>
       <g id="crown" class="crown"><g filter="url(#wobble)">${[[200,170,92],[120,200,60],[284,200,62],[160,110,58],[246,112,60]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}
         ${[[150,180],[250,150],[205,230],[290,215],[120,140]].map(([x,y])=>`<path d="M${x} ${y} q8 -6 16 0" fill="none" stroke="#6f9a60" stroke-width="3" stroke-linecap="round"/>`).join("")}</g>
-        <g transform="translate(232 196) scale(.8)" opacity=".9">${ITEM[g.item||"jar"]}</g></g>
-      <g id="fx"></g><g id="drop" opacity="0"><g transform="translate(232 196) scale(.8)">${ITEM[g.item||"jar"]}</g></g>`;
+        <g id="hang" transform="translate(232 196) scale(.8)" opacity=".9">${ITEM[it]}</g></g>
+      <g id="fx"></g><g id="air"></g><g id="drop" opacity="0"><g transform="translate(232 196) scale(.8)">${ITEM[it]}</g></g>`;
     A.say(g.say||"Secoue l'arbre : touche-le plusieurs fois !");
-    const crown=sv.querySelector("#crown"),fx=sv.querySelector("#fx");
-    A.tap=()=>{replay(crown,"shk");k++;
+    const crown=sv.querySelector("#crown"),fx=sv.querySelector("#fx"),air=sv.querySelector("#air"),hang=sv.querySelector("#hang");
+    // la chute : l'objet (et des pommes de pin pour brouiller) tombent ; on touche l'objet en l'air
+    const drop=()=>{st="fall";const D=++dn;hang.setAttribute("opacity",0);air.innerHTML="";
+      const fs=[{it,x:150+Math.random()*100,good:1},{it:"cone",x:110+Math.random()*60},{it:"cone",x:240+Math.random()*60}].map((o,i)=>({...o,y:150+i*14,vy:-60-i*30,vx:(Math.random()-.5)*50,r:0,
+        el:grp(air,`<g transform="scale(${o.good?1.25:1})">${ITEM[o.it]}</g><circle r="${o.good?40:26}" fill="transparent"/>`,o.good?{"data-g":1}:{})}));
+      fs.forEach(f=>{f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();if(st!=="fall")return;
+        if(f.good){st="won";f.el.classList.add("popin");A.win(g.win||"Rattrapé !")}else{f.el.remove();f.gone=1;A.say("Une pomme de pin ! Le bocal, vite !")}}});
+      A.say("Il tombe ! Attrape-le avant qu'il touche le sol !");
+      A.loop(dt=>{if(st!=="fall"||D!==dn)return;for(const f of fs){if(f.gone)continue;f.vy+=560*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.r+=f.vx*dt*1.5;
+        if(f.y>=404){if(f.good){st="broke";f.el.innerHTML=`<path d="M-16 4 l8 -10 l4 8 l6 -12 l4 14 l8 -6 l2 10Z" fill="#e4f3f9" ${O}/>`;f.el.setAttribute("transform",`translate(${f.x.toFixed(0)} 404)`);
+            try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
+            A.say("Crac ! Il s'est cassé… Il y en a un autre là-haut. Secoue encore !");A.later(()=>{air.innerHTML="";hang.setAttribute("opacity",.9);k=n-3;st="shake"},1400);return}
+          f.gone=1;f.el.remove();continue}
+        f.el.setAttribute("transform",`translate(${f.x.toFixed(1)} ${f.y.toFixed(1)}) rotate(${f.r.toFixed(0)})`)}})};
+    A.tap=()=>{if(st!=="shake")return;replay(crown,"shk");k++;
       for(let i=0;i<2;i++){const x=110+Math.random()*180,c=["#8dbd86","#b5d68f","#f2a35c"][Math.floor(Math.random()*3)];
         const l=grp(fx,`<path d="M-8 0 Q0 -8 8 0 Q0 6 -8 0Z" fill="${c}" stroke="${INK}" stroke-width="2"/>`,{transform:`translate(${x} ${120+Math.random()*100})`});
         const f=mk(l,"animateTransform",{attributeName:"transform",type:"translate",additive:"sum",from:"0 0",to:`${(Math.random()-.5)*60} 300`,dur:"1.2s",fill:"freeze"});f.beginElement();setTimeout(()=>l.remove(),1300)}
-      if(k===n){crown.lastElementChild.remove();const d=sv.querySelector("#drop");d.setAttribute("opacity",1);d.classList.add("fall");A.win(g.win||"Quelque chose est tombé !")}
+      if(k===n){if(g.catch)return drop();st="won";hang.remove();const d=sv.querySelector("#drop");d.setAttribute("opacity",1);d.classList.add("fall");A.win(g.win||"Quelque chose est tombé !")}
       else if(k===Math.ceil(n/2))A.say("Encore ! Quelque chose bouge là-haut…")};
   },
 
-  /* Fouiller : des tas de feuilles ; les premiers cachent des surprises, l'objet est toujours sous le troisième. */
+  /* Fouiller : des tas de feuilles ; l'objet est sous celui qui frémit de temps en temps (le vent fait bouger tous les tas,
+     ça ne compte pas). Deux essais ; raté deux fois, l'objet file sous un autre tas. */
   search(g,A){
-    const sv=A.sv,P=[[100,180],[300,170],[200,290],[96,400],[304,392]],gags=[["snail","Un escargot. Il n'a rien vu."],["cone","Une pomme de pin. Pas ça…"],["pebble","Un caillou tout lisse."]];
-    let k=0;
-    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${Array.from({length:30},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}`;
-    A.say(g.say||"Fouille les tas de feuilles !");
-    P.forEach(([x,y],i)=>{
-      const it=grp(sv,"",{transform:`translate(${x} ${y})`,opacity:0});
-      const pile=grp(sv,`<g filter="url(#wobble)">${[[-26,4,"#f2a35c",-12],[0,-8,"#e8794e",8],[24,2,"#f6c065",-4],[-10,10,"#e98a5a",14],[14,12,"#f2a35c",-8],[0,0,"#f6c065",4]].map(([dx,dy,c,r])=>`<path d="M${dx-20} ${dy} Q${dx} ${dy-20} ${dx+20} ${dy} Q${dx} ${dy+8} ${dx-20} ${dy}Z" fill="${c}" transform="rotate(${r} ${dx} ${dy})" ${O}/>`).join("")}</g>`,{transform:`translate(${x} ${y})`,class:"pile"});
-      pile.onpointerdown=e=>{e.stopPropagation();if(A.won||pile.classList.contains("gone"))return;pile.classList.add("gone");k++;
-        if(k===3){it.innerHTML=ITEM[g.item||"wool"];it.setAttribute("opacity",1);it.classList.add("popin");A.win(g.win||"Trouvé !")}
-        else{const [gi,t]=gags[(k-1+i)%gags.length];it.innerHTML=ITEM[gi];it.setAttribute("opacity",1);it.classList.add("popin");A.say(t)}};
-    });
+    const sv=A.sv,P=[[88,150],[206,128],[322,166],[136,262],[272,284],[80,388],[214,402],[330,380]],tries=g.tries||2,
+      gags=[["snail","Un escargot. Il n'a rien vu."],["cone","Une pomme de pin. Pas ça…"],["pebble","Un caillou tout lisse."],["leaf","Rien que des feuilles."]];
+    let good=0,left=tries,st="look",gen=0;
+    sv.innerHTML=`<rect width="400" height="480" fill="#c9e2a4"/>${Array.from({length:30},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="its"></g><g id="piles"></g>`;
+    const its=sv.querySelector("#its"),box=sv.querySelector("#piles");
+    const piles=P.map(([x,y],i)=>{const it=grp(its,"",{transform:`translate(${x} ${y})`,opacity:0});
+      const pile=grp(box,`<g class="pin"><g filter="url(#wobble)">${[[-26,4,"#f2a35c",-12],[0,-8,"#e8794e",8],[24,2,"#f6c065",-4],[-10,10,"#e98a5a",14],[14,12,"#f2a35c",-8],[0,0,"#f6c065",4]].map(([dx,dy,c,r])=>`<path d="M${dx-20} ${dy} Q${dx} ${dy-20} ${dx+20} ${dy} Q${dx} ${dy+8} ${dx-20} ${dy}Z" fill="${c}" transform="rotate(${r} ${dx} ${dy})" ${O}/>`).join("")}</g></g>`,{transform:`translate(${x} ${y})`,class:"pile"});
+      pile.onpointerdown=e=>{e.stopPropagation();pick(i)};return {pile,it,pin:pile.firstChild}});
+    const shown=(i,k)=>{const p=piles[i];p.it.innerHTML=ITEM[k];p.it.setAttribute("opacity",1);replay(p.it,"popin")};
+    // le bon tas frémit ; de temps en temps, une rafale fait bouger tous les tas
+    const rustle=G=>{if(G!==gen||st!=="look")return;
+      if(Math.random()<.35)replay(box,"gust");else replay(piles[good].pin,"shiv");
+      A.later(()=>rustle(G),1200+Math.random()*1300)};
+    const round=()=>{gen++;st="look";left=tries;good=Math.floor(Math.random()*P.length);
+      piles.forEach((p,i)=>{p.pile.classList.remove("gone");p.pile.toggleAttribute("data-g",i===good);p.it.setAttribute("opacity",0);p.it.innerHTML=""});
+      A.say(g.say||`La laine est sous un des tas : il frémit quand elle bouge. Regarde bien… ${tries} essais !`);
+      const G=gen;A.later(()=>rustle(G),900)};
+    const pick=i=>{const p=piles[i];if(A.won||st!=="look"||p.pile.classList.contains("gone"))return;p.pile.classList.add("gone");
+      if(i===good){st="won";shown(i,g.item||"wool");A.win(g.win||"Trouvé !");return}
+      const [gi,t]=gags[Math.floor(Math.random()*gags.length)];shown(i,gi);left--;
+      if(left>0)A.say(`${t} Encore ${left} essai${left>1?"s":""} !`);
+      else{st="lost";piles[good].pile.classList.add("gone");shown(good,g.item||"wool");A.say("Raté ! La laine était là… et elle file sous un autre tas. On recommence !");A.later(round,2200)}};
+    round();
   },
 
   /* Attraper : des lucioles volent dans tous les sens ; on les touche une à une. */
@@ -193,26 +220,26 @@ const GAMES={
   firefly(g,A){
     const sv=A.sv,COL=["#ff9ec4","#8fd3ff","#a6f08a","#c9a6ff","#ff7a8a","#7ff0d8"];let done=0;
     sv.innerHTML=`<defs>${COL.map((c,i)=>`<radialGradient id="ffc${i}"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="${c}" stop-opacity=".85"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`).join("")}
-        <radialGradient id="ffg"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#ffd23a"/><stop offset="1" stop-color="#ffb800" stop-opacity="0"/></radialGradient></defs>
-      <rect width="400" height="480" fill="#3a3f78"/>${Array.from({length:22},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.37%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%240}" r="1.4" fill="#fff8d0"/>`).join("")}
+        <radialGradient id="ffsky" cx=".5" cy=".55" r=".7"><stop offset="0" stop-color="#7a6bb8" stop-opacity=".7"/><stop offset="1" stop-color="#3a3f78" stop-opacity="0"/></radialGradient><radialGradient id="ffg"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#ffd23a"/><stop offset="1" stop-color="#ffb800" stop-opacity="0"/></radialGradient></defs>
+      <rect width="400" height="480" fill="#3a3f78"/><rect width="400" height="480" fill="url(#ffsky)"/><circle cx="61" cy="239" r="90" fill="url(#ffg)" opacity=".35"/>${Array.from({length:22},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.37%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%240}" r="1.4" fill="#fff8d0"/>`).join("")}
       <g filter="url(#wobble)"><path d="M0 340 Q100 310 200 330 Q300 310 400 340 V480 H0Z" fill="#4b6a5a" ${O}/>
         <rect x="56" y="250" width="10" height="110" rx="4" fill="#7a5a4a" ${O}/><rect x="44" y="222" width="34" height="34" rx="9" fill="#ffe9a6" ${O}/></g>
       <g id="flies"></g>`;
     const box=sv.querySelector("#flies");
-    const mkFly=(gold,i)=>{const b={gold,x:40+Math.random()*320,y:70+Math.random()*290,a:Math.random()*6.3,s:gold?250:45+Math.random()*45,t:Math.random()*9,flee:0};
-      b.el=grp(box,gold?`<circle r="38" fill="url(#ffg)" class="glim"/><circle r="6" fill="#fffbe0" stroke="#ffb800" stroke-width="2"/><circle r="34" fill="transparent"/>`
-        :`<circle r="${20+Math.random()*10}" fill="url(#ffc${i%COL.length})" class="glim" style="animation-delay:${(-Math.random()*2).toFixed(2)}s"/><circle r="3.6" fill="#fff"/><circle r="22" fill="transparent"/>`);
+    const mkFly=(gold,i)=>{const b={gold,x:40+Math.random()*320,y:70+Math.random()*290,a:Math.random()*6.3,s:gold?330:45+Math.random()*45,t:Math.random()*9,flee:0};
+      b.el=grp(box,gold?`<circle r="50" fill="url(#ffg)" class="glim"/><circle r="6" fill="#fffbe0" stroke="#ffb800" stroke-width="2"/><circle r="34" fill="transparent"/>`
+        :`<circle r="${26+Math.random()*14}" fill="url(#ffc${i%COL.length})" class="glim" style="animation-delay:${(-Math.random()*2).toFixed(2)}s"/><circle r="3.6" fill="#fff"/><circle r="22" fill="transparent"/>`);
       b.el.style.cursor="pointer";
       b.el.onpointerdown=e=>{e.stopPropagation();if(done||A.won)return;
         if(b.gold){done=1;b.el.classList.add("caught");A.win(g.win||"Attrapée !")}
         else{b.flee=.6;b.s=180;b.a+=Math.PI;A.say(g.miss||"Pas celle-là ! Cherche la dorée !")}};
       return b};
-    const flies=[...Array.from({length:16},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[16].el); // la dorée passe devant
+    const flies=[...Array.from({length:28},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[28].el); // la dorée passe devant
     A.say(g.say||"Attrape la luciole dorée !");
     A.loop(dt=>{for(const b of flies){if(done&&b.gold)continue;b.t+=dt;
       if(b.flee>0&&(b.flee-=dt)<=0)b.s=45+Math.random()*45;
       // la dorée change souvent de direction, d'un coup
-      if(b.gold&&Math.random()<dt*2.2)b.a+=(Math.random()-.5)*3.4;else b.a+=(Math.random()-.5)*(b.gold?6:2.5)*dt;
+      if(b.gold&&Math.random()<dt*3)b.a+=(Math.random()-.5)*3.6;else b.a+=(Math.random()-.5)*(b.gold?6:2.5)*dt;
       b.x+=Math.cos(b.a)*b.s*dt;b.y+=Math.sin(b.a)*b.s*dt+Math.sin(b.t*3)*.4;
       if(b.x<30||b.x>370)b.a=Math.PI-b.a;if(b.y<60||b.y>400)b.a=-b.a;b.x=Math.max(30,Math.min(370,b.x));b.y=Math.max(60,Math.min(400,b.y));
       b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`)}});
@@ -246,25 +273,56 @@ const GAMES={
     reset();
   },
 
-  /* Cache-cache : le renard pointe le museau aux fenêtres, à la porte, derrière le pot… il faut le toucher. */
-  whack(g,A){
-    const sv=A.sv,need=g.need||5,id=g.who||g.target,H=[[136,170],[264,170],[200,300],[70,360],[330,360]];let k=0,last=-1;
+  /* Le jeu des coussins (Pantoufle) : le renard se cache sous un des coussins du porche, les coussins se mélangent,
+     il faut toucher le bon. 3 manches, de plus en plus rapides. Raté : on voit où il était, et on refait la manche. */
+  cushion(g,A){
+    const sv=A.sv,id=g.who||g.target,name=FOX[id].name,RD=g.rounds||[[3,3,.62],[3,6,.46],[4,8,.38]],Y=338,
+      COL=["#f6b3c4","#9ec3ef","#f2d27a"],LOOT=[["wool","une pelote de laine"],["cone","une pomme de pin"],["leaf","une feuille"],["pebble","un caillou"]];
+    let r=0,st="show",cs=[],under=null,sw=null,q=[];
     sv.innerHTML=`<rect width="400" height="480" fill="#bcd99a"/><g filter="url(#wobble)">
-      <path d="M40 90 L360 90 L360 330 L40 330Z" fill="#f0c99a" ${O}/>${[120,150,180,210,240,270,300].map(y=>`<path d="M42 ${y} H358" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
-      <path d="M20 96 L200 20 L380 96Z" fill="#d98b7a" ${O}/>
-      <rect x="96" y="130" width="80" height="78" rx="8" fill="#6a4434" ${O}/><rect x="224" y="130" width="80" height="78" rx="8" fill="#6a4434" ${O}/>
-      <path d="M160 330 V250 Q200 220 240 250 V330Z" fill="#6a4434" ${O}/>
-      <path d="M40 330 L60 400 L82 400 L100 330Z" fill="#e8794e" ${O}/><circle cx="330" cy="352" r="40" fill="#8dbd86" ${O}/></g><g id="pk"></g>
-      <g filter="url(#wobble)"><path d="M92 206 H180 M220 206 H308" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M38 360 Q70 344 104 360 L98 372 H44Z" fill="#e8794e" ${O}/><path d="M290 380 Q330 350 372 380 Q330 396 290 380Z" fill="#7fb27f" ${O}/></g>`;
-    const pk=sv.querySelector("#pk");
-    A.say(g.say||`${FOX[id].name} joue à cache-cache : touche-le quand il se montre !`);
-    const peek=()=>{let h;do h=Math.floor(Math.random()*H.length);while(h===last);last=h;const [x,y]=H[h];
-      const p=grp(pk,faceAt(id,x,y,80,"joy")+`<circle cx="${x}" cy="${y}" r="42" fill="transparent"/>`,{class:"peek"});
-      p.onpointerdown=e=>{e.stopPropagation();if(A.won||p.dataset.hit)return;p.dataset.hit=1;k++;p.classList.add("hit");
-        if(k>=need)A.win(g.win||"Trouvé !");else A.say(`Trouvé ! ${k} sur ${need}… il se recache !`)};
-      A.later(()=>{p.classList.add("hide");A.later(()=>p.remove(),250)},950-Math.min(250,k*50));
-      A.later(peek,1150-Math.min(250,k*50))};
-    A.later(peek,700);
+      <rect x="-10" y="40" width="420" height="230" fill="#f0c99a" ${O}/>${[80,120,160,200,240].map(y=>`<path d="M0 ${y} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
+      ${[40,280].map(x=>`<rect x="${x}" y="100" width="80" height="72" rx="8" fill="#ffe9a6" ${O}/><path d="M${x+40} 100 V172 M${x} 136 H${x+80}" stroke="${INK}" stroke-width="3"/>`).join("")}
+      <path d="M156 270 V140 Q200 104 244 140 V270Z" fill="#6a4434" ${O}/><circle cx="232" cy="210" r="4" fill="#f2c45a"/>
+      <path d="M-10 18 H410 V58 H-10Z" fill="#d98b7a" ${O}/>
+      <rect x="-10" y="262" width="420" height="230" fill="#d9a777" ${O}/>${[300,340,380,420,460].map(y=>`<path d="M0 ${y} H400" stroke="#c08a5c" stroke-width="2"/>`).join("")}</g>
+      <g id="pips"></g><g id="loot"></g><g id="fx" style="opacity:0">${foxAt(id,0,0,100,{pose:"sit"})}</g><g id="cush"></g>`;
+    const fx=sv.querySelector("#fx"),loot=sv.querySelector("#loot"),box=sv.querySelector("#cush"),pips=sv.querySelector("#pips");
+    const X=(i,n)=>200+(i-(n-1)/2)*(n>3?94:124);
+    const put=(e,x,y,t)=>{e.style.transition=t||"none";e.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`};
+    const fox=(x,y,pose,t)=>{fx.innerHTML=foxAt(id,0,0,100,{pose});put(fx,x,y,t||"transform .35s cubic-bezier(.3,1.5,.5,1),opacity .25s")};
+    const pillow=c=>`<ellipse cy="40" rx="54" ry="9" fill="#5b4250" opacity=".14"/><g filter="url(#wobble)"><path d="M-54 -30 Q0 -44 54 -30 Q66 0 54 30 Q0 44 -54 30 Q-66 0 -54 -30Z" fill="${c}" ${O}/>
+      <path d="M-40 -21 Q0 -31 40 -21 M-40 21 Q0 31 40 21" fill="none" stroke="#fff" stroke-width="2.4" stroke-dasharray="5 6" opacity=".85"/></g>
+      <circle r="5.5" fill="#fff" stroke="${INK}" stroke-width="2.2"/>${[[-56,-30],[56,-30],[-56,30],[56,30]].map(([x,y])=>`<path d="M${x} ${y} l${x<0?-8:8} ${y<0?-6:6}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`).join("")}
+      <rect x="-64" y="-50" width="128" height="96" fill="transparent"/>`;
+    const drawPips=()=>pips.innerHTML=RD.map((_,i)=>`<circle cx="${200+(i-(RD.length-1)/2)*30}" cy="452" r="9" fill="${i<r?"#a9d68f":"#fff"}" stroke="${INK}" stroke-width="2.6"/>`).join("");
+    const start=()=>{const [n,k,d]=RD[r];st="show";sw=null;q=[];loot.innerHTML="";box.innerHTML="";drawPips();
+      // tous pareils, sinon on suivrait la couleur
+      cs=Array.from({length:n},(_,i)=>{const c={slot:i,el:grp(box,pillow(COL[r%COL.length]),{class:"cush"})};c.el.style.cursor="pointer";put(c.el,X(i,n),Y);
+        c.el.onpointerdown=e=>{e.stopPropagation();pick(c)};return c});
+      under=cs[Math.floor(Math.random()*n)];under.el.dataset.g=1; // data-g : la bonne réponse, pour les tests
+      fox(X(under.slot,n),Y-26,"happy","none");fx.style.opacity=1;
+      A.say(r?`Encore ! Plus vite, cette fois. Regarde où se cache ${name}…`:`${name} se cache sous un coussin. Regarde bien lequel !`);
+      A.later(()=>{fox(X(under.slot,n),Y+40,"sit");fx.style.opacity=0;replay(under.el,"squish")},1300);
+      A.later(()=>{A.say("Les coussins se mélangent ! Suis le bon des yeux…");
+        let last="";for(let i=0;i<k;i++){let a,b,key;do{a=Math.floor(Math.random()*n);b=Math.floor(Math.random()*n);key=Math.min(a,b)+"-"+Math.max(a,b)}while(a===b||key===last);last=key;q.push([a,b])}
+        next()},2000)};
+    // un échange : les deux coussins passent l'un devant, l'autre derrière, en arc
+    const next=()=>{if(!q.length){st="pick";A.say(`Où est ${name} ? Touche son coussin !`);return}
+      const [a,b]=q.shift();sw={a:cs.find(c=>c.slot===a),b:cs.find(c=>c.slot===b),t:0,d:RD[r][2]};
+      box.appendChild(sw.a.el)};
+    A.loop(dt=>{if(!sw)return;const n=RD[r][0];sw.t=Math.min(1,sw.t+dt/sw.d);const t=sw.t,e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,h=Math.sin(Math.PI*e)*30;
+      const xa=X(sw.a.slot,n),xb=X(sw.b.slot,n);put(sw.a.el,xa+(xb-xa)*e,Y+h);put(sw.b.el,xb+(xa-xb)*e,Y-h);
+      if(t>=1){const s=sw.a.slot;sw.a.slot=sw.b.slot;sw.b.slot=s;sw=null;next()}});
+    const lift=c=>{const x=X(c.slot,RD[r][0]);put(c.el,x,Y-136,"transform .3s cubic-bezier(.3,1.4,.5,1)");return x};
+    const pick=c=>{if(st!=="pick"||A.won)return;st="reveal";const x=lift(c);
+      if(c===under){fox(x,Y+40,"happy","none");fx.style.opacity=1;A.later(()=>fox(x,Y+26,"happy"),20);r++;drawPips();
+        if(r>=RD.length)A.win(g.win||"Trouvé !");
+        else{A.say(["Trouvé ! Il rigole sous son coussin.","Bien vu ! Il n'en revient pas."][r-1]||"Trouvé !");A.later(start,1500)}}
+      else{const [it,nm]=LOOT[Math.floor(Math.random()*LOOT.length)];grp(loot,`<g transform="translate(${x} ${Y+10}) scale(1.6)">${ITEM[it]}</g>`);
+        A.say(`Raté, juste ${nm} !`);
+        A.later(()=>{const xu=lift(under);fox(xu,Y+40,"happy","none");fx.style.opacity=1;A.later(()=>fox(xu,Y+26,"happy"),20);A.say(`Hi hi ! ${name} était là. On refait cette manche !`)},700);
+        A.later(start,2600)}};
+    start();
   },
 
   /* La danse des flaques : le renard saute dans des flaques, il faut refaire la même suite. */
