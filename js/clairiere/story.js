@@ -14,7 +14,7 @@ if(VITE)R.nextAt=0;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","libellule","gribouille"];
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
@@ -161,34 +161,57 @@ const STORIES={
       ["moka","joy","Battu ! Comme d'habitude. Au moins, je suis à l'heure pour perdre."],
       ["moka","shy","Tiens, ma montre. Elle retarde de dix minutes… C'est peut-être pour ça."]]}
   ]},
-  // une histoire d'amour (demande de Joffray) : Gaston, qui n'a jamais rien attrapé, et Libellule, qui regarde l'eau
-  libellule:{title:"Les oreilles rouges",souv:"le poème mordillé",beats:[
+  // un feuilleton d'amour sur trois histoires (demande de Joffray) : Pain d'épice cherche quelqu'un et n'y arrive pas,
+  // Libellule passe entre les deux (pour oublier un peu), puis Brioche arrive, qui cherche aussi : tu les réunis
+  painepice:{title:"Quelqu'un pour moi",souv:"le biscuit en forme de cœur",beats:[
+    {at:"painepice",goal:"Pain d'épice vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["painepice","open",`${ME()}, tu sens ? Cannelle, miel, four chaud. C'est moi : je sens le goûter.`],
+      ["painepice","sad","Tout le monde ici a quelqu'un. Moi, je fais des gâteaux… et je les mange tout seul."],
+      ["painepice","shy","J'aimerais trouver quelqu'un. Quelqu'un rien que pour moi. Tu m'aides ?"]]},
+    {at:"*",goal:"Demande à un renard s'il connaît quelqu'un pour Pain d'épice.",lines:id=>[
+      ["me","open",`${FOX[id].name}, tu connais quelqu'un pour Pain d'épice ?`],
+      [id,"surprise","Quelqu'un ? Ici, on se connaît tous depuis toujours…"],
+      [id,"open","Essaie la forêt. Un signal, le soir, ça se voit de très loin."]]},
+    {at:"@lampL",lamps:1,game:{k:"firefly",say:"Attrape la luciole dorée : elle portera le signal jusqu'au fond de la forêt !",win:"Le signal est parti !"},goal:"Envoie un signal à la forêt depuis les lanternes.",lines:[
+      ["painepice","joy","Toutes les lanternes allumées… Si quelqu'un est là-bas, il les verra."],
+      ["me","joy","Et maintenant, on attend."]]},
+    {at:"painepice",goal:"Va voir si quelqu'un a répondu au signal.",lines:[
+      ["painepice","sad","Personne. Pas un bruit dans la forêt."],
+      ["painepice","open","Tant pis. Je garde un biscuit au chaud, en forme de cœur. On ne sait jamais."],
+      ["painepice","shy","Tiens, prends le premier. Tu as essayé, c'est déjà beaucoup."]]}
+  ]},
+  libellule:{title:"Le ciel dans la mare",souv:"le galet lisse comme l'eau calme",beats:[
     {at:"libellule",after:[["libellule","pond"]],goal:"Libellule vient d'arriver au refuge. Va lui dire bonjour.",lines:[
       ["libellule","open","Bonjour… Chut. Regarde la mare : quand l'eau est calme, on voit le ciel dedans."],
-      ["libellule","shy","Je pourrais la regarder toute la journée. Tu restes un peu ?"]]},
-    {at:"gaston",goal:"Gaston a l'air tout bizarre. Va voir ce qu'il a.",lines:[
-      ["gaston","shy",`${ME()}… Qui est-ce, au bord de la mare ?`],
-      ["me","joy","Libellule. Elle regarde l'eau, comme toi."],
-      ["gaston","sad","Je n'ose plus pêcher. Si je ne prends encore rien, devant elle…"],
-      ["gaston","surprise","Et mes oreilles deviennent toutes rouges ! Elles sont rouges ? Ne réponds pas."],
-      ["gaston","shy","J'ai écrit un poème, cette nuit. Viens, je l'ai caché près du banc."]]},
-    {at:"@bench",game:{k:"catch",thing:"page",n:4,say:"Un coup de vent ! Rattrape les pages du poème !"},goal:"Retrouve le poème de Gaston près du banc.",lines:[
-      ["gaston","joy","Toutes les pages ! Merci…"],
-      ["grignote","joy","Mmm… ça sent le poème d'amour. C'est ce qu'il y a de meilleur."],
-      ["gaston","surprise","Grignote ! Tu as mangé la fin !"],
-      ["gaston","sad","Tant pis. Tu peux le lui porter ? Moi, je n'ose pas."]]},
-    {at:"libellule",after:[["gaston","g7"]],goal:"Porte le poème à Libellule, au bord de la mare.",lines:[
-      ["libellule","surprise","Un poème ? Pour moi ?"],
-      ["libellule","open","« Tu regardes l'eau, moi je te regarde. Ton reflet est le plus joli des poissons… »"],
-      ["libellule","shy","…et après, c'est tout mordillé. Il est de qui ?"],
-      ["me","open","D'un pêcheur qui n'a jamais rien attrapé."],
-      ["libellule","joy","Un bob sur la tête, des oreilles toutes rouges ? Dis-lui de venir pêcher avec moi."]]},
-    {at:"@pond",game:{k:"fish",say:"Aide Gaston : touche l'eau dès que le bouchon plonge !",win:"Un poisson !"},after:[["gaston","bench1"],["libellule","bench2"]],goal:"Gaston et Libellule pêchent ensemble. Va les voir à la mare.",lines:[
-      ["gaston","surprise","Un poisson… Mon premier poisson ! Devant elle !"],
-      ["libellule","joy","Il est magnifique. Presque aussi rouge que tes oreilles."],
-      ["gaston","shy","On le remet à l'eau ? Comme ça, on pourra revenir le voir. Ensemble."],
-      ["libellule","shy","Ensemble."],
-      ["gaston","joy",`Tiens, ${ME()}, le poème. Sans la fin. Je crois qu'on va l'écrire à deux.`]]}
+      ["libellule","sad","Mais il y a toujours une mouche, ou Plouf, pour faire des ronds. Je n'ai jamais vu la lune dedans."]]},
+    {at:"libellule",game:{k:"still",say:"Chasse les mouches avant qu'elles touchent l'eau !",win:"Plus un rond… Regarde !"},goal:"Aide Libellule à garder la mare bien calme.",lines:[
+      ["libellule","surprise","La lune… dans la mare. Toute ronde."],
+      ["libellule","joy","Je te donne mon galet le plus lisse. Il est calme comme l'eau ce soir."]]}
+  ]},
+  brioche:{title:"Moitié-moitié",souv:"la recette du goûter à deux",beats:[
+    {at:"brioche",goal:"Brioche vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["brioche","joy",`Bonjour ${ME()} ! Un soir, j'ai vu des lanternes au loin. J'ai marché, marché…`],
+      ["brioche","shy","Et puis il y avait cette odeur. Cannelle, miel, four chaud. Je l'ai suivie jusqu'ici."],
+      ["brioche","sad","Tu sais, j'aimerais trouver quelqu'un. Quelqu'un avec qui partager le goûter."],
+      ["me","surprise","Cannelle, miel, four chaud… Attends-moi là !"]]},
+    {at:"painepice",goal:"Cannelle, miel, four chaud : tu connais quelqu'un qui sent comme ça.",lines:[
+      ["painepice","surprise","Une renarde ? Qui a vu les lanternes ? Qui a suivi… mon odeur ?"],
+      ["painepice","sad","Je ne peux pas y aller comme ça. Je sens le four !"],
+      ["me","joy","C'est justement ça qu'elle a suivi."],
+      ["painepice","shy","Alors il me faut un gâteau. Un vrai. Tu m'aides à ramasser des pommes ?"]]},
+    {at:"@tree",game:{k:"basket",n:8,win:"Assez pour un gâteau à deux étages !"},after:[["painepice","bench1"]],goal:"Ramasse des pommes pour le gâteau de Pain d'épice.",lines:[
+      ["painepice","joy","Un étage pour elle, un étage pour moi. Et le biscuit en cœur, dessus."],
+      ["painepice","shy","Tu peux lui dire de venir sur le banc ? Moi, mes pattes tremblent."]]},
+    {at:"brioche",after:[["brioche","bench2"]],goal:"Dis à Brioche que quelqu'un l'attend sur le banc.",lines:[
+      ["me","joy","Quelqu'un t'attend sur le banc. Avec un gâteau."],
+      ["brioche","surprise","Un gâteau ? Pour moi ?"]]},
+    {at:"@bench",goal:"Va voir Pain d'épice et Brioche sur le banc.",lines:[
+      ["painepice","shy","J'ai… gardé un biscuit au chaud. Depuis longtemps. Pour quelqu'un."],
+      ["brioche","surprise","Cannelle, miel… C'est toi, l'odeur que j'ai suivie !"],
+      ["painepice","joy","Et c'est moi qui ai allumé les lanternes. Enfin, avec un peu d'aide."],
+      ["brioche","shy","On partage ? Moitié-moitié."],
+      ["painepice","joy","Moitié-moitié. Et le goûter de demain aussi."],
+      ["brioche","joy",`Tiens, ${ME()}, la recette. Pour deux. C'est grâce à toi.`]]}
   ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[

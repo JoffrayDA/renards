@@ -43,7 +43,7 @@ const MINE={
   luciole:[{k:"lucioles",ask:"Une luciole dorée s'est perdue loin des autres. Tu m'aides à la retrouver ? Elle a peur sans sa famille.",thx:"La voilà ! Ma queue brille plus fort quand elles sont toutes là."},
     {k:"copain",ami:"petitpois",ask:"Va chercher Petit Pois. Ce soir, c'est lui qui allume les lanternes, et je veux être au premier rang.",thx:"Il allume comme un grand, maintenant. Je suis fière de lui."}],
   gaston:[{k:"poisson",ask:"Je pêche depuis toujours. Tu crois que c'est la canne ? Essaie, toi, pour voir.",thx:"Du premier coup ?! … C'était forcément la canne."},
-    {k:"copain",ami:"libellule",ask:"Tu peux dire à Libellule de venir sur le banc ? Pas de ma part ! … Enfin, si. De ma part.",thx:"Elle est venue… Mes oreilles sont rouges ? Ne réponds pas."}],
+    {k:"copain",ami:"galette",ask:"Tu peux appeler Galette ? Ses ricochets font fuir les poissons. Comme ça, si je n'attrape rien, j'ai une excuse.",thx:"On n'a rien attrapé. Mais on a bien ri."}],
   galette:[{k:"ricochet",ask:"Mon record tient toujours. Tu veux t'entraîner ? Trois rebonds, pour commencer.",thx:"Pas mal ! Mais le record reste à moi."},
     {k:"pommes",ask:"J'ai lancé tous mes cailloux plats dans la mare. Pour me consoler… des pommes ?",thx:"Une pomme, ça ne ricoche pas. J'ai essayé. Ça se mange, par contre."}],
   pantoufle:[{k:"coussin",ask:"On refait le jeu des coussins ? Moi dessous, toi qui cherches. C'est mieux, dedans.",thx:"Tu m'as trouvé. Je peux rester sous ce coussin pour toujours ?"},
@@ -65,7 +65,7 @@ const MINE={
   moka:[{k:"pommes",ask:"J'ai raté le goûter, c'est ça ? Il reste des pommes dans l'arbre ?",thx:"Pour une fois, je suis arrivé à temps !"},
     {k:"conte",ask:"Une histoire ? D'accord, mais vite. Je dois être quelque part. Je ne sais plus où.",tale:["Il était une fois un renard toujours en retard…","…un jour, il est arrivé trop tard pour la pluie, et juste à temps pour l'arc-en-ciel."],thx:"Juste à temps pour l'arc-en-ciel… J'aime bien."}],
   libellule:[{k:"poisson",ask:"Tu pêches un poisson ? Je voudrais juste le regarder de près, puis on le rend à l'eau.",thx:"Il a des écailles comme des petits miroirs. Au revoir, poisson."},
-    {k:"copain",ami:"gaston",ask:"Tu peux demander à Gaston de venir sur le banc ? Ses oreilles rougissent quand je le regarde. C'est mignon.",thx:"Regarde-le, il est tout rouge. On regarde la mare ensemble ?"}],
+    {k:"copain",ami:"plouf",ask:"Tu peux appeler Plouf ? J'aimerais lui demander, gentiment, de ne pas sauter dans la mare ce soir.",thx:"Il a promis. Il saute déjà dans une flaque à côté. C'est un début."}],
   gribouille:[{k:"lucioles",ask:"Il me faut une lumière dorée pour mon prochain tableau. Tu me trouves la luciole ?",thx:"Cette couleur-là ! Vite, mes pinceaux… enfin, ma queue."},
     {k:"copain",ask:"Va me chercher un modèle. N'importe qui. Il faut juste qu'il ne bouge pas.",thx:"Ne bougez plus… Voilà. {ami} a un nez de patate. C'est de l'art."}],
   marquis:[{k:"panier",ask:"Ce panier a-t-il une couverture ? Je ne m'assois que sur du moelleux, vois-tu.",thx:"Acceptable. Tout à fait acceptable. Zzz."}],
@@ -74,8 +74,10 @@ const MINE={
   noisette:[{k:"pommes",ask:"Pour mes recherches, il me faudrait six pommes. Les glands, je les connais déjà par cœur.",thx:"Fascinant. Une pomme n'est pas un gland. Je le note."}],
   comete:[{k:"conte",ask:"Raconte-moi la nuit d'où je viens. Tu l'inventes, je fais semblant d'y croire.",tale:["Il était une fois une étoile qui s'ennuyait tout là-haut…","…elle a sauté, elle est tombée dans une clairière, et elle a trouvé quelqu'un pour qui briller."],thx:"C'est presque vrai, tu sais."}],
   givre:[{k:"feuilles",ask:"Pas de neige ici… Un tas de feuilles, ça marche pareil ? Je veux m'y rouler jusqu'à disparaître.",thx:"Tu me vois ? Non ? Parfait."}],
-  painepice:[{k:"pommes",ask:"Des pommes, de la cannelle, un four chaud… On commence par les pommes ?",thx:"Ça sent déjà le gâteau. Enfin, ça sent moi."}],
-  brioche:[{k:"pommes",ask:"C'est l'heure du goûter. Il est toujours l'heure du goûter.",thx:"Miam. Et le goûter d'après, c'est quand ?"}]
+  painepice:[{k:"pommes",ask:"Des pommes, de la cannelle, un four chaud… On commence par les pommes ?",thx:"Ça sent déjà le gâteau. Enfin, ça sent moi."},
+    {k:"copain",ami:"brioche",ask:"Tu peux appeler Brioche ? Le goûter est prêt, et il refroidit.",thx:"Moitié-moitié. Comme toujours."}],
+  brioche:[{k:"pommes",ask:"C'est l'heure du goûter. Il est toujours l'heure du goûter.",thx:"Miam. Et le goûter d'après, c'est quand ?"},
+    {k:"copain",ami:"painepice",ask:"Tu sais où est Pain d'épice ? Je lui ai gardé la moitié de ma pomme.",thx:"Il rougit quand je partage. Je vais partager souvent."}]
 };
 // le texte d'une envie : celle du renard s'il en a une, sinon la commune
 const envDef=c=>c.m!=null&&MINE[c.id]?.[c.m]?{...ENVIES[c.k],...MINE[c.id][c.m]}:ENVIES[c.k];
