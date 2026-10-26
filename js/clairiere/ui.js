@@ -1,5 +1,11 @@
 /* La Clairière : interface (compteurs, bulles, dialogues, gamelle, carnet, photos). */
 function acornSVG(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><g filter="url(#wobble)" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"><path d="M5 10 Q5 21 12 22 Q19 21 19 10Z" fill="#d9a06a"/><path d="M3.5 10.5 Q12 2 20.5 10.5 Q12 13 3.5 10.5Z" fill="#a9785a"/><path d="M12 6 q1 -3 3 -4" fill="none"/></g></svg>`}
+const HEART=`<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20 C4 14 1.5 10 1.5 6.5 A5 5 0 0 1 12 4.5 A5 5 0 0 1 22.5 6.5 C22.5 10 20 14 12 20Z" fill="#f48aa6" stroke="#5b4250" stroke-width="2.2" stroke-linejoin="round"/><path d="M5.5 7 q.5 -2 2.5 -2.4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+// câlin : le renard frotte sa tête comme un chat, des petits cœurs s'envolent
+function hugFx(f){f.el.querySelector(".want")?.remove();f.el.classList.remove("hug");void f.el.offsetWidth;f.el.classList.add("hug");
+  clearTimeout(f.hugT);f.hugT=setTimeout(()=>f.el.classList.remove("hug"),1700);
+  for(let i=0;i<5;i++){const h=document.createElement("i");h.className="lovep";h.innerHTML=HEART;
+    h.style.cssText=pc(f.x+(i-2)*8,f.y-38)+`;animation-delay:${(i*.16).toFixed(2)}s;--dx:${(i-2)*14}px`;$("scene").appendChild(h);setTimeout(()=>h.remove(),2400)}}
 const heartsHTML=h=>{const l=lvOf(h);return `<span class="hs5" aria-label="Amitié ${l} sur 5">${"♥".repeat(l)}<i>${"♥".repeat(5-l)}</i></span>`};
 function renderHud(){$("glands").textContent=R.glands;$("fishc").hidden=!R.fish;$("fishn").textContent=R.fish;drawBowl();drawDrops()}
 const fishSVG=()=>`<svg viewBox="-24 -16 48 32" aria-hidden="true"><g filter="url(#wobble)">${ITEM.fish}</g></svg>`;
@@ -43,7 +49,7 @@ function tapFox(f){
   if(f.wild){bubble(f,"un renard sauvage, il mange !");return}
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
-  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);renderHud();bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur, +1 gland)")}
+  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);hugFx(f);renderHud();bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur, +1 gland)")}
   else bubble(f,what);
 }
 

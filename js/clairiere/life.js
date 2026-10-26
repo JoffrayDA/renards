@@ -29,6 +29,7 @@ function draw(f){
   if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
   else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
   if(!f.wild&&isTarget(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`); // l'histoire attend ce renard
+  else if(!f.wild&&wantsHug(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="want">${HEART}</i>`); // pas encore de câlin aujourd'hui
   f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);
 }
 // la lumière de Luciole passe au-dessus du voile de la nuit : elle suit le bout de sa queue

@@ -22,9 +22,9 @@ const STORIES={
       ["petitpois","shy",`${ME()}… le noir, je déteste. Ça fait crac. Hou-hou.`],
       ["petitpois","open","Tu crois qu'il existe quelqu'un qui n'a jamais peur ?"],
       ["me","open","Quelqu'un qui brille, peut-être… Je vais voir aux lanternes."]]},
-    {at:"@lampL",arrive:"luciole",game:{k:"catch",say:"Des lucioles ! Attrape-les toutes !",win:"Toutes attrapées ! Mais… qui arrive là ?"},goal:"Cherche quelqu'un qui brille, près des lanternes.",lines:[
-      ["luciole","surprise","Hé ! Doucement avec mes amies !"],
-      ["luciole","joy","Moi, c'est Luciole. Ma queue brille toute seule. Pratique, non ?"],
+    {at:"@lampL",arrive:"luciole",game:{k:"firefly",say:"Plein de lucioles ! Mais une seule brille en or… Attrape-la !",win:"Attrapée ! … Hein ? Elle est toute chaude."},goal:"Cherche quelqu'un qui brille, près des lanternes.",lines:[
+      ["luciole","surprise","Aïe ! Doucement, c'est ma queue que tu tiens !"],
+      ["luciole","joy","Moi, c'est Luciole. Ma queue brille en or, et les lucioles de toutes les couleurs me suivent partout."],
       ["me","joy","Viens vite, quelqu'un doit absolument te rencontrer."]]},
     {at:"petitpois",after:[["petitpois","lampR"]],goal:"Présente Luciole à Petit Pois.",lines:[
       ["petitpois","surprise","Ta queue… elle fait de la lumière ?!"],
@@ -222,7 +222,8 @@ function renderStory(){
     if(t&&f.inside)f.until=0;
     if(isHidden(f.id)&&!f.inside&&!f.walk){f.inside=true;f.walk=null;f.el.classList.add("inside");drawGlow()}
     if(t&&c.b.sleep&&!f.walk&&f.pose!=="sleep"){f.pose="sleep";f.until=Date.now()+6e5;draw(f)}
-    else if(t&&!m)f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`);else if(!t&&m)m.remove();
+    else if(t&&!m){f.el.querySelector(".want")?.remove();f.el.insertAdjacentHTML("beforeend",`<i class="mark">!</i>`)}
+    else if(!t&&m){m.remove();if(wantsHug(f.id))f.el.insertAdjacentHTML("beforeend",`<i class="want">${HEART}</i>`)}
   }
   const s=c&&c.b.at.startsWith("@")&&TG[c.b.at.slice(1)];
   hotEl.hidden=!s;if(s){hotEl.style.cssText=pc(s.x,s.y);hotEl.setAttribute("aria-label",s.name)}

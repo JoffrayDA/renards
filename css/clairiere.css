@@ -147,6 +147,15 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 @keyframes dropwob{0%,80%,100%{transform:translate(-50%,-70%) rotate(0)}88%{transform:translate(-50%,-70%) rotate(-12deg)}94%{transform:translate(-50%,-70%) rotate(10deg)}}
 .plus{position:absolute;transform:translate(-50%,-100%);z-index:7;font:900 16px/1 "Mochiy Pop One",system-ui;color:#a9785a;-webkit-text-stroke:.5px #fff;pointer-events:none;animation:plusup .9s ease-out forwards}
 @keyframes plusup{to{transform:translate(-50%,-180%);opacity:0}}
+/* câlins : un cœur au-dessus de ceux qui en attendent un ; au câlin, le renard frotte sa tête et des cœurs s'envolent */
+.want{position:absolute;left:50%;top:-8%;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 0 var(--ink);pointer-events:none;transform:translateX(-50%);animation:wantbeat 1.8s ease-in-out infinite}
+.want svg{width:13px;display:block}
+@keyframes wantbeat{0%,60%,100%{transform:translateX(-50%) scale(1)}70%{transform:translateX(-50%) scale(1.18)}80%{transform:translateX(-50%) scale(.96)}}
+.fox.hug:not(.walking) .flip>svg{animation:rub .5s ease-in-out 3;transform-origin:50% 95%}
+@keyframes rub{25%{transform:rotate(-9deg) translateX(-3%) scaleY(.95)}50%{transform:rotate(1deg) scaleY(1.02)}75%{transform:rotate(9deg) translateX(3%) scaleY(.95)}}
+.lovep{position:absolute;width:20px;z-index:7;pointer-events:none;animation:loveup 1.5s ease-out both}
+.lovep svg{display:block;width:100%}
+@keyframes loveup{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}20%{opacity:1;transform:translate(-50%,-100%) scale(1.15)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),-420%) scale(.8)}}
 /* petits jeux des histoires, par-dessus la scène */
 .play{position:absolute;inset:0;z-index:9;background:#cfe3a8;touch-action:none;cursor:pointer;animation:up .25s ease-out}
 .play>svg{position:absolute;inset:0;width:100%;height:100%}
@@ -166,6 +175,8 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 .play .popin{animation:popin .4s cubic-bezier(.3,1.6,.5,1)}
 @keyframes popin{from{opacity:0}}
 .play .caught{transition:opacity .35s;opacity:0}
+.play .glim{animation:glim 1.6s ease-in-out infinite}
+@keyframes glim{50%{opacity:.6}}
 .play .shoo{transition:opacity .3s;opacity:0}
 .play .wing{animation:wing .08s linear infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes wing{to{transform:scaleY(.4)}}
@@ -204,6 +215,16 @@ h1{white-space:nowrap}
 .play .swim{animation:swim 2.6s ease-in-out infinite}
 @keyframes swim{50%{transform:translate(-8px,3px)}}
 .play .sway{animation:sway 4s ease-in-out infinite}
+.play .tug{animation:tug .16s ease-in-out infinite alternate}
+@keyframes tug{to{transform:rotate(3.5deg)}}
+.play .pull{animation:pull .9s cubic-bezier(.2,.9,.3,1)}
+@keyframes pull{25%{transform:rotate(-24deg)}55%{transform:rotate(-18deg)}}
+.play .nudge{animation:nudge .5s ease-out}
+@keyframes nudge{35%{transform:rotate(-8deg)}}
+.play .lean{animation:lean .9s cubic-bezier(.2,.9,.3,1)}
+@keyframes lean{25%{transform:translate(-6px,-12px) rotate(-7deg)}55%{transform:translateY(-4px) rotate(-4deg)}}
+.play .flinch{animation:flinch .5s ease-out}
+@keyframes flinch{35%{transform:rotate(-3deg)}}
 @keyframes sway{50%{transform:rotate(2.5deg)}}
 .play .dfly{animation:dfly 11s ease-in-out infinite}
 @keyframes dfly{0%{transform:translate(-40px,190px)}30%{transform:translate(120px,170px)}35%{transform:translate(124px,172px)}60%{transform:translate(260px,210px)}100%{transform:translate(440px,180px)}}

@@ -69,6 +69,7 @@ function simulate(live){
 // une caresse par jour et par renard installé : un cœur et un gland
 function pet(id){const r=R.res[id];if(!r||r.pet===today())return 0;
   const a=lvOf(r.h);r.h++;r.pet=today();R.glands++;save();return lvOf(r.h)>a?2:1}
+const wantsHug=id=>!!R.res[id]&&R.res[id].pet!==today();
 
 /* ---------- rencontres (pour le carnet et le grand portrait) ---------- */
 function metIds(){

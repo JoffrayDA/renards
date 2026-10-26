@@ -76,20 +76,25 @@ const GAMES={
         <g transform="translate(350 380)"><path d="M0 -4 q-10 -16 0 -24 q10 8 0 24Z M0 -4 q-18 -6 -16 -18 q12 0 16 18Z M0 -4 q18 -6 16 -18 q-12 0 -16 18Z" fill="#f6b3c4" ${O}/><circle cy="-8" r="3.4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g></g>
       <g id="shadow" style="transition:transform 1.8s ease-in-out,opacity .4s"><g class="swim" opacity="${night?.5:.38}"><ellipse cx="${BX}" cy="${BY+28}" rx="22" ry="8" fill="${night?"#14203f":"#3f6f86"}"/><path d="M${BX+18} ${BY+28} l14 -8 v16Z" fill="${night?"#14203f":"#3f6f86"}" class="tail"/></g></g>
       <g id="rips"></g>
-      <path id="line" d="M238 196 Q${BX+6} 250 ${BX} ${BY-16}" fill="none" stroke="#fff" stroke-width="1.6" opacity=".9"/>
       <g id="bob" style="transition:transform .14s ease-out,opacity .2s"><g class="bobidle"><ellipse cx="${BX}" cy="${BY+12}" rx="18" ry="4" fill="#fff" opacity=".35"/>
-        <g filter="url(#wobble)"><path d="M${BX-15} ${BY} a15 15 0 0 0 30 0Z" fill="#fff" ${O}/><path d="M${BX-15} ${BY} a15 15 0 0 1 30 0Z" fill="#e0564f" ${O}/><path d="M${BX-15} ${BY} h30" stroke="${INK}" stroke-width="2.4"/><path d="M${BX} ${BY-15} v-7" ${O}/><circle cx="${BX-5}" cy="${BY-7}" r="2.6" fill="#fff" stroke="none"/></g></g></g>
+        <g filter="url(#wobble)"><path d="M${BX-9} ${BY} Q${BX} ${BY+10} ${BX+9} ${BY}Z" fill="#fff" ${O}/><path d="M${BX-9} ${BY} Q${BX-9} ${BY-12} ${BX} ${BY-24} Q${BX+9} ${BY-12} ${BX+9} ${BY}Z" fill="#e0564f" ${O}/>
+          <path d="M${BX} ${BY-24} v-9" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${BX}" cy="${BY-35}" r="3.4" fill="#ffd36a" stroke="${INK}" stroke-width="2"/>
+          <path d="M${BX-4.5} ${BY-5} q0 -6 3 -11" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></g></g></g>
       <g class="sway" style="transform-origin:372px 480px">${[[362,300],[378,280],[392,310]].map(([x,y])=>`<path d="M${x} 480 Q${x-4} ${(y+480)/2} ${x} ${y}" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/><rect x="${x-4.5}" y="${y-4}" width="9" height="26" rx="4.5" fill="#a9785a" stroke="${INK}" stroke-width="2.4"/>`).join("")}</g>
       <g class="dfly"><g transform="translate(0 0)"><path d="M0 0 h18" stroke="#6aa6c9" stroke-width="3.4" stroke-linecap="round"/><ellipse class="wing" cx="7" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><ellipse class="wing" cx="11" cy="-5" rx="7" ry="3" fill="#e4f3f9" stroke="${INK}" stroke-width="1.4"/><circle cx="19" cy="0" r="3" fill="#6aa6c9" stroke="${INK}" stroke-width="1.4"/></g></g>
       ${night?[[60,240],[180,190],[300,300],[120,340]].map(([x,y],i)=>`<circle class="ff" style="animation-delay:${-i*1.3}s" cx="${x}" cy="${y}" r="9" fill="url(#fglow)"/>`).join(""):""}
       <g filter="url(#wobble)"><path d="M-10 404 L196 392 L222 480 L-10 480Z" fill="#d9a777" ${O}/>
         ${[418,438,458].map((y,i)=>`<path d="M-10 ${y} L${200+i*7} ${y-4+i}" stroke="#c08a5c" stroke-width="2.2"/>`).join("")}
         <rect x="184" y="388" width="14" height="92" rx="4" fill="#b58460" ${O}/><path d="M8 410 l8 6 M120 400 l6 6" stroke="#a9704e" stroke-width="2.4" stroke-linecap="round"/></g>
-      ${foxAt("roussette",98,462,138,{pose:"sit"})}
-      <g filter="url(#wobble)"><path d="M118 444 L238 196" stroke="#a9785a" stroke-width="5.5" stroke-linecap="round"/><path d="M118 444 L134 411" stroke="#d9a06a" stroke-width="9" stroke-linecap="round"/>
-        <circle cx="140" cy="402" r="8" fill="#e3dccf" ${O}/><circle cx="140" cy="402" r="2.4" fill="${INK}"/></g>
+      <g id="angler" style="transform-origin:98px 470px">${foxAt("roussette",98,462,138,{pose:"sit"})}
+      <g id="rod" style="transform-origin:118px 444px"><path id="line" d="M238 196 Q${BX+6} 250 ${BX} ${BY-37}" fill="none" stroke="#fff" stroke-width="1.6" opacity=".9"/>
+        <g filter="url(#wobble)"><path d="M118 444 L238 196" stroke="#a9785a" stroke-width="5.5" stroke-linecap="round"/><path d="M118 444 L134 411" stroke="#d9a06a" stroke-width="9" stroke-linecap="round"/>
+        <circle cx="140" cy="402" r="8" fill="#e3dccf" ${O}/><circle cx="140" cy="402" r="2.4" fill="${INK}"/></g></g></g>
       <g id="excl" opacity="0"><circle cx="${BX+42}" cy="${BY-48}" r="18" fill="#ffd36a" stroke="${INK}" stroke-width="3"/><text x="${BX+42}" y="${BY-39}" text-anchor="middle" font-size="23" font-weight="900" fill="${INK}">!</text></g>
       <g id="hud"></g><g id="leap"></g><g id="card"></g>`;
+    const angler=sv.querySelector("#angler"),rod=sv.querySelector("#rod");
+    // la canne plie quand ça mord ; on ferre : Roussette se penche en arrière et tire (fort si ça mord, un petit coup sinon)
+    const pull=hard=>{rod.classList.remove("tug");replay(rod,hard?"pull":"nudge");replay(angler,hard?"lean":"flinch")};
     const bob=sv.querySelector("#bob"),rips=sv.querySelector("#rips"),ex=sv.querySelector("#excl"),sh=sv.querySelector("#shadow"),card=sv.querySelector("#card"),leap=sv.querySelector("#leap"),hud=sv.querySelector("#hud");
     // pêche libre : cinq petits poissons en haut, qui se remplissent
     const drawHud=()=>{if(!g.free)return;const n=Math.min(g.need,g.have());
@@ -105,9 +110,9 @@ const GAMES={
       A.later(()=>{sh.style.transition="";sh.style.transform="translate(0,0)"},60);
       let nib=1+Math.floor(Math.random()*3);
       const step=()=>{if(nib-->0)A.later(()=>{ring(16,2.2);bob.style.transform="translateY(4px)";A.later(()=>bob.style.transform="",150);A.say("Ploc… ça grignote. Pas encore !");A.later(step,0)},900+Math.random()*900);
-        else A.later(()=>{st="bite";bob.style.transform="translateY(24px)";bob.style.opacity=.3;ring(22,3.6);ring(44,2.6,120);ring(66,1.8,240);drops(7,40);ex.setAttribute("opacity",1);replay(ex,"popin");A.say("Ça mord ! Touche vite !");
+        else A.later(()=>{st="bite";bob.style.transform="translateY(24px)";bob.style.opacity=.3;ring(22,3.6);ring(44,2.6,120);ring(66,1.8,240);drops(7,40);ex.setAttribute("opacity",1);replay(ex,"popin");rod.classList.add("tug");A.say("Ça mord ! Touche vite !");
           try{navigator.vibrate&&navigator.vibrate(90)}catch(e){}
-          A.later(()=>{if(st==="bite"){st="miss";ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";sh.style.opacity=0;A.say("Trop tard… il a filé. On relance !");A.later(start,1400)}},1150)},800+Math.random()*1000)};
+          A.later(()=>{if(st==="bite"){st="miss";rod.classList.remove("tug");ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";sh.style.opacity=0;A.say("Trop tard… il a filé. On relance !");A.later(start,1400)}},1150)},800+Math.random()*1000)};
       A.later(step,1400)};
     // la prise saute hors de l'eau, puis s'affiche sur une carte
     const show=(it,name,sub,fish)=>{
@@ -119,8 +124,8 @@ const GAMES={
           <text y="46" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="18" fill="${INK}">${name}</text>
           <text y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#8f7a86">${sub}</text>${slots}</g></g>`},520)};
     A.tap=()=>{
-      if(st==="wait"){st="miss";A.clear();bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*220}px,60px)`;ring(16,2);A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1500)}
-      else if(st==="bite"){st="won";ex.setAttribute("opacity",0);bob.style.opacity=0;sh.style.opacity=0;
+      if(st==="wait"){st="miss";A.clear();pull(0);bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*220}px,60px)`;ring(16,2);A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1500)}
+      else if(st==="bite"){st="won";pull(1);ex.setAttribute("opacity",0);bob.style.opacity=0;sh.style.opacity=0;
         // pêche libre : un poisson une fois sur dix, sinon ce qui traîne au fond de la mare
         const j=g.free&&Math.random()>=.1?JUNK[Math.floor(Math.random()*JUNK.length)]:null;
         if(j){show(j[0],j[2],j[1],false);A.say("Ce n'est pas un poisson… On relance ?");A.later(start,2300)}
@@ -183,10 +188,40 @@ const GAMES={
       b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`+(page?` rotate(${(Math.sin(b.a*3)*25).toFixed(0)})`:""))}});
   },
 
+  /* Lucioles : un nuage de lucioles de toutes les couleurs, et une seule dorée, très vive, qui zigzague.
+     Toucher une autre la fait s'écarter ; il faut attraper la dorée. */
+  firefly(g,A){
+    const sv=A.sv,COL=["#ff9ec4","#8fd3ff","#a6f08a","#c9a6ff","#ff7a8a","#7ff0d8"];let done=0;
+    sv.innerHTML=`<defs>${COL.map((c,i)=>`<radialGradient id="ffc${i}"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="${c}" stop-opacity=".85"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`).join("")}
+        <radialGradient id="ffg"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#ffd23a"/><stop offset="1" stop-color="#ffb800" stop-opacity="0"/></radialGradient></defs>
+      <rect width="400" height="480" fill="#3a3f78"/>${Array.from({length:22},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.37%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%240}" r="1.4" fill="#fff8d0"/>`).join("")}
+      <g filter="url(#wobble)"><path d="M0 340 Q100 310 200 330 Q300 310 400 340 V480 H0Z" fill="#4b6a5a" ${O}/>
+        <rect x="56" y="250" width="10" height="110" rx="4" fill="#7a5a4a" ${O}/><rect x="44" y="222" width="34" height="34" rx="9" fill="#ffe9a6" ${O}/></g>
+      <g id="flies"></g>`;
+    const box=sv.querySelector("#flies");
+    const mkFly=(gold,i)=>{const b={gold,x:40+Math.random()*320,y:70+Math.random()*290,a:Math.random()*6.3,s:gold?250:45+Math.random()*45,t:Math.random()*9,flee:0};
+      b.el=grp(box,gold?`<circle r="38" fill="url(#ffg)" class="glim"/><circle r="6" fill="#fffbe0" stroke="#ffb800" stroke-width="2"/><circle r="34" fill="transparent"/>`
+        :`<circle r="${20+Math.random()*10}" fill="url(#ffc${i%COL.length})" class="glim" style="animation-delay:${(-Math.random()*2).toFixed(2)}s"/><circle r="3.6" fill="#fff"/><circle r="22" fill="transparent"/>`);
+      b.el.style.cursor="pointer";
+      b.el.onpointerdown=e=>{e.stopPropagation();if(done||A.won)return;
+        if(b.gold){done=1;b.el.classList.add("caught");A.win(g.win||"Attrapée !")}
+        else{b.flee=.6;b.s=180;b.a+=Math.PI;A.say(g.miss||"Pas celle-là ! Cherche la dorée !")}};
+      return b};
+    const flies=[...Array.from({length:16},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[16].el); // la dorée passe devant
+    A.say(g.say||"Attrape la luciole dorée !");
+    A.loop(dt=>{for(const b of flies){if(done&&b.gold)continue;b.t+=dt;
+      if(b.flee>0&&(b.flee-=dt)<=0)b.s=45+Math.random()*45;
+      // la dorée change souvent de direction, d'un coup
+      if(b.gold&&Math.random()<dt*2.2)b.a+=(Math.random()-.5)*3.4;else b.a+=(Math.random()-.5)*(b.gold?6:2.5)*dt;
+      b.x+=Math.cos(b.a)*b.s*dt;b.y+=Math.sin(b.a)*b.s*dt+Math.sin(b.t*3)*.4;
+      if(b.x<30||b.x>370)b.a=Math.PI-b.a;if(b.y<60||b.y>400)b.a=-b.a;b.x=Math.max(30,Math.min(370,b.x));b.y=Math.max(60,Math.min(400,b.y));
+      b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`)}});
+  },
+
   /* Ricochets : un toucher par rebond, quand le curseur passe dans la petite zone verte ; il accélère à chaque rebond.
      Un raté et le caillou coule : on recommence. Il faut need rebonds d'affilée. */
   ricochet(g,A){
-    const sv=A.sv,need=g.need||4,X0=40,WG=320,HALF=16;let t=0,k=0,per=.9,st="aim";
+    const sv=A.sv,need=g.need||4,X0=40,WG=320,HALF=26;let t=0,k=0,per=.9,st="aim";
     sv.innerHTML=`<rect width="400" height="480" fill="#bfe0f2"/><g filter="url(#wobble)"><path d="M0 170 Q100 150 200 164 Q300 150 400 170 V200 H0Z" fill="#8dbd86" ${O}/></g>
       <rect y="196" width="400" height="200" fill="#a9d3e6"/><path d="M60 240 q30 -8 60 0 M220 300 q26 -8 52 0 M120 350 q24 -6 48 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
       <rect y="392" width="400" height="88" fill="#d9c6a4"/><g id="rings"></g><g id="pips"></g>
