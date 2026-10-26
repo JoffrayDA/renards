@@ -197,6 +197,20 @@ Nouvelle sauvegarde `clairiere-renards-v2`. L'ancienne (`clairiere-renards-v1`) 
 - **Le grand portrait**, la fin du jeu : quand tout le monde est réuni (les 29 renards, sauvages et invités d'honneur compris), Gribouille peint la photo de famille. Les invités d'Halloween y figurent en bonus s'ils ont été croisés.
 - Idée pour le Café : un calendrier de connexion sur 7 jours, avec une grosse récompense le 7e (le bonus actuel ne donne que des pièces).
 
+## Décidé le 26/10/2026 (revue de la Clairière avec Joffray)
+
+Constat : depuis la refonte du matin (histoires en une visite, plus d'attente), les 10 histoires se finissaient en une soirée, ce qui reproduisait le « j'ai fini, on s'ennuie » de la v1. Le problème de départ (« je ne sais pas où j'en suis ») était réel et les « ! » le règlent ; celui de la durée a été réglé en supprimant ce qui fait revenir.
+
+1. **Un renard par jour** (fait) : Petit Pois puis Mitaine s'enchaînent pour accrocher, ensuite le renard suivant arrive le matin (6 h), au moins 6 h après la fin de l'histoire (`nextMorning` dans `story.js`). La ligne d'objectif l'annonce : « Quelqu'un approche par la forêt… Il arrivera demain matin. » `?vite=1` pour tester. Une histoire se finit toujours en une visite. Raison : le joueur occasionnel ouvre l'app une ou deux fois par jour, un renard par jour est pour lui une surprise et pas une attente ; seul celui qui enchaîne tout (le développeur) la subit. 3 h était le pire choix : trop long pour une séance, trop court pour faire un rythme.
+2. **Pluie une tranche de 3 h sur deux** (fait, `rainNow`, au lieu d'une sur trois).
+3. **Petites envies** (à faire) : déclenchées au retour du joueur, deux par jour au plus, jamais cumulées (on ne punit pas l'absence).
+4. **Les mini-jeux restent**, mêlés à des moments plus variés (la nuit, la pluie, un autre renard).
+5. **Objets du refuge = poses = photos** (à faire). On achète un objet avec des glands, on le pose, il attire un renard dans une pose propre à l'objet, la photo garde ce moment (comme Neko Atsume). Les glands servent enfin, les photos ont une cause que le joueur provoque, la mignonnerie se voit dans la scène. Essai : `tools/poses-objets.html`. Joffray : panier « top », ventre en l'air et feuilles bien pour une photo, pot de fleurs à retoucher, queue sur le museau abandonnée (« bizarre »).
+6. **Une vingtaine de sauvages** (à faire), au dessin inhabituel pour se reconnaître à la silhouette : cicatrice, œil fermé blessé dans la forêt (Balafre, sur la planche d'essai), queue absente ou très longue, pelage multicolore. Jamais de cicatrice en éclair (Harry Potter). Ils ont un nom et une ligne de caractère, mais on ne connaît pas le nom au départ : **5 photos du même renard**, chacune donne un indice (où il dort, ce qu'il mange, un détail), puis on trouve son prénom parmi trois ou un renard du refuge le reconnaît (inspiration : *Return of the Obra Dinn*). Certaines photos n'arrivent qu'à un moment (pluie, nuit, une gamelle) (inspiration : *Pokémon Snap*). Plus économe que de nouveaux renards : plusieurs photos par renard.
+7. **Sésame ouvre la maison** vers le jour 15 (15e histoire, après Moka, avant Gribouille) : la nuit, tous les renards dorment à l'intérieur au bord du feu.
+
+Encore ouverts : ce que ressent le joueur au jour 15 (5 à 7 sont une piste), ce qu'on montre dans les 5 premières minutes et ce qu'on cache (Joffray, en essayant Neko Atsume : « beaucoup trop de parlotte au début » et « beaucoup trop de features, je suis un peu perdu »), le test avec la copine de Joffray, toujours à faire. Joffray joue à Neko Atsume quelques jours pour juger l'attente par lui-même.
+
 ## Questions encore ouvertes
 
 1. ~~Gribouille : son histoire~~ (écrite le 25/10/2026).

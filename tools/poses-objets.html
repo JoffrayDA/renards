@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poses avec objets</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+p{margin:0 0 14px;opacity:.8}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+figure{margin:0;background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:8px}
+figure svg{display:block;width:100%}
+figcaption{font-size:13px;font-weight:700;text-align:center;margin-top:4px}
+figcaption span{display:block;font-weight:400;font-size:12px;opacity:.65}
+.zz{animation:zz 2.4s ease-in-out infinite;opacity:0}
+@keyframes zz{30%{opacity:1}100%{opacity:0;transform:translate(4px,-8px)}}
+.wig{animation:wig .5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center bottom}
+@keyframes wig{to{transform:rotate(9deg)}}
+.breath{animation:breath 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+@keyframes breath{50%{transform:scaleY(1.03)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Poses avec objets (essai)</h1>
+<p>Les renards interagissent avec un objet : c'est ce qui fera les photos. Même brioche que la planche (js/foxart.js).</p>
+<div id="grid"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+// le renard dessiné par foxArt, placé dans la scène (mêmes coordonnées : viewBox 0 -16 120 116), sans son ombre
+const fox=(id,o={},tf="")=>{const f=typeof id==="string"?FOX[id]:id;
+  const s=foxArt(f,o).replace(/<ellipse cx="60" cy="9\d"[^>]*opacity="[\d.]+"\/>/,"");
+  return `<g transform="${tf}"><svg x="0" y="-16" width="120" height="116" viewBox="0 -16 120 116" overflow="visible">${s.replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg></g>`};
+// objets au trait de la maison : contour INK épais et filtre wobble
+const ink=s=>`<g stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${s}</g>`;
+const shadow=(rx=42,y=104)=>`<ellipse cx="60" cy="${y}" rx="${rx}" ry="5" fill="#3d2a35" opacity=".14"/>`;
+const leaf=(x,y,r,col)=>`<path transform="translate(${x} ${y}) rotate(${r})" d="M0 -7 Q6 -2 0 7 Q-6 -2 0 -7Z" fill="${col}" stroke-width="1.8"/>`;
+const scene=(vb,inner)=>`<svg viewBox="${vb}" aria-hidden="true">${inner}</svg>`;
+// un sauvage à part : pelage gris-brun, oreille entaillée
+const balafre={id:"balafre",name:"Balafre",c:{b:"#a8957f",ch:"#f3ece2",e:"#5e4c3e",s:"#5e4c3e",t:"#efe6da"}};
+
+const SCENES=[
+  ["Dans un panier","dort en boule, le museau sur le bord",()=>scene("-6 10 132 104",
+    shadow(50,103)+ink(`<ellipse cx="60" cy="72" rx="49" ry="12" fill="#b9814a"/>`)
+    +`<g class="breath">${fox("pantoufle",{pose:"sleep"},"translate(0 -2)")}</g>`
+    +ink(`<path d="M11 72 Q12 104 60 104 Q108 104 109 72 Q60 90 11 72Z" fill="#dca86c"/>`
+      +[22,36,50,64,78,92].map(x=>`<path d="M${x} ${78+(x-60)**2/400*-1+6} Q${x+3} 92 ${x+1} ${100-Math.abs(x-60)/8}" fill="none" stroke="#b9814a" stroke-width="2"/>`).join("")
+      +`<path d="M13 76 Q60 94 107 76" fill="none" stroke-width="2.2"/><path d="M84 88 q10 2 14 -8" fill="#f2c0c8" stroke-width="2"/>`)
+    +`<text class="zz" x="78" y="44" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text>`)],
+  ["Ventre en l'air","se roule dans l'herbe, pattes en l'air",()=>{const g=FOX.galette,P=(x,y,r,d)=>`<g class="wig" style="animation-delay:${d}s">${ink(`<ellipse cx="${x}" cy="${y}" rx="5.6" ry="7.4" fill="${g.c.s}" transform="rotate(${r} ${x} ${y})"/>`)}</g>`;
+    return scene("-4 20 128 88",shadow(46,100)+ink(`<path d="M8 100 q5 -9 9 0 M100 101 q4 -8 8 0 M24 102 q3 -6 6 0" fill="none" stroke="#7fb36a" stroke-width="2.4"/>`)
+    +`<g transform="rotate(-6 60 90)">${fox("galette",{pose:"lie"}).replace(/<ellipse cx="(44|76)" cy="91"[^>]*\/>/g,"")}${ink(`<ellipse cx="60" cy="86" rx="20" ry="6" fill="${g.c.ch}" stroke="none"/>`)}</g>`
+    +P(22,64,-55,0)+P(98,62,55,.2)+P(42,94,-150,.35)+P(78,92,150,.1))}],
+  ["Collés pour la sieste","Petit Pois dort contre Gaston",()=>scene("-14 18 148 92",
+    shadow(62,100)+`<g class="breath">${fox("gaston",{pose:"sleep"},"translate(-12 0)")}</g>`
+    +fox("petitpois",{pose:"sleep"},"translate(52 34) scale(.62)")
+    +`<path d="M58 30 c-4 -6 -12 0 0 8 c12 -8 4 -14 0 -8Z" fill="#f6a5b4" stroke="${INK}" stroke-width="2"/>`)],
+  ["Caché dans les feuilles","seuls les yeux et les oreilles dépassent",()=>scene("-4 10 128 100",
+    shadow(52,104)+fox("cannelle",{pose:"sit"},"translate(0 6)")
+    +ink(`<path d="M2 106 Q6 72 30 70 Q42 58 60 66 Q78 58 92 70 Q114 72 118 106Z" fill="#e7a356"/>`
+      +[[18,84,20,"#d9693f"],[34,74,-30,"#f2c45a"],[50,88,60,"#c9583a"],[68,76,10,"#f2c45a"],[86,86,-50,"#d9693f"],[100,80,40,"#e98a4a"],[28,96,80,"#f2c45a"],[76,96,-20,"#c9583a"],[56,100,30,"#e98a4a"]].map(a=>leaf(...a)).join(""))
+    +ink(leaf(78,26,30,"#d9693f")))],
+  ["Dans un pot de fleurs","trop grand pour le pot, mais il y tient",()=>scene("-4 0 128 116",
+    shadow(34,112)+ink(`<ellipse cx="60" cy="82" rx="36" ry="7" fill="#9a5a3e"/>`)
+    +fox("biscuit",{pose:"happy"},"translate(0 12)")
+    +ink(`<path d="M22 80 H98 V92 H22Z" fill="#e0855c"/><path d="M27 92 L35 112 H85 L93 92Z" fill="#d07450"/><path d="M40 100 q8 3 14 0" fill="none" stroke="#b55d3c" stroke-width="2"/>`
+      +`<path d="M60 18 V8" fill="none" stroke="#6f9a60" stroke-width="2.4"/><path d="M60 12 Q50 2 44 8 Q52 14 60 12Z M60 10 Q70 0 76 6 Q68 12 60 10Z" fill="#a9d68f" stroke-width="2"/>`))],
+  ["La queue sur le museau","s'est endormi dans sa propre écharpe",()=>scene("-4 4 128 104",
+    shadow(44,100)+`<g class="breath">${fox("brume",{pose:"sleep"}).replace(/<path d="M99 86 C106 98[^>]*\/><path d="M30 96[^>]*\/>/,"")}`
+    +ink(`<path d="M100 88 C104 76 82 72 56 76 C40 78 26 80 22 88 C20 94 30 94 34 90 C46 84 70 84 92 94Z" fill="#a9c0d2"/><path d="M22 88 C20 94 30 94 34 90 C33 87 31 85 28 84 C25 85 23 86 22 88Z" fill="#f4f8fb"/>`)+`</g>`)],
+  ["Sauvage : Balafre","un œil fermé, blessé dans la forêt",()=>scene("4 0 112 110",
+    shadow(42,96)+fox(balafre,{pose:"sit"})
+    +ink(`<ellipse cx="48" cy="55" rx="4.6" ry="5.2" fill="${balafre.c.b}" stroke="none"/><path d="M43.5 55.5 Q48 58.6 52.5 55.5" fill="none" stroke-width="2.4"/>`
+      +`<path d="M42.5 45 Q47 54 53.5 63" fill="none" stroke="#ecb8ac" stroke-width="2.4" filter="none"/><path d="M44 48.6 l3 -1.6 M47.4 54.6 l3 -1.6 M50.6 60 l3 -1.6" stroke="#ecb8ac" stroke-width="1.6"/>`))],
+];
+document.getElementById("grid").innerHTML=SCENES.map(([t,s,draw])=>`<figure>${draw()}<figcaption>${t}<span>${s}</span></figcaption></figure>`).join("");
+</script>
+</body>
+</html>
