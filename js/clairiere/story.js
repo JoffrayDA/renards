@@ -1,6 +1,6 @@
 /* La Clairière : les histoires. Voir docs/clairiere-v2.md, « Les histoires ».
    Une seule histoire à la fois, dans l'ordre d'ORDER. Le renard arrive pour son histoire (ou elle démarre s'il est déjà là),
-   le matin qui suit la fin de la précédente (nextMorning). Une histoire est une suite de moments : un renard ou un endroit
+   6 h après la fin de la précédente (nextMorning). Une histoire est une suite de moments : un renard ou un endroit
    porte un signe, on le touche, le dialogue se joue, et le moment suivant s'ouvre aussitôt. Ni amitié, ni météo, ni attente.
    R.beat[id] = moments finis ; R.souv[id] = souvenir reçu ; R.nextAt = quand la prochaine histoire peut commencer ;
    R.who[id][i] = le renard touché pour un moment « * » (pour relire l'histoire).
@@ -9,7 +9,11 @@
 // un renard par jour (décidé avec Joffray le 26/10/2026) : le suivant arrive au matin (6 h), au moins 6 h après la fin ;
 // les deux premières histoires s'enchaînent pour accrocher ; ?vite=1 pour tester sans attendre
 const VITE=/[?&]vite=1/.test(location.search);
-function nextMorning(){const d=new Date(Date.now()+6*36e5);if(d.getHours()>=6)d.setDate(d.getDate()+1);d.setHours(6,0,0,0);return d.getTime()}
+// une histoire toutes les 6 h (Joffray, 27/10/2026 : un renard par jour, « on va jamais s'en sortir ») ;
+// les parties qui attendaient le lendemain matin n'attendent pas plus de 6 h
+const STORY_GAP=6*36e5;
+function nextMorning(){return Date.now()+STORY_GAP}
+if(R.nextAt>Date.now()+STORY_GAP)R.nextAt=Date.now()+STORY_GAP;
 if(VITE)R.nextAt=0;
 // une scène sous la pluie (rain:1 dans un moment ; la fin de Pain d'épice et Brioche, Joffray : « il faut absolument qu'il pleuve ») :
 // il pleut pendant le moment et encore 3 min après ; les renards de stay restent où ils sont, même sous la pluie
@@ -377,7 +381,7 @@ function goalText(){const c=cur();
   const e=envGoal();if(e)return e; // pas d'histoire en cours : la petite envie du moment
   const id=nextId();
   if(!id)return {t:"Histoires",g:storyDone(LAST)?"Toutes les histoires sont finies.":"La suite des histoires arrive bientôt."};
-  const w=R.nextAt>Date.now()?(new Date(R.nextAt).getDate()===new Date().getDate()?"ce matin":"demain matin"):"bientôt";
+  const at=new Date(R.nextAt),w=R.nextAt>Date.now()?`${at.getDate()===new Date().getDate()?"":"demain "}vers ${at.getHours()} h`:"bientôt";
   return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
 }
 function renderStory(){

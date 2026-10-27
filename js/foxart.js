@@ -83,6 +83,8 @@ function foxArt(f,o={}){
     if(f.mark==="peinture")return [[-.7,.66,"#ffd84a",3.4],[.74,.78,"#8fca7a",2.8],[-.42,.9,"#7cb8e0",2.4]].map(([u,v,col,r])=>{const [x,y]=at(u,v);return `<path d="M${(x-r).toFixed(1)} ${y.toFixed(1)} q${r*.2} ${-r*1.1} ${r} ${-r} q${r*1.1} ${-r*.1} ${r} ${r} q${-r*.1} ${r*1.1} ${-r} ${r} q${-r*1.1} 0 ${-r} ${-r}Z" fill="${col}" stroke-width="1.4"/>`}).join("")+`<circle cx="${84}" cy="${Y+1}" r="1.8" fill="#7cb8e0" stroke="none"/>`;
     // Balafre : un œil fermé, une cicatrice droite et recousue (jamais en éclair)
     if(f.mark==="balafre")return `<g transform="translate(${dx} 0)"><ellipse cx="48" cy="${Y-.5}" rx="4.4" ry="4.8" fill="${c.b}" stroke="none"/><path d="M43.5 ${Y} Q48 ${Y+3} 52.5 ${Y}" fill="none" stroke-width="2.2"/><path d="M44.6 ${Y-9.5} L51.8 ${Y+5}" stroke="#b97a7a" stroke-width="2"/><path d="M45.2 ${Y-5.6} l3.2 -1.3 M47.2 ${Y-1.4} l3.2 -1.3 M49 ${Y+2.6} l3.2 -1.3" stroke="#b97a7a" stroke-width="1.3"/></g>`;
+    // Mûre : le bout du museau teint par les baies
+    if(f.mark==="mure")return `<g transform="translate(${dx} 0)"><ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="#8a4a9a" opacity=".55" stroke="none"/></g>`;
     if(f.mark==="taches")return `<g fill="${c.e}" stroke="none" opacity=".75" transform="translate(${dx} 0)">${[[36,-1],[40.5,-2.6],[38,2.2],[84,-1],[79.5,-2.6],[82,2.2]].map(([x,y])=>`<circle cx="${x}" cy="${Y+y}" r="1.25"/>`).join("")}</g>`;
     return ""};
   // la brioche : une seule forme pour la tête et le corps, déformée selon la pose

@@ -114,7 +114,9 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
   const flip=r()<.5,eat=pz==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
   // le renard mange au-dessus de la gamelle, ou se tient à côté de la gamelle vide
   const fx=eat?60-42*sc/.7:r()*10,fy=eat?10+(.7-sc)*60:14+(.7-sc)*80;
-  const fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose:pz}))}</g>`;
+  let fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose:pz}))}</g>`;
+  // ce que l'indice montre (la chaussette que Filou a « empruntée »)
+  if(cl&&cl.prop==="chaussette")fox+=`<g transform="translate(${(fx+78*sc).toFixed(1)} ${(fy+86*sc).toFixed(1)}) rotate(-18)" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"><path d="M0 -10 h7 v9 q0 3 3 3 h6 v6 h-11 q-5 0 -5 -5Z" fill="#f48aa6"/><path d="M0 -6 h7 M0 -2 h7" stroke="#fff" stroke-width="1.6"/><path d="M-.6 -10 h8.2" stroke-width="2"/></g>`;
   const bowl=eat?`<g transform="translate(36 63) scale(1.2)">${inner(bowlSVG(p.bowl))}</g>`:`<g transform="translate(84 72) scale(.85)">${inner(bowlSVG(null))}</g>`;
   const [tc,ta]=PH_TINT[ph],ex=[];
   if(ph==="jour"&&!wet&&r()<.6)ex.push(`<path transform="translate(${80+r()*24} ${10+r()*14})" d="M0 0 q-6 -7 -8 0 q2 5 8 0 q6 -7 8 0 q-2 5 -8 0Z" fill="#f6a5b4" stroke="${INK}" stroke-width="1.2"/>`);

@@ -290,3 +290,5 @@ h1{white-space:nowrap}
 @keyframes flame{0%{transform:scale(1,1)}50%{transform:scale(.94,1.08) skewX(2deg)}100%{transform:scale(1.04,.95) skewX(-2deg)}}
 .play .hgrow{position:absolute;left:10px;bottom:10px;z-index:2}
 @media (prefers-reduced-motion:reduce){.play.house .flame{animation:none}}
+/* une photo ne bouge pas : ni toilette, ni clignement, ni « z » (Joffray voyait un renard se lécher dans une photo) */
+.photo svg *,.pic.shot svg *{animation:none!important}
