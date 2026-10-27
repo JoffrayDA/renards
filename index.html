@@ -50,6 +50,13 @@ a.game img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;backgroun
 /* un jeu s'ouvre par-dessus l'accueil, qui garde la musique */
 #game{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:50;background:var(--bg)}
 footer{color:var(--soft);font-size:12.5px;text-align:center}
+/* Mes chiffres : ce que les testeurs lisent à Joffray au bout d'une semaine (jours joués, histoires…) */
+.stats{font:inherit;color:var(--soft);background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px}
+#stats{border:2px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);padding:18px 20px;max-width:340px;width:calc(100% - 32px)}
+#stats::backdrop{background:rgba(91,66,80,.35)}
+#stats h2{font-family:var(--display);font-weight:400;margin:0 0 8px;font-size:20px}
+#stats dl{display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin:0 0 14px;font-size:14px}
+#stats dd{margin:0;font-weight:900;text-align:right}#stats dt.h{grid-column:1/-1;font-weight:900;margin-top:6px;color:var(--coral-d)}
 /* un renard attend à la Clairière : sa silhouette sur l'image, sans son nom */
 .shot{position:relative}
 .wait{position:absolute;right:4%;bottom:6%;display:flex;flex-direction:column;align-items:center;pointer-events:none}
@@ -73,7 +80,8 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
     <div class="shot"><img src="img/clairiere.jpg" alt="Aperçu de la clairière"><div class="wait" id="wait" hidden aria-label="Un nouveau renard t'attend"><div class="sil" id="wsil"></div></div></div>
     <div class="tx"><div><strong>La clairière</strong><span>Le soir, les clients du café suivent Roussette jusqu'à son refuge. Prends soin d'eux, et remplis la gamelle pour les renards sauvages.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
   </a>
-  <footer>Tes parties sont enregistrées sur cet appareil.</footer>
+  <footer>Tes parties sont enregistrées sur cet appareil. <button class="stats" id="statsbtn" type="button">Mes chiffres</button></footer>
+  <dialog id="stats"><h2>Mes chiffres</h2><div id="statsin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button></dialog>
 </main>
 <script src="js/music.js"></script>
 <script src="js/cafe/foxes.js"></script>
@@ -100,6 +108,18 @@ function waiting(){let R=null;try{R=JSON.parse(localStorage.getItem("clairiere-r
   const w=document.getElementById("wait");w.hidden=!on;
   if(on)document.getElementById("wsil").innerHTML=foxArt(f).replace(/ filter="url\(#wobble\)"/g,"")}
 try{waiting()}catch(e){}
+// jours où l'app a été ouverte (pour le test : qui revient au bout d'une semaine ?) et ce que chaque jeu a avancé
+const SK="renards-stats",rd=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+function markDay(){const st=rd(SK)||{days:[]},d=new Date().toISOString().slice(0,10);if(!st.days.includes(d))st.days.push(d);try{localStorage.setItem(SK,JSON.stringify(st))}catch(e){}}
+markDay();
+function showStats(){const st=rd(SK)||{days:[]},C=rd("cafe-renards-v1")||{},R=rd("clairiere-renards-v2")||{},beat=R.beat||{},inco=R.inco||{};
+  const stars=Object.values(C.stars||{}).reduce((a,b)=>a+b,0),fmt=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"numeric",month:"long"}):"–";
+  const row=(k,v)=>`<dt>${k}</dt><dd>${v}</dd>`;
+  document.getElementById("statsin").innerHTML=`<dl><dt class="h">L'app</dt>${row("Jours joués",st.days.length)}${row("Premier jour",fmt(st.days[0]))}${row("Dernier jour",fmt(st.days[st.days.length-1]))}
+    <dt class="h">Le café</dt>${row("Journée atteinte",C.day||0)}${row("Étoiles",stars)}
+    <dt class="h">La clairière</dt>${row("Histoires finies",Object.keys(R.souv||{}).length)}${row("Renards au refuge",Object.keys(R.res||{}).length)}${row("Photos",(R.photos||[]).length)}${row("Inconnus retrouvés",Object.values(inco).filter(s=>s.found).length)}${row("Glands",R.glands||0)}</dl>`;
+  document.getElementById("stats").showModal()}
+document.getElementById("statsbtn").onclick=showStats;
 setInterval(()=>{if(frame.hidden)try{waiting()}catch(e){}},30000);
 document.querySelectorAll("a.game").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();try{MUSIC.unlock()}catch(err){}openGame(a.getAttribute("href"))}));
 </script>

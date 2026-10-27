@@ -8,6 +8,7 @@
 - `cafe.html` : **Kitsune Café**, jeu de gestion actif. C'est le jeu principal. Depuis le 22/10/2026, la page ne contient plus que le HTML : le style est dans `css/cafe.css` et le code dans `js/cafe/` (foxes, data, state, draw, game, render, end, menus, map, main), des scripts classiques qui partagent la portée globale et se chargent dans cet ordre. Une fonction appelée au chargement doit être définie dans un fichier précédent (ou le même).
 - `clairiere.html` : **La Clairière**, le refuge de Roussette (v2 depuis le 24/10/2026, voir `docs/clairiere-v2.md`). Style dans `css/clairiere.css`, code dans `js/clairiere/` (data, state, scene, life, ui, games, objets, story, envies, maison, main), après `js/cafe/foxes.js` (les renards) et `js/foxart.js`.
 - `js/foxart.js` : le dessin des renards (`foxArt`), partagé par les deux jeux (`foxSVG` l'appelle). `tools/planche.html` montre toutes les poses ; `tools/poses-objets.html` essaie des poses avec objets (panier, pot, feuilles…) pour les objets et photos du refuge.
+- **Mes chiffres** (lien en bas de l'accueil, `showStats` dans `index.html`, jours d'ouverture dans `renards-stats`) : jours joués, premier et dernier jour, avancée du Café et de la Clairière. Pour le test de rétention : 3 à 5 joueurs du genre, sans relance, on regarde au bout de 7 jours (27/10/2026).
 - `manifest.webmanifest`, `sw.js`, `icons/`, `img/` : PWA (installation sur l'écran d'accueil, hors ligne).
 - `tools/balance-bot.py` : bot qui joue au Café pour vérifier l'équilibrage.
 
