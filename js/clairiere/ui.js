@@ -105,7 +105,8 @@ const PH_TINT={aube:["#f7b8a8",.28],jour:["#fff",0],crepu:["#e98a6a",.3],nuit:["
 function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x45d9f3b);x=Math.imul(x^x>>>16,0x45d9f3b);x^=x>>>16; // instants proches, photos différentes
   const r=rng((x>>>0)%2147483646+1);
   const h=new Date(p.t).getHours(),ph=h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit",wet=rainAt(p.t),night=ph==="nuit";
-  const poses=night?["eat","sleep","sleep","lie","sit"]:["eat","eat","sit","groom","happy","lie","up"],pose=poses[Math.floor(r()*poses.length)];
+  // une photo sur deux le prend en train de manger (Joffray : « un peu des deux »), sinon repu à côté de la gamelle vide
+  const poses=night?["sleep","sleep","lie","sit"]:["sit","groom","happy","lie","up"],pose=r()<.5?"eat":poses[Math.floor(r()*poses.length)];
   const flip=r()<.5,eat=pose==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
   // le renard mange au-dessus de la gamelle, ou se tient à côté de la gamelle vide
   const fx=eat?60-42*sc/.7:r()*10,fy=eat?10+(.7-sc)*60:14+(.7-sc)*80;
@@ -119,7 +120,7 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
   if(!night&&!wet&&r()<.5)ex.push(`<g fill="#fff" stroke="${INK}" stroke-width="1"><circle cx="${8+r()*10}" cy="${84+r()*8}" r="2.4"/><circle cx="${100+r()*12}" cy="${80+r()*10}" r="2.4"/></g>`);
   const ground=wet?"#b9d29a":"#cfe3a8",bush=wet?"#79a978":"#8dbd86";
   return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="${ground}"/><path d="M0 34 Q30 ${24+r()*6} 60 32 Q90 ${24+r()*6} 120 34 V0 H0Z" fill="${bush}"/>`+
-    `<g${flip?' transform="translate(120 0) scale(-1 1)"':""}>${bowl}${fox}</g>`+
+    `<g${flip?' transform="translate(120 0) scale(-1 1)"':""}>${eat?fox+bowl:bowl+fox}</g>`+
     `<rect width="120" height="100" fill="${tc}" opacity="${ta}"/>${ex.join("")}</svg>`}
 const fmtDate=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" à "+new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 function photos(){
