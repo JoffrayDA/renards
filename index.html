@@ -54,13 +54,10 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
 .shot{position:relative}
 .wait{position:absolute;right:4%;bottom:6%;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .wait[hidden]{display:none}
-.wait .sil{width:78px;filter:brightness(.22) drop-shadow(0 0 6px rgba(255,248,225,.95));animation:peek 1.8s ease-in-out infinite alternate}
+.wait .sil{width:84px;filter:brightness(0) drop-shadow(0 0 5px rgba(255,248,225,.9));animation:peek 1.8s ease-in-out infinite alternate}
 .wait .sil svg{display:block;width:100%}
-.wait .q{position:absolute;top:-4px;right:-6px;font-family:var(--display);font-size:20px;color:#fff;background:var(--coral);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;box-shadow:0 3px 0 var(--coral-d);animation:pulse 1.4s ease-in-out infinite}
-.wait b{margin-top:-4px;font-size:12.5px;font-weight:900;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:99px;padding:3px 10px;white-space:nowrap}
-.wait.soon .sil{filter:brightness(.22) opacity(.45)}.wait.soon .q{display:none}
 @keyframes peek{to{transform:translateY(-5px) rotate(3deg)}}
-@media (prefers-reduced-motion:reduce){.wait .sil,.wait .q{animation:none}}
+@media (prefers-reduced-motion:reduce){.wait .sil{animation:none}}
 </style>
 </head>
 <body>
@@ -73,7 +70,7 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
     <div class="tx"><div><strong>Le café</strong><span>Sers les commandes avant que les clients s'impatientent, décroche tes étoiles et traverse les quatre saisons.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
   </a>
   <a class="game" href="clairiere.html">
-    <div class="shot"><img src="img/clairiere.jpg" alt="Aperçu de la clairière"><div class="wait" id="wait" hidden><div class="sil" id="wsil"></div><span class="q" aria-hidden="true">?</span><b>Quelqu'un t'attend…</b></div></div>
+    <div class="shot"><img src="img/clairiere.jpg" alt="Aperçu de la clairière"><div class="wait" id="wait" hidden aria-label="Un nouveau renard t'attend"><div class="sil" id="wsil"></div></div></div>
     <div class="tx"><div><strong>La clairière</strong><span>Le soir, les clients du café suivent Roussette jusqu'à son refuge. Prends soin d'eux, et remplis la gamelle pour les renards sauvages.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
   </a>
   <footer>Tes parties sont enregistrées sur cet appareil.</footer>
@@ -96,16 +93,12 @@ function openGame(url){load(url);frame.hidden=false;history.pushState({game:url}
 function hide(){frame.hidden=true;load("about:blank");M("boite");try{waiting()}catch(e){}}
 function closeGame(){if(frame.hidden)return;hide();if(history.state&&history.state.game)history.back()}
 addEventListener("popstate",()=>{if(!frame.hidden)hide()});
-// un nouveau renard attend son histoire à la Clairière : sa silhouette sur la carte (le nom reste caché, demande de Joffray)
-// aussi pendant une histoire en cours, et en attendant le prochain (« Arrive vers 15 h », silhouette pâle) ;
-// première partie : Petit Pois attend déjà
+// un nouveau renard arrive pour son histoire : sa silhouette noire sur la carte de la Clairière, rien d'autre
+// (Joffray) ; prise sur son vrai dessin, accessoire compris, pour qu'on devine qui c'est
 function waiting(){let R=null;try{R=JSON.parse(localStorage.getItem("clairiere-renards-v2"))}catch(e){}
-  const id=!R||!R.intro?"petitpois":R.nextFox,f=id&&FOXES.find(x=>x.id===id),w=document.getElementById("wait");
-  if(!f){w.hidden=true;return}
-  const soon=R&&R.intro&&!((R.beat||{})[id]>0)&&Date.now()<(R.nextAt||0),at=soon&&new Date(R.nextAt);
-  w.hidden=false;w.classList.toggle("soon",!!soon);
-  w.querySelector("b").textContent=soon?`Arrive ${at.getDate()===new Date().getDate()?"":"demain "}vers ${at.getHours()} h`:R&&(R.beat||{})[id]>0?"Une histoire t'attend…":"Quelqu'un t'attend…";
-  document.getElementById("wsil").innerHTML=foxArt(f,{sil:1}).replace(/ filter="url\(#wobble\)"/g,"")}
+  const id=R&&R.intro&&R.nextFox,f=id&&FOXES.find(x=>x.id===id),on=!!f&&!((R.beat||{})[id]>0)&&Date.now()>=(R.nextAt||0);
+  const w=document.getElementById("wait");w.hidden=!on;
+  if(on)document.getElementById("wsil").innerHTML=foxArt(f).replace(/ filter="url\(#wobble\)"/g,"")}
 try{waiting()}catch(e){}
 setInterval(()=>{if(frame.hidden)try{waiting()}catch(e){}},30000);
 document.querySelectorAll("a.game").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();try{MUSIC.unlock()}catch(err){}openGame(a.getAttribute("href"))}));
