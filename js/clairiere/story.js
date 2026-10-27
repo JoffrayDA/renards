@@ -25,7 +25,7 @@ const storyPeek=()=>storyRain()&&scn.rain;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","copeau","sesame","gribouille"];
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","copeau","sesame","marquis","zaza","flocon","noisette","givre","comete","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
@@ -195,7 +195,7 @@ const STORIES={
     {at:"libellule",after:[["libellule","pond"]],goal:"Libellule vient d'arriver au refuge. Va lui dire bonjour.",lines:[
       ["libellule","open","Bonjour… Chut. Regarde la mare : quand l'eau est calme, on voit le ciel dedans."],
       ["libellule","sad","Mais il y a toujours une mouche, ou Plouf, pour faire des ronds. Je n'ai jamais vu la lune dedans."]]},
-    {at:"libellule",game:{k:"still",say:"Chasse les mouches avant qu'elles touchent l'eau !",win:"Plus un rond… Regarde !"},goal:"Aide Libellule à garder la mare bien calme.",lines:[
+    {at:"libellule",game:{k:"still",label:"L'eau se calme…",say:"Chasse les mouches avant qu'elles touchent l'eau !",win:"Plus un rond… Regarde !"},goal:"Aide Libellule à garder la mare bien calme.",lines:[
       ["libellule","surprise","La lune… dans la mare. Toute ronde."],
       ["libellule","joy","Je te donne mon galet le plus lisse. Il est calme comme l'eau ce soir."]]}
   ]},
@@ -261,6 +261,82 @@ const STORIES={
       ["sesame","joy","Une cheminée, un tapis, et de la place pour tout le monde. Bienvenue chez toi."],
       ["copeau","open","Un peu petit, quand même. Je vais pouvoir agrandir tout ça…"],
       ["sesame","open",`Tiens, ${ME()}, garde la clé. Moi, je la perdrais avant ce soir. Touche la porte pour entrer.`]]}
+  ]},
+  // lot du 27/10/2026 : les six derniers clients du Café sans histoire
+  marquis:{title:"Rien que du moelleux",souv:"le nœud de soie",beats:[
+    {at:"marquis",goal:"Marquis vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["marquis","open",`Bonsoir, ${ME()}. Marquis, enchanté. Je resterai debout, merci.`],
+      ["marquis","sad","La souche ? Trop dure. Le banc ? Trop froid. L'herbe ? Elle pique."],
+      ["marquis","shy","Je ne m'assois que sur du moelleux. C'est une question de dignité."]]},
+    {at:"brindille",goal:"Demande à Mamie Brindille si elle peut coudre un coussin.",lines:[
+      ["brindille","joy","Un coussin pour ce petit monsieur ? Bien sûr, mon chou."],
+      ["brindille","sad","Mais ma pelote de laine a encore roulé sous les feuilles…"]]},
+    {at:"@leaves",game:{k:"search",item:"wool",say:"La pelote de Mamie Brindille est sous un des tas : il frémit quand elle bouge. 3 essais !",win:"La pelote !"},after:[["marquis","bench1"]],goal:"Retrouve la pelote de Mamie Brindille dans les feuilles.",lines:[
+      ["brindille","joy","Trois points, deux nœuds… Voilà un coussin bien dodu. Va, porte-le-lui."]]},
+    {at:"marquis",goal:"Apporte le coussin à Marquis, sur le banc.",lines:[
+      ["marquis","surprise","Pour moi ? Brodé ?"],
+      ["marquis","joy","…Oh. Que c'est moelleux. Je ne me relèverai plus jamais."],
+      ["marquis","shy","Tiens, mon nœud de soie. Un marquis paie toujours ses dettes."]]}
+  ]},
+  zaza:{title:"Chut",souv:"le grelot qui ne sonne pas",beats:[
+    {at:"zaza",goal:"Zaza vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["zaza","surprise",`${ME()} ! Tu entends ? Non ? Moi, j'entends tout.`],
+      ["zaza","sad","Une mouche qui bâille. Une feuille qui tombe. Somnus qui ronfle au fond de la forêt. Je ne dors jamais."],
+      ["zaza","shy","Juste une fois, je voudrais un vrai silence."]]},
+    {at:"zaza",game:{k:"still",label:"Zaza s'endort…",say:"Zaza ferme les yeux. Chasse les mouches avant qu'elles bourdonnent à ses oreilles !",win:"Plus un bruit…"},goal:"Fais le silence autour de Zaza.",lines:[
+      ["zaza","shy","Mmh… J'ai dormi. Vraiment dormi. J'ai rêvé de mon désert."],
+      ["zaza","joy","Tiens, mon grelot. Je l'ai bouché exprès : il ne sonne pas. Comme ça, tu penseras au silence."]]}
+  ]},
+  flocon:{title:"Une lumière à soi",souv:"le bocal-veilleuse",beats:[
+    {at:"flocon",goal:"Flocon vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["flocon","shy",`Bonsoir ${ME()}… Pardon, je suis un peu perdu. J'ai suivi une lumière toute la nuit.`],
+      ["flocon","sad","Chez moi, dans la neige, il fait noir six mois. Alors dès que quelque chose brille, je le suis. Les lanternes, la lune, la queue de Luciole…"],
+      ["luciole","surprise","C'est toi qui me suis partout depuis ce matin ?"]]},
+    {at:"luciole",goal:"Demande conseil à Luciole.",lines:[
+      ["luciole","joy","Il lui faut une lumière rien qu'à lui. Une qu'il garde près de son lit."],
+      ["luciole","open","Les lucioles dorées sont les plus douces. Il y en a toujours une près des lanternes."]]},
+    {at:"@lampL",game:{k:"firefly",say:"Une seule luciole brille en or. Attrape-la pour Flocon !",win:"Dans le bocal !"},goal:"Attrape une luciole dorée pour Flocon, près des lanternes.",lines:[
+      ["flocon","surprise","Pour moi ? Une lumière qui reste ?"],
+      ["flocon","joy","Je n'aurai plus besoin de suivre personne. Je pourrai enfin m'endormir."],
+      ["flocon","shy","Garde ce bocal vide, celui d'avant. Il a tenu toutes mes nuits d'hiver."]]}
+  ]},
+  noisette:{title:"Le gland d'or",souv:"le carnet du professeur",beats:[
+    {at:"noisette",goal:"Le Professeur Noisette vient d'arriver. Va lui dire bonjour.",lines:[
+      ["noisette","open",`Ah, ${ME()} ! Professeur Noisette. J'étudie les glands depuis quarante saisons.`],
+      ["noisette","surprise","Et mes calculs sont formels : au sommet de ce grand arbre pousse le seul gland d'or de la forêt."],
+      ["noisette","shy","Seulement… je n'ai jamais grimpé. Le vertige. Et mes lunettes glissent."]]},
+    {at:"@tree",game:{k:"shake",item:"acorn",catch:1,say:"Secoue le grand arbre ! Le gland d'or va tomber : attrape-le au vol !",win:"Le gland d'or !"},goal:"Fais tomber le gland d'or du grand arbre.",lines:[
+      ["noisette","surprise","Il existe ! Quarante saisons… J'avais raison !"]]},
+    {at:"noisette",goal:"Rends le gland d'or au Professeur Noisette.",lines:[
+      ["noisette","joy","Je vais l'étudier… Non. Je vais le planter. Dans quarante saisons, il y aura un arbre d'or ici."],
+      ["noisette","shy","Prends mon carnet. Tout ce que je sais des glands est dedans. Il te servira plus qu'à moi."]]}
+  ]},
+  givre:{title:"Disparu",souv:"la boule de neige qui ne fond pas",beats:[
+    {at:"givre",goal:"Givre vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+      ["givre","joy",`Coucou ${ME()} ! Chez moi, je me roule dans la neige jusqu'à disparaître. Personne ne me trouve jamais !`],
+      ["givre","sad","Mais ici, pas de neige. Tout le monde me voit. C'est nul."],
+      ["givre","open","Oh ! Les coussins de Pantoufle sont tout blancs… Tu me cherches ?"]]},
+    {at:"givre",game:{k:"cushion",who:"givre",say:"Givre se cache sous un coussin. Suis-le des yeux !"},goal:"Joue à cache-cache avec Givre.",lines:[
+      ["givre","surprise","Tu m'as trouvé ? Même sous les coussins ?"],
+      ["givre","joy","Personne ne m'avait jamais trouvé ! C'est encore mieux que disparaître."],
+      ["givre","shy","Tiens, une boule de neige de chez moi. Elle ne fond jamais, je ne sais pas pourquoi."]]}
+  ]},
+  // Comète ne vient pas de ce monde (idée de Joffray) : une étoile filante tombée dans la mare, qui a perdu sa traînée
+  comete:{title:"Pas d'ici",souv:"l'éclat d'étoile toujours tiède",cast:["noisette"],beats:[
+    {at:"comete",goal:"Une lumière est tombée près de la mare cette nuit. Va voir.",lines:[
+      ["comete","surprise","Où… où suis-je ? Ce n'est pas mon ciel. Il n'y a qu'une lune, ici ?"],
+      ["me","open",`Tu es au refuge. Moi, c'est ${ME()}. Tu viens d'où ?`],
+      ["comete","sad","De là-haut. Très loin derrière la lune. Je passais trop près, et j'ai glissé de ma route."],
+      ["comete","shy","Je brillais tellement, avant. Il me reste à peine une étincelle."]]},
+    {at:"noisette",goal:"Le Professeur Noisette a peut-être une explication.",lines:[
+      ["noisette","surprise","Fascinant… Une étoile filante. Vivante ! Toutes mes lectures disaient que c'était impossible."],
+      ["noisette","open","Pour remonter, il lui faut sa traînée. En tombant, elle s'est éparpillée en éclats dans toute la clairière."]]},
+    {at:"@pond",game:{k:"catch",n:6,say:"Les éclats de la traînée flottent au-dessus de la mare. Attrape-les tous !",win:"Tous les éclats !"},goal:"Ramasse les éclats de la traînée de Comète, près de la mare.",lines:[
+      ["comete","joy","Ma traînée… Je la sens. Je pourrais rentrer cette nuit."]]},
+    {at:"comete",goal:"Rends ses éclats à Comète.",lines:[
+      ["comete","sad","Là-haut, il fait froid et tout est silencieux. Ici, il y a des lanternes, une mare qui garde la lune… et toi."],
+      ["comete","open","Alors je reste. Une nuit par lune, je remonterai dire bonjour à mon ciel. C'est la seule nuit où on me voit là-haut."],
+      ["comete","joy",`Tiens, ${ME()}. Un éclat que je n'ai pas rendu. Il restera tiède, comme une étoile dans ta poche.`]]}
   ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[

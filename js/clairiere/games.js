@@ -19,6 +19,8 @@ function drag(A,f){const sv=A.sv;let down=false;sv.style.touchAction="none";
 
 /* ---------- objets trouvés ---------- */
 const ITEM={
+  // le gland d'or du Professeur Noisette
+  acorn:`<g transform="scale(1.5)"><path d="M-11 -2 Q-11 17 0 19 Q11 17 11 -2Z" fill="#f2c45a" ${O}/><path d="M-13 -1.5 Q0 -16 13 -1.5 Q0 3 -13 -1.5Z" fill="#a9785a" ${O}/><path d="M0 -9 q2 -5 6 -7" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M-5 4 q2 6 6 8" fill="none" stroke="#fff8dc" stroke-width="2.2" stroke-linecap="round"/></g>`,
   key:`<path d="M-4 -12 q-8 -6 -12 0 q4 4 12 0Z M4 -12 q8 -6 12 0 q-4 4 -12 0Z" fill="#e2546e" ${O}/><circle cy="-6" r="8" fill="#f2c45a" ${O}/><circle cy="-6" r="3" fill="#fff8dc" stroke="${INK}" stroke-width="1.8"/><path d="M0 2 V18 M0 12 h6 M0 17 h5" fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"/><path d="M0 2 V18 M0 12 h6 M0 17 h5" fill="none" stroke="#f2c45a" stroke-width="3" stroke-linecap="round"/>`,
   jar:`<path d="M-11 -17 h22 v6 h-22Z" fill="#c9a08a" ${O}/><rect x="-14" y="-12" width="28" height="30" rx="9" fill="#e4f3f9" fill-opacity=".85" ${O}/><path d="M-7 -5 q-2 8 0 14" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,
   wool:`<path d="M10 4 q16 6 26 -4 q8 -8 18 0" fill="none" stroke="#e0564f" stroke-width="3" stroke-linecap="round"/><circle r="13" fill="#e0564f" ${O}/><path d="M-9 -6 q9 4 16 -2 M-11 2 q10 5 20 -1 M-6 9 q6 2 12 -2" fill="none" stroke="#b83c38" stroke-width="2.2" stroke-linecap="round"/>`,
@@ -163,12 +165,12 @@ const GAMES={
       const fs=[{it,x:150+Math.random()*100,good:1},{it:"cone",x:110+Math.random()*60},{it:"cone",x:240+Math.random()*60}].map((o,i)=>({...o,y:150+i*14,vy:-60-i*30,vx:(Math.random()-.5)*50,r:0,
         el:grp(air,`<g transform="scale(${o.good?1.25:1})">${ITEM[o.it]}</g><circle r="${o.good?40:26}" fill="transparent"/>`,o.good?{"data-g":1}:{})}));
       fs.forEach(f=>{f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();if(st!=="fall")return;
-        if(f.good){st="won";f.el.classList.add("popin");A.win(g.win||"Rattrapé !")}else{f.el.remove();f.gone=1;A.say("Une pomme de pin ! Le bocal, vite !")}}});
+        if(f.good){st="won";f.el.classList.add("popin");A.win(g.win||"Rattrapé !")}else{f.el.remove();f.gone=1;A.say(it==="jar"?"Une pomme de pin ! Le bocal, vite !":"Une pomme de pin ! Pas celle-là, vite !")}}});
       A.say("Il tombe ! Attrape-le avant qu'il touche le sol !");
       A.loop(dt=>{if(st!=="fall"||D!==dn)return;for(const f of fs){if(f.gone)continue;f.vy+=560*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.r+=f.vx*dt*1.5;
-        if(f.y>=404){if(f.good){st="broke";f.el.innerHTML=`<path d="M-16 4 l8 -10 l4 8 l6 -12 l4 14 l8 -6 l2 10Z" fill="#e4f3f9" ${O}/>`;f.el.setAttribute("transform",`translate(${f.x.toFixed(0)} 404)`);
+        if(f.y>=404){if(f.good){st="broke";f.el.innerHTML=it==="jar"?`<path d="M-16 4 l8 -10 l4 8 l6 -12 l4 14 l8 -6 l2 10Z" fill="#e4f3f9" ${O}/>`:`<g opacity=".45">${ITEM[it]}</g>`;f.el.setAttribute("transform",`translate(${f.x.toFixed(0)} 404)`);
             try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
-            A.say("Crac ! Il s'est cassé… Il y en a un autre là-haut. Secoue encore !");A.later(()=>{air.innerHTML="";hang.setAttribute("opacity",.9);k=n-3;st="shake"},1400);return}
+            A.say(it==="jar"?"Crac ! Il s'est cassé… Il y en a un autre là-haut. Secoue encore !":"Raté, il s'est perdu dans l'herbe… Il en reste un là-haut. Secoue encore !");A.later(()=>{air.innerHTML="";hang.setAttribute("opacity",.9);k=n-3;st="shake"},1400);return}
           f.gone=1;f.el.remove();continue}
         f.el.setAttribute("transform",`translate(${f.x.toFixed(1)} ${f.y.toFixed(1)}) rotate(${f.r.toFixed(0)})`)}})};
     A.tap=()=>{if(st!=="shake")return;replay(crown,"shk");k++;
@@ -581,7 +583,7 @@ const GAMES={
     const pos=ids.map((id,i)=>N===1?[200,380]:[(i%Math.ceil(N/2)+.5)*(360/Math.ceil(N/2))+20,i<Math.ceil(N/2)?300:430]);
     sv.innerHTML=`<rect width="400" height="480" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
       <rect x="40" y="112" width="320" height="20" rx="10" fill="#fff" stroke="${INK}" stroke-width="3"/><rect id="bar" x="43" y="115" width="0" height="14" rx="7" fill="#9ec3ef"/>
-      <text x="200" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="${INK}">Gribouille peint…</text>`;
+      <text x="200" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="${INK}">${g.label||"Gribouille peint…"}</text>`;
     const models=ids.map((id,i)=>grp(sv,foxAt(id,pos[i][0],pos[i][1],w),{class:"model"}));
     const bar=sv.querySelector("#bar");let p=0,next=.8;const flies=[];
     A.say(g.say||"Chasse les mouches avant qu'elles chatouillent le museau !");
