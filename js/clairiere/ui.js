@@ -26,7 +26,8 @@ const bowlEl=document.createElement("button");bowlEl.className="bowl";bowlEl.typ
 bowlEl.onpointerdown=e=>{e.stopPropagation();bowlSheet()};
 // tant qu'un sauvage est venu manger, la gamelle montre encore ce qu'il est venu chercher
 function drawBowl(){const v=foxes.find(f=>f.wild&&f.food);
-  bowlEl.style.cssText=pc(240,268)+";z-index:269";bowlEl.innerHTML=bowlSVG(v?v.food:R.bowl&&R.bowl.type)}
+  bowlEl.style.cssText=pc(240,268)+";z-index:269";bowlEl.innerHTML=bowlSVG(v?v.food:R.bowl&&R.bowl.type);
+  bowlEl.classList.toggle("want",!R.bowl&&!v&&typeof wildLeft==="function"&&wildLeft().length>0&&!nextId())}
 
 /* ---------- glands dans l'herbe ---------- */
 // les glands rapportés par les renards (R.pend) traînent dans l'herbe : 6 tas au plus, on les touche pour les ramasser

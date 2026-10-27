@@ -26,7 +26,7 @@ setInterval(()=>{
   if(phaseNow()!==scn.phase)drawBg();
   const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}else if(rainTill&&!storyRain()){rainTill=0;drawGlow()} // fin de la scène sous la pluie : plus personne aux fenêtres
   if(!foxes.some(f=>f.walk))syncFoxes();
-  envieTick();
+  envieTick();wildNudge();
   renderHud();
 },30000);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){simulate(false);renderHud();if($("talk").hidden&&$("sheet").hidden)showNews();envieTick()}});

@@ -504,6 +504,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
     if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
     else toast("+3 glands");
     if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!metAny())setTimeout(firstLure,500);
+    else if(storyDone(c.id))setTimeout(wildNudge,600);
     save();renderStory();renderHud();syncRain();
   });
   if(b.game)playGame({...b.game,target:at},go);else go();
@@ -518,6 +519,15 @@ function firstLure(){if(R.lure)return;R.lure=1;save();
     ["petitpois","joy","Des fois, quand tout le monde dort, un renard sauvage vient manger. Il laisse toujours une trace…"],
     ["petitpois","joy","Reviens demain : on regardera ensemble qui est venu !"]],
     ()=>{R.bowl={type:"baies",until:Date.now()+BOWLS.baies.hours*36e5};save();renderHud();drawBowl();log("Des baies des bois dans la gamelle. Qui va venir ?")})}
+
+// il ne reste que les sauvages jamais croisés : Petit Pois le dit une fois et remplit la gamelle de baies
+// (sinon un joueur qui ne touche pas à la gamelle restait bloqué avant Gribouille)
+function wildNudge(){if(R.wildNudge||!R.intro||cur()||nextId()||!wildLeft().length||gameOn||!$("talk").hidden||!$("sheet").hidden)return;
+  R.wildNudge=1;save();
+  talk([["petitpois","surprise",`${ME()}, tu as entendu ? Ça gratte dans les buissons, tous les soirs.`],
+    ["petitpois","open","Ce sont les renards sauvages. Ils ont chacun une histoire, mais ils ne sortent que pour manger."],
+    ["petitpois","joy","Je mets des baies dans la gamelle. Après, il faudra du poisson, ou même du miel : chacun a ses goûts. Regarde la fiche des sauvages dans le carnet !"]],
+    ()=>{if(!R.bowl){R.bowl={type:"baies",until:Date.now()+BOWLS.baies.hours*36e5};save()}renderHud();log("La gamelle attend les sauvages.")})}
 
 /* ---------- repères : signes, endroit qui brille, objectif ---------- */
 const hotEl=document.createElement("button");hotEl.className="hot";hotEl.type="button";hotEl.hidden=true;
