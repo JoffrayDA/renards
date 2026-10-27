@@ -25,7 +25,7 @@ const storyPeek=()=>storyRain()&&scn.rain;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","copeau","sesame","marquis","zaza","flocon","noisette","givre","comete","gribouille"];
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","copeau","sesame","marquis","zaza","flocon","noisette","givre","comete","somnus","reglisse","aurore","maree","perle","yeti","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
@@ -338,6 +338,76 @@ const STORIES={
       ["comete","open","Alors je reste. Une nuit par lune, je remonterai dire bonjour à mon ciel. C'est la seule nuit où on me voit là-haut."],
       ["comete","joy",`Tiens, ${ME()}. Un éclat que je n'ai pas rendu. Il restera tiède, comme une étoile dans ta poche.`]]}
   ]},
+  // les six sauvages de la gamelle (27/10/2026) : leur histoire vient après leur première visite, puis ils s'installent.
+  // Une sur deux avec un jeu (Joffray : « pas obligé de faire des jeux pour tous »)
+  somnus:{title:"La vingt-quatrième heure",souv:"le bonnet de nuit de rechange",beats:[
+    {at:"somnus",sleep:1,goal:"Somnus est revenu de la forêt. Il dort, évidemment. Réveille-le doucement.",lines:[
+      ["somnus","shy",`Mmh… ${ME()} ? C'est l'heure ? Ma seule heure réveillée de la journée ?`],
+      ["somnus","open","D'habitude, je la passe à bâiller. Mais aujourd'hui, je voudrais voir quelque chose de beau."]]},
+    {at:"@pond",goal:"Montre la mare à Somnus.",lines:[
+      ["somnus","surprise","De l'eau qui brille… Je l'avais toujours vue en rêve. En vrai, c'est mieux."],
+      ["somnus","open","Encore un endroit. Vite, mon heure file."]]},
+    {at:"@bench",goal:"Emmène Somnus jusqu'au banc.",lines:[
+      ["somnus","joy","Le banc. La mare. Les lanternes. Et quelqu'un à côté."],
+      ["somnus","shy","C'était… la plus belle heure de toutes. Je crois que je vais rester ici pour les prochaines."],
+      ["somnus","shy","Tiens, mon bonnet de rechange. Pour les jours où toi aussi tu… zzz…"]]}
+  ]},
+  reglisse:{title:"Le secret sous la souche",souv:"le plan des tunnels",beats:[
+    {at:"reglisse",goal:"Réglisse est revenu de la forêt. Va lui dire bonjour.",lines:[
+      ["reglisse","open",`Bonsoir, ${ME()}. Je connais tous les tunnels de la forêt. Et tous les secrets de tes renards.`],
+      ["reglisse","shy","Ils me les racontent. Je ne répète jamais. Enfin… presque jamais."]]},
+    {at:"*",goal:"Demande à un renard s'il a déjà confié un secret à Réglisse.",lines:id=>[
+      ["me","open",`${FOX[id].name}, tu as déjà raconté un secret à Réglisse ?`],
+      [id,"shy","…Peut-être. Mais il ne l'a jamais répété. C'est pour ça qu'on lui dit tout."],
+      [id,"surprise","Par contre, lui, il en a un. Il gratte toujours sous la souche."]]},
+    {at:"@stump",goal:"Va voir ce que Réglisse cache sous la souche.",lines:[
+      ["reglisse","surprise","Tu m'as trouvé. Bon. Mon secret, c'est un tunnel."],
+      ["reglisse","joy","Il va de la souche jusque sous la maison. Quand il pleut, je passe par là pour être au chaud sans me mouiller."],
+      ["reglisse","shy","Je te donne le plan. Personne d'autre ne l'a jamais vu. Garde le secret."]]}
+  ]},
+  aurore:{title:"Chaque nuit une autre",souv:"le ruban qui change de couleur",beats:[
+    {at:"aurore",goal:"Aurore est revenue de la forêt. Va lui dire bonjour.",lines:[
+      ["aurore","sad",`${ME()}… Personne ne me reconnaît jamais. La nuit, mon pelage change : rose, puis vert, puis violet.`],
+      ["aurore","shy","Le lendemain, tout le monde croit que je suis une autre. Alors je reste seule."]]},
+    {at:"*",goal:"Demande à un renard s'il reconnaîtrait Aurore.",lines:id=>[
+      ["me","open",`${FOX[id].name}, si Aurore change de couleur, tu la reconnais ?`],
+      [id,"open","À sa voix, bien sûr. Et à sa façon de pencher la tête quand elle écoute."],
+      [id,"joy","La couleur, c'est juste une surprise en plus."]]},
+    {at:"aurore",goal:"Dis à Aurore ce que les autres ont répondu.",lines:[
+      ["aurore","surprise","À ma voix ? À ma façon de pencher la tête ?"],
+      ["aurore","joy","Alors je peux changer de couleur autant que je veux. Je resterai moi."],
+      ["aurore","shy","Prends ce ruban. Il change de couleur avec moi, chaque nuit. Comme ça, on sera deux."]]}
+  ]},
+  maree:{title:"Contre le courant",souv:"le galet aux quatre ricochets",beats:[
+    {at:"maree",goal:"Marée est revenue de la rivière. Va lui dire bonjour.",lines:[
+      ["maree","open",`Bonjour ${ME()}. J'arrive avec le courant, je repars avec lui. Toujours.`],
+      ["maree","sad","Mais ici, je voudrais rester. Seulement, la rivière m'appelle chaque soir."],
+      ["maree","shy","On dit qu'un galet qui rebondit quatre fois sur l'eau répond à la rivière à ta place."]]},
+    {at:"@pond",game:{k:"ricochet",need:4},goal:"Fais faire quatre ricochets pour Marée, sur la mare.",lines:[
+      ["maree","surprise","Quatre ! La rivière a entendu."],
+      ["maree","joy","Ce soir, elle partira sans moi. Je reste au refuge."],
+      ["maree","shy","Garde le galet. Il a dit oui pour moi."]]}
+  ]},
+  perle:{title:"La perle perdue",souv:"une perle de son collier",beats:[
+    {at:"perle",goal:"Perle est revenue de la rivière. Va lui dire bonjour.",lines:[
+      ["perle","joy",`${ME()} ! Je venais te remercier pour la gamelle. Tu as vu mon collier ? Chaque perle vient d'un coquillage.`],
+      ["perle","sad","Oh non… Il en manque une. Elle a dû rouler sous les feuilles."]]},
+    {at:"@leaves",game:{k:"search",item:"pearl",say:"La perle a roulé sous un des tas. Il frémit quand elle bouge. 3 essais !",win:"La perle !"},goal:"Retrouve la perle de Perle dans les feuilles.",lines:[
+      ["perle","joy","Elle brille encore plus après un tour dans les feuilles."],
+      ["perle","shy","Garde-la. Mon collier sera plus court, mais j'aurai une raison de revenir. Et puis… je crois que je vais rester."]]}
+  ]},
+  yeti:{title:"Personne n'y croit",souv:"un poil tout doux du Yéti",beats:[
+    {at:"petitpois",hide:1,goal:"Petit Pois a vu quelque chose dans le brouillard.",lines:[
+      ["petitpois","surprise",`${ME()} ! Il y avait une ombre énorme près de la gamelle. Énorme ! Avec un bonnet !`],
+      ["petitpois","shy","Personne ne me croit. Tu viens voir avec moi ?"]]},
+    {at:"@lampL",hide:1,game:{k:"lantern",who:"yeti",win:"Trouvé ! Il est… énorme. Et tout doux."},after:[["yeti","lampL"]],goal:"Prends une lanterne et cherche l'ombre dans le brouillard.",lines:[
+      ["yeti","shy","Bonsoir. Pardon. Je suis très discret, d'habitude."],
+      ["yeti","sad","Quand on est aussi gros, tout le monde a peur. Alors je me cache, et plus personne ne croit que j'existe."],
+      ["petitpois","joy","Moi, j'y crois ! Je l'ai dit le premier !"]]},
+    {at:"yeti",goal:"Va voir le Yéti près des lanternes.",lines:[
+      ["yeti","joy","Si je reste, vous me ferez une place près du feu ? Je prends beaucoup de place, mais je tiens chaud."],
+      ["yeti","shy",`Tiens, ${ME()}. Un poil de ma fourrure. La preuve que j'existe.`]]}
+  ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
       ["gribouille","joy",`Bonjour ${ME()} ! Je peins avec ma queue : tu vois le bout bleu ?`],
@@ -375,14 +445,16 @@ const chainDone=()=>ORDER.every(storyDone);
 // renards aient fini la leur, même celles qui ne sont pas encore écrites
 const LAST="gribouille",OTHERS=FOXES.filter(f=>!f.event&&f.id!=="roussette"&&f.id!==LAST).map(f=>f.id);
 const lastReady=()=>OTHERS.every(id=>STORIES[id]&&storyDone(id));
-const nextId=()=>ORDER.find(k=>!storyDone(k)&&(k!==LAST||lastReady()));
+// un sauvage n'a son histoire qu'une fois croisé à la gamelle ; ensuite il s'installe au refuge (Joffray, 27/10/2026)
+const nextId=()=>ORDER.find(k=>!storyDone(k)&&(k!==LAST||lastReady())&&(!WILD[k]||R.met[k]||isRes(k)));
+const wildLeft=()=>ORDER.filter(k=>WILD[k]&&!storyDone(k)&&!R.met[k]&&!isRes(k));
 // arrivé trop tôt (avant le 26/10/2026) : il repart, il reviendra en dernier
 if(isRes(LAST)&&!storyDone(LAST)&&!lastReady()){delete R.res[LAST];delete R.beat[LAST];delete R.who[LAST];save()}
 // l'histoire en cours et le moment attendu (null si on attend le prochain renard)
 function cur(){if(!R.intro)return null;const id=nextId();if(!id||!isRes(id))return null;
   const n=R.beat[id]||0;if(!n&&Date.now()<(R.nextAt||0))return null;return {id,n,b:beats(id)[n]}}
 // renards qui peuvent répondre à un moment « * » : les autres renards du refuge, pas celui d'avant
-function anyOk(c,fid){if(!isRes(fid)||WILD[fid]||fid===c.id)return false;const prev=(R.who[c.id]||{})[c.n-1];
+function anyOk(c,fid){if(!isRes(fid)||(WILD[fid]&&!storyDone(fid))||fid===c.id)return false;const prev=(R.who[c.id]||{})[c.n-1];
   return fid!==prev||!foxes.some(f=>!f.wild&&f.id!==c.id&&f.id!==prev)}
 // le renard de l'histoire caché dans la maison (Pantoufle)
 function isHidden(fid){const c=cur();return !!c&&c.id===fid&&!!c.b.hide}
@@ -456,7 +528,7 @@ function goalText(){const c=cur();
   if(c)return {t:`${STORIES[c.id].title} · ${c.n+1} sur ${beats(c.id).length}`,g:c.b.goal};
   const e=envGoal();if(e)return e; // pas d'histoire en cours : la petite envie du moment
   const id=nextId();
-  if(!id)return {t:"Histoires",g:storyDone(LAST)?"Toutes les histoires sont finies.":"La suite des histoires arrive bientôt."};
+  if(!id)return {t:"Histoires",g:storyDone(LAST)?"Toutes les histoires sont finies.":wildLeft().length?"Des renards sauvages rôdent encore autour de la gamelle. Remplis-la : chacun a une histoire à raconter.":"La suite des histoires arrive bientôt."};
   const at=new Date(R.nextAt),w=R.nextAt>Date.now()?`${at.getDate()===new Date().getDate()?"":"demain "}vers ${at.getHours()} h`:"bientôt";
   return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
 }

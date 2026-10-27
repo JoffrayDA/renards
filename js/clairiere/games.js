@@ -21,6 +21,8 @@ function drag(A,f){const sv=A.sv;let down=false;sv.style.touchAction="none";
 const ITEM={
   // le gland d'or du Professeur Noisette
   acorn:`<g transform="scale(1.5)"><path d="M-11 -2 Q-11 17 0 19 Q11 17 11 -2Z" fill="#f2c45a" ${O}/><path d="M-13 -1.5 Q0 -16 13 -1.5 Q0 3 -13 -1.5Z" fill="#a9785a" ${O}/><path d="M0 -9 q2 -5 6 -7" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M-5 4 q2 6 6 8" fill="none" stroke="#fff8dc" stroke-width="2.2" stroke-linecap="round"/></g>`,
+  // la perle du collier de Perle
+  pearl:`<circle r="11" fill="#fff4f6" ${O}/><circle cx="-3.5" cy="-3.5" r="3.4" fill="#fff"/><path d="M4 6 q4 -3 4 -8" fill="none" stroke="#f6b3c4" stroke-width="2.4" stroke-linecap="round"/>`,
   key:`<path d="M-4 -12 q-8 -6 -12 0 q4 4 12 0Z M4 -12 q8 -6 12 0 q-4 4 -12 0Z" fill="#e2546e" ${O}/><circle cy="-6" r="8" fill="#f2c45a" ${O}/><circle cy="-6" r="3" fill="#fff8dc" stroke="${INK}" stroke-width="1.8"/><path d="M0 2 V18 M0 12 h6 M0 17 h5" fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"/><path d="M0 2 V18 M0 12 h6 M0 17 h5" fill="none" stroke="#f2c45a" stroke-width="3" stroke-linecap="round"/>`,
   jar:`<path d="M-11 -17 h22 v6 h-22Z" fill="#c9a08a" ${O}/><rect x="-14" y="-12" width="28" height="30" rx="9" fill="#e4f3f9" fill-opacity=".85" ${O}/><path d="M-7 -5 q-2 8 0 14" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,
   wool:`<path d="M10 4 q16 6 26 -4 q8 -8 18 0" fill="none" stroke="#e0564f" stroke-width="3" stroke-linecap="round"/><circle r="13" fill="#e0564f" ${O}/><path d="M-9 -6 q9 4 16 -2 M-11 2 q10 5 20 -1 M-6 9 q6 2 12 -2" fill="none" stroke="#b83c38" stroke-width="2.2" stroke-linecap="round"/>`,
@@ -534,7 +536,7 @@ const GAMES={
   /* Le grand portrait (fin de l'histoire de Gribouille) : le tableau de tout le refuge ; Petit Pois y ajoute Gribouille
      dans le coin, de travers. On touche pour continuer. */
   portrait(g,A){
-    const sv=A.sv,ids=Object.keys(R.res).filter(i=>!WILD[i]&&i!=="gribouille"),n=Math.max(1,ids.length);
+    const sv=A.sv,ids=Object.keys(R.res).filter(i=>i!=="gribouille"),n=Math.max(1,ids.length);
     const cols=Math.ceil(Math.sqrt(n*1.8)),rows=Math.ceil(n/cols),cw=292/cols,ch=170/rows,sz=Math.min(cw*1.15,ch*1.25,96);
     let st="look";
     sv.innerHTML=`<rect width="400" height="480" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}

@@ -86,7 +86,7 @@ const MINE={
 // le texte d'une envie : celle du renard s'il en a une, sinon la commune
 const envDef=c=>c.m!=null&&MINE[c.id]?.[c.m]?{...ENVIES[c.k],...MINE[c.id][c.m]}:ENVIES[c.k];
 // les renards arrivés du Café après les histoires (sans histoire à eux) ont aussi des envies
-const envOk=id=>isRes(id)&&!WILD[id]&&(!STORIES[id]||storyDone(id))&&!isTarget(id);
+const envOk=id=>isRes(id)&&(!STORIES[id]||storyDone(id))&&!isTarget(id);
 const envFox=id=>foxes.find(f=>f.id===id&&!f.wild);
 const envCur=()=>R.env.day===today()?R.env.cur:null;
 const txt=(v,a)=>typeof v==="function"?v(a):a?v.replaceAll("{ami}",FOX[a].name):v;

@@ -67,7 +67,7 @@ const phaseAt=t=>{const h=new Date(t).getHours();return h>=6&&h<8?"aube":h>=8&&h
 function clueFits(c,t){const ph=phaseAt(t);return (!c.when||c.when===ph||(c.when==="nuit"&&ph==="crepu"))&&(!c.rain||rainAt(t))}
 // qui peut venir manger à cette gamelle, à cet instant ; un renard jamais vu, ou qui a un indice à donner, compte double
 function visitPool(type,t){const pool=[];
-  for(const id in WILD)if(WILD[id]===type)pool.push(...(R.met[id]?[id]:[id,id]));
+  for(const id in WILD)if(WILD[id]===type&&!isRes(id))pool.push(...(R.met[id]?[id]:[id,id]));
   for(const f of INCO){if(f.bowl!==type&&f.bowl!=="tout")continue;const s=R.inco[f.id]||{n:0};
     const w=f.bowl==="tout"?1:2; // celui qui mange de tout ne doit pas prendre toutes les visites
     if(s.n<5){if(clueFits(f.clues[s.n],t))pool.push(...Array(w).fill(f.id))}else if(w>1)pool.push(f.id)}
