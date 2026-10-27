@@ -8,7 +8,8 @@ const QH=new URLSearchParams(location.search).get("heure"),hourNow=()=>QH!=null?
 const phaseNow=()=>{const h=hourNow();return h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit"};
 const dark=()=>["crepu","nuit"].includes(phaseNow());
 // il pleut par tranches de 3 heures, une fois sur deux (demande de Joffray) ; la même pluie pour tout le monde au même moment
-function rainNow(){if(storyRain())return true;const d=new Date(),k=d.getFullYear()*1e6+(d.getMonth()+1)*1e4+d.getDate()*10+Math.floor(d.getHours()/3);
+function rainNow(){return storyRain()||rainAt(Date.now())}
+function rainAt(t){const d=new Date(t),k=d.getFullYear()*1e6+(d.getMonth()+1)*1e4+d.getDate()*10+Math.floor(d.getHours()/3);
   let x=k%2147483647;for(let i=0;i<3;i++)x=(x*16807)%2147483647;return x/2147483647<.5}
 
 /* ---------- décor ---------- */

@@ -351,11 +351,21 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
     if(c.id==="gaston"&&storyDone("gaston")){drawBg();log("La pêche est ouverte : touche la mare quand tu veux.")}
     if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
     else toast("+3 glands");
+    if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!Object.keys(R.met).length)setTimeout(firstLure,500);
     save();renderStory();renderHud();syncRain();
   });
   if(b.game)playGame({...b.game,target:at},go);else go();
   return true;
 }
+
+/* ---------- avant de partir : la gamelle ---------- */
+// à la fin des premières histoires, Petit Pois remplit la gamelle de baies : un sauvage viendra pendant ton absence
+// (la copine de Joffray a fermé le jeu une fois les histoires finies, sans raison de revenir)
+function firstLure(){if(R.lure)return;R.lure=1;save();
+  talk([["petitpois","open","Avant d'aller dormir… J'ai cueilli des baies des bois. On les met dans la gamelle ?"],
+    ["petitpois","joy","Des fois, quand tout le monde dort, un renard sauvage vient manger. Il laisse toujours une trace…"],
+    ["petitpois","joy","Reviens demain : on regardera ensemble qui est venu !"]],
+    ()=>{R.bowl={type:"baies",until:Date.now()+BOWLS.baies.hours*36e5};save();renderHud();drawBowl();log("Des baies des bois dans la gamelle. Qui va venir ?")})}
 
 /* ---------- repères : signes, endroit qui brille, objectif ---------- */
 const hotEl=document.createElement("button");hotEl.className="hot";hotEl.type="button";hotEl.hidden=true;
@@ -371,7 +381,8 @@ function goalText(){const c=cur();
   return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
 }
 function renderStory(){
-  const c=cur();
+  const c=cur(),nf=nextId()||"";if(R.nextFox!==nf){R.nextFox=nf;save()} // lu par l'accueil
+
   storyKey=c?c.id+c.n:"";
   for(const f of foxes)if(!f.wild){const t=isTarget(f.id);
     if(t&&f.inside)f.until=0;

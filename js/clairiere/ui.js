@@ -90,7 +90,7 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
 function hoursLeft(){if(!R.bowl)return "";const h=(R.bowl.until-Date.now())/36e5;return h>=1?`encore ${Math.round(h)} h`:"presque vide"}
 function bowlSheet(){
   const cur=R.bowl?`<p class="sub">Dans la gamelle : <b>${BOWLS[R.bowl.type].name}</b>, ${hoursLeft()}. En remplir une autre remplace ce qu'il y a dedans.</p>`:`<p class="sub">La gamelle est vide.</p>`;
-  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name}</strong><span>${B.desc} Dure ${B.hours} h.</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Un sauvage passe souvent quand tu n'es pas là. Il laisse une photo de lui en train de manger : c'est la seule trace de son passage.</p><p class="sub"><b>Pêcher :</b> ${canFish()?"touche la mare quand tu veux. Un poisson de temps en temps, et beaucoup de vieilles bottes.":"il te faudra une canne à pêche. Un certain pêcheur en a peut-être une…"}</p><p class="sub"><b>Gagner des glands :</b> chaque renard du refuge en rapporte quelques-uns par jour (plus il t'aime, plus il en rapporte) ; ils t'attendent dans l'herbe, touche-les pour les ramasser. Un câlin par jour et par renard en donne un, et les histoires en donnent aussi.</p>`);
+  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name}</strong><span>${B.desc} Dure ${B.hours} h.</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Un sauvage passe souvent quand tu n'es pas là. Il laisse une photo de sa visite : c'est la seule trace de son passage.</p><p class="sub"><b>Pêcher :</b> ${canFish()?"touche la mare quand tu veux. Un poisson de temps en temps, et beaucoup de vieilles bottes.":"il te faudra une canne à pêche. Un certain pêcheur en a peut-être une…"}</p><p class="sub"><b>Gagner des glands :</b> chaque renard du refuge en rapporte quelques-uns par jour (plus il t'aime, plus il en rapporte) ; ils t'attendent dans l'herbe, touche-les pour les ramasser. Un câlin par jour et par renard en donne un, et les histoires en donnent aussi.</p>`);
 }
 function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))return;
   R.glands-=B.price;R.fish-=B.fish||0;R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();
@@ -98,7 +98,29 @@ function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))ret
 
 function photoSVG(p){const f=FOX[p.id];
   if(p.obj)return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(0 -6)">${(OBJS[p.obj]||OBJS.panier).svg(p.id).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`;
-  return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(18 10) scale(.7)">${foxArt(f,{pose:"eat"}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g><g transform="translate(36 63) scale(1.2)">${bowlSVG(p.bowl).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`}
+  return wildPhoto(p,f)}
+// photo de la gamelle : jamais deux pareilles (Joffray recevait trois fois la même). L'instant de la visite fixe l'heure
+// (aube, jour, soir, nuit), la pluie de ce moment-là, la pose, le côté et quelques détails ; les anciennes photos changent aussi
+const PH_TINT={aube:["#f7b8a8",.28],jour:["#fff",0],crepu:["#e98a6a",.3],nuit:["#2b3466",.36]};
+function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x45d9f3b);x=Math.imul(x^x>>>16,0x45d9f3b);x^=x>>>16; // instants proches, photos différentes
+  const r=rng((x>>>0)%2147483646+1);
+  const h=new Date(p.t).getHours(),ph=h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit",wet=rainAt(p.t),night=ph==="nuit";
+  const poses=night?["eat","sleep","sleep","lie","sit"]:["eat","eat","sit","groom","happy","lie","up"],pose=poses[Math.floor(r()*poses.length)];
+  const flip=r()<.5,eat=pose==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
+  // le renard mange au-dessus de la gamelle, ou se tient à côté de la gamelle vide
+  const fx=eat?60-42*sc/.7:r()*10,fy=eat?10+(.7-sc)*60:14+(.7-sc)*80;
+  const fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose}))}</g>`;
+  const bowl=eat?`<g transform="translate(36 63) scale(1.2)">${inner(bowlSVG(p.bowl))}</g>`:`<g transform="translate(84 72) scale(.85)">${inner(bowlSVG(null))}</g>`;
+  const [tc,ta]=PH_TINT[ph],ex=[];
+  if(ph==="jour"&&!wet&&r()<.6)ex.push(`<path transform="translate(${80+r()*24} ${10+r()*14})" d="M0 0 q-6 -7 -8 0 q2 5 8 0 q6 -7 8 0 q-2 5 -8 0Z" fill="#f6a5b4" stroke="${INK}" stroke-width="1.2"/>`);
+  if(night)for(let i=0;i<6;i++)ex.push(`<circle cx="${(r()*120).toFixed(0)}" cy="${(r()*24).toFixed(0)}" r="${(.8+r()).toFixed(1)}" fill="#fff6c8"/>`);
+  if(ph==="crepu"||night)for(let i=0;i<3;i++)ex.push(`<circle cx="${(10+r()*100).toFixed(0)}" cy="${(36+r()*50).toFixed(0)}" r="1.8" fill="#f8ec7a"/>`);
+  if(wet)ex.push(Array.from({length:16},()=>{const x=r()*130,y=r()*90;return `<path d="M${x.toFixed(0)} ${y.toFixed(0)} l-3 8" stroke="#dfeaf6" stroke-width="1.4" stroke-linecap="round" opacity=".85"/>`}).join("")+`<ellipse cx="${flip?30:90}" cy="90" rx="16" ry="3.5" fill="#a9c6dd" opacity=".55"/>`);
+  if(!night&&!wet&&r()<.5)ex.push(`<g fill="#fff" stroke="${INK}" stroke-width="1"><circle cx="${8+r()*10}" cy="${84+r()*8}" r="2.4"/><circle cx="${100+r()*12}" cy="${80+r()*10}" r="2.4"/></g>`);
+  const ground=wet?"#b9d29a":"#cfe3a8",bush=wet?"#79a978":"#8dbd86";
+  return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="${ground}"/><path d="M0 34 Q30 ${24+r()*6} 60 32 Q90 ${24+r()*6} 120 34 V0 H0Z" fill="${bush}"/>`+
+    `<g${flip?' transform="translate(120 0) scale(-1 1)"':""}>${bowl}${fox}</g>`+
+    `<rect width="120" height="100" fill="${tc}" opacity="${ta}"/>${ex.join("")}</svg>`}
 const fmtDate=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" à "+new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 function photos(){
   const ps=R.photos.slice().reverse();
@@ -134,7 +156,7 @@ function showNews(){
   R.news=[];save();
   const next=()=>{if(arr.length){const n=arr.shift();syncFoxes();talk(arrLines(n.id),next)}else renderStory()};
   if(wild.length){
-    openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence, ${wild.length>1?"des renards sauvages sont passés":"un renard sauvage est passé"} à la gamelle.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG({id:n.id,bowl:R.photos.find(p=>p.t===n.t)?.bowl||WILD[n.id]})}<figcaption><b>${FOX[n.id].name}</b>${n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
+    openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence, ${wild.length>1?"des renards sauvages sont passés":"un renard sauvage est passé"} à la gamelle.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG({id:n.id,t:n.t,bowl:R.photos.find(p=>p.t===n.t)?.bowl||WILD[n.id]})}<figcaption><b>${FOX[n.id].name}</b>${n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
     afterSheet=next;
   }else next();
 }

@@ -53,7 +53,7 @@ function simulate(live){
     if(R.gf>=1){const n=Math.floor(R.gf);R.pend=(R.pend||0)+n;R.gf-=n} // laissés dans l'herbe, à ramasser
     if(R.bowl&&t>R.bowl.until)R.bowl=null;
     const B=R.bowl&&BOWLS[R.bowl.type];
-    if(B&&B.p&&R.wildDay!==today(t)&&Math.random()<B.p){
+    if(B&&B.p&&R.wildDay!==today(t)&&Math.random()<(Object.keys(R.met).length?B.p:.3)){
       // un renard pas encore rencontré a deux fois plus de chances de venir
       const pool=Object.keys(WILD).filter(id=>WILD[id]===R.bowl.type).flatMap(id=>R.met[id]?[id]:[id,id]);
       const id=pool[Math.floor(Math.random()*pool.length)];

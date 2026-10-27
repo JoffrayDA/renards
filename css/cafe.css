@@ -45,6 +45,8 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 #custs{z-index:1}
 #counter{z-index:2}
 #helper{z-index:3;pointer-events:none}
+.fly{position:fixed;left:0;top:0;width:34px;height:34px;pointer-events:none;z-index:70;filter:drop-shadow(0 3px 0 rgba(91,66,80,.25))}
+.fly svg{display:block;width:100%;height:100%}
 #helper .buddy>div.hop{animation:joy .18s ease-out 2 alternate}
 #closed{z-index:4;display:grid;place-items:center;background:rgba(91,66,80,.16)}
 .closed-in{display:flex;flex-direction:column;align-items:center;gap:8px}

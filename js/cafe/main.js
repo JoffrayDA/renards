@@ -5,6 +5,17 @@ function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout
 function shake(el){if(!el)return;el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}
 function rel(el){const r=$("scene").getBoundingClientRect(),b=el.getBoundingClientRect();return[b.left+b.width/2-r.left,b.top+b.height*.25-r.top]}
 function floatAt(el,t,gold){if(!el)return;const [x,y]=rel(el),s=document.createElement("span");s.className="float"+(gold?" gold":"");s.textContent=t;s.style.left=x+"px";s.style.top=y+"px";$("scene").appendChild(s);setTimeout(()=>s.remove(),1200)}
+// le compagnon sert une pâtisserie : on la voit quitter la vitrine, passer par lui et arriver au client
+// (la copine de Joffray voyait des pâtisseries disparaître sans comprendre pourquoi)
+function flyPastry(k,to,i=1){const from=document.querySelector(`[data-pa="${k}"] .ki`),by=document.querySelector("#helper .buddy");if(!from||!to)return;
+  const mid=e=>{const r=e.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]},a=mid(from),b=by?mid(by):a,d=mid(to);
+  const at=([x,y],sc=1)=>({transform:`translate(${x}px,${y}px) translate(-50%,-50%) scale(${sc})`});
+  const s=document.createElement("div");s.className="fly";s.innerHTML=icon(k);document.body.appendChild(s);
+  s.animate([at(a),at([(a[0]+b[0])/2,Math.min(a[1],b[1])-40],1.15),at(b),at([(b[0]+d[0])/2,Math.min(b[1],d[1])-50],1.15),at(d,.55)],
+    {duration:760,delay:(i-1)*140,easing:"ease-in-out",fill:"backwards"}).onfinish=()=>s.remove()}
+// les trois premières fois, une bulle dit qui sert les pâtisseries
+function buddyTip(){if((S.buddyTip||0)>=3)return;S.buddyTip=(S.buddyTip||0)+1;save();
+  hint(`<b>${FOX[buddy()].name}</b> apporte les pâtisseries de la vitrine aux clients pressés.`)}
 function burst(el){const [x,y]=rel(el);for(let i=0;i<3;i++){const s=document.createElement("span");s.className="heart";s.textContent="♥";s.style.left=(x+(i-1)*14)+"px";s.style.top=y+"px";s.style.setProperty("--dx",((i-1)*16)+"px");s.style.animationDelay=(i*.1)+"s";$("scene").appendChild(s);setTimeout(()=>s.remove(),1500)}}
 
 /* ---------- événements ---------- */

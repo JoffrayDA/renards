@@ -70,8 +70,8 @@ function update(dt){
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé
   if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
-    for(const c of w){let got=0;for(const it of c.order)if(!it.done&&!it.o&&REC[it.r].kind==="bake"&&G.vit[it.r]>0){G.vit[it.r]--;it.done=1;got++}
-      if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);buddyHop();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
+    for(const c of w){let got=0;for(const it of c.order)if(!it.done&&!it.o&&REC[it.r].kind==="bake"&&G.vit[it.r]>0){G.vit[it.r]--;it.done=1;got++;flyPastry(it.r,custEl(c),got)}
+      if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);buddyHop();buddyTip();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
 }}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
