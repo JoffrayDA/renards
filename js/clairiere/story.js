@@ -351,7 +351,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
     if(c.id==="gaston"&&storyDone("gaston")){drawBg();log("La pêche est ouverte : touche la mare quand tu veux.")}
     if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();R.glands+=15;toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands`)}
     else toast("+3 glands");
-    if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!Object.keys(R.met).length)setTimeout(firstLure,500);
+    if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!metAny())setTimeout(firstLure,500);
     save();renderStory();renderHud();syncRain();
   });
   if(b.game)playGame({...b.game,target:at},go);else go();

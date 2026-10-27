@@ -68,7 +68,7 @@ function arrive(f){
   if(w.to==="edge"){removeFox(f);return}
   if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");moveLight(f);f.until=Date.now()+9000+Math.random()*9000;drawGlow();log(`${FOX[f.id].name} rentre se mettre au chaud.`);return}
   f.spot=w.to;f.el.style.zIndex=Math.round(f.y);settle(f);
-  if(f.wild&&w.to.bowl)log(`${FOX[f.id].name} mange à la gamelle !`);
+  if(f.wild&&w.to.bowl)log(`${nameOf(f.id)==='???'?'Un inconnu':FOX[f.id].name} mange à la gamelle !`);
 }
 // où aller ensuite
 function choose(f){

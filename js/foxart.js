@@ -81,6 +81,8 @@ function foxArt(f,o={}){
       return `<path d="M${pts.join(" L")}" fill="none" stroke="#fffaf3" stroke-width="2.6"/>`}
     if(f.mark==="neige")return `<path d="M43 ${top+7} Q45 ${top-4} 53 ${top-3} Q57 ${top-10} 65 ${top-5} Q74 ${top-7} 77 ${top+7} Q60 ${top+12} 43 ${top+7}Z" fill="#fff" stroke-width="2.4"/><path d="M50 ${top+2} q3 -2 6 0" fill="none" stroke="#cfe0f2" stroke-width="1.6"/>`;
     if(f.mark==="peinture")return [[-.7,.66,"#ffd84a",3.4],[.74,.78,"#8fca7a",2.8],[-.42,.9,"#7cb8e0",2.4]].map(([u,v,col,r])=>{const [x,y]=at(u,v);return `<path d="M${(x-r).toFixed(1)} ${y.toFixed(1)} q${r*.2} ${-r*1.1} ${r} ${-r} q${r*1.1} ${-r*.1} ${r} ${r} q${-r*.1} ${r*1.1} ${-r} ${r} q${-r*1.1} 0 ${-r} ${-r}Z" fill="${col}" stroke-width="1.4"/>`}).join("")+`<circle cx="${84}" cy="${Y+1}" r="1.8" fill="#7cb8e0" stroke="none"/>`;
+    // Balafre : un œil fermé, une cicatrice droite et recousue (jamais en éclair)
+    if(f.mark==="balafre")return `<g transform="translate(${dx} 0)"><ellipse cx="48" cy="${Y-.5}" rx="4.4" ry="4.8" fill="${c.b}" stroke="none"/><path d="M43.5 ${Y} Q48 ${Y+3} 52.5 ${Y}" fill="none" stroke-width="2.2"/><path d="M44.6 ${Y-9.5} L51.8 ${Y+5}" stroke="#b97a7a" stroke-width="2"/><path d="M45.2 ${Y-5.6} l3.2 -1.3 M47.2 ${Y-1.4} l3.2 -1.3 M49 ${Y+2.6} l3.2 -1.3" stroke="#b97a7a" stroke-width="1.3"/></g>`;
     if(f.mark==="taches")return `<g fill="${c.e}" stroke="none" opacity=".75" transform="translate(${dx} 0)">${[[36,-1],[40.5,-2.6],[38,2.2],[84,-1],[79.5,-2.6],[82,2.2]].map(([x,y])=>`<circle cx="${x}" cy="${Y+y}" r="1.25"/>`).join("")}</g>`;
     return ""};
   // la brioche : une seule forme pour la tête et le corps, déformée selon la pose
@@ -127,7 +129,7 @@ function foxArt(f,o={}){
       +[[13,-15,1.2,0],[-15,-7,.9,.5],[9,14,.8,1],[-8,13,.7,1.4],[18,4,.6,.8]].map(([dx,dy,k,d])=>`<path class="spark" style="animation-delay:${d}s" d="M${(gx+dx).toFixed(1)} ${(gy+dy-4*k).toFixed(1)} q${.8*k} ${3.2*k} ${4*k} ${4*k} q${-3.2*k} ${.8*k} ${-4*k} ${4*k} q${-.8*k} ${-3.2*k} ${-4*k} ${-4*k} q${3.2*k} ${-.8*k} ${4*k} ${-4*k}Z" fill="#fff8c8"/>`).join("")+`</g>`;
     return ""};
   const tailG=s=>gh?"":s;
-  const tailBack=(rot=0,ox=90,oy=82)=>tailG(`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64,rot,ox,oy)}</g></g>`);
+  const tailBack=(rot=0,ox=90,oy=82)=>tailG(`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})${f.tail==="long"?` translate(${ox} ${oy}) scale(1.6) translate(${-ox} ${-oy})`:""}"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64,rot,ox,oy)}</g></g>`);
   // pour l'épouvantail : pas d'yeux boutons quand les yeux sont fermés
   const closedPose=["happy","sleep","groom","eat"].includes(pose);if(closedPose)o.closed=1;
   // fx : parties animées, dessinées hors du filtre #wobble (sinon il est recalculé à chaque image)

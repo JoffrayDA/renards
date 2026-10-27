@@ -119,6 +119,9 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 .chip.discret{background:var(--peach);color:#a0583a}.chip.rare{background:var(--lav);color:#5e4f9a}.chip.legend{background:#fbe39a;color:#8a6210}
 .story{background:#fff3e2;border-radius:12px;padding:8px 10px;font-size:13px;line-height:1.4}
 .lvl{font-size:13px;font-weight:700;margin-top:6px}
+.card .pic.shot{padding:0;overflow:hidden;aspect-ratio:6/5;display:block}.card .pic.shot svg{width:100%;display:block}
+.sheet h3.sec{font-family:var(--display);font-weight:400;font-size:16px;margin:14px 0 2px}
+.guess{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}.guess .btn{flex:1 1 30%}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .photo{margin:0;background:#fff;padding:6px 6px 8px;border-radius:6px;box-shadow:0 3px 10px rgba(91,66,80,.18);transform:rotate(-1.2deg)}
 .photo:nth-child(even){transform:rotate(1.4deg)}

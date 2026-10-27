@@ -20,7 +20,7 @@ setInterval(tick,100);
 // toutes les 30 s : simulation (glands, gamelle, sauvages), arrivées, moment de la journée, pluie
 setInterval(()=>{
   const seen=simulate(true);
-  for(const id of seen){const n=R.news.find(x=>x.k==="wild"&&x.id===id&&x.live);wildVisit(id,R.photos[R.photos.length-1].bowl);toast(n&&n.first?`Un renard sauvage ! ${FOX[id].name} s'approche de la gamelle.`:`${FOX[id].name} revient manger à la gamelle.`)}
+  for(const id of seen){const n=R.news.find(x=>x.k==="wild"&&x.id===id&&x.live);wildVisit(id,R.photos[R.photos.length-1].bowl);toast(!known(id)?"Un inconnu s'approche de la gamelle… Une photo de plus pour l'album !":n&&n.first?`Un renard sauvage ! ${FOX[id].name} s'approche de la gamelle.`:`${FOX[id].name} revient manger à la gamelle.`)}
   R.news=R.news.filter(x=>!(x.k==="wild"&&x.live));
   chainTick(true);checkArrival();if(R.news.some(x=>x.k==="arr")&&$("talk").hidden&&$("sheet").hidden)showNews();else renderStory();
   if(phaseNow()!==scn.phase)drawBg();

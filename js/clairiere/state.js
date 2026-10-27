@@ -53,13 +53,15 @@ function simulate(live){
     if(R.gf>=1){const n=Math.floor(R.gf);R.pend=(R.pend||0)+n;R.gf-=n} // laissés dans l'herbe, à ramasser
     if(R.bowl&&t>R.bowl.until)R.bowl=null;
     const B=R.bowl&&BOWLS[R.bowl.type];
-    if(B&&B.p&&R.wildDay!==today(t)&&Math.random()<(Object.keys(R.met).length?B.p:.3)){
-      // un renard pas encore rencontré a deux fois plus de chances de venir
-      const pool=Object.keys(WILD).filter(id=>WILD[id]===R.bowl.type).flatMap(id=>R.met[id]?[id]:[id,id]);
-      const id=pool[Math.floor(Math.random()*pool.length)];
-      const first=!R.met[id];R.met[id]=1;R.wildDay=today(t);
-      R.photos.push({id,bowl:R.bowl.type,t});R.bowl=null;
-      R.news.push({k:"wild",id,t,first,live:!!live});seen.push(id);
+    if(R.wildDay!==today(t)){R.wildDay=today(t);R.wildN=0} // deux visites par jour au plus
+    // la toute première visite arrive vite : le joueur revient pour la voir
+    if(B&&B.p&&R.wildN<2&&Math.random()<(metAny()?B.p:.3)){
+      // sauvages de cette gamelle et inconnus dont le prochain indice va avec le moment (sauvages.js)
+      const pool=visitPool(R.bowl.type,t);
+      if(pool.length){const id=pool[Math.floor(Math.random()*pool.length)],ph={id,bowl:R.bowl.type,t};
+        const first=!INC[id]&&!R.met[id];if(INC[id])incoPhoto(id,ph);else R.met[id]=1;R.wildN++;
+        R.photos.push(ph);R.bowl=null;
+        R.news.push({k:"wild",id,t,first,clue:ph.clue,live:!!live});seen.push(id)}
     }
   }
   R.last=t;save();return seen;

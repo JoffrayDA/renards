@@ -43,10 +43,10 @@ function pickDrop(i){const n=Math.min(DROPS.length,R.pend||0);if(!n)return;const
 /* ---------- bulles ---------- */
 let bubT;
 function bubble(f,txt){const b=document.querySelector(".bubble")||document.createElement("div");b.className="bubble";
-  b.innerHTML=`${FOX[f.id].name}<small>${txt}</small>`;b.style.cssText=pc(Math.max(50,Math.min(350,f.x)),f.y-58);$("scene").appendChild(b);clearTimeout(bubT);bubT=setTimeout(()=>b.remove(),2600)}
+  b.innerHTML=`${nameOf(f.id)}<small>${txt}</small>`;b.style.cssText=pc(Math.max(50,Math.min(350,f.x)),f.y-58);$("scene").appendChild(b);clearTimeout(bubT);bubT=setTimeout(()=>b.remove(),2600)}
 function tapFox(f){
   if(!f.wild&&storyTap(f.id))return;
-  if(f.wild){bubble(f,"un renard sauvage, il mange !");return}
+  if(f.wild){bubble(f,known(f.id)?"un renard sauvage, il mange !":"un inconnu… Qui est-ce ?");return}
   if(envieTap(f))return; // une petite envie (envies.js)
   if(snapObj(f))return; // un renard dans un objet : la photo d'abord
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
@@ -85,6 +85,9 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   else if(b.dataset.fox)foxSheet(b.dataset.fox);
   else if(b.dataset.reread)reread(b.dataset.reread);
   else if(b.dataset.buddy){R.buddy=b.dataset.buddy;save();toast(`${FOX[R.buddy].name} t'accompagnera au Café.`);foxSheet(R.buddy)}
+  else if(b.dataset.inco)incoSheet(b.dataset.inco);
+  else if(b.dataset.guess){const [id,n]=b.dataset.guess.split("|");guessInco(id,n)}
+  else if(b.dataset.ask)askInco(b.dataset.ask);
   else if(b.dataset.go==="carnet")carnet();else if(b.dataset.go==="photos")photos()};
 
 function hoursLeft(){if(!R.bowl)return "";const h=(R.bowl.until-Date.now())/36e5;return h>=1?`encore ${Math.round(h)} h`:"presque vide"}
@@ -106,11 +109,12 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
   const r=rng((x>>>0)%2147483646+1);
   const h=new Date(p.t).getHours(),ph=h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit",wet=rainAt(p.t),night=ph==="nuit";
   // une photo sur deux le prend en train de manger (Joffray : « un peu des deux »), sinon repu à côté de la gamelle vide
-  const poses=night?["sleep","sleep","lie","sit"]:["sit","groom","happy","lie","up"],pose=r()<.5?"eat":poses[Math.floor(r()*poses.length)];
-  const flip=r()<.5,eat=pose==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
+  const poses=night?["sleep","sleep","lie","sit"]:["sit","groom","happy","lie","up"],cl=p.clue!=null&&INC[p.id]&&INC[p.id].clues[p.clue];
+  const pose=r()<.5?"eat":poses[Math.floor(r()*poses.length)],pz=cl?cl.pose:pose; // la photo d'un inconnu montre son indice
+  const flip=r()<.5,eat=pz==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
   // le renard mange au-dessus de la gamelle, ou se tient à côté de la gamelle vide
   const fx=eat?60-42*sc/.7:r()*10,fy=eat?10+(.7-sc)*60:14+(.7-sc)*80;
-  const fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose}))}</g>`;
+  const fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose:pz}))}</g>`;
   const bowl=eat?`<g transform="translate(36 63) scale(1.2)">${inner(bowlSVG(p.bowl))}</g>`:`<g transform="translate(84 72) scale(.85)">${inner(bowlSVG(null))}</g>`;
   const [tc,ta]=PH_TINT[ph],ex=[];
   if(ph==="jour"&&!wet&&r()<.6)ex.push(`<path transform="translate(${80+r()*24} ${10+r()*14})" d="M0 0 q-6 -7 -8 0 q2 5 8 0 q6 -7 8 0 q-2 5 -8 0Z" fill="#f6a5b4" stroke="${INK}" stroke-width="1.2"/>`);
@@ -125,7 +129,7 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
 const fmtDate=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" à "+new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 function photos(){
   const ps=R.photos.slice().reverse();
-  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p><div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${FOX[p.id].name}</b>${p.obj?`${(OBJS[p.obj]||OBJS.panier).in}, le `:""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
+  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p>${incoCards()}${ps.length&&incoCards()?`<h3 class="sec">Toutes les photos</h3>`:""}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${nameOf(p.id)}</b>${p.clue!=null?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.obj?`${(OBJS[p.obj]||OBJS.panier).in}, le `:""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
 }
 
 function status(id,M){
@@ -157,7 +161,7 @@ function showNews(){
   R.news=[];save();
   const next=()=>{if(arr.length){const n=arr.shift();syncFoxes();talk(arrLines(n.id),next)}else renderStory()};
   if(wild.length){
-    openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence, ${wild.length>1?"des renards sauvages sont passés":"un renard sauvage est passé"} à la gamelle.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG({id:n.id,t:n.t,bowl:R.photos.find(p=>p.t===n.t)?.bowl||WILD[n.id]})}<figcaption><b>${FOX[n.id].name}</b>${n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
+    openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence, ${wild.length>1?"des renards sauvages sont passés":"un renard sauvage est passé"} à la gamelle.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG({id:n.id,t:n.t,clue:n.clue,bowl:R.photos.find(p=>p.t===n.t)?.bowl||WILD[n.id]})}<figcaption><b>${nameOf(n.id)}</b>${n.clue!=null?`Indice ${n.clue+1} sur 5 : ${INC[n.id].clues[n.clue].txt}`:n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
     afterSheet=next;
   }else next();
 }
