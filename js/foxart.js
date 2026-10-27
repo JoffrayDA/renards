@@ -2,6 +2,11 @@
    même silhouette, même visage, même taille. Utilisé par le Café et la Clairière (foxSVG). */
 // Différences de look testées sur la planche avant de toucher aux données des jeux.
 // Roussette (l'héroïne) garde le roux classique ; les autres se distinguent par un motif, pas seulement une couleur.
+// Sur iPhone et iPad, Safari recalcule le filtre #wobble (trait qui tremble) à chaque image dès qu'un renard bouge :
+// le Café ramait (copine de Joffray, 27/10/2026). On y garde le trait net, sans le filtre. ?lite=1 / ?lite=0 pour tester.
+const LITE=(()=>{const q=new URLSearchParams(location.search).get("lite");if(q!=null)return q==="1";
+  return /iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)})();
+if(LITE){const s=document.createElement("style");s.textContent='[filter="url(#wobble)"]{filter:none!important}';document.head.appendChild(s)}
 const LOOK={
   galette:{c:{b:"#d9764c",ch:"#fff3e2",e:"#5e2c1c",s:"#5e2c1c",t:"#fff3e2"},mark:"liste"},
   pantoufle:{c:{b:"#f0b7a2",ch:"#fff6ec",e:"#9a6a48",s:"#fffaf3",t:"#fffaf3"},acc:"bonnetnuit",mark:"chaussettes"},
@@ -83,8 +88,9 @@ function foxArt(f,o={}){
     if(f.mark==="peinture")return [[-.7,.66,"#ffd84a",3.4],[.74,.78,"#8fca7a",2.8],[-.42,.9,"#7cb8e0",2.4]].map(([u,v,col,r])=>{const [x,y]=at(u,v);return `<path d="M${(x-r).toFixed(1)} ${y.toFixed(1)} q${r*.2} ${-r*1.1} ${r} ${-r} q${r*1.1} ${-r*.1} ${r} ${r} q${-r*.1} ${r*1.1} ${-r} ${r} q${-r*1.1} 0 ${-r} ${-r}Z" fill="${col}" stroke-width="1.4"/>`}).join("")+`<circle cx="${84}" cy="${Y+1}" r="1.8" fill="#7cb8e0" stroke="none"/>`;
     // Balafre : un œil fermé, une cicatrice droite et recousue (jamais en éclair)
     if(f.mark==="balafre")return `<g transform="translate(${dx} 0)"><ellipse cx="48" cy="${Y-.5}" rx="4.4" ry="4.8" fill="${c.b}" stroke="none"/><path d="M43.5 ${Y} Q48 ${Y+3} 52.5 ${Y}" fill="none" stroke-width="2.2"/><path d="M44.6 ${Y-9.5} L51.8 ${Y+5}" stroke="#b97a7a" stroke-width="2"/><path d="M45.2 ${Y-5.6} l3.2 -1.3 M47.2 ${Y-1.4} l3.2 -1.3 M49 ${Y+2.6} l3.2 -1.3" stroke="#b97a7a" stroke-width="1.3"/></g>`;
-    // Mûre : le bout du museau teint par les baies
-    if(f.mark==="mure")return `<g transform="translate(${dx} 0)"><ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="#8a4a9a" opacity=".55" stroke="none"/></g>`;
+    // Mûre : des morceaux de toutes les couleurs, comme cousus (Joffray a voulu tous les signes, 27/10/2026)
+    if(f.mark==="patch")return [[-.72,.56,"#8fb6d9",6.4],[.74,.6,"#d39ac4",5.8],[-.36,.92,"#9cc48a",5.2],[.42,.93,"#f2d27a",5]].map(([u,v,col,r])=>{const [x,y]=at(u,v);
+      return `<path d="M${(x-r).toFixed(1)} ${(y-r*.6).toFixed(1)} l${(r*1.9).toFixed(1)} ${(-r*.3).toFixed(1)} l${(r*.2).toFixed(1)} ${(r*1.5).toFixed(1)} l${(-r*1.9).toFixed(1)} ${(r*.4).toFixed(1)}Z" fill="${col}" stroke-width="1.4" stroke-dasharray="2.2 1.6"/>`}).join("");
     if(f.mark==="taches")return `<g fill="${c.e}" stroke="none" opacity=".75" transform="translate(${dx} 0)">${[[36,-1],[40.5,-2.6],[38,2.2],[84,-1],[79.5,-2.6],[82,2.2]].map(([x,y])=>`<circle cx="${x}" cy="${Y+y}" r="1.25"/>`).join("")}</g>`;
     return ""};
   // la brioche : une seule forme pour la tête et le corps, déformée selon la pose
@@ -121,6 +127,7 @@ function foxArt(f,o={}){
       else h=noMouth+dot(49.3,Y+1.2,2.6,3,.8)+dot(73.3,Y+1.2,2.6,3,.8)
         +`<g stroke="#e2546e" stroke-width="1.4"><path d="M36 ${Y+3} l-2 4 M40 ${Y+3} l-2 4 M44 ${Y+3} l-2 4 M80 ${Y+3} l-2 4 M84 ${Y+3} l-2 4 M88 ${Y+3} l-2 4"/></g><path d="M56 ${Y+7.6} q2 -1.6 4 0 q2 1.6 4 0" fill="none" stroke-width="1.6"/><path d="M90 ${Y-14} q-3 4.6 0 6.4 q3 -1.8 0 -6.4Z" fill="#cfe4f7" stroke-width="1.3"/>`;
     }
+    if(f.mark==="masque")h=`<path d="M34 ${Y+1} Q35 ${Y-8} 48 ${Y-7} Q60 ${Y-3.5} 72 ${Y-7} Q85 ${Y-8} 86 ${Y+1} Q81 ${Y+7} 72 ${Y+5} Q60 ${Y+2.5} 48 ${Y+5} Q39 ${Y+7} 34 ${Y+1}Z" fill="#625c6e" stroke="none"/>`+h;
     return dx?`<g transform="translate(${dx} 0)">${h}</g>`:h};
   const paws=(y,l=50,r=70,lift=[0,0])=>gh?"":(f.mark==="moufle"&&!sil?`<path d="M${l-8} ${y-lift[0]+3} Q${l-9} ${y-lift[0]-7} ${l-1} ${y-lift[0]-7} Q${l+8} ${y-lift[0]-7} ${l+8} ${y-lift[0]+3}Z" fill="#7cb8e0"/><path d="M${l-8} ${y-lift[0]+3} L${l+8} ${y-lift[0]+3}" stroke="#fff" stroke-width="2.4"/><path d="M${l-4} ${y-lift[0]-3} l2 2 2 -2 2 2 2 -2" fill="none" stroke="#fff" stroke-width="1.2"/>`:`<ellipse cx="${l}" cy="${y-lift[0]}" rx="7" ry="4.4" fill="${c.s}"/>`)+`<ellipse cx="${r}" cy="${y-lift[1]}" rx="7" ry="4.4" fill="${c.s}"/>`;
   // Luciole : le bout de la queue est une vraie petite lumière (cœur blanc, halo qui pulse, étincelles).
@@ -131,7 +138,8 @@ function foxArt(f,o={}){
       +[[13,-15,1.2,0],[-15,-7,.9,.5],[9,14,.8,1],[-8,13,.7,1.4],[18,4,.6,.8]].map(([dx,dy,k,d])=>`<path class="spark" style="animation-delay:${d}s" d="M${(gx+dx).toFixed(1)} ${(gy+dy-4*k).toFixed(1)} q${.8*k} ${3.2*k} ${4*k} ${4*k} q${-3.2*k} ${.8*k} ${-4*k} ${4*k} q${-.8*k} ${-3.2*k} ${-4*k} ${-4*k} q${3.2*k} ${-.8*k} ${4*k} ${-4*k}Z" fill="#fff8c8"/>`).join("")+`</g>`;
     return ""};
   const tailG=s=>gh?"":s;
-  const tailBack=(rot=0,ox=90,oy=82)=>tailG(`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})${f.tail==="long"?` translate(${ox} ${oy}) scale(1.6) translate(${-ox} ${-oy})`:""}"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64,rot,ox,oy)}</g></g>`);
+  const tailBack=(rot=0,ox=90,oy=82)=>tailG(f.tail==="pompon"?`<g class="tail" style="transform-origin:${ox}px ${oy}px"><circle cx="${ox+5}" cy="${oy-1}" r="8.5" fill="${c.t}"/></g>`
+    :`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})${f.tail==="long"?` translate(${ox} ${oy}) scale(1.6) translate(${-ox} ${-oy})`:""}"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64,rot,ox,oy)}</g></g>`);
   // pour l'épouvantail : pas d'yeux boutons quand les yeux sont fermés
   const closedPose=["happy","sleep","groom","eat"].includes(pose);if(closedPose)o.closed=1;
   // fx : parties animées, dessinées hors du filtre #wobble (sinon il est recalculé à chaque image)
@@ -144,8 +152,9 @@ function foxArt(f,o={}){
     // la même brioche, aplatie ; oreilles basses ; pour dormir, la queue fait le tour par devant
     T=50;Y=69;N=86;W=34;
     const front=pose==="sleep";
-    body=(front?"":tailBack(18,92,86))+ears(14,front?-28:-12)+bun(T,90,41)+faceOf(Y,front?"shut":"open")
-      +(front?tailG(glow(31,92)+`<path d="M99 86 C106 98 70 100 30 96 C21 95 20 89 29 88 C60 91 88 90 94 82Z" fill="${c.b}"/><path d="M30 96 C21 95 20 89 29 88 C34 88.5 39 89 43 89.4 C42 93 37 96 30 96Z" fill="${c.t}"/>`):paws(91,44,76));
+    const wrap=front&&f.tail!=="pompon"; // un pompon ne fait pas le tour
+    body=(wrap?"":tailBack(18,92,86))+ears(14,front?-28:-12)+bun(T,90,41)+faceOf(Y,front?"shut":"open")
+      +(wrap?tailG(glow(31,92)+`<path d="M99 86 C106 98 70 100 30 96 C21 95 20 89 29 88 C60 91 88 90 94 82Z" fill="${c.b}"/><path d="M30 96 C21 95 20 89 29 88 C34 88.5 39 89 43 89.4 C42 93 37 96 30 96Z" fill="${c.t}"/>`):paws(91,44,76));
   }else if(pose==="eat"){
     // penchée vers la gamelle : la tête descend, les oreilles avancent
     T=42;Y=64;N=82;W=31;
@@ -167,7 +176,8 @@ function foxArt(f,o={}){
     const ex=o.expr||"open";
     body=tailBack(ex==="surprise"?-14:0)+ears(ex==="surprise"?-3:0,ex==="sad"?-26:ex==="shy"?-12:0)+bun(T,88,36)+faceOf(Y,ex==="joy"||ex==="open"?ex:ex)+paws(89);
   }
-  body+=markOf(Y)+acc(T,Y,N,W);
+  // Mûre : le bout du museau teint par les baies
+  body+=markOf(Y)+(f.muzzle&&!sil?`<ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="${f.muzzle}" opacity=".55" stroke="none"/>`:"")+acc(T,Y,N,W);
   const fxG=fx?`<g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${fx}</g>`:"";
   const zz=pose==="sleep"?`<text class="zz" x="70" y="42" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="80" y="32" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
   if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}</g></svg>`;

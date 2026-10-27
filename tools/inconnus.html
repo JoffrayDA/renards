@@ -23,30 +23,21 @@ figcaption span{display:block;font-weight:400;font-size:12px;opacity:.65}
   <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
 <h1>Inconnus de la forêt (essai)</h1>
-<p>Premier lot de 6. Seuls Balafre et Panache ont un signe qui se voit ; les autres sont des renards ordinaires, reconnus à ce qu'ils font dans les indices.</p>
+<p>Premier lot de 6, chacun avec un signe qui se voit (Joffray les a tous voulus).</p>
 <div id="out"></div>
 <script src="../js/cafe/foxes.js"></script>
 <script src="../js/foxart.js"></script>
 <script>
 const IN=[
   {id:"balafre",name:"Balafre",mark:"balafre",c:{b:"#a8957f",ch:"#f3ece2",e:"#5e4c3e",s:"#5e4c3e",t:"#efe6da"},why:"cicatrice, un œil fermé"},
-  {id:"miette",name:"Miette",scale:.86,c:{b:"#e8a874",ch:"#fff7ea",e:"#9a5a3a",s:"#9a5a3a",t:"#fff7ea"},why:"toute petite, finit les restes"},
+  {id:"miette",name:"Miette",scale:.86,tail:"pompon",c:{b:"#e8a874",ch:"#fff7ea",e:"#9a5a3a",s:"#9a5a3a",t:"#fff7ea"},why:"toute petite, queue en pompon"},
   {id:"panache",name:"Panache",tail:"long",c:{b:"#c96a3e",ch:"#fff1e4",e:"#4a2a20",s:"#4a2a20",t:"#fff8ee"},why:"queue immense"},
-  {id:"mure",name:"Mûre",mark:"mure",c:{b:"#b8583e",ch:"#fff0e6",e:"#4a2230",s:"#4a2230",t:"#fff0e6"},why:"mange les baies une par une"},
-  {id:"filou",name:"Filou",c:{b:"#9a9aa6",ch:"#f1f1f4",e:"#3f3f4c",s:"#3f3f4c",t:"#f1f1f4"},why:"« emprunte » les chaussettes"},
-  {id:"radar",name:"Radar",c:{b:"#f0d6a4",ch:"#fffaf0",e:"#c79a5a",s:"#c79a5a",t:"#fffaf0"},why:"entend tout"}];
-// variantes à signe, non retenues (Joffray : « pas les freaks de la forêt ») : dessinées par-dessus la pose assise
-const Y=55,g=s=>`<g stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${s}</g>`;
-const eyes=`<ellipse cx="48" cy="${Y}" rx="2.9" ry="3.5" fill="#2e2028" stroke="none"/><ellipse cx="72" cy="${Y}" rx="2.9" ry="3.5" fill="#2e2028" stroke="none"/><circle cx="48.9" cy="${Y-1.4}" r="1.05" fill="#fff" stroke="none"/><circle cx="72.9" cy="${Y-1.4}" r="1.05" fill="#fff" stroke="none"/>`;
-const add=(svg,over)=>svg.replace(/<\/g><\/svg>$/,g(over)+"</g></svg>");
-const VAR=[
-  {f:IN[4],name:"Filou masqué",why:"masque sombre sur les yeux",draw:f=>add(foxArt(f),`<path d="M34 ${Y+1} Q35 ${Y-8} 48 ${Y-7} Q60 ${Y-3.5} 72 ${Y-7} Q85 ${Y-8} 86 ${Y+1} Q81 ${Y+7} 72 ${Y+5} Q60 ${Y+2.5} 48 ${Y+5} Q39 ${Y+7} 34 ${Y+1}Z" fill="#625c6e" stroke="none"/>${eyes}<ellipse cx="60" cy="${Y+6.5}" rx="12.5" ry="7.5" fill="${f.c.ch}" stroke="none"/><path d="M56 ${Y+5} Q60 ${Y+2.6} 64 ${Y+5} Q60 ${Y+8} 56 ${Y+5}Z" fill="#3d2a35" stroke-width="1.4"/><path d="M55 ${Y+9} q2.5 2 5 0 q2.5 2 5 0" fill="none" stroke-width="1.6"/>`)},
-  {f:{...IN[3],c:{b:"#e0b48a",ch:"#fff6ea",e:"#8a5a3a",s:"#8a5a3a",t:"#fff6ea"}},name:"Mûre patchwork",why:"pelage en morceaux cousus",draw:f=>add(foxArt(f),[[34,64,"#8fb6d9",6.4],[87,67,"#d39ac4",5.8],[47,83,"#9cc48a",5.2],[75,84,"#f2d27a",5]].map(([x,y,col,r])=>`<path d="M${x-r} ${y-r*.6} l${r*1.9} ${-r*.3} l${r*.2} ${r*1.5} l${-r*1.9} ${r*.4}Z" fill="${col}" stroke-width="1.4" stroke-dasharray="2.2 1.6"/>`).join(""))},
-  {f:IN[1],name:"Miette pompon",why:"queue toute ronde",draw:f=>add(foxArt(f).replace(/<g class="tail"[\s\S]*?<\/g><\/g>/,""),`<circle cx="95" cy="81" r="8.5" fill="${f.c.t}"/>`)},
-  {f:{...IN[5],ears:1.75},name:"Radar fennec",why:"oreilles immenses",draw:f=>foxArt(f)}];
+  {id:"mure",name:"Mûre",mark:"patch",muzzle:"#8a4a9a",c:{b:"#e0b48a",ch:"#fff6ea",e:"#8a5a3a",s:"#8a5a3a",t:"#fff6ea"},why:"patchwork, museau violet"},
+  {id:"filou",name:"Filou",mark:"masque",c:{b:"#9a9aa6",ch:"#f1f1f4",e:"#3f3f4c",s:"#3f3f4c",t:"#f1f1f4"},why:"masque, « emprunte » les chaussettes"},
+  {id:"radar",name:"Radar",ears:1.75,c:{b:"#f0d6a4",ch:"#fffaf0",e:"#c79a5a",s:"#c79a5a",t:"#fffaf0"},why:"oreilles immenses"}];
 const card=(f,name,why,a,b)=>`<figure><div class="duo">${a}<span class="sil">${b}</span></div><figcaption>${name}<span>${why}</span></figcaption></figure>`;
 document.getElementById("out").innerHTML=`<h2>Dans le jeu</h2><div class="row">${IN.map(f=>card(f,f.name,f.why,foxArt(f),foxArt(f,{sil:1}))).join("")}</div>`
-  +`<h2>Avec un signe (non retenus)</h2><div class="row">${VAR.map(v=>card(v.f,v.name,v.why,v.draw(v.f),v.draw(v.f))).join("")}</div>`;
+  ;
 </script>
 </body>
 </html>
