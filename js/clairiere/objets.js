@@ -34,7 +34,7 @@ const OBJS={
     ${[[18,78,20,"#d9693f"],[34,68,-30,"#f2c45a"],[50,82,60,"#c9583a"],[68,70,10,"#f2c45a"],[86,80,-50,"#d9693f"],[100,74,40,"#e98a4a"],[28,90,80,"#f2c45a"],[76,90,-20,"#c9583a"],[56,94,30,"#e98a4a"]].map(([x,y,r,c])=>leaf(x,id?y+(100-y)*.35:y,r,c)).join("")}</g></svg>`}},
   // les constructions de l'arbre de droite (28/10/2026) : la cabane et la branche sont dans le décor (bgSVG) ;
   // ici, ce qui va avec le renard : la barrière de la terrasse devant lui, les cordes et la planche de la balançoire
-  cabane:{name:"Cabane dans l'arbre",price:150,pose:"sit",in:"Dans la cabane",spot:{id:"treehouse",x:320,y:141,poses:["sit"],obj:"cabane"},thumb:"-10 -40 140 150",
+  cabane:{name:"Cabane dans l'arbre",price:150,pose:"sit",in:"Dans la cabane",spot:{id:"treehouse",x:320,y:141,poses:["sit"],obj:"cabane",via:[{x:373,y:252},{x:373,y:141}]},thumb:"-10 -40 140 150",
     desc:"Copeau construit une cabane dans l'arbre de droite, avec une terrasse. On y voit toute la clairière.",
     svg:id=>`<svg viewBox="0 -16 120 116" aria-hidden="true">${id?foxIn(id,"sit"):""}<g ${O} filter="url(#wobble)"><path d="M-6 96 H126" stroke-width="3"/><path d="M-4 96 V70 H124 V96" fill="none" stroke-width="2.6"/>${[14,34,54,74,94,114].map(x=>`<path d="M${x} 70 V96" stroke-width="2.2"/>`).join("")}</g></svg>`,
     photo:id=>`<svg viewBox="0 0 200 160" aria-hidden="true"><rect width="200" height="160" fill="#bfe3f2"/><path d="M0 120 Q100 110 200 120 V160 H0Z" fill="#cfe3a8"/><g filter="url(#wobble)"><path d="M130 160 Q136 110 128 70 L156 70 Q150 110 158 160Z" fill="#a9785a" ${O}/>${[[150,40,44],[92,52,30],[186,64,28]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}<rect x="90" y="44" width="80" height="56" rx="4" fill="#e8b884" ${O}/>${[56,68,80,92].map(y=>`<path d="M92 ${y} H168" stroke="#c99a6a" stroke-width="2"/>`).join("")}<path d="M82 48 L130 14 L178 48Z" fill="#d9776a" ${O}/><rect x="138" y="60" width="22" height="20" rx="3" fill="#ffe9a6" ${O}/><path d="M40 104 H176" stroke="#8a5a3a" stroke-width="10" stroke-linecap="round"/><path d="M40 104 H176" stroke="${INK}" stroke-width="2"/></g>${foxAt(id,72,104,60,{pose:"sit",expr:"joy"})}<g filter="url(#wobble)"><path d="M40 100 V84 H104 V100" fill="none" stroke="${INK}" stroke-width="2.6"/>${[52,64,76,88].map(x=>`<path d="M${x} 84 V100" stroke="${INK}" stroke-width="2.2"/>`).join("")}</g></svg>`},
@@ -53,7 +53,7 @@ const basketSVG=id=>OBJS.panier.svg(id); // gardé pour les anciens appels
 
 // les endroits des objets posés rejoignent ceux de la clairière
 function addObjSpots(){for(const k in R.obj){const sp=OBJS[k].spot;if(!SPOT[sp.id]){SPOTS.push(sp);SPOT[sp.id]=sp}}
-  if(R.obj.balancoire)SPOT.lampR.x=284} // la balançoire prend la place sous la lanterne de droite
+  if(R.obj.balancoire){SPOT.lampR.x=284;Object.assign(OBJS.panier.spot,{x:376,y:306})}} // la balançoire prend la place sous la lanterne de droite, le panier va au pied de l'arbre
 addObjSpots();
 const objEls={};
 // l'objet vide reste visible ; quand un renard est dedans, c'est lui qui le dessine (draw dans life.js)

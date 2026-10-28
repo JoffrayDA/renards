@@ -27,7 +27,8 @@ function makeFox(id,spot,o={}){
 function removeFox(f){f.el.remove();f.badge.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
 function draw(f){
   const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
-  if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
+  if(f.walk&&f.walk.climb)f.el.innerHTML=`<div class="flip"><div class="bob">${foxArt(art,{pose:"up"})}</div></div>`; // il grimpe à l'échelle
+  else if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
   else if(objOf(f.spot))f.el.innerHTML=`<div class="flip">${objOf(f.spot).svg(f.id)}</div>`; // dans un objet du refuge (objets.js)
   else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
   setBadge(f); // « ! » de l'histoire, « … » d'une petite envie ou cœur du câlin (envies.js)
@@ -57,14 +58,23 @@ function settle(f){
   draw(f);
 }
 const taken=sp=>foxes.some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
+// un trajet se fait par étapes : pour la cabane (via), on passe par le pied de l'échelle et on grimpe (climb)
 function goTo(f,sp){
-  const from={x:f.x,y:f.y},to=sp==="door"?DOOR:sp==="edge"?EDGE:sp,d=Math.hypot(to.x-from.x,to.y-from.y),dur=Math.max(.8,d/38);
-  f.walk={to:sp,t0:Date.now(),dur:dur*1000,from,goal:to};f.spot=null;
-  f.el.classList.toggle("left",to.x<from.x);draw(f);
+  const legs=[];
+  if(f.spot&&f.spot.via&&f.spot!==sp)legs.push(f.spot.via[1],{...f.spot.via[0],climb:1});
+  if(sp&&sp.via)legs.push(sp.via[0],{...sp.via[1],climb:1});
+  legs.push(sp==="door"?DOOR:sp==="edge"?EDGE:sp);
+  f.walk={to:sp,legs};f.spot=null;leg(f);
+}
+function leg(f){
+  const w=f.walk,to=w.legs.shift(),from={x:f.x,y:f.y},d=Math.hypot(to.x-from.x,to.y-from.y),dur=to.climb?Math.max(1.5,d/24):Math.max(.8,d/38);
+  Object.assign(w,{t0:Date.now(),dur:dur*1000,from,goal:to,climb:!!to.climb});
+  if(!to.climb&&Math.abs(to.x-from.x)>2)f.el.classList.toggle("left",to.x<from.x);draw(f);
   requestAnimationFrame(()=>{f.el.style.transitionDuration=dur+"s";f.el.style.left=to.x/W*100+"%";f.el.style.top=to.y/H*100+"%";f.x=to.x;f.y=to.y;moveLight(f,dur)});
 }
 function arrive(f){
   const w=f.walk;f.x=w.goal.x;f.y=w.goal.y;
+  if(w.legs.length){leg(f);return} // étape suivante (l'échelle de la cabane)
   if(w.to==="edge"){removeFox(f);return}
   if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");moveLight(f);f.until=Date.now()+9000+Math.random()*9000;drawGlow();log(`${FOX[f.id].name} rentre se mettre au chaud.`);return}
   f.spot=w.to;f.el.style.zIndex=Math.round(f.y);settle(f);
