@@ -101,6 +101,7 @@ function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))ret
   log(k==="croquettes"?"La gamelle est pleine de croquettes.":`${B.name} dans la gamelle. Qui va venir ?`)}
 
 function photoSVG(p){const f=FOX[p.id];
+  if(p.obj&&HOBJ[p.obj])return `<svg viewBox="0 0 200 160" aria-hidden="true">${houseBack()}${HOBJ[p.obj].art(p.id)}</svg>`; // photo prise dans la maison
   if(p.obj)return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(0 -6)">${(OBJS[p.obj]||OBJS.panier).svg(p.id).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`;
   return wildPhoto(p,f)}
 // photo de la gamelle : jamais deux pareilles (Joffray recevait trois fois la même). L'instant de la visite fixe l'heure
@@ -133,7 +134,7 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
 const fmtDate=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" à "+new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 function photos(){
   const ps=R.photos.slice().reverse();
-  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p>${incoCards()}${ps.length&&incoCards()?`<h3 class="sec">Toutes les photos</h3>`:""}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${nameOf(p.id)}</b>${p.clue!=null?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.obj?`${(OBJS[p.obj]||OBJS.panier).in}, le `:""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
+  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p>${incoCards()}${ps.length&&incoCards()?`<h3 class="sec">Toutes les photos</h3>`:""}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${nameOf(p.id)}</b>${p.clue!=null?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.obj?`${(HOBJ[p.obj]||OBJS[p.obj]||OBJS.panier).in}, le `:""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
 }
 
 function status(id,M){
