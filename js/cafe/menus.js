@@ -72,7 +72,7 @@ function costumesSheet(){
 }
 function nightSheet(n){
   if(!nightOpen(n)){toast("Cette nuit n'est pas encore ouverte.");return}
-  const N=NIGHTS[n-1],c=cfgOf(N.base),g=Math.round(N.goal*(1+equipBonus(N.base))),st=S.hwStars[n]||0;
+  const N=NIGHTS[n-1],c=cfgOf(N.base),g=Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0)))),st=S.hwStars[n]||0;
   openSheet(`<h2>${NIGHT_NAMES[n-1]}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">Nuit ${n} sur 5. ${c.c} clients, <b>tous déguisés</b>${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Les VIP sont les invités d'Halloween.</p>
   <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>

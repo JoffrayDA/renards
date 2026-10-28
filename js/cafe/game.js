@@ -16,7 +16,7 @@ function newDay(d){
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want("service");
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
-function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base)))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
+function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0))))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
 // Un client vit ainsi : file d'attente à la porte (queue), il entre en trottinant (walkin), attend sa commande (wait),
 // reste un instant content ou fâché (happy, angry), puis repart en marchant (walkout). Sa patience ne baisse qu'en « wait ».
 const WALK=1.6,QMAX=3;
@@ -67,22 +67,26 @@ function update(dt){
   if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,5.2,6][lv("fourpro")];dirty=true}}
   else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
-  // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé
+  // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte au client le plus pressé ce qui l'attend sur le plateau
+  // (la « vitrine » de Joffray) ; il ne touche jamais au plan de travail : sinon c'est de la triche, et on ne comprend plus
   if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
-    // ce que le compagnon peut prendre : la vitrine, sans la fournée qui refroidit encore
-    const cold=k=>{const f=G.fresh&&G.fresh[k];return G.vit[k]-(f&&G.t<f.until?Math.min(f.n,G.vit[k]):0)};
-    for(const c of w){let got=0;for(const it of c.order)if(!it.done&&!it.o&&REC[it.r].kind==="bake"&&cold(it.r)>0){G.vit[it.r]--;it.done=1;got++;flyPastry(it.r,custEl(c),got)}
+    for(const c of w){let got=0;for(const it of c.order){if(it.done)continue;const k=G.tray.indexOf(itemKey(it));if(k<0)continue;
+        flyPastry(itemKey(it),custEl(c),got+1,k);G.tray.splice(k,1);it.done=1;got++;G.arm=null;G.pick=null}
       if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);buddyHop();buddyTip();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
 }}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
 const custEl=c=>document.querySelector(`[data-cust="${c.id}"]`);
 // une option s'ajoute au premier article du plateau qui peut la recevoir et n'en a pas encore
-function applyOpt(o,el){
-  const i=G.tray.findIndex(k=>!k.includes("+")&&OPTS[o].for.includes(k));
-  if(i<0){shake(el);hint(`Pose d'abord ${OPTS[o].for.map(r=>REC[r].name.toLowerCase()).join(" ou ")} sur le plateau, puis touche « ${OPTS[o].name} ».`);return}
-  G.tray[i]+="+"+o;G.popI=i;G.arm=null;dirty=true;
+// les articles du plateau qui peuvent recevoir l'option
+const optFits=o=>G.tray.map((k,i)=>!k.includes("+")&&OPTS[o].for.includes(k)?i:-1).filter(i=>i>=0);
+function applyOpt(o,el,at){
+  const fit=optFits(o);
+  if(!fit.length){shake(el);hint(`Pose d'abord ${OPTS[o].for.map(r=>REC[r].name.toLowerCase()).join(" ou ")} sur le plateau, puis touche « ${OPTS[o].name} ».`);return}
+  // plusieurs possibles (un chocolat et un gâteau pour la chantilly) : on touche celui qui la reçoit
+  if(at==null&&el&&fit.length>1&&new Set(fit.map(i=>G.tray[i])).size>1){G.pick={o,until:performance.now()+5000};setTimeout(()=>{dirty=true},5050);hint(`Touche l'article qui reçoit ${OPTS[o].name.toLowerCase()}.`);dirty=true;return}
+  const i=at!=null?at:fit[0];G.tray[i]+="+"+o;G.popI=i;G.arm=null;G.pick=null;dirty=true;
 }
 function deliver(c,el){
   if(c.state!=="wait")return;let got=0;
@@ -119,7 +123,5 @@ function tapStation(k,el){
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
 }
 function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
-function unload(){const o=G.oven;if(o.state!=="ready")return;const before=G.vit[o.r]||0;G.vit[o.r]=Math.min(S.own.four2?14:9,before+batchOf(o.r));
-  // la fournée qui sort refroidit 3 s : le compagnon sert d'abord ce qui était déjà en vitrine (Joffray : on croyait qu'il se servait au four)
-  (G.fresh=G.fresh||{})[o.r]={n:G.vit[o.r]-before,until:G.t+3};o.state="idle";dirty=true}
+function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(S.own.four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}

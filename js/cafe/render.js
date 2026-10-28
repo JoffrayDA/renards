@@ -34,10 +34,11 @@ function render(){
 }
 function renderTray(){
   const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;
+  const pk=G&&G.run&&G.pick&&G.pick.until>performance.now()?G.pick.o:null,pks=pk?optFits(pk):[];
   let h=`<span class="tl">Plateau</span>`;
-  for(let i=0;i<cap;i++)h+=t[i]?`<button class="ts${i===arm?" arm":""}${G.popI===i?" new":""}" data-tray="${i}" type="button" aria-label="${i===arm?`Toucher encore pour jeter ${itemName(t[i])}`:itemName(t[i])}">${icon(t[i])}${i===arm?`<span class="bin">${icon("bin")}</span>`:""}</button>`:`<span class="ts"></span>`;
+  for(let i=0;i<cap;i++)h+=t[i]?`<button class="ts${i===arm?" arm":""}${pks.includes(i)?" pick":""}${G.popI===i?" new":""}" data-tray="${i}" type="button" aria-label="${i===arm?`Toucher encore pour jeter ${itemName(t[i])}`:itemName(t[i])}">${icon(t[i])}${i===arm?`<span class="bin">${icon("bin")}</span>`:""}</button>`:`<span class="ts"></span>`;
   const ops=Object.keys(OPTS).filter(o=>optOn(o));
-  if(ops.length)h+=`<span class="tps">${ops.map(o=>`<button class="tp" data-opt="${o}" type="button" aria-label="Ajouter ${OPTS[o].name.toLowerCase()}" ${G&&G.run?"":"disabled"}>${icon(o)}<em>${OPTS[o].name}</em></button>`).join("")}</span>`;
+  if(ops.length)h+=`<span class="tps">${ops.map(o=>`<button class="tp${pk===o?" on":""}" data-opt="${o}" type="button" aria-label="Ajouter ${OPTS[o].name.toLowerCase()}" ${G&&G.run?"":"disabled"}>${icon(o)}<em>${OPTS[o].name}</em></button>`).join("")}</span>`;
   else h+=`<small>Touche un client pour le servir.<br>Touche 2 fois un article pour le jeter.</small>`;
   if($("tray")._h!==h){$("tray").innerHTML=h;$("tray")._h=h}
   if(G)G.popI=-1;

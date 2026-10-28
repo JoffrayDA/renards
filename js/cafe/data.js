@@ -142,7 +142,10 @@ const GOALS=[37,59,73,92,109,123,139,152,160,181,185,208,212,217,217,263,266,277
 // ne fait que 10 à 25 % de mieux selon le jour, et ★★★ doit rester possible. EQUIP=0 retire cet ajustement.
 const KIT=[["plantes",1,4],["comptoir1",1,6],["double",1,6],["guirlande",1,8],["fourpro",1,8],["barista",1,11],["plateau",1,11],["comptoir1",2,13],["disque",1,13],["coussins",1,16],["serveur",1,19],["machines",1,23],["plateau",2,24],["fauteuils",1,27],["four2",1,33],["lanternes",1,37]];
 const EQUIP=.02;
-function equipBonus(d){
+// seulement tant que le jour n'est pas réussi : rejouer un jour avec plus d'équipement doit être plus facile, pas plus dur
+// (la copine de Joffray, niveau 19, ne pouvait plus faire ★★★ au jour 1 : il fallait 70 pièces, le bot parfait en fait 71)
+function equipBonus(d,fresh=!((S.stars||{})[d]>0)){
+  if(!fresh)return 0;
   let n=0;for(const u of ALLUP){const k=Math.max(0,...KIT.filter(x=>x[0]===u.id&&x[2]<=d).map(x=>x[1]));n+=Math.max(0,lv(u.id)-k)}
   return Math.min(.12,EQUIP*n);
 }
