@@ -29,6 +29,9 @@ function bgSVG(){
   // chemin de pierres plates
   [[200,272],[193,296],[206,322],[196,350],[205,392],[196,430],[204,466]].forEach(([x,y],i)=>s+=`<ellipse cx="${x}" cy="${y}" rx="${13-i*.3}" ry="6" fill="#e3dccf" stroke="${INK}" stroke-width="2.4"/>`);
   // arbres sur les côtés (troncs qui encadrent la clairière)
+  // la branche de la balançoire sort de l'arbre de droite (les cordes et la planche sont dans objets.js)
+  if(R.obj&&R.obj.balancoire)s+=`<path d="M374 182 Q340 168 298 176 Q290 180 297 186 Q338 182 374 206Z" fill="#a9785a" ${O}/><path d="M352 186 q-8 -2 -14 1" fill="none" stroke="#8a5a3a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M296 178 q-8 -6 -6 -14 q8 2 6 14Z" fill="#8dbd86" stroke="${INK}" stroke-width="2"/>`;
   s+=`<path d="M14 250 Q20 200 16 150 L36 150 Q32 200 40 250Z" fill="#a9785a" ${O}/><path d="M362 250 Q368 200 364 150 L384 150 Q380 200 388 250Z" fill="#a9785a" ${O}/>`;
   s+=`<circle cx="22" cy="128" r="40" fill="#8dbd86" ${O}/><circle cx="380" cy="128" r="40" fill="#8dbd86" ${O}/>`;
   // la cabane, nichée dans l'arbre de droite : des touffes de feuilles passent devant, une échelle de corde descend le long du tronc
@@ -36,11 +39,9 @@ function bgSVG(){
     <rect x="330" y="88" width="56" height="44" rx="3" fill="#e8b884" ${O}/>${[99,110,121].map(y=>`<path d="M332 ${y} H384" stroke="#c99a6a" stroke-width="2"/>`).join("")}
     <path d="M322 92 L358 64 L394 92Z" fill="#d9776a" ${O}/><path d="M336 84 L358 68 L380 84" fill="none" stroke="#b85f55" stroke-width="2"/>
     <rect x="360" y="102" width="16" height="15" rx="3" fill="${dark()?"#ffe7a3":"#d9ecf4"}" ${O}/><path d="M368 102 V117 M360 109.5 H376" stroke="${INK}" stroke-width="1.8"/>
-    <path d="M300 134 H390" stroke="#8a5a3a" stroke-width="9" stroke-linecap="round"/><path d="M300 134 H390" stroke="${INK}" stroke-width="2"/><path d="M310 137 L326 156 M382 137 L370 154" stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"/>
+    <path d="M330 138 L366 166 L366 156 L344 138Z" fill="#8a5a3a" ${O}/><rect x="298" y="130" width="94" height="8" rx="3" fill="#c99a6a" ${O}/>
     <path d="M366 138 L368 248 M378 138 L380 248" stroke="#c99a6a" stroke-width="2"/>${[152,168,184,200,216,232].map(y=>`<path d="M${366+(y-138)*.02} ${y} H${378+(y-138)*.02}" stroke="#c99a6a" stroke-width="2.4"/>`).join("")}
     <circle cx="398" cy="140" r="16" fill="#8dbd86" ${O}/><circle cx="318" cy="70" r="12" fill="#9cc796" ${O}/>`}
-  // la branche de la balançoire sort de l'arbre de droite (les cordes et la planche sont dans objets.js)
-  if(R.obj&&R.obj.balancoire)s+=`<path d="M372 196 Q344 180 304 186" fill="none" stroke="#8a5a3a" stroke-width="10" stroke-linecap="round"/><path d="M372 196 Q344 180 304 186" fill="none" stroke="${INK}" stroke-width="2"/><path d="M322 184 q-5 -10 2 -16 q7 6 -2 16Z" fill="#8dbd86" stroke="${INK}" stroke-width="1.6"/>`;
   // la maison de Roussette
   s+=`<rect x="232" y="44" width="20" height="40" rx="3" fill="#c9a08a" ${O}/>`;
   s+=`<path d="M128 106 L272 106 L272 202 L128 202Z" fill="#f0c99a" ${O}/>`;
