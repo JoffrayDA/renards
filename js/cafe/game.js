@@ -70,7 +70,9 @@ function update(dt){
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte d'un coup les pâtisseries en vitrine au client le plus pressé
   if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
-    for(const c of w){let got=0;for(const it of c.order)if(!it.done&&!it.o&&REC[it.r].kind==="bake"&&G.vit[it.r]>0){G.vit[it.r]--;it.done=1;got++;flyPastry(it.r,custEl(c),got)}
+    // ce que le compagnon peut prendre : la vitrine, sans la fournée qui refroidit encore
+    const cold=k=>{const f=G.fresh&&G.fresh[k];return G.vit[k]-(f&&G.t<f.until?Math.min(f.n,G.vit[k]):0)};
+    for(const c of w){let got=0;for(const it of c.order)if(!it.done&&!it.o&&REC[it.r].kind==="bake"&&cold(it.r)>0){G.vit[it.r]--;it.done=1;got++;flyPastry(it.r,custEl(c),got)}
       if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);buddyHop();buddyTip();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
 }}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
@@ -117,5 +119,7 @@ function tapStation(k,el){
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
 }
 function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
-function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(S.own.four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
+function unload(){const o=G.oven;if(o.state!=="ready")return;const before=G.vit[o.r]||0;G.vit[o.r]=Math.min(S.own.four2?14:9,before+batchOf(o.r));
+  // la fournée qui sort refroidit 3 s : le compagnon sert d'abord ce qui était déjà en vitrine (Joffray : on croyait qu'il se servait au four)
+  (G.fresh=G.fresh||{})[o.r]={n:G.vit[o.r]-before,until:G.t+3};o.state="idle";dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}
