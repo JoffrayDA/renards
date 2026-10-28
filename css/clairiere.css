@@ -38,6 +38,9 @@ h1 span{color:var(--coral-d)}
 .flight.off{opacity:0}
 .fbadge{position:absolute;width:13.5%;aspect-ratio:120/116;transform:translate(-50%,-93%);transition-property:left,top;transition-timing-function:linear;pointer-events:none;z-index:1}
 .fbadge.off{display:none}
+.cheer{position:absolute;left:50%;top:46%;z-index:6;font-family:var(--display);font-size:clamp(30px,9vw,46px);color:#fff;white-space:nowrap;pointer-events:none;
+  text-shadow:0 3px 0 #5b4250,2px 0 0 #5b4250,-2px 0 0 #5b4250,0 -2px 0 #5b4250,0 0 18px rgba(255,214,120,.95);animation:cheer 1.05s ease-out forwards}
+@keyframes cheer{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}22%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}60%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
 .fbadge>i{filter:drop-shadow(0 0 5px rgba(255,250,225,.95))} /* un halo clair : on les voit même la nuit sous la pluie */
 .fox.inside{opacity:0;pointer-events:none;transition:opacity .6s,left 1s linear,top 1s linear}
 .fox.f1 .w0,.fox:not(.f1) .w1{display:none}

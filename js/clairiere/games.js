@@ -46,12 +46,14 @@ function playGame(g,done){
   const sv=el.firstChild,sayEl=el.lastChild;
   const api={sv,won:false,tap:null,
     say:t=>{sayEl.textContent=t;replay(sayEl,"pop")},
+    // un grand « Bravo ! » au milieu : une étape réussie se voit (Joffray ne voyait pas qu'une suite était validée)
+    cheer:(t="Bravo !")=>{const c=document.createElement("div");c.className="cheer";c.textContent=t;el.appendChild(c);setTimeout(()=>c.remove(),1100)},
     later:(f,ms)=>{timers.push(setTimeout(()=>{if(!over)f()},ms))},
     clear:()=>{timers.forEach(clearTimeout);timers=[]},
     loop:f=>{let last=performance.now();const fr=now=>{if(over)return;f(Math.max(0,Math.min(.05,(now-last)/1000)));last=now;raf=requestAnimationFrame(fr)};raf=requestAnimationFrame(fr)},
     // pêche libre : on enchaîne les lancers et on rentre quand on veut
     close:()=>{over=true;api.clear();cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;done()},
-    win:t=>{if(api.won)return;api.won=true;api.clear();api.say(t);
+    win:t=>{if(api.won)return;api.won=true;api.clear();api.say(t);api.cheer();
       setTimeout(()=>{over=true;cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;done()},1400)}};
   el.onpointerdown=e=>{if(!api.won&&api.tap)api.tap(e)};
   if(g.free){const x=document.createElement("button");x.className="btn pclose";x.type="button";x.textContent="Rentrer";
@@ -333,7 +335,7 @@ const GAMES={
     const pick=c=>{if(st!=="pick"||A.won)return;st="reveal";const x=lift(c);
       if(c===under){fox(x,Y+40,"happy","none");fx.style.opacity=1;A.later(()=>fox(x,Y+26,"happy"),20);r++;drawPips();
         if(r>=RD.length)A.win(g.win||"Trouvé !");
-        else{A.say(["Trouvé ! Il rigole sous son coussin.","Bien vu ! Il n'en revient pas."][r-1]||"Trouvé !");A.later(start,1500)}}
+        else{A.cheer("Trouvé !");A.say(["Trouvé ! Il rigole sous son coussin.","Bien vu ! Il n'en revient pas."][r-1]||"Trouvé !");A.later(start,1500)}}
       else{const [it,nm]=LOOT[Math.floor(Math.random()*LOOT.length)];grp(loot,`<g transform="translate(${x} ${Y+10}) scale(1.6)">${ITEM[it]}</g>`);
         A.say(`Raté, juste ${nm} !`);
         A.later(()=>{const xu=lift(under);fox(xu,Y+40,"happy","none");fx.style.opacity=1;A.later(()=>fox(xu,Y+26,"happy"),20);A.say(`Hi hi ! ${name} était là. On refait cette manche !`)},700);
@@ -370,7 +372,7 @@ const GAMES={
       if(a.k===b.k){a.done=b.done=true;found++;A.later(()=>{a.el.classList.add("done");b.el.classList.add("done");
           if(found===K)return A.win(g.win||"Toutes les paires !");
           if(found===3&&!blown)return blow();
-          lock=false;A.say(`Une paire ! ${found} sur ${K}.`)},350)}
+          lock=false;A.cheer("Une paire !");A.say(`Une paire ! ${found} sur ${K}.`)},350)}
       else A.later(()=>{turn(a,false);turn(b,false);lock=false;A.say("Pas pareilles… Retourne-les deux par deux.")},850)};
     // on voit toutes les chaussettes un instant
     A.say(g.say||"Regarde bien les chaussettes…");
@@ -574,7 +576,7 @@ const GAMES={
     const round=()=>{seq=[];for(let i=0;i<L[r];i++){let p;do p=Math.floor(Math.random()*4);while(p===seq[i-1]);seq.push(p)}show()};
     puds.forEach((pd,i)=>pd.onpointerdown=e=>{e.stopPropagation();if(st!=="input"||A.won)return;splash(i);
       if(i!==seq[idx]){st="show";A.say(`Raté ! ${FOX[id].name} recommence.`);A.later(show,900);return}
-      if(++idx===seq.length){r++;if(r>=L.length)A.win(g.win||"Parfait !");else{st="show";A.say("Bravo ! Une flaque de plus…");A.later(round,900)}}});
+      if(++idx===seq.length){r++;if(r>=L.length)A.win(g.win||"Parfait !");else{st="show";A.cheer();A.say("Bravo ! Une flaque de plus…");A.later(round,1100)}}});
     round();
   },
 
