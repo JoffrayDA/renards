@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maison et constructions</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+h2{font-size:15px;margin:18px 0 8px}
+p{margin:0 0 12px;opacity:.8}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+figure{margin:0;background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:8px}
+figure svg{display:block;width:100%;border-radius:8px}
+figcaption{font-size:13px;font-weight:700;text-align:center;margin-top:4px}
+figcaption span{display:block;font-weight:400;font-size:12px;opacity:.65}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Maison et constructions (essai)</h1>
+<p>Chaque objet attire un renard dans une pose à lui, et donne une photo. Rien n'est encore dans le jeu.</p>
+<div id="out"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const O=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
+const inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
+// un renard dans la scène : x, y = milieu du bas, w = largeur
+const fox=(id,x,y,w,o={})=>{const k=w/120;return `<g transform="translate(${x-60*k} ${y-100*k}) scale(${k})">${inner(foxArt(FOX[id],o))}</g>`};
+const inside=b=>`<rect width="200" height="160" fill="#d9a777"/>${[18,54,90,126,162,198].map(x=>`<path d="M${x} 0 V104" stroke="#c08a5c" stroke-width="2"/>`).join("")}<rect y="104" width="200" height="56" fill="#b9814a"/><path d="M0 124 H200 M0 146 H200" stroke="#9a6a3c" stroke-width="2"/>`+b;
+const outside=b=>`<rect width="200" height="160" fill="#bfe3f2"/><path d="M0 62 Q50 50 100 58 Q150 50 200 62 V160 H0Z" fill="#cfe3a8"/>${[[20,120],[170,138],[60,148],[140,96]].map(([x,y])=>`<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`).join("")}`+b;
+const svg=b=>`<svg viewBox="0 0 200 160">${b}</svg>`;
+const W=s=>`<g filter="url(#wobble)">${s}</g>`;
+const IN=[
+  ["Fauteuil près du feu","un renard roulé en boule",inside(W(`<path d="M44 140 V82 Q44 62 64 62 H136 Q156 62 156 82 V140Z" fill="#e48a8a" ${O}/><path d="M32 140 V96 Q32 86 44 86 Q56 86 56 96 V140Z M144 140 V96 Q144 86 156 86 Q168 86 168 96 V140Z" fill="#d66f74" ${O}/><path d="M56 140 V112 H144 V140Z" fill="#f2a6a0" ${O}/><path d="M40 140 v10 M160 140 v10" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>`)+fox("cannelle",100,124,74,{pose:"sleep"}))],
+  ["Couverture tricotée","on ne voit que les oreilles",inside(fox("pantoufle",100,136,92,{pose:"sleep"})+W(`<path d="M30 146 Q32 104 64 100 Q100 94 136 100 Q170 104 172 146Z" fill="#9ec3ef" ${O}/>`)+`<g stroke="#fff" stroke-width="2.4" fill="none" opacity=".85">${[112,124,136].map(y=>`<path d="M40 ${y} q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0 q8 6 16 0"/>`).join("")}</g>`)],
+  ["Théière et tasses","il souffle sur son thé",inside(W(`<rect x="96" y="104" width="80" height="10" rx="4" fill="#a9785a" ${O}/><path d="M104 114 V146 M168 114 V146" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M118 104 Q112 80 132 76 Q152 80 146 104Z" fill="#f6e0b8" ${O}/><path d="M146 88 q10 -2 10 8 q-2 6 -8 6" fill="none" stroke="${INK}" stroke-width="3"/><path d="M118 90 l-12 -6" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><circle cx="132" cy="72" r="4" fill="#e48a8a" ${O}/><path d="M154 104 v-9 h14 v9Z" fill="#fff" ${O}/>`)+`<path d="M158 88 q-4 -6 0 -12 M164 86 q-4 -6 0 -12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>`+fox("brindille",56,146,74,{expr:"joy"}))],
+  ["Tourne-disque","un renard qui danse",inside(W(`<rect x="112" y="98" width="70" height="48" rx="6" fill="#c98a5a" ${O}/><rect x="116" y="88" width="62" height="12" rx="3" fill="#8a5a3a" ${O}/><ellipse cx="146" cy="88" rx="24" ry="6" fill="#3d2a35" ${O}/><ellipse cx="146" cy="88" rx="6" ry="2" fill="#e48a8a"/><path d="M172 82 l-14 8" stroke="#cfc6c0" stroke-width="3" stroke-linecap="round"/>`)+`<g fill="${INK}" font-family="Mochiy Pop One,sans-serif"><text x="124" y="62" font-size="16">♪</text><text x="154" y="48" font-size="13">♫</text><text x="86" y="40" font-size="12">♪</text></g>`+fox("plouf",62,146,78,{pose:"happy"}))],
+  ["Guirlandes","décor, pas de renard",inside(`<path d="M0 18 Q50 44 100 22 Q150 44 200 18" fill="none" stroke="${INK}" stroke-width="2"/>${[[16,26,"#e48a8a"],[40,34,"#f2d27a"],[64,34,"#9ec3ef"],[88,26,"#a9d68f"],[112,26,"#e48a8a"],[136,34,"#f2d27a"],[160,34,"#9ec3ef"],[184,26,"#a9d68f"]].map(([x,y,c])=>`<path d="M${x-7} ${y} h14 l-7 14Z" fill="${c}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`).join("")}<path d="M0 60 Q100 84 200 60" fill="none" stroke="${INK}" stroke-width="1.6"/>${[20,50,80,110,140,170].map((x,i)=>`<circle cx="${x}" cy="${66+Math.sin(i)*4+6}" r="5" fill="#fff3a8" stroke="${INK}" stroke-width="1.6"/><circle cx="${x}" cy="${66+Math.sin(i)*4+6}" r="11" fill="#fff3a8" opacity=".3"/>`).join("")}`)]
+];
+const OUT=[
+  ["Cabane dans l'arbre","il regarde par la fenêtre",outside(W(`<path d="M120 160 Q126 90 118 40 L148 40 Q142 90 150 160Z" fill="#a9785a" ${O}/>${[[134,22,46],[96,40,32],[172,40,32]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}<rect x="96" y="54" width="76" height="46" rx="4" fill="#e8b884" ${O}/><path d="M90 58 L134 30 L178 58Z" fill="#d9776a" ${O}/><rect x="110" y="66" width="22" height="18" rx="3" fill="#3d2a35" ${O}/><path d="M60 158 L96 96 M74 158 L106 100" stroke="${INK}" stroke-width="3"/><path d="M66 146 h12 M72 134 h12 M78 122 h12 M84 110 h12" stroke="${INK}" stroke-width="3"/>`)+`<g transform="translate(121 84)">${inner(foxArt(FOX.grignote,{portrait:1,expr:"joy"})).replace(/^/,'<g transform="translate(-14 -22) scale(.28)">')}</g></g>`)],
+  ["Petit pont sur la mare","assis tout en haut",outside(`<ellipse cx="100" cy="128" rx="92" ry="26" fill="#a9d3e6" stroke="${INK}" stroke-width="3"/><path d="M40 130 q20 -6 40 0 M120 134 q18 -6 36 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>`+W(`<path d="M30 132 Q100 66 170 132 L160 136 Q100 82 40 136Z" fill="#c98a5a" ${O}/>${[50,70,90,110,130,150].map(x=>`<path d="M${x} ${132-Math.sin((x-30)/140*Math.PI)*46} v14" stroke="${INK}" stroke-width="2.4"/>`).join("")}`)+fox("libellule",100,96,58))],
+  ["Balançoire","ça se balance",outside(W(`<path d="M0 26 Q100 12 200 30" fill="none" stroke="#8a5a3a" stroke-width="12" stroke-linecap="round"/><path d="M0 26 Q100 12 200 30" fill="none" stroke="${INK}" stroke-width="2"/>`)+`<g transform="rotate(10 100 22)"><path d="M72 22 V118 M128 22 V118" stroke="${INK}" stroke-width="2.4"/>${W(`<rect x="64" y="116" width="72" height="10" rx="4" fill="#e8b884" ${O}/>`)}${fox("moka",100,120,62,{pose:"happy"})}</g>`)],
+  ["Potager","il surveille les carottes",outside(W(`<rect x="70" y="92" width="122" height="58" rx="8" fill="#8a5a3a" ${O}/>`)+[0,1,2].map(r=>[0,1,2,3].map(c=>{const x=86+c*28,y=106+r*16;return r===1?`<circle cx="${x}" cy="${y}" r="8" fill="#a9d68f" stroke="${INK}" stroke-width="2"/><path d="M${x-4} ${y} q4 -6 8 0" fill="none" stroke="#6fae5e" stroke-width="2"/>`:`<path d="M${x-3} ${y+2} L${x} ${y+10} L${x+3} ${y+2}Z" fill="#f2a35c" stroke="${INK}" stroke-width="1.6"/><path d="M${x} ${y+2} l-4 -7 M${x} ${y+2} v-8 M${x} ${y+2} l4 -7" stroke="#6fae5e" stroke-width="2" stroke-linecap="round"/>`}).join("")).join("")+fox("gaston",40,150,64))],
+  ["Observatoire","il regarde les étoiles",`<rect width="200" height="160" fill="#2b3466"/>${Array.from({length:18},(_,i)=>`<circle cx="${(i*53)%200}" cy="${(i*31)%70}" r="${1+(i%3)*.5}" fill="#fff6c8"/>`).join("")}<path d="M0 104 Q100 92 200 104 V160 H0Z" fill="#5d7a63"/>`+W(`<rect x="92" y="112" width="80" height="40" rx="4" fill="#e8b884" ${O}/><rect x="122" y="124" width="20" height="28" rx="3" fill="#8a5a3a" ${O}/><path d="M88 114 Q88 70 132 70 Q176 70 176 114Z" fill="#9ec3ef" ${O}/><path d="M126 72 L124 114 M138 72 L140 114" stroke="${INK}" stroke-width="3"/><path d="M126 72 L124 114 H140 L138 72Z" fill="#3d2a35"/><path d="M132 84 L176 40" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M132 84 L176 40" stroke="#f2c45a" stroke-width="5" stroke-linecap="round"/>`)+fox("noisette",56,152,70,{pose:"up"})]
+];
+const card=([n,w,s])=>`<figure>${svg(s)}<figcaption>${n}<span>${w}</span></figcaption></figure>`;
+document.getElementById("out").innerHTML=`<h2>Dans la maison</h2><div class="row">${IN.map(card).join("")}</div><h2>Dehors</h2><div class="row">${OUT.map(card).join("")}</div>`;
+</script>
+</body>
+</html>
