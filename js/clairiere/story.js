@@ -539,7 +539,7 @@ function goalText(){const c=cur();
   const e=envGoal();if(e)return e; // pas d'histoire en cours : la petite envie du moment
   const id=nextId();
   if(!id)return {t:"Histoires",g:storyDone(LAST)?"Toutes les histoires sont finies.":wildLeft().length?"Des renards sauvages rôdent encore autour de la gamelle. Remplis-la : chacun a une histoire à raconter.":"La suite des histoires arrive bientôt."};
-  const at=new Date(R.nextAt),w=R.nextAt>Date.now()?`${at.getDate()===new Date().getDate()?"":"demain "}vers ${at.getHours()} h`:"bientôt";
+  const w=R.nextAt-Date.now()>36e5?"un peu plus tard":"bientôt"; // pas d'heure précise (Joffray)
   return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
 }
 function renderStory(){
