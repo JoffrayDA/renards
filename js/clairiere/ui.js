@@ -102,6 +102,7 @@ function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))ret
 
 function photoSVG(p){const f=FOX[p.id];
   if(p.obj&&HOBJ[p.obj])return `<svg viewBox="0 0 200 160" aria-hidden="true">${houseBack()}${HOBJ[p.obj].art(p.id)}</svg>`; // photo prise dans la maison
+  if(p.obj&&OBJS[p.obj]&&OBJS[p.obj].photo)return OBJS[p.obj].photo(p.id); // les constructions ont leur propre photo
   if(p.obj)return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(0 -6)">${(OBJS[p.obj]||OBJS.panier).svg(p.id).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`;
   return wildPhoto(p,f)}
 // photo de la gamelle : jamais deux pareilles (Joffray recevait trois fois la même). L'instant de la visite fixe l'heure

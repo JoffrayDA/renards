@@ -31,6 +31,16 @@ function bgSVG(){
   // arbres sur les côtés (troncs qui encadrent la clairière)
   s+=`<path d="M14 250 Q20 200 16 150 L36 150 Q32 200 40 250Z" fill="#a9785a" ${O}/><path d="M362 250 Q368 200 364 150 L384 150 Q380 200 388 250Z" fill="#a9785a" ${O}/>`;
   s+=`<circle cx="22" cy="128" r="40" fill="#8dbd86" ${O}/><circle cx="380" cy="128" r="40" fill="#8dbd86" ${O}/>`;
+  // la cabane, nichée dans l'arbre de droite : des touffes de feuilles passent devant, une échelle de corde descend le long du tronc
+  if(R.obj&&R.obj.cabane){s+=`<circle cx="350" cy="92" r="30" fill="#8dbd86" ${O}/><circle cx="396" cy="84" r="26" fill="#8dbd86" ${O}/>
+    <rect x="330" y="88" width="56" height="44" rx="3" fill="#e8b884" ${O}/>${[99,110,121].map(y=>`<path d="M332 ${y} H384" stroke="#c99a6a" stroke-width="2"/>`).join("")}
+    <path d="M322 92 L358 64 L394 92Z" fill="#d9776a" ${O}/><path d="M336 84 L358 68 L380 84" fill="none" stroke="#b85f55" stroke-width="2"/>
+    <rect x="360" y="102" width="16" height="15" rx="3" fill="${dark()?"#ffe7a3":"#d9ecf4"}" ${O}/><path d="M368 102 V117 M360 109.5 H376" stroke="${INK}" stroke-width="1.8"/>
+    <path d="M300 134 H390" stroke="#8a5a3a" stroke-width="9" stroke-linecap="round"/><path d="M300 134 H390" stroke="${INK}" stroke-width="2"/><path d="M310 137 L326 156 M382 137 L370 154" stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"/>
+    <path d="M366 138 L368 248 M378 138 L380 248" stroke="#c99a6a" stroke-width="2"/>${[152,168,184,200,216,232].map(y=>`<path d="M${366+(y-138)*.02} ${y} H${378+(y-138)*.02}" stroke="#c99a6a" stroke-width="2.4"/>`).join("")}
+    <circle cx="398" cy="140" r="16" fill="#8dbd86" ${O}/><circle cx="318" cy="70" r="12" fill="#9cc796" ${O}/>`}
+  // la branche de la balançoire sort de l'arbre de droite (les cordes et la planche sont dans objets.js)
+  if(R.obj&&R.obj.balancoire)s+=`<path d="M372 196 Q344 180 304 186" fill="none" stroke="#8a5a3a" stroke-width="10" stroke-linecap="round"/><path d="M372 196 Q344 180 304 186" fill="none" stroke="${INK}" stroke-width="2"/><path d="M322 184 q-5 -10 2 -16 q7 6 -2 16Z" fill="#8dbd86" stroke="${INK}" stroke-width="1.6"/>`;
   // la maison de Roussette
   s+=`<rect x="232" y="44" width="20" height="40" rx="3" fill="#c9a08a" ${O}/>`;
   s+=`<path d="M128 106 L272 106 L272 202 L128 202Z" fill="#f0c99a" ${O}/>`;
@@ -47,7 +57,7 @@ function bgSVG(){
   s+=`<path d="M108 168 L292 168 L302 192 L98 192Z" fill="#c97b6a" ${O}/>${[128,156,184,212,240,268].map(x=>`<path d="M${x} 170 L${x-4+((x-200)*.06)} 191" stroke="#a9604f" stroke-width="2"/>`).join("")}`;
   s+=`<rect x="102" y="190" width="7" height="54" rx="2" fill="#b58460" ${O}/><rect x="291" y="190" width="7" height="54" rx="2" fill="#b58460" ${O}/>`;
   // guirlandes de lanternes, du porche aux arbres
-  s+=`<path d="M106 194 Q60 226 26 200 M294 194 Q340 226 374 200" fill="none" stroke="${INK}" stroke-width="1.8"/>`;
+  s+=`<path d="M106 194 Q60 226 26 200 ${R.obj&&R.obj.balancoire?"M294 194 Q300 210 306 206":"M294 194 Q340 226 374 200"}" fill="none" stroke="${INK}" stroke-width="1.8"/>`;
   // la souche
   s+=`<path d="M63 290 L63 304 Q85 316 107 304 L107 290Z" fill="#b5835a" ${O}/><ellipse cx="85" cy="290" rx="22" ry="8" fill="#e6c49a" ${O}/><ellipse cx="85" cy="290" rx="12" ry="4" fill="none" stroke="#c99a6a" stroke-width="1.8"/><path d="M60 304 q-6 4 -10 2 M110 304 q6 4 10 2" fill="none" ${O}/>`;
   // le tas de feuilles
@@ -64,7 +74,7 @@ function bgSVG(){
 // les lumières passent au-dessus du voile de la nuit pour vraiment briller
 function glowSVG(){
   let s="";const lamps=(side,pts)=>pts.map(([x,y])=>{const on=scn.lamps[side];return (on?`<circle class="lit" cx="${x}" cy="${y+8}" r="14" fill="#ffe08a" opacity=".45"/>`:"")+`<path d="M${x} ${y} v4" stroke="${INK}" stroke-width="1.6"/><rect x="${x-5}" y="${y+3}" width="10" height="12" rx="4" fill="${on?"#ffd36a":"#f4e6d4"}" stroke="${INK}" stroke-width="2"/>`}).join("");
-  s+=lamps("L",[[86,206],[60,214],[38,208]])+lamps("R",[[314,206],[340,214],[362,208]]);
+  s+=lamps("L",[[86,206],[60,214],[38,208]])+lamps("R",R.obj&&R.obj.balancoire?[[301,202]]:[[314,206],[340,214],[362,208]]);
   if(dark()){
     s+=[166,236].map(x=>`<circle cx="${x}" cy="141" r="26" fill="#ffe08a" opacity=".22"/>`).join("");
     s+=`<path d="M188 142 Q195 136 202 137 V202 H188Z" fill="#ffe08a" opacity=".35"/>`;

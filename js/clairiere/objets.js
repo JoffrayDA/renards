@@ -31,14 +31,25 @@ const OBJS={
       return `<svg viewBox="0 -16 120 116" aria-hidden="true"><ellipse cx="60" cy="98" rx="52" ry="5" fill="#3d2a35" opacity=".14"/>
   ${id?foxIn(id,"sit"):""}
   <g ${O} filter="url(#wobble)"><path d="M2 100 Q6 ${id?78:72} 30 ${id?75:70} Q42 ${id?68:62} 60 ${id?72:64} Q78 ${id?68:62} 92 ${id?75:70} Q114 ${id?78:72} 118 100Z" fill="#e7a356"/>
-    ${[[18,78,20,"#d9693f"],[34,68,-30,"#f2c45a"],[50,82,60,"#c9583a"],[68,70,10,"#f2c45a"],[86,80,-50,"#d9693f"],[100,74,40,"#e98a4a"],[28,90,80,"#f2c45a"],[76,90,-20,"#c9583a"],[56,94,30,"#e98a4a"]].map(([x,y,r,c])=>leaf(x,id?y+(100-y)*.35:y,r,c)).join("")}</g></svg>`}}
+    ${[[18,78,20,"#d9693f"],[34,68,-30,"#f2c45a"],[50,82,60,"#c9583a"],[68,70,10,"#f2c45a"],[86,80,-50,"#d9693f"],[100,74,40,"#e98a4a"],[28,90,80,"#f2c45a"],[76,90,-20,"#c9583a"],[56,94,30,"#e98a4a"]].map(([x,y,r,c])=>leaf(x,id?y+(100-y)*.35:y,r,c)).join("")}</g></svg>`}},
+  // les constructions de l'arbre de droite (28/10/2026) : la cabane et la branche sont dans le décor (bgSVG) ;
+  // ici, ce qui va avec le renard : la barrière de la terrasse devant lui, les cordes et la planche de la balançoire
+  cabane:{name:"Cabane dans l'arbre",price:150,pose:"sit",in:"Dans la cabane",spot:{id:"treehouse",x:320,y:141,poses:["sit"],obj:"cabane"},thumb:"-10 -40 140 150",
+    desc:"Copeau construit une cabane dans l'arbre de droite, avec une terrasse. On y voit toute la clairière.",
+    svg:id=>`<svg viewBox="0 -16 120 116" aria-hidden="true">${id?foxIn(id,"sit"):""}<g ${O} filter="url(#wobble)"><path d="M-6 96 H126" stroke-width="3"/><path d="M-4 96 V70 H124 V96" fill="none" stroke-width="2.6"/>${[14,34,54,74,94,114].map(x=>`<path d="M${x} 70 V96" stroke-width="2.2"/>`).join("")}</g></svg>`,
+    photo:id=>`<svg viewBox="0 0 200 160" aria-hidden="true"><rect width="200" height="160" fill="#bfe3f2"/><path d="M0 120 Q100 110 200 120 V160 H0Z" fill="#cfe3a8"/><g filter="url(#wobble)"><path d="M130 160 Q136 110 128 70 L156 70 Q150 110 158 160Z" fill="#a9785a" ${O}/>${[[150,40,44],[92,52,30],[186,64,28]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}<rect x="90" y="44" width="80" height="56" rx="4" fill="#e8b884" ${O}/>${[56,68,80,92].map(y=>`<path d="M92 ${y} H168" stroke="#c99a6a" stroke-width="2"/>`).join("")}<path d="M82 48 L130 14 L178 48Z" fill="#d9776a" ${O}/><rect x="138" y="60" width="22" height="20" rx="3" fill="#ffe9a6" ${O}/><path d="M40 104 H176" stroke="#8a5a3a" stroke-width="10" stroke-linecap="round"/><path d="M40 104 H176" stroke="${INK}" stroke-width="2"/></g>${foxAt(id,72,104,60,{pose:"sit",expr:"joy"})}<g filter="url(#wobble)"><path d="M40 100 V84 H104 V100" fill="none" stroke="${INK}" stroke-width="2.6"/>${[52,64,76,88].map(x=>`<path d="M${x} 84 V100" stroke="${INK}" stroke-width="2.2"/>`).join("")}</g></svg>`},
+  balancoire:{name:"Balançoire",price:80,pose:"happy",in:"Sur la balançoire",spot:{id:"swing",x:330,y:262,poses:["happy"],obj:"balancoire"},thumb:"-10 -80 140 190",
+    desc:"Une planche et deux cordes, nouées à une grosse branche de l'arbre de droite. Ça grince un peu, c'est ça qui est bien.",
+    svg:id=>`<svg viewBox="0 -16 120 116" aria-hidden="true"><ellipse cx="60" cy="104" rx="40" ry="5" fill="#3d2a35" opacity=".14"/><path d="M14 -78 V88 M106 -78 V88" stroke="${INK}" stroke-width="3"/>${id?`<g transform="translate(0 -6)">${foxIn(id,"happy")}</g>`:""}<g ${O} filter="url(#wobble)"><rect x="4" y="84" width="112" height="12" rx="4" fill="#e8b884"/></g></svg>`,
+    photo:id=>`<svg viewBox="0 0 200 160" aria-hidden="true"><rect width="200" height="160" fill="#bfe3f2"/><path d="M0 62 Q50 50 100 58 Q150 50 200 62 V160 H0Z" fill="#cfe3a8"/><g filter="url(#wobble)"><path d="M0 26 Q100 12 200 30" fill="none" stroke="#8a5a3a" stroke-width="12" stroke-linecap="round"/><path d="M0 26 Q100 12 200 30" fill="none" stroke="${INK}" stroke-width="2"/></g><g transform="rotate(8 100 22)"><path d="M72 22 V118 M128 22 V118" stroke="${INK}" stroke-width="2.4"/><g filter="url(#wobble)"><rect x="64" y="116" width="72" height="10" rx="4" fill="#e8b884" ${O}/></g>${foxAt(id,100,122,62,{pose:"happy"})}</g></svg>`}
 };
 for(const k in OBJS)PLACE[OBJS[k].spot.id]=OBJS[k].in.toLowerCase();
 const objOf=sp=>sp&&sp.obj&&OBJS[sp.obj];
 const basketSVG=id=>OBJS.panier.svg(id); // gardé pour les anciens appels
 
 // les endroits des objets posés rejoignent ceux de la clairière
-function addObjSpots(){for(const k in R.obj){const sp=OBJS[k].spot;if(!SPOT[sp.id]){SPOTS.push(sp);SPOT[sp.id]=sp}}}
+function addObjSpots(){for(const k in R.obj){const sp=OBJS[k].spot;if(!SPOT[sp.id]){SPOTS.push(sp);SPOT[sp.id]=sp}}
+  if(R.obj.balancoire)SPOT.lampR.x=284} // la balançoire prend la place sous la lanterne de droite
 addObjSpots();
 const objEls={};
 // l'objet vide reste visible ; quand un renard est dedans, c'est lui qui le dessine (draw dans life.js)
@@ -46,7 +57,7 @@ function drawObjs(){
   for(const k in R.obj){const o=OBJS[k],sp=o.spot;let el=objEls[k];
     if(!el){el=objEls[k]=document.createElement("button");el.className="obj";el.type="button";el.setAttribute("aria-label",o.name);
       el.style.cssText=pc(sp.x,sp.y)+`;z-index:${sp.y}`;el.innerHTML=o.svg();
-      el.onpointerdown=e=>{e.stopPropagation();log(o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":k==="feuilles"?"Rien ne bouge dans les feuilles… pour l'instant. Les renards adorent s'y cacher quand il fait beau.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
+      el.onpointerdown=e=>{e.stopPropagation();log(k==="cabane"?"La cabane est vide. Les renards y montent pour regarder la clairière quand il fait beau.":k==="balancoire"?"La balançoire attend quelqu'un. Ça grince un peu.":o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":k==="feuilles"?"Rien ne bouge dans les feuilles… pour l'instant. Les renards adorent s'y cacher quand il fait beau.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
       $("actors").appendChild(el)}
     el.hidden=foxes.some(f=>f.spot===sp&&!f.walk)}
 }
@@ -65,7 +76,7 @@ function snapObj(f){const o=objOf(f.spot);if(!o||f.walk)return false;const k=f.s
   toast(`Clic ! ${FOX[f.id].name} ${o.in.toLowerCase()}. La photo est dans l'album.`);return true}
 
 function objSheet(){
-  openSheet(`<h2>Objets du refuge</h2><p class="sub">Pose un objet dans la clairière : il attire les renards dans des positions qu'on ne voit nulle part ailleurs. Touche-les pour les prendre en photo.</p>${Object.entries(OBJS).map(([k,o])=>`<div class="opt"><span class="thumb">${o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button></div>`).join("")}<p class="sub">D'autres objets arriveront bientôt.</p>`)}
+  openSheet(`<h2>Objets du refuge</h2><p class="sub">Pose un objet dans la clairière : il attire les renards dans des positions qu'on ne voit nulle part ailleurs. Touche-les pour les prendre en photo.</p>${Object.entries(OBJS).map(([k,o])=>`<div class="opt"><span class="thumb">${o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button></div>`).join("")}<p class="sub">D'autres objets arriveront bientôt.</p>`)}
 function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
-  R.glands-=o.price;R.obj[k]=1;save();addObjSpots();drawObjs();renderHud();closeSheet();
+  R.glands-=o.price;R.obj[k]=1;save();addObjSpots();drawObjs();if(o.photo)drawBg();renderHud();closeSheet();
   log(`${o.name} : posé dans l'herbe. Qui va s'y installer ?`)}
