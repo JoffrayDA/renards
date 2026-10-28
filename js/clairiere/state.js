@@ -44,6 +44,13 @@ function checkArrival(){
 }
 
 /* ---------- simulation ---------- */
+// le tirage d'une visite ne dépend que de la gamelle et de l'instant : on sait d'avance quand quelqu'un viendra (notifications, push.js)
+function visitRoll(t){let h=2166136261;for(const ch of R.bowl.type+R.bowl.until+":"+t){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}
+  h^=h>>>15;h=Math.imul(h,2246822507);h^=h>>>13;h=Math.imul(h,3266489909);h^=h>>>16;return (h>>>0)/4294967296}
+// la prochaine visite à la gamelle (0 = personne avant qu'elle soit vide), en refaisant les pas de simulate sans rien changer
+function nextVisit(){const B=R.bowl&&BOWLS[R.bowl.type];if(!B||!B.p)return 0;let t=R.last,day=R.wildDay,n=R.wildN;
+  for(;;){t+=STEP;if(t>R.bowl.until)return 0;if(day!==today(t)){day=today(t);n=0}
+    if(n<2&&visitRoll(t)<(metAny()?B.p:.3)&&visitPool(R.bowl.type,t).length)return t}}
 // les renards vivent même page fermée : glands laissés, gamelle mangée, visites des sauvages
 function simulate(live){
   const now=Date.now();let t=Math.max(R.last,now-MAXSIM);const seen=[];
@@ -55,7 +62,7 @@ function simulate(live){
     const B=R.bowl&&BOWLS[R.bowl.type];
     if(R.wildDay!==today(t)){R.wildDay=today(t);R.wildN=0} // deux visites par jour au plus
     // la toute première visite arrive vite : le joueur revient pour la voir
-    if(B&&B.p&&R.wildN<2&&Math.random()<(metAny()?B.p:.3)){
+    if(B&&B.p&&R.wildN<2&&visitRoll(t)<(metAny()?B.p:.3)){
       // sauvages de cette gamelle et inconnus dont le prochain indice va avec le moment (sauvages.js)
       const pool=visitPool(R.bowl.type,t);
       if(pool.length){const id=pool[Math.floor(Math.random()*pool.length)],ph={id,bowl:R.bowl.type,t};

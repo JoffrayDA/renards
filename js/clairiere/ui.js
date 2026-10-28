@@ -87,6 +87,8 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   else if(b.dataset.reread)reread(b.dataset.reread);
   else if(b.dataset.buddy){R.buddy=b.dataset.buddy;save();toast(`${FOX[R.buddy].name} t'accompagnera au Café.`);foxSheet(R.buddy)}
   else if(b.dataset.inco)incoSheet(b.dataset.inco);
+  else if(b.dataset.push==="on")pushEnable(pushPlan()).then(ok=>{toast(ok?"C'est noté : Petit Pois te préviendra.":"Les notifications sont bloquées. Tu peux les autoriser dans les réglages du téléphone.");drawBell();closeSheet()}).catch(()=>{toast("Impossible pour l'instant. Réessaie plus tard.");drawBell()});
+  else if(b.dataset.push==="off")pushOff().then(()=>{toast("D'accord, plus de notifications.");drawBell();closeSheet()});
   else if(b.dataset.guess){const [id,n]=b.dataset.guess.split("|");guessInco(id,n)}
   else if(b.dataset.ask)askInco(b.dataset.ask);
   else if(b.dataset.go==="carnet")carnet();else if(b.dataset.go==="photos")photos()};

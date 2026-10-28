@@ -505,6 +505,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
     else toast("+3 glands");
     if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!metAny())setTimeout(firstLure,500);
     else if(storyDone(c.id))setTimeout(wildNudge,600);
+    if(storyDone(c.id)&&c.id!=="petitpois")setTimeout(pushInvite,2500); // proposer les notifications, une fois
     save();renderStory();renderHud();syncRain();
   });
   if(b.game)playGame({...b.game,target:at},go);else go();

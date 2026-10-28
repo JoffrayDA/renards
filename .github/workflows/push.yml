@@ -1,0 +1,20 @@
+# Notifications du refuge : toutes les 30 min, envoie ce qui est prévu (tools/push-send.mjs).
+# Secrets du dépôt : FIREBASE_SA (fichier JSON du compte de service Firebase) et VAPID_PRIVATE.
+name: Notifications
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save web-push@3.6.7
+      - run: node tools/push-send.mjs
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+          VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}

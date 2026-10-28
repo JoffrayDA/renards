@@ -1,9 +1,9 @@
 // Cache hors ligne : tout vient du réseau quand il y en a (mises à jour visibles tout de suite), le cache sert hors ligne.
 // GitHub Pages autorise 10 min de cache HTTP : on le contourne (cache "reload" / "no-cache"), sinon un téléphone
 // peut recevoir l'ancienne page juste après une mise à jour.
-const CACHE = "renards-v97";
+const CACHE = "renards-v98";
 const FILES = ["./", "index.html", "cafe.html", "clairiere.html", "manifest.webmanifest",
-  "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg", "css/cafe.css", "css/clairiere.css", "js/music.js", "js/foxart.js",
+  "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg", "css/cafe.css", "css/clairiere.css", "js/music.js", "js/foxart.js", "js/push.js",
   ...["foxes", "data", "state", "draw", "game", "render", "end", "menus", "map", "hwintro", "main"].map(n => `js/cafe/${n}.js`),
   ...["data", "state", "scene", "life", "ui", "games", "objets", "sauvages", "story", "envies", "maison", "main"].map(n => `js/clairiere/${n}.js`)];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: "reload" }))))); self.skipWaiting(); });
@@ -25,5 +25,18 @@ self.addEventListener("fetch", e => {
       if (r.ok) c.put(nav ? e.request.url : e.request, r.clone());
       return r;
     } catch (err) { return hit || Response.error(); }
+  }));
+});
+// Notifications (js/push.js, tools/push-send.mjs) : le serveur envoie { t: titre, b: texte, k: genre, u: page à ouvrir }
+self.addEventListener("push", e => {
+  let d = {}; try { d = e.data.json(); } catch (x) {}
+  e.waitUntil(self.registration.showNotification(d.t || "Kitsune Café", { body: d.b || "", icon: "icons/icon-192.png", badge: "icons/icon-192.png", tag: d.k || "renards", data: { u: d.u || "./" } }));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  const u = new URL(e.notification.data && e.notification.data.u || "./", self.registration.scope).href;
+  e.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then(ws => {
+    const w = ws.find(x => "focus" in x);
+    return w ? w.navigate(u).then(x => (x || w).focus()).catch(() => w.focus()) : clients.openWindow(u);
   }));
 });
