@@ -27,7 +27,7 @@ function foxArt(f,o={}){
   const earPair=(L,R,base)=>[L,R].map((d,i)=>{const [bx,by]=base[i];
     return `<g class="${i?"earR":""}" style="transform-origin:${bx}px ${by}px"><g transform="translate(${bx} ${by}) scale(${e}) translate(${-bx} ${-by})">${d}</g></g>`}).join("");
   const ear=(dy,left)=>{const X=x=>left?x:120-x;
-    return `<path d="M${X(33)} ${44+dy} Q${X(30)} ${24+dy} ${X(38)} ${16+dy} Q${X(50)} ${23+dy} ${X(55)} ${36+dy}Z" fill="${c.b}"/>`+(sil?"":`<path d="M${X(37)} ${38+dy} Q${X(36)} ${27+dy} ${X(39.5)} ${22+dy} Q${X(46)} ${27+dy} ${X(49)} ${35+dy}Z" fill="${pink}" stroke="none"/><path d="M${X(38)} ${16.6+dy} Q${X(34.5)} ${19+dy} ${X(33.6)} ${23+dy} Q${X(38)} ${21+dy} ${X(42)} ${19.5+dy}Z" fill="${c.e}" stroke="none"/>`)};
+    return (f.mark==="plumet"&&!sil?`<path d="M${X(38)} ${18+dy} Q${X(37)} ${10+dy} ${X(32)} ${4+dy}" fill="none" stroke="${dark}" stroke-width="3.4"/>`:"")+`<path d="M${X(33)} ${44+dy} Q${X(30)} ${24+dy} ${X(38)} ${16+dy} Q${X(50)} ${23+dy} ${X(55)} ${36+dy}Z" fill="${c.b}"/>`+(sil?"":`<path d="M${X(37)} ${38+dy} Q${X(36)} ${27+dy} ${X(39.5)} ${22+dy} Q${X(46)} ${27+dy} ${X(49)} ${35+dy}Z" fill="${pink}" stroke="none"/><path d="M${X(38)} ${16.6+dy} Q${X(34.5)} ${19+dy} ${X(33.6)} ${23+dy} Q${X(38)} ${21+dy} ${X(42)} ${19.5+dy}Z" fill="${c.e}" stroke="none"/>`)};
   const face=(Y,happy)=>`<ellipse cx="60" cy="${Y+6.5}" rx="12.5" ry="7.5" fill="${c.ch}" stroke="none"/>`+(sil?"":
     (happy?`<path d="M44 ${Y+1} Q48 ${Y-4} 52 ${Y+1} M68 ${Y+1} Q72 ${Y-4} 76 ${Y+1}" fill="none" stroke-width="2.6"/>`
       :gh?`<g class="eyes" style="transform-origin:60px ${Y}px">${[47,73].map(x=>`<ellipse cx="${x}" cy="${Y-.5}" rx="4.6" ry="6.2" fill="${dark}" stroke="none"/><circle cx="${x+1.4}" cy="${Y-2.8}" r="1.7" fill="#fff" stroke="none"/><circle cx="${x-1.5}" cy="${Y+2.2}" r=".8" fill="#fff" stroke="none"/>`).join("")}</g>`
@@ -91,6 +91,10 @@ function foxArt(f,o={}){
     // Mûre : des morceaux de toutes les couleurs, comme cousus (Joffray a voulu tous les signes, 27/10/2026)
     if(f.mark==="patch")return [[-.72,.56,"#8fb6d9",6.4],[.74,.6,"#d39ac4",5.8],[-.36,.92,"#9cc48a",5.2],[.42,.93,"#f2d27a",5]].map(([u,v,col,r])=>{const [x,y]=at(u,v);
       return `<path d="M${(x-r).toFixed(1)} ${(y-r*.6).toFixed(1)} l${(r*1.9).toFixed(1)} ${(-r*.3).toFixed(1)} l${(r*.2).toFixed(1)} ${(r*1.5).toFixed(1)} l${(-r*1.9).toFixed(1)} ${(r*.4).toFixed(1)}Z" fill="${col}" stroke-width="1.4" stroke-dasharray="2.2 1.6"/>`}).join("");
+    // lot 2 des inconnus (28/10/2026) : Câline (cœur blanc au front), Tilleul (sourcils et barbiche blancs), Frisette (mèche frisée)
+    if(f.mark==="coeur"){const y=(top+Y)/2;return `<path d="M60 ${y+4} C52 ${y-1} 54.5 ${y-7.5} 60 ${y-3.2} C65.5 ${y-7.5} 68 ${y-1} 60 ${y+4}Z" fill="#fff" stroke="none"/>`}
+    if(f.mark==="vieux")return `<g fill="#fff" stroke-width="1.6">${[1,-1].map(k=>{const x=k>0?48:72;return `<path d="M${x-7*k} ${Y-5} q${2*k} -6 ${6*k} -4 q${3*k} -4 ${7*k} -1 q${1*k} 3 ${-2*k} 4 q${-5*k} -1 ${-11*k} 1Z"/>`}).join("")}<path d="M54.5 ${Y+12.5} Q57 ${Y+22} 60 ${Y+23} Q63 ${Y+22} 65.5 ${Y+12.5} Q60 ${Y+15} 54.5 ${Y+12.5}Z"/></g>`;
+    if(f.mark==="houppe")return `<path d="M56 ${top+3} q-5 -9 2 -12 q8 -2 8 5 q-1 5 -6 4 q-3 -1 -2 -4" fill="none" stroke-width="6.4"/><path d="M56 ${top+3} q-5 -9 2 -12 q8 -2 8 5 q-1 5 -6 4 q-3 -1 -2 -4" fill="none" stroke="${c.b}" stroke-width="3.2"/>`;
     if(f.mark==="taches")return `<g fill="${c.e}" stroke="none" opacity=".75" transform="translate(${dx} 0)">${[[36,-1],[40.5,-2.6],[38,2.2],[84,-1],[79.5,-2.6],[82,2.2]].map(([x,y])=>`<circle cx="${x}" cy="${Y+y}" r="1.25"/>`).join("")}</g>`;
     return ""};
   // la brioche : une seule forme pour la tête et le corps, déformée selon la pose
@@ -127,6 +131,7 @@ function foxArt(f,o={}){
       else h=noMouth+dot(49.3,Y+1.2,2.6,3,.8)+dot(73.3,Y+1.2,2.6,3,.8)
         +`<g stroke="#e2546e" stroke-width="1.4"><path d="M36 ${Y+3} l-2 4 M40 ${Y+3} l-2 4 M44 ${Y+3} l-2 4 M80 ${Y+3} l-2 4 M84 ${Y+3} l-2 4 M88 ${Y+3} l-2 4"/></g><path d="M56 ${Y+7.6} q2 -1.6 4 0 q2 1.6 4 0" fill="none" stroke-width="1.6"/><path d="M90 ${Y-14} q-3 4.6 0 6.4 q3 -1.8 0 -6.4Z" fill="#cfe4f7" stroke-width="1.3"/>`;
     }
+    if(f.mark==="oeil")h=`<ellipse cx="72.5" cy="${Y-.6}" rx="7.4" ry="7" fill="${c.e}" opacity=".8" stroke="none"/>`+h;
     if(f.mark==="masque")h=`<path d="M34 ${Y+1} Q35 ${Y-8} 48 ${Y-7} Q60 ${Y-3.5} 72 ${Y-7} Q85 ${Y-8} 86 ${Y+1} Q81 ${Y+7} 72 ${Y+5} Q60 ${Y+2.5} 48 ${Y+5} Q39 ${Y+7} 34 ${Y+1}Z" fill="#625c6e" stroke="none"/>`+h;
     return dx?`<g transform="translate(${dx} 0)">${h}</g>`:h};
   const paws=(y,l=50,r=70,lift=[0,0])=>gh?"":(f.mark==="moufle"&&!sil?`<path d="M${l-8} ${y-lift[0]+3} Q${l-9} ${y-lift[0]-7} ${l-1} ${y-lift[0]-7} Q${l+8} ${y-lift[0]-7} ${l+8} ${y-lift[0]+3}Z" fill="#7cb8e0"/><path d="M${l-8} ${y-lift[0]+3} L${l+8} ${y-lift[0]+3}" stroke="#fff" stroke-width="2.4"/><path d="M${l-4} ${y-lift[0]-3} l2 2 2 -2 2 2 2 -2" fill="none" stroke="#fff" stroke-width="1.2"/>`:`<ellipse cx="${l}" cy="${y-lift[0]}" rx="7" ry="4.4" fill="${c.s}"/>`)+`<ellipse cx="${r}" cy="${y-lift[1]}" rx="7" ry="4.4" fill="${c.s}"/>`;

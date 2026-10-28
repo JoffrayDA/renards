@@ -34,7 +34,13 @@ const IN=[
   {id:"panache",name:"Panache",tail:"long",c:{b:"#c96a3e",ch:"#fff1e4",e:"#4a2a20",s:"#4a2a20",t:"#fff8ee"},why:"queue immense"},
   {id:"mure",name:"Mûre",mark:"patch",muzzle:"#8a4a9a",c:{b:"#e0b48a",ch:"#fff6ea",e:"#8a5a3a",s:"#8a5a3a",t:"#fff6ea"},why:"patchwork, museau violet"},
   {id:"filou",name:"Filou",mark:"masque",c:{b:"#9a9aa6",ch:"#f1f1f4",e:"#3f3f4c",s:"#3f3f4c",t:"#f1f1f4"},why:"masque, « emprunte » les chaussettes"},
-  {id:"radar",name:"Radar",ears:1.75,c:{b:"#f0d6a4",ch:"#fffaf0",e:"#c79a5a",s:"#c79a5a",t:"#fffaf0"},why:"oreilles immenses"}];
+  {id:"radar",name:"Radar",ears:1.75,c:{b:"#f0d6a4",ch:"#fffaf0",e:"#c79a5a",s:"#c79a5a",t:"#fffaf0"},why:"oreilles immenses"},
+  {id:"pataud",name:"Pataud",scale:1.2,c:{b:"#b5774a",ch:"#fbeedd",e:"#5a3424",s:"#5a3424",t:"#fbeedd"},why:"très gros"},
+  {id:"caline",name:"Câline",mark:"coeur",c:{b:"#eeb8a6",ch:"#fffaf5",e:"#a86652",s:"#a86652",t:"#fffaf5"},why:"cœur blanc au front"},
+  {id:"tilleul",name:"Tilleul",mark:"vieux",c:{b:"#c4b29c",ch:"#f7f2ea",e:"#7d6a58",s:"#7d6a58",t:"#f7f2ea"},why:"vieux : sourcils et barbiche"},
+  {id:"pinceau",name:"Pinceau",mark:"plumet",c:{b:"#d6b98e",ch:"#fbf4e8",e:"#6a5040",s:"#6a5040",t:"#3d2f2a"},why:"plumets noirs aux oreilles"},
+  {id:"patou",name:"Patou",mark:"oeil",c:{b:"#ece4d8",ch:"#ffffff",e:"#9a6a4a",s:"#9a6a4a",t:"#ffffff"},why:"tache autour d'un œil"},
+  {id:"frisette",name:"Frisette",mark:"houppe",c:{b:"#e07f52",ch:"#fff3e6",e:"#7a3a22",s:"#7a3a22",t:"#fff3e6"},why:"mèche frisée"}];
 const card=(f,name,why,a,b)=>`<figure><div class="duo">${a}<span class="sil">${b}</span></div><figcaption>${name}<span>${why}</span></figcaption></figure>`;
 document.getElementById("out").innerHTML=`<h2>Dans le jeu</h2><div class="row">${IN.map(f=>card(f,f.name,f.why,foxArt(f),foxArt(f,{sil:1}))).join("")}</div>`
   ;
