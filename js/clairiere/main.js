@@ -5,6 +5,10 @@ $("actors").appendChild(bowlEl);
 scn.rain=rainNow();
 simulate(false);
 const togGot=syncTogether();
+// un objet offert par lien (?cadeau=cabane), une seule fois : pour que Joffray voie la cabane sans attendre ses glands
+const GIFT=new URLSearchParams(location.search).get("cadeau");
+if(GIFT&&OBJS[GIFT]&&!R.obj[GIFT]){R.obj[GIFT]=1;save();addObjSpots();setTimeout(()=>toast(`Copeau t'offre : ${OBJS[GIFT].name.toLowerCase()} !`),800)}
+if(GIFT)history.replaceState(null,"",location.pathname);
 drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
 syncFoxes();drawObjs();fillObjs();
 chainTick(false);checkArrival();
