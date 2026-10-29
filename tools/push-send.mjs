@@ -8,7 +8,10 @@ import crypto from "node:crypto";
 const DRY = process.argv.includes("--dry");
 if (!process.env.FIREBASE_SA || !process.env.VAPID_PRIVATE) { console.log("Notifications pas encore configurées."); process.exit(0); }
 const { default: webpush } = await import("web-push");
-const SA = JSON.parse(process.env.FIREBASE_SA), now = Date.now();
+let SA;
+try { SA = JSON.parse(process.env.FIREBASE_SA); } catch (e) { console.error("FIREBASE_SA n'est pas le fichier JSON entier (il doit commencer par { et finir par }) :", e.message); process.exit(1); }
+if (!SA.private_key || !SA.client_email) { console.error("FIREBASE_SA : il manque private_key ou client_email. Champs trouvés :", Object.keys(SA).join(", ")); process.exit(1); }
+const now = Date.now();
 const VAPID_PUBLIC = "BArwx5Jl1qA3zyPDMAvKgdNGRIJQXEPuMKAlvQ4ZclKWb1zjFQcxtvg4juYcGgWX5ObMOCn8lPZkijTorVQkji4";
 webpush.setVapidDetails("https://joffrayda.github.io/renards/", VAPID_PUBLIC, process.env.VAPID_PRIVATE);
 
@@ -24,7 +27,7 @@ const iat = Math.floor(now / 1000);
 const jwt = b64({ alg: "RS256", typ: "JWT" }) + "." + b64({ iss: SA.client_email, scope: "https://www.googleapis.com/auth/datastore", aud: "https://oauth2.googleapis.com/token", iat, exp: iat + 3600 });
 const signed = jwt + "." + crypto.sign("RSA-SHA256", Buffer.from(jwt), SA.private_key).toString("base64url");
 const tok = await (await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=" + signed })).json();
-if (!tok.access_token) { console.error("Jeton refusé", tok); process.exit(1); }
+if (!tok.access_token) { console.error("Google refuse la clé du compte de service :", tok.error, tok.error_description); process.exit(1); }
 const H = { Authorization: "Bearer " + tok.access_token, "Content-Type": "application/json" };
 const BASE = `https://firestore.googleapis.com/v1/projects/${SA.project_id}/databases/(default)/documents`;
 const val = f => f.integerValue != null ? +f.integerValue : f.stringValue;
@@ -32,6 +35,7 @@ const val = f => f.integerValue != null ? +f.integerValue : f.stringValue;
 let page = "", sent = 0, seen = 0;
 do {
   const r = await (await fetch(`${BASE}/push?pageSize=300${page ? "&pageToken=" + page : ""}`, { headers: H })).json();
+  if (r.error) { console.error("Firestore refuse la lecture :", r.error.status, r.error.message); process.exit(1); }
   for (const doc of r.documents || []) {
     seen++;
     const d = Object.fromEntries(Object.entries(doc.fields || {}).map(([k, v]) => [k, val(v)]));
