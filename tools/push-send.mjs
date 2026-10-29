@@ -17,7 +17,10 @@ try { SA = JSON.parse(process.env.FIREBASE_SA); } catch (e) { fail("FIREBASE_SA 
 if (!SA.private_key || !SA.client_email) fail("FIREBASE_SA : il manque private_key ou client_email. Champs trouvés :", Object.keys(SA).join(", "));
 const now = Date.now();
 const VAPID_PUBLIC = "BArwx5Jl1qA3zyPDMAvKgdNGRIJQXEPuMKAlvQ4ZclKWb1zjFQcxtvg4juYcGgWX5ObMOCn8lPZkijTorVQkji4";
-webpush.setVapidDetails("https://joffrayda.github.io/renards/", VAPID_PUBLIC, process.env.VAPID_PRIVATE);
+// la clé collée dans le secret peut garder un retour à la ligne, des espaces ou des guillemets
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE.replace(/[\s"']/g, "");
+if (!/^[A-Za-z0-9_-]{43}$/.test(VAPID_PRIVATE)) fail(`VAPID_PRIVATE ne ressemble pas à la clé : ${VAPID_PRIVATE.length} caractères au lieu de 43 (elle commence par « ${VAPID_PRIVATE.slice(0, 3)} »).`);
+webpush.setVapidDetails("https://joffrayda.github.io/renards/", VAPID_PUBLIC, VAPID_PRIVATE);
 
 const MSG = {
   fox: { t: "Quelqu'un t'attend", b: "Un renard vient d'arriver à la Clairière. Il a une histoire à te raconter." },
