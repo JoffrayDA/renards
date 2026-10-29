@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sapin soigné</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+p{margin:0 0 12px;opacity:.8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+figure{margin:0}
+figure iframe{display:block;width:100%;aspect-ratio:400/480;border:3px solid #5b4250;border-radius:18px;background:#e8eef4}
+figcaption{font-size:13px;font-weight:700;text-align:center;margin-top:6px}
+body.one{padding:0;background:#e8eef4;overflow:hidden}
+body.one svg.sc{display:block;width:100vw;height:100vh}
+.flake{animation:fall linear infinite}
+@keyframes fall{0%{transform:translate(0,-30px)}50%{transform:translate(8px,240px)}100%{transform:translate(-4px,520px)}}
+.tw{animation:tw 1.8s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.25}to{opacity:1}}
+.smoke{animation:smoke 4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes smoke{0%{transform:translate(0,0) scale(.5);opacity:0}20%{opacity:.85}100%{transform:translate(14px,-46px) scale(1.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<div id="out"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+/* Essai de décor soigné : la Clairière sous la neige, avec le grand sapin de Noël.
+   Même cadre que le jeu (400 × 480, mêmes emplacements : maison, souche, mare, banc), pour pouvoir le reprendre tel quel. */
+const q=new URLSearchParams(location.search),V=q.get("v"),NIGHT=q.get("nuit")==="1";
+const L=(w=2.6)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+function rng(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646}}
+const f1=n=>n.toFixed(1);
+// ombre douce et bleutée sur la neige (soleil d'hiver bas, à gauche)
+const shadow=(x,y,rx,ry,o=1)=>`<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(rx)}" ry="${f1(ry)}" fill="url(#sh)" opacity="${o}"/>`;
+
+function defs(){const g=(id,a,b,x2=0,y2=1)=>`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  const ball=(id,c,d)=>`<radialGradient id="${id}" cx=".38" cy=".34" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".18" stop-color="${c}"/><stop offset="1" stop-color="${d}"/></radialGradient>`;
+  return `<defs>
+  ${NIGHT?`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18204a"/><stop offset=".6" stop-color="#2f3672"/><stop offset="1" stop-color="#5a4f86"/></linearGradient>`
+    :`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fc8e6"/><stop offset=".65" stop-color="#d9ebf3"/><stop offset="1" stop-color="#fbeedd"/></linearGradient>`}
+  <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3ecf6"/><stop offset=".25" stop-color="#f6f9fc"/><stop offset="1" stop-color="#eaf1f8"/></linearGradient>
+  <radialGradient id="sh"><stop offset="0" stop-color="#7a8fbf" stop-opacity=".42"/><stop offset=".6" stop-color="#8fa2cc" stop-opacity=".2"/><stop offset="1" stop-color="#9fb0d6" stop-opacity="0"/></radialGradient>
+  <radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe8" stop-opacity=".95"/><stop offset=".4" stop-color="#fff3cf" stop-opacity=".4"/><stop offset="1" stop-color="#fff3cf" stop-opacity="0"/></radialGradient>
+  <radialGradient id="warm"><stop offset="0" stop-color="#ffd98a" stop-opacity=".75"/><stop offset=".5" stop-color="#ffc56a" stop-opacity=".3"/><stop offset="1" stop-color="#ffb84a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="star"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#fff2a8" stop-opacity=".7"/><stop offset="1" stop-color="#ffe680" stop-opacity="0"/></radialGradient>
+  ${g("tierG","#2e5e45","#5f9e72")}${g("trunkG","#7a5238","#b98a62",1,0)}${g("logG","#f2c78f","#d9a26a")}${g("roofG","#d47c66","#b8604f")}
+  ${g("snowRoof","#ffffff","#dfe9f4")}${g("glassD","#cfe6f3","#9fc7de",1,1)}${g("glassN","#fff1b8","#ffbe62")}${g("doorG","#9a6444","#74462f",1,0)}
+  ${g("deckG","#e3b583","#c99566")}${g("ice","#e4f2f9","#a9cfe4")}${g("stumpG","#9a6a48","#c28e62",1,0)}${g("benchG","#deac7a","#b8835a")}${g("snowSoft","#ffffff","#e2ebf5")}
+  ${g("hill","#c9d6e8","#e4ecf5")}${g("hillN","#3f4a80","#56609a")}${g("crownG","#8fbf98","#5f8f72")}
+  ${ball("bR","#ff7a8f","#c0304e")}${ball("bB","#8fd0ff","#3f86c4")}${ball("bY","#ffe48a","#d99a2a")}${ball("bP","#d6b0ff","#7a52c4")}${ball("bG","#a8e6a0","#3f9a52")}
+  <pattern id="grain" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1" cy="2" r=".5" fill="#5b4250" opacity=".08"/><circle cx="5" cy="5.5" r=".45" fill="#5b4250" opacity=".06"/></pattern>
+  </defs>`}
+
+/* ---------- ciel, montagnes, forêt de sapins au loin ---------- */
+function sky(){const r=rng(5);let s=`<rect width="400" height="200" fill="url(#sky)"/>`;
+  if(NIGHT){for(let i=0;i<40;i++)s+=`<circle class="${i%3?"":"tw"}" style="animation-delay:${f1(-r()*2)}s" cx="${f1(r()*400)}" cy="${f1(r()*110)}" r="${f1(.5+r()*1.1)}" fill="#fff8dc"/>`;
+    s+=`<circle cx="332" cy="40" r="34" fill="#fff6d0" opacity=".12"/><circle cx="332" cy="40" r="14" fill="#fff6dc"/><circle cx="327" cy="37" r="3" fill="#ece0b8"/><circle cx="337" cy="45" r="2" fill="#ece0b8"/>`}
+  else s+=`<circle cx="320" cy="34" r="70" fill="url(#sun)"/><circle cx="320" cy="34" r="13" fill="#fffdf2" opacity=".9"/>`;
+  // montagnes très pâles, noyées dans la brume
+  s+=`<path d="M0 112 L40 84 L66 98 L104 66 L140 96 L176 78 L214 100 L252 70 L292 98 L330 76 L370 94 L400 82 L400 150 L0 150Z" fill="url(#${NIGHT?"hillN":"hill"})"/>`;
+  s+=`<path d="M104 66 L94 74 L100 74 L108 80 L114 72 L120 76Z M252 70 L242 79 L250 78 L258 84 L262 77 L268 80Z M330 76 L322 83 L330 82 L336 87 L342 84Z M40 84 L34 90 L42 89 L48 92Z" fill="${NIGHT?"#7c86b8":"#fff"}" opacity=".9"/>`;
+  return s}
+function pine(x,yb,h,w,fill,snowC,line){let s="";const n=3;
+  for(let k=0;k<n;k++){const y=yb-k*h*.27,hh=h*.46,ww=w*(1-k*.26),t=y-hh;
+    s+=`<path d="M${f1(x)} ${f1(t)} L${f1(x-ww)} ${f1(y)} Q${f1(x)} ${f1(y+4)} ${f1(x+ww)} ${f1(y)}Z" fill="${fill}" ${line}/>`;
+    s+=`<path d="M${f1(x-ww*.9)} ${f1(y-1)} Q${f1(x-ww*.5)} ${f1(y-hh*.22)} ${f1(x)} ${f1(y-hh*.18)} Q${f1(x+ww*.5)} ${f1(y-hh*.22)} ${f1(x+ww*.9)} ${f1(y-1)} Q${f1(x)} ${f1(y+3)} ${f1(x-ww*.9)} ${f1(y-1)}Z" fill="${snowC}"/>`}
+  return s+`<path d="M${f1(x-w*.2)} ${f1(yb-h*.62)} L${f1(x)} ${f1(yb-h*1.0)} L${f1(x+w*.2)} ${f1(yb-h*.62)}Z" fill="${snowC}"/>`}
+function forest(){const r=rng(17);let s="";
+  const rows=NIGHT?[[118,46,"#4d5a8a","#8a94c4",""],[136,58,"#3f5578","#a6b2d8",""],[156,72,"#34506a","#c4cde8",`stroke="${INK}" stroke-width="1.6" stroke-opacity=".5"`]]
+    :[[118,46,"#a9c4c8","#f2f7fa",""],[136,58,"#86ab9f","#f6fafc",""],[156,72,"#5f8f7c","#ffffff",`stroke="${INK}" stroke-width="1.8" stroke-opacity=".55"`]];
+  rows.forEach(([y,h,c,sc,ln],ri)=>{for(let i=-1;i<15;i++){const x=i*30+ri*11+r()*10,hh=h*(.8+r()*.4);s+=pine(x,y+r()*8,hh,hh*.36,c,sc,ln)}});
+  // brume du fond
+  s+=`<rect y="100" width="400" height="70" fill="${NIGHT?"#5a5f98":"#eef4f8"}" opacity="${NIGHT?.18:.28}"/>`;
+  return s}
+
+/* ---------- sol enneigé ---------- */
+function ground(){const r=rng(23);let s=`<path d="M0 160 Q60 150 120 158 Q200 148 280 158 Q340 150 400 158 L400 480 L0 480Z" fill="url(#snow)"/>`;
+  // congères : un peu de volume, ombre bleutée en bas
+  [[40,300,70,14],[350,290,64,12],[230,470,90,16],[30,470,60,12],[380,440,40,10]].forEach(([x,y,w,h])=>s+=`<path d="M${x-w} ${y} Q${x-w*.4} ${y-h} ${x} ${y-h*.8} Q${x+w*.5} ${y-h*1.1} ${x+w} ${y} Z" fill="#fff"/><path d="M${x-w} ${y} Q${x} ${y+5} ${x+w} ${y}" fill="none" stroke="#cbd8ea" stroke-width="2.4" stroke-linecap="round"/>`);
+  // petites traces de pattes le long du chemin
+  for(let i=0;i<9;i++){const y=470-i*24,x=226+Math.sin(i*.9)*8;[[0,0],[7,-9]].forEach(([dx,dy])=>s+=`<g fill="#c9d6e8" transform="translate(${f1(x+dx)} ${f1(y+dy)})"><ellipse rx="2.6" ry="2"/><circle cx="-2.4" cy="-3" r=".9"/><circle cx="0" cy="-3.8" r=".9"/><circle cx="2.4" cy="-3" r=".9"/></g>`)}
+  // chemin de pierres, à moitié sous la neige
+  [[200,272],[193,296],[206,322],[196,350],[205,392],[196,430],[204,466]].forEach(([x,y],i)=>{const w=13-i*.3;
+    s+=shadow(x+3,y+3,w+4,7,.7)+`<ellipse cx="${x}" cy="${y}" rx="${w}" ry="6" fill="#d9d2c8" ${L(2.2)}/><ellipse cx="${x-2}" cy="${y-1.6}" rx="${f1(w*.62)}" ry="2.6" fill="#ece6dd"/><path d="M${f1(x-w*.8)} ${y-2} Q${x-2} ${y-7} ${f1(x+w*.5)} ${y-3.4} Q${x} ${y-1.6} ${f1(x-w*.8)} ${y-2}Z" fill="#fff"/>`});
+  // éclats de neige
+  for(let i=0;i<26;i++){const x=r()*400,y=175+r()*300,k=.6+r()*.8;s+=`<path class="${i%2?"tw":""}" style="animation-delay:${f1(-r()*2)}s" d="M${f1(x)} ${f1(y-3*k)} L${f1(x+.8*k)} ${f1(y-.8*k)} L${f1(x+3*k)} ${f1(y)} L${f1(x+.8*k)} ${f1(y+.8*k)} L${f1(x)} ${f1(y+3*k)} L${f1(x-.8*k)} ${f1(y+.8*k)} L${f1(x-3*k)} ${f1(y)} L${f1(x-.8*k)} ${f1(y-.8*k)}Z" fill="#fff"/>`}
+  return s}
+
+/* ---------- arbres des côtés ---------- */
+function sideTree(x,flip){const X=v=>flip?2*x-v:v;let s=shadow(x+10,252,40,8);
+  s+=`<path d="M${X(x-12)} 254 Q${X(x-20)} 258 ${X(x-26)} 256 Q${X(x-14)} 248 ${X(x-9)} 230 Q${X(x-6)} 190 ${X(x-10)} 150 L${X(x+10)} 150 Q${X(x+6)} 190 ${X(x+10)} 232 Q${X(x+16)} 248 ${X(x+26)} 256 Q${X(x+18)} 258 ${X(x+12)} 254Z" fill="url(#trunkG)" ${L(2.8)}/>`;
+  s+=`<path d="M${X(x-4)} 236 Q${X(x-2)} 210 ${X(x-5)} 186 M${X(x+4)} 220 Q${X(x+5)} 200 ${X(x+3)} 176 M${X(x-1)} 166 q3 4 0 8" fill="none" stroke="#6a4430" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><ellipse cx="${X(x+2)}" cy="200" rx="2.6" ry="3.6" fill="#6a4430"/>`;
+  s+=`<path d="M${X(x-12)} 254 Q${X(x)} 248 ${X(x+12)} 254 Q${X(x)} 258 ${X(x-12)} 254Z M${X(x-26)} 256 q4 -5 10 -4 M${X(x+26)} 256 q-4 -5 -10 -4" fill="#fff" stroke="none"/>`;
+  // houppier en touffes : lumière en haut à gauche, ombre dessous, neige posée dessus
+  const cl=[[-22,132,26],[18,136,26],[-4,112,30],[-30,104,20],[26,106,22],[0,86,22]];
+  cl.forEach(([dx,y,r])=>{const cx=X(x+dx);s+=`<circle cx="${cx}" cy="${y}" r="${r}" fill="url(#crownG)" ${L(2.6)}/>`});
+  cl.forEach(([dx,y,r])=>{const cx=X(x+dx);s+=`<path d="M${f1(cx-r*.85)} ${f1(y-r*.35)} Q${f1(cx-r*.6)} ${f1(y-r*1.02)} ${f1(cx)} ${f1(y-r)} Q${f1(cx+r*.6)} ${f1(y-r*1.02)} ${f1(cx+r*.85)} ${f1(y-r*.35)} Q${f1(cx+r*.4)} ${f1(y-r*.5)} ${f1(cx+r*.1)} ${f1(y-r*.36)} Q${f1(cx-r*.3)} ${f1(y-r*.56)} ${f1(cx-r*.85)} ${f1(y-r*.35)}Z" fill="url(#snowSoft)" ${L(2)}/>`});
+  return s}
+
+/* ---------- la maison de Roussette, en rondins ---------- */
+function house(){let s=shadow(200,250,120,16);
+  // cheminée en pierres, chapeau de neige, fumée
+  s+=`<rect x="232" y="46" width="22" height="42" rx="3" fill="#b9a49a" ${L()}/>`+[[234,52,9],[244,52,8],[236,61,10],[247,61,6],[234,70,7],[242,70,10],[236,79,9],[246,79,7]].map(([x,y,w])=>`<rect x="${x}" y="${y}" width="${w}" height="7" rx="2.4" fill="#cfbcb2" stroke="#9a857b" stroke-width="1.2"/>`).join("");
+  s+=`<path d="M228 48 Q230 38 243 40 Q256 37 258 48 Q243 52 228 48Z" fill="url(#snowRoof)" ${L(2.2)}/>`;
+  // murs : rondins empilés, bouts ronds qui dépassent
+  s+=`<rect x="128" y="104" width="144" height="98" fill="url(#logG)" ${L(3)}/>`;
+  for(let y=104,i=0;y<200;y+=12,i++){s+=`<path d="M129 ${y+12} H271" stroke="#c48a58" stroke-width="2"/><path d="M134 ${y+4} q20 -1.6 40 0 M${180+i*7%30} ${y+7} q22 1.4 44 0" fill="none" stroke="#fbe0b6" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>`;
+    for(const x of [126,274])s+=`<circle cx="${x}" cy="${y+6}" r="6" fill="#e8b47c" ${L(2)}/><circle cx="${x}" cy="${y+6}" r="2.6" fill="none" stroke="#b8804e" stroke-width="1.2"/>`}
+  // toit en bardeaux sous une épaisse couche de neige, stalactites
+  s+=`<path d="M104 116 L200 40 L296 116 Q200 126 104 116Z" fill="url(#roofG)" ${L(3)}/>`;
+  for(const [y,a,b] of [[108,116,284],[96,131,269]])for(let x=a;x<b;x+=12)s+=`<path d="M${x} ${y} q6 6 12 0" fill="none" stroke="#a65445" stroke-width="1.6"/>`;
+  s+=`<path d="M108 112 L200 38 L292 112 Q286 118 278 112 Q270 120 260 113 Q250 121 240 112 Q228 119 216 112 Q204 120 192 112 Q180 120 168 112 Q156 119 146 112 Q134 120 124 112 Q116 118 108 112Z" fill="url(#snowRoof)" ${L(2.6)}/>`;
+  s+=`<path d="M150 90 Q176 70 200 56 M212 66 Q240 82 262 96" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/><path d="M120 110 Q200 116 282 110" fill="none" stroke="#cddbeb" stroke-width="2" stroke-linecap="round"/>`;
+  s+=[124,138,159,176,198,214,236,252,270,284].map((x,i)=>`<path d="M${x-2.4} ${114+(i%3)} L${x} ${121+(i*7)%9} L${x+2.4} ${114+(i%3)}Z" fill="#e8f4fb" stroke="#9fc1da" stroke-width="1.2" stroke-linejoin="round"/>`).join("");
+  // fenêtres : cadre en bois, rideaux, houx sur le rebord enneigé
+  const win=x=>`<rect x="${x-3}" y="121" width="42" height="40" rx="6" fill="#8a5a3a" ${L(2.4)}/><rect x="${x}" y="124" width="36" height="34" rx="4" fill="url(#${NIGHT?"glassN":"glassD"})" stroke="#6a4430" stroke-width="1.6"/>`
+    +(NIGHT?"":`<path d="M${x+4} 154 L${x+16} 128 M${x+12} 156 L${x+24} 130" stroke="#fff" stroke-width="2.6" opacity=".55" stroke-linecap="round"/>`)
+    +`<path d="M${x+1} 125 Q${x+9} 132 ${x+5} 157 L${x+1} 157Z M${x+35} 125 Q${x+27} 132 ${x+31} 157 L${x+35} 157Z" fill="#f6b8c4" stroke="#d98a9a" stroke-width="1.2"/>`
+    +`<path d="M${x+18} 124 V158 M${x} 141 H${x+36}" stroke="#8a5a3a" stroke-width="3"/>`
+    +`<path d="M${x-6} 161 H${x+42} l-2 6 H${x-4}Z" fill="#a9785a" ${L(2.2)}/><path d="M${x-6} 161 Q${x+4} 154 ${x+14} 159 Q${x+24} 153 ${x+34} 158 Q${x+40} 156 ${x+42} 161Z" fill="#fff" ${L(1.8)}/>`
+    +`<path d="M${x+28} 158 q-6 -6 -10 0 q5 3 10 0Z M${x+28} 158 q4 -7 9 -2 q-4 4 -9 2Z" fill="#5fa86c" stroke="${INK}" stroke-width="1.2"/><circle cx="${x+27}" cy="157" r="1.8" fill="#e2445e"/><circle cx="${x+30}" cy="158" r="1.6" fill="#e2445e"/>`;
+  s+=win(146)+win(218);
+  // porte en planches, couronne de Noël
+  s+=`<path d="M184 202 V146 Q200 128 216 146 V202Z" fill="url(#doorG)" ${L(2.8)}/><path d="M192 140 V202 M200 136 V202 M208 140 V202" stroke="#5e3a26" stroke-width="1.4" opacity=".7"/>`;
+  s+=`<path d="M184 160 h10 M184 188 h10" stroke="#3d2a35" stroke-width="2.6" stroke-linecap="round"/><circle cx="210" cy="174" r="2.2" fill="#f2c45a" ${L(1.2)}/>`;
+  s+=`<circle cx="200" cy="158" r="9" fill="none" stroke="${INK}" stroke-width="7.2"/><circle cx="200" cy="158" r="9" fill="none" stroke="#4f9a5e" stroke-width="4.6"/>`+[0,60,120,180,240,300].map(a=>`<circle cx="${f1(200+9*Math.cos(a*Math.PI/180))}" cy="${f1(158+9*Math.sin(a*Math.PI/180))}" r="1.6" fill="#e2445e"/>`).join("")
+    +`<path d="M200 166 l-5 -4 v8Z M200 166 l5 -4 v8Z" fill="#e2445e" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/><path d="M199 167 l-3 8 M201 167 l3 8" stroke="#e2445e" stroke-width="2" stroke-linecap="round"/>`;
+  // porche : terrasse, marches enneigées, auvent avec neige, stalactites et guirlande lumineuse
+  s+=`<path d="M106 202 L294 202 L302 246 L98 246Z" fill="url(#deckG)" ${L(3)}/>`;
+  for(const y of [213,224,235])s+=`<path d="M${104-(y-202)*.1} ${y} H${296+(y-202)*.1}" stroke="#b8845a" stroke-width="1.8"/>`;
+  s+=`<path d="M98 246 L302 246 L300 240 Q262 236 230 241 Q200 236 170 241 Q136 236 100 240Z" fill="#fff" ${L(2)}/>`;
+  s+=`<path d="M180 246 h40 l3 8 h-46Z M175 254 h50 l3 8 h-56Z" fill="#c99a6a" ${L(2.4)}/><path d="M180 246 q20 -3 40 0 M176 254 q24 -3 48 0 M172 262 q28 -3 56 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+  s+=`<rect x="102" y="190" width="7" height="54" rx="2" fill="#a87650" ${L(2.4)}/><rect x="291" y="190" width="7" height="54" rx="2" fill="#a87650" ${L(2.4)}/>`;
+  s+=[105.5,294.5].map(x=>`<path d="M${x-4} 200 l8 6 M${x-4} 212 l8 6 M${x-4} 224 l8 6" stroke="#4f9a5e" stroke-width="3" stroke-linecap="round"/>`).join("");
+  s+=`<path d="M108 168 L292 168 L302 192 L98 192Z" fill="url(#roofG)" ${L(3)}/>`+[128,156,184,212,240,268].map(x=>`<path d="M${x} 170 L${f1(x-4+(x-200)*.06)} 191" stroke="#9a4f42" stroke-width="1.8"/>`).join("");
+  s+=`<path d="M106 172 Q150 160 200 164 Q250 160 294 172 L298 182 Q280 188 262 182 Q244 190 226 183 Q206 190 186 183 Q164 190 146 183 Q124 189 102 182Z" fill="url(#snowRoof)" ${L(2.4)}/>`;
+  s+=`<path d="M98 192 Q200 202 302 192" fill="none" stroke="#3d2a35" stroke-width="1.2"/>`+Array.from({length:15},(_,i)=>{const x=104+i*13.7,y=193+Math.sin(i/14*Math.PI)*8.6,c=["#ff7a8f","#ffe07a","#8fd0ff","#a8e6a0"][i%4];return `<ellipse cx="${f1(x)}" cy="${f1(y+2.4)}" rx="2" ry="2.8" fill="${c}" stroke="${INK}" stroke-width="1"/>`}).join("");
+  return s}
+
+/* ---------- le grand sapin, à gauche de la maison ---------- */
+const CX=60,B=262;
+function tierPath(cx,top,yb,w,n){let d=`M${f1(cx)} ${f1(top)} Q${f1(cx-w*.28)} ${f1(yb-(yb-top)*.42)} ${f1(cx-w)} ${f1(yb)}`;
+  for(let i=1;i<=n;i++){const x=cx-w+2*w*i/n,xm=x-w/n;d+=` Q${f1(xm)} ${f1(yb-8)} ${f1(x)} ${f1(yb+(i%2?2:0))}`}
+  return d+` Q${f1(cx+w*.28)} ${f1(yb-(yb-top)*.42)} ${f1(cx)} ${f1(top)}Z`}
+function snowBand(cx,yb,w,n,r){let d=`M${f1(cx-w+2)} ${f1(yb-2)}`;
+  for(let i=1;i<=n;i++){const x=cx-w+2+(2*w-4)*i/n,xm=x-(w-2)/n;d+=` Q${f1(xm)} ${f1(yb-9)} ${f1(x)} ${f1(yb-2+(i%2?1.5:0))}`}
+  for(let i=n;i>0;i--){const x=cx-w+2+(2*w-4)*(i-1)/n,xm=x+(w-2)/n;d+=` Q${f1(xm)} ${f1(yb-15-r()*5)} ${f1(x)} ${f1(yb-10-r()*3)}`}
+  return d+"Z"}
+function sapin(stage){const r=rng(31);let s="";
+  const T=stage==="0"?{n:3,h0:24,dy:11,w0:17,dw:4.5,bough:3}:stage==="1"?{n:4,h0:52,dy:28,w0:38,dw:8,bough:6}:{n:6,h0:92,dy:52,w0:68,dw:10.4,bough:8};
+  const tiers=[];for(let k=0;k<T.n;k++){const yb=B-k*T.dy,h=T.h0-k*(T.h0*.04),w=T.w0-k*T.dw;tiers.push([yb,yb-h,w])}
+  s+=shadow(CX+14,B+6,T.w0+18,T.w0*.22+4);
+  if(stage==="0")s+=`<ellipse cx="${CX}" cy="${B+3}" rx="20" ry="7" fill="#a98068" ${L(2.4)}/><path d="M${CX-20} ${B+2} Q${CX} ${B-6} ${CX+20} ${B+2} Q${CX} ${B+4} ${CX-20} ${B+2}Z" fill="#fff"/>`;
+  s+=`<rect x="${CX-T.w0*.11}" y="${B-6}" width="${f1(T.w0*.22)}" height="${f1(T.w0*.22+4)}" rx="3" fill="url(#trunkG)" ${L(2.6)}/>`;
+  tiers.forEach(([yb,top,w],k)=>{
+    s+=`<path d="${tierPath(CX,top,yb,w,T.bough-(k>3?2:0))}" fill="url(#tierG)" ${L(stage==="0"?2:2.8)}/>`;
+    // côté droit dans l'ombre, aiguilles dessinées en petits traits
+    s+=`<path d="M${CX} ${f1(top+6)} Q${f1(CX+w*.24)} ${f1(yb-(yb-top)*.42)} ${f1(CX+w*.92)} ${f1(yb-1)} Q${f1(CX+w*.4)} ${f1(yb-4)} ${CX} ${f1(yb-2)}Z" fill="#163a28" opacity=".22"/>`;
+    for(let i=0;i<(stage==="0"?0:Math.round(w/5));i++){const x=CX+(r()*2-1)*w*.7,y=yb-(yb-top)*(.15+r()*.5);if(Math.abs(x-CX)>(yb-y)*w/(yb-top)*.8)continue;
+      s+=`<path d="M${f1(x-3)} ${f1(y-2)} L${f1(x)} ${f1(y+1.6)} L${f1(x+3)} ${f1(y-2)}" fill="none" stroke="${x<CX?"#7ab88a":"#2c5a40"}" stroke-width="1.3" stroke-linecap="round"/>`}
+    if(stage!=="0")s+=`<path d="${snowBand(CX,yb,w*.96,T.bough-(k>3?2:0),r)}" fill="url(#snowSoft)" ${L(stage==="0"?1.4:2)}/>`;
+    if(stage==="0"&&k===T.n-1)s+=`<path d="M${CX} ${f1(top)} q-5 7 -8 8 q4 2 8 -1 q4 3 8 1 q-3 -1 -8 -8Z" fill="#fff" ${L(1.6)}/>`});
+  if(stage==="3"||stage==="4"){
+    // guirlandes lumineuses, boules brillantes, nœuds rouges
+    tiers.forEach(([yb,top,w],k)=>{const y=yb-(yb-top)*.4,x0=CX-w*.66,x1=CX+w*.66;
+      s+=`<path d="M${f1(x0)} ${f1(y-5)} Q${CX} ${f1(y+9)} ${f1(x1)} ${f1(y+1)}" fill="none" stroke="#3d2a35" stroke-width="1.2"/>`;
+      for(let i=0;i<=6;i++){const t=i/6,x=(1-t)*(1-t)*x0+2*(1-t)*t*CX+t*t*x1,yy=(1-t)*(1-t)*(y-5)+2*(1-t)*t*(y+9)+t*t*(y+1),c=["#ffe07a","#ff9aa8","#9fdcff","#b8f0a8"][(i+k)%4];
+        s+=`<ellipse cx="${f1(x)}" cy="${f1(yy+2.2)}" rx="1.8" ry="2.5" fill="${c}" stroke="${INK}" stroke-width=".9"/>`}
+      [[-.72,"bR"],[-.12,"bB"],[.5,"bY"],[.82,"bP"]].slice(0,k>3?2:4).forEach(([u,g],j)=>{const x=CX+w*u*.9,yy=yb-4-(j%2)*4;
+        s+=`<path d="M${f1(x)} ${f1(yy-10)} v4" stroke="${INK}" stroke-width="1.2"/><circle cx="${f1(x)}" cy="${f1(yy-1)}" r="5.4" fill="url(#${g})" ${L(1.8)}/><rect x="${f1(x-1.8)}" y="${f1(yy-7.6)}" width="3.6" height="2.4" rx=".6" fill="#f2c45a" stroke="${INK}" stroke-width="1"/>`});
+      if(k<4)s+=`<g transform="translate(${f1(CX+w*.18*(k%2?-1:1))} ${f1(yb-(yb-top)*.72)})"><path d="M0 0 l-6 -4 v8Z M0 0 l6 -4 v8Z" fill="#e2445e" ${L(1.4)}/><circle r="1.8" fill="#c2304a" stroke="${INK}" stroke-width="1"/></g>`});
+    // cadeaux au pied, en volume
+    [[CX-44,B+12,22,15,"#e2546e","#f7d77a"],[CX+22,B+14,18,13,"#7cb8e0","#fff"],[CX-12,B+22,26,13,"#8fca7a","#e2445e"],[CX+40,B+6,14,11,"#c9a0ec","#fff3a8"]].forEach(([x,y,w,h,c,rb])=>{
+      s+=shadow(x+w*.6,y+2,w*.8,4)+`<path d="M${x} ${y-h} l5 -5 h${w} l-5 5Z" fill="${c}" ${L(2)}/><path d="M${x} ${y-h} l5 -5 h${w} l-5 5Z" fill="#fff" opacity=".35"/><rect x="${x}" y="${y-h}" width="${w}" height="${h}" rx="1.6" fill="${c}" ${L(2.2)}/><path d="M${x+w} ${y-h} l5 -5 v${h} l-5 5Z" fill="${c}" ${L(2)}/><path d="M${x+w} ${y-h} l5 -5 v${h} l-5 5Z" fill="#3d2a35" opacity=".2"/>`
+        +`<path d="M${x+w/2} ${y-h} v${h} M${x} ${y-h/2} h${w} M${x+w/2} ${y-h} l5 -5" stroke="${rb}" stroke-width="3"/><path d="M${x+w/2+2.5} ${y-h-2.5} q-8 -8 -10 -1 q4 3 10 1 q7 -8 10 -1 q-4 3 -10 1" fill="${rb}" stroke="${INK}" stroke-width="1.4"/>`});
+    // l'étoile, hors de l'écran : sa lumière déborde en haut
+    s+=`<ellipse cx="${CX}" cy="-4" rx="80" ry="56" fill="url(#star)"/>`+[[-40,40],[-14,52],[14,52],[40,40]].map(([dx,dy])=>`<path d="M${CX} 0 L${CX+dx} ${dy}" stroke="#fff6c0" stroke-width="2" opacity=".5" stroke-linecap="round"/>`).join("")}
+  return s}
+
+/* ---------- souche, tas de neige, mare gelée, banc ---------- */
+function stump(){return shadow(94,306,32,7)+`<path d="M63 290 L62 304 Q85 316 108 304 L107 290Z" fill="url(#stumpG)" ${L(2.8)}/><path d="M70 296 v10 M80 297 v12 M92 297 v12 M101 295 v9" stroke="#7a5238" stroke-width="1.4" opacity=".6"/><path d="M60 304 q-7 5 -12 2 q4 -3 4 -6 M110 304 q7 5 12 2 q-4 -3 -4 -6" fill="#9a6a48" ${L(2.2)}/>`
+  +`<ellipse cx="85" cy="290" rx="22" ry="8" fill="#e6c49a" ${L(2.4)}/><path d="M62 291 Q66 280 78 282 Q86 276 96 281 Q106 280 108 290 Q102 296 92 293 Q84 298 74 294 Q66 297 62 291Z" fill="url(#snowSoft)" ${L(2)}/>`}
+function mound(){let s=shadow(330,344,46,9)+`<path d="M286 342 Q292 322 312 320 Q324 308 340 316 Q360 318 366 342 Q326 350 286 342Z" fill="url(#snowSoft)" ${L(2.6)}/>`;
+  s+=[[298,336,"#f2a35c",-20],[352,338,"#e8794e",24],[326,344,"#f6c065",-6]].map(([x,y,c,a])=>`<path d="M${x-8} ${y} Q${x} ${y-8} ${x+8} ${y} Q${x} ${y+4} ${x-8} ${y}Z" fill="${c}" stroke="${INK}" stroke-width="1.6" transform="rotate(${a} ${x} ${y})"/>`).join("");
+  // un petit rouge-gorge posé sur le tas
+  s+=`<g transform="translate(330 312)"><ellipse cx="0" cy="0" rx="7" ry="6" fill="#8a6a5a" ${L(1.8)}/><path d="M-5 1 Q-4 6 1 6 Q5 5 5 1 Q0 -1 -5 1Z" fill="#e8794e" stroke="none"/><circle cx="-5" cy="-5" r="4.4" fill="#8a6a5a" ${L(1.8)}/><path d="M-6.6 -7 Q-5 -2.2 -1.8 -3.6 Q-2.8 -6.4 -6.6 -7Z" fill="#e8794e" stroke="none"/><circle cx="-6" cy="-6" r=".9" fill="${INK}"/><path d="M-9.4 -5 l-3 1 l3 1Z" fill="#f2c45a" stroke="${INK}" stroke-width="1"/><path d="M6 -1 l6 -3 l-1 5Z" fill="#6a4a3a" ${L(1.4)}/><path d="M-2 6 v3 M2 6 v3" stroke="${INK}" stroke-width="1.2"/></g>`;
+  return s}
+function pond(){let s=`<ellipse cx="96" cy="426" rx="70" ry="30" fill="#fff" ${L(2.4)}/><ellipse cx="98" cy="429" rx="70" ry="29" fill="#d4e1ee" opacity=".5"/>`;
+  s+=`<ellipse cx="96" cy="424" rx="60" ry="22" fill="url(#ice)" ${L(2.6)}/><ellipse cx="80" cy="428" rx="9" ry="4" fill="#9cc79a" opacity=".45"/>`;
+  s+=`<path d="M52 418 q20 -9 44 -5 M110 432 q14 -4 26 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/><path d="M70 420 l12 5 l9 -6 l6 8 M112 428 l9 -4 l8 5 M96 424 l-6 8" fill="none" stroke="#8fb9d4" stroke-width="1.4" stroke-linecap="round"/>`;
+  s+=`<path d="M60 432 Q96 444 130 428 M66 436 Q100 446 136 432" fill="none" stroke="#fff" stroke-width="1.4" opacity=".7"/>`;
+  s+=`<path d="M38 418 l-4 -20 M44 414 l0 -22 M150 416 l3 -18 M156 420 l6 -14" fill="none" stroke="#9a7a4a" stroke-width="3" stroke-linecap="round"/><ellipse cx="34" cy="396" rx="2.6" ry="6" fill="#7a5a3a" ${L(1.4)}/><ellipse cx="44" cy="391" rx="2.6" ry="6" fill="#7a5a3a" ${L(1.4)}/><ellipse cx="153" cy="397" rx="2.4" ry="5.4" fill="#7a5a3a" ${L(1.4)}/>`
+    +`<circle cx="34" cy="390" r="2.6" fill="#fff"/><circle cx="44" cy="385" r="2.6" fill="#fff"/><circle cx="153" cy="392" r="2.4" fill="#fff"/>`;
+  s+=`<path d="M30 424 Q40 408 64 404 Q96 398 128 404 Q156 410 164 426" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`;
+  return s}
+function bench(){return shadow(306,420,50,7)+`<rect x="266" y="404" width="6" height="14" fill="#9a6a48" ${L(2.2)}/><rect x="328" y="404" width="6" height="14" fill="#9a6a48" ${L(2.2)}/><rect x="258" y="394" width="84" height="13" rx="3" fill="url(#benchG)" ${L(2.6)}/><path d="M262 400 H338" stroke="#b07a52" stroke-width="1.6"/><path d="M270 398 q8 -1 14 0 M300 403 q10 -1 18 0" stroke="#f0c896" stroke-width="1.2" stroke-linecap="round"/>`
+  +`<path d="M258 396 Q262 386 280 388 Q296 382 312 387 Q332 384 342 396 Q300 400 258 396Z" fill="url(#snowSoft)" ${L(2)}/><path d="M318 394 q6 4 4 14 l5 0 q1 -9 -3 -15Z" fill="#e2546e" ${L(1.6)}/><path d="M320 400 h6 M321 404 h6" stroke="#fff" stroke-width="1.4"/>`}
+// lanternes : de la terrasse au sapin (gauche) et au grand arbre (droite)
+function lanterns(){let s=`<path d="M106 194 Q92 210 82 204 M294 194 Q340 226 374 200" fill="none" stroke="${INK}" stroke-width="1.6"/>`;
+  return s+[[90,206],[314,206],[340,214],[362,208]].map(([x,y])=>`<path d="M${x} ${y} v3" stroke="${INK}" stroke-width="1.4"/><path d="M${x-4} ${y+3} h8 l-1 -2 h-6Z" fill="#5b4250"/><rect x="${x-5}" y="${y+4}" width="10" height="12" rx="3.4" fill="${NIGHT?"#ffd36a":"#fbefd8"}" ${L(1.8)}/><path d="M${x-3} ${y+16} h6 l-1 2 h-4Z" fill="#5b4250"/>`).join("")}
+// à la nuit : lumière chaude des fenêtres sur la neige, halos des lanternes, lumières du sapin
+function nightGlow(stage){if(!NIGHT)return "";const r=rng(9);let s=`<rect width="400" height="480" fill="#1c2460" opacity=".42"/>`;
+  s+=`<ellipse cx="164" cy="236" rx="40" ry="16" fill="url(#warm)"/><ellipse cx="236" cy="236" rx="40" ry="16" fill="url(#warm)"/><ellipse cx="200" cy="262" rx="34" ry="20" fill="url(#warm)"/>`;
+  s+=[146,218].map(x=>`<rect x="${x}" y="124" width="36" height="34" rx="4" fill="url(#glassN)" opacity=".85"/><circle cx="${x+18}" cy="141" r="30" fill="#ffd98a" opacity=".18"/>`).join("");
+  s+=[[90,206],[314,206],[340,214],[362,208]].map(([x,y])=>`<circle cx="${x}" cy="${y+10}" r="16" fill="#ffe08a" opacity=".35"/><rect x="${x-5}" y="${y+4}" width="10" height="12" rx="3.4" fill="#ffd36a"/><ellipse cx="${x}" cy="${y+50}" rx="20" ry="7" fill="url(#warm)"/>`).join("");
+  s+=Array.from({length:15},(_,i)=>{const x=104+i*13.7,y=195.4+Math.sin(i/14*Math.PI)*8.6,c=["#ff9aa8","#ffe07a","#9fdcff","#b8f0a8"][i%4];return `<circle class="tw" style="animation-delay:${f1(-i*.37)}s" cx="${f1(x)}" cy="${f1(y)}" r="5" fill="${c}" opacity=".55"/>`}).join("");
+  if(stage==="3"||stage==="4"){for(let i=0;i<40;i++){const k=Math.floor(r()*6),yb=B-k*52,h=92-k*3.7,w=68-k*10.4,t=.18+r()*.75,y=yb-h*t,x=CX+(r()*2-1)*w*t*.85;if(y<6)continue;
+      s+=`<circle class="tw" style="animation-delay:${f1(-r()*2)}s" cx="${f1(x)}" cy="${f1(y)}" r="5.5" fill="${["#ffe08a","#ffb0c0","#bfe6ff"][i%3]}" opacity=".55"/><circle cx="${f1(x)}" cy="${f1(y)}" r="1.6" fill="#fffbe8"/>`}
+    s+=`<ellipse cx="${CX}" cy="-4" rx="90" ry="64" fill="url(#star)"/><ellipse cx="${CX+6}" cy="${B+10}" rx="70" ry="18" fill="url(#warm)" opacity=".8"/>`}
+  return s}
+function smoke(){return [0,1.3,2.6].map(d=>`<circle class="smoke" style="animation-delay:${d}s" cx="243" cy="36" r="6" fill="${NIGHT?"#9aa0c8":"#f7f4f2"}" opacity=".85"/>`).join("")}
+function snowfall(){const r=rng(3);let s="";for(let i=0;i<80;i++){const big=i%7===0;s+=`<circle class="flake" style="animation-duration:${f1(big?4+r()*2:6+r()*6)}s;animation-delay:${f1(-r()*12)}s" cx="${f1(r()*420-10)}" cy="${f1(-r()*30)}" r="${f1(big?2.8+r()*1.4:1+r()*1.4)}" fill="#fff" opacity="${big?.75:.95}"/>`}return s}
+function fox(f,x,y,o={}){const w=54,h=w*116/120;return `<g ${o.left?`transform="translate(${2*x} 0) scale(-1 1)"`:""}>`+foxArt(f,o).replace("<svg ",`<svg x="${x-w/2}" y="${f1(y-.93*h)}" width="${w}" height="${f1(h)}" `)+`</g>`}
+const XF={grelot:{id:"grelot",acc:"lutin",c:{b:"#e8a05e",ch:"#fff4e4",e:"#7a4a2a",s:"#7a4a2a",t:"#fff4e4"}},
+  ramure:{id:"ramure",acc:"renne",c:{b:"#b07a52",ch:"#f7ead8",e:"#5a3a24",s:"#5a3a24",t:"#f7ead8"}},
+  neige:{id:"bouleneige",acc:"neige",c:{b:"#f6f9fd",ch:"#ffffff",e:"#cddbea",s:"#dfe8f2",t:"#ffffff"}}};
+function scene(v){let s=defs()+sky()+forest()+ground();
+  s+=`<g filter="url(#wobble)">`+sideTree(22,false)+sideTree(380,true)+house()+lanterns()+sapin(v)+stump()+mound()+pond()+bench()+`</g>`+smoke();
+  s+=fox(FOX.roussette,v==="0"?100:118,v==="0"?280:292,{pose:"up"})+fox(XF.grelot,v==="0"?26:150,v==="0"?286:302,{pose:v==="3"?"happy":"sit",left:v!=="0"});
+  if(v==="3"||v==="4")s+=fox(XF.ramure,250,302,{pose:"sit",left:1})+fox(XF.neige,300,418,{pose:"happy",left:1})+fox(FOX.petitpois,200,332,{pose:v==="4"?"sleep":"happy"});
+  s+=nightGlow(v)+`<rect width="400" height="480" fill="url(#grain)"/>`+snowfall();
+  return `<svg class="sc" viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice">${s}</svg>`}
+if(V!=null){document.body.className="one";document.getElementById("out").innerHTML=scene(V)}
+else{const P=[["Avant",`sapin.html?v=3&heure=12`],["Après",`sapin-hd.html?v=3`],["Avant, la nuit",`sapin.html?v=4&heure=22`],["Après, la nuit",`sapin-hd.html?v=4&nuit=1`],["La pousse",`sapin-hd.html?v=0`],["Elle a grandi",`sapin-hd.html?v=1`],["Immense, pas encore décoré",`sapin-hd.html?v=2`]];
+  document.getElementById("out").innerHTML=`<h1>Le sapin de Noël : version soignée</h1><p>Même scène, refaite : lumière, ombres bleutées sur la neige, maison en rondins, toit enneigé avec stalactites, sapins au loin dans la brume, mare gelée, petites traces de pattes.</p><div class="grid">`
+    +P.map(([c,u])=>`<figure><iframe src="${u}" title="${c}"></iframe><figcaption>${c}</figcaption></figure>`).join("")+`</div>`}
+</script>
+</body>
+</html>

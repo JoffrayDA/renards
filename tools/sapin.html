@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sapin de Noël</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+p{margin:0 0 12px;opacity:.8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+figure{margin:0}
+figure iframe{display:block;width:100%;aspect-ratio:400/480;border:3px solid #5b4250;border-radius:18px;background:#cfe3a8}
+figcaption{font-size:13px;font-weight:700;text-align:center;margin-top:6px}
+body.one{padding:0;background:none}
+body.one svg.sc{display:block;width:100vw;height:100vh}
+.flake{animation:fall linear infinite}
+@keyframes fall{from{transform:translateY(-40px)}to{transform:translateY(520px)}}
+.tw{animation:tw 1.6s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.35}to{opacity:1}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<div id="out"></div>
+<canvas id="rain" hidden></canvas>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+// juste ce qu'il faut pour dessiner le décor de la Clairière (js/clairiere/scene.js) hors du jeu
+const W=400,H=480,O=`stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+const R={obj:{}},storyDone=()=>false,storyPeek=()=>false,storyRain=()=>false,foxes=[];
+</script>
+<script src="../js/clairiere/scene.js"></script>
+<script>
+const q=new URLSearchParams(location.search),stage=q.get("v");
+// le sapin pousse à gauche de la maison, devant le petit arbre ; sa cime finit par sortir de l'écran
+const CX=60,B=262;
+function tree(Ht,hw,n,deco){let s=`<rect x="${CX-7}" y="${B-8}" width="14" height="16" rx="3" fill="#a9785a" ${O}/>`;
+  const sp=n>3?.19:.26,hh=n>3?.3:.42,tiers=[];
+  for(let k=0;k<n;k++){const yb=B-k*sp*Ht,h=hh*Ht,w=hw*(1-k*(n>3?.17:.24)),top=yb-h;tiers.push([yb,h,w]);
+    s+=`<path d="M${CX} ${top} Q${CX-w*.35} ${yb-h*.45} ${CX-w} ${yb} Q${CX-w*.5} ${yb+6} ${CX} ${yb+3} Q${CX+w*.5} ${yb+6} ${CX+w} ${yb} Q${CX+w*.35} ${yb-h*.45} ${CX} ${top}Z" fill="${k%2?"#5f9a6e":"#568f64"}" ${O}/>`;
+    // la neige posée sur le bord de chaque étage
+    s+=`<path d="M${CX-w} ${yb} Q${CX-w*.5} ${yb+6} ${CX} ${yb+3} Q${CX+w*.5} ${yb+6} ${CX+w} ${yb} Q${CX+w*.72} ${yb-8} ${CX+w*.46} ${yb-3} Q${CX+w*.22} ${yb-9} ${CX} ${yb-4} Q${CX-w*.24} ${yb-10} ${CX-w*.48} ${yb-3} Q${CX-w*.74} ${yb-8} ${CX-w} ${yb}Z" fill="#fff" ${O}/>`;
+    if(k===n-1&&Ht<200)s+=`<path d="M${CX} ${top} q-7 9 -12 11 q6 3 12 -1 q6 4 12 1 q-5 -2 -12 -11Z" fill="#fff" ${O}/>`}
+  if(deco){const cols=["#e2546e","#7cb8e0","#f2c45a","#b48ae0"];
+    tiers.forEach(([yb,h,w],k)=>{const y=yb-h*.38,x0=CX-w*.62,x1=CX+w*.62;
+      s+=`<path d="M${x0} ${y-6} Q${CX} ${y+10} ${x1} ${y+2}" fill="none" stroke="${INK}" stroke-width="5"/><path d="M${x0} ${y-6} Q${CX} ${y+10} ${x1} ${y+2}" fill="none" stroke="#f2c45a" stroke-width="2.6" stroke-dasharray="2 1.4"/>`;
+      [-.7,-.1,.5].forEach((u,j)=>{const x=CX+w*u,yy=yb-2+(j%2?-4:0);s+=`<path d="M${x} ${yy-9} v4" stroke="${INK}" stroke-width="1.4"/><circle cx="${x}" cy="${yy-1}" r="4.6" fill="${cols[(k+j)%4]}" ${O} stroke-width="2"/><circle cx="${x-1.4}" cy="${yy-2.6}" r="1.2" fill="#fff" stroke="none"/>`})});
+    // les cadeaux au pied
+    [[CX-38,B+10,22,16,"#e2546e","#f7d77a"],[CX+24,B+12,18,14,"#7cb8e0","#fff"],[CX-8,B+20,24,13,"#8fca7a","#e2546e"]].forEach(([x,y,w,h,c,r])=>s+=`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" rx="2" fill="${c}" ${O} stroke-width="2.4"/><path d="M${x+w/2} ${y-h} v${h} M${x} ${y-h/2} h${w}" stroke="${r}" stroke-width="3"/><path d="M${x+w/2} ${y-h} q-6 -7 -8 -1 q3 2 8 1 q6 -7 8 -1 q-3 2 -8 1" fill="${r}" stroke="${INK}" stroke-width="1.6"/>`)}
+  return s}
+// la Clairière sous la neige : on repeint l'herbe, la forêt et les arbres, la neige sur le toit, la mare gelée
+function snowy(s){return s.replace(/#bcd99a/g,"#e9f0f6").replace(/#d6e9b4/g,"#f7fafc").replace(/#6fa070/g,"#d5e1ea").replace(/#86b06e/g,"#c9d6e2")
+  .replace(/#9cc796/g,"#a9c8b4").replace(/#7fb27f/g,"#8fb5a0").replace(/#8dbd86/g,"#9cc4a6")}
+function snowTop(){let s=`<g filter="url(#wobble)">`;
+  s+=`<path d="M120 103 L200 44 L280 103 Q266 95 254 101 Q240 91 226 99 Q212 89 198 98 Q184 89 170 99 Q156 91 144 101 Q132 95 120 103Z" fill="#fff" ${O}/>`;
+  s+=`<path d="M229 46 h26 v-5 q-13 -5 -26 0Z" fill="#fff" ${O}/>`;
+  s+=[[22,96,30],[380,96,30]].map(([x,y,r])=>`<path d="M${x-r} ${y+8} Q${x-r+4} ${y-14} ${x} ${y-16} Q${x+r-4} ${y-14} ${x+r} ${y+8} Q${x+r*.5} ${y+2} ${x} ${y+6} Q${x-r*.5} ${y+2} ${x-r} ${y+8}Z" fill="#fff" ${O}/>`).join("");
+  s+=`<path d="M106 202 L294 202 L296 210 Q200 214 104 210Z" fill="#fff" ${O}/>`;
+  s+=`<ellipse cx="85" cy="289" rx="22" ry="8" fill="#fff" ${O}/>`;
+  s+=`<ellipse cx="96" cy="424" rx="62" ry="24" fill="#dcecf5" ${O}/><path d="M70 418 l14 6 l8 -6 M110 430 l10 -4 l8 5 M96 424 l-6 8" fill="none" stroke="#b9d3e4" stroke-width="1.8" stroke-linecap="round"/><path d="M58 420 q16 -6 30 -2" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>`;
+  s+=`<path d="M260 396 h80 v-4 q-40 -6 -80 0Z" fill="#fff" ${O}/>`;
+  s+=`<path d="M292 330 Q318 314 346 332 Q320 338 292 330Z" fill="#fff" ${O}/>`;
+  return s+`</g>`}
+function fox(f,x,y,o={}){const w=54,h=w*116/120;return foxArt(f,o).replace("<svg ",`<svg x="${x-w/2}" y="${y-.93*h}" width="${w}" height="${h}" ${o.left?`transform="translate(${2*x} 0) scale(-1 1)"`:""} `)}
+const XF={grelot:{id:"grelot",acc:"lutin",c:{b:"#e8a05e",ch:"#fff4e4",e:"#7a4a2a",s:"#7a4a2a",t:"#fff4e4"}},
+  ramure:{id:"ramure",acc:"renne",c:{b:"#b07a52",ch:"#f7ead8",e:"#5a3a24",s:"#5a3a24",t:"#f7ead8"}},
+  neige:{id:"bouleneige",acc:"neige",c:{b:"#f6f9fd",ch:"#ffffff",e:"#cddbea",s:"#dfe8f2",t:"#ffffff"}}};
+function scene(v){const night=phaseNow()==="nuit",ph=PH[phaseNow()];
+  let s=snowy(bgSVG())+snowTop()+`<g filter="url(#wobble)">`;
+  if(v==="0")s+=`<ellipse cx="${CX}" cy="${B+4}" rx="18" ry="6" fill="#c9a08a" ${O}/>`+tree(30,12,3,false);
+  else if(v==="1")s+=tree(120,36,3,false);
+  else s+=tree(340,64,5,v!=="2");
+  s+=`</g>`;
+  s+=fox(FOX.roussette||FOXES[0],v==="0"?100:118,v==="0"?280:290,{pose:"up"})+fox(XF.grelot,v==="0"?26:150,v==="0"?284:300,{pose:v==="3"?"happy":"sit",left:v!=="0"});
+  if(v==="3")s+=fox(XF.ramure,250,300,{pose:"sit",left:1})+fox(XF.neige,300,420,{pose:"happy",left:1})+fox(FOX.petitpois||FOXES[4],200,330,{pose:"happy"});
+  s+=`<rect width="400" height="480" fill="${ph.tint}" opacity="${ph.a}"/>`;
+  // l'étoile, tout en haut, hors de l'écran : on devine sa lumière
+  if(v==="3"||v==="4")s+=`<defs><radialGradient id="star"><stop offset="0" stop-color="#fff6c0" stop-opacity=".95"/><stop offset="1" stop-color="#ffe680" stop-opacity="0"/></radialGradient></defs><ellipse cx="${CX}" cy="0" rx="70" ry="46" fill="url(#star)"/>`;
+  if((v==="3"||v==="4")&&night){const r=rng(9);for(let i=0;i<34;i++){const k=Math.floor(r()*5),yb=B-k*.19*340,h=.3*340,w=64*(1-k*.17),t=.2+r()*.75,y=yb-h*t,x=CX+(r()*2-1)*w*t*.9;
+    if(y<4)continue;s+=`<circle class="tw" style="animation-delay:${(-r()*2).toFixed(2)}s" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="#ffe08a" opacity=".5"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2" fill="#fff6c8"/>`}}
+  const r=rng(3);for(let i=0;i<70;i++)s+=`<circle class="flake" style="animation-duration:${(5+r()*5).toFixed(1)}s;animation-delay:${(-r()*10).toFixed(1)}s" cx="${(r()*420).toFixed(1)}" cy="${(r()*-40).toFixed(1)}" r="${(1.2+r()*1.8).toFixed(1)}" fill="#fff" opacity=".9"/>`;
+  return `<svg class="sc" viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice">${s}</svg>`}
+if(stage!=null){document.body.className="one";$("out").innerHTML=scene(stage)}
+else{const V=[["0",12,"1. La pousse que Grelot apporte"],["1",12,"2. Elle a grandi d'un coup"],["2",12,"3. Immense : la cime sort de l'écran"],["3",12,"4. Décoré, tout le monde réuni"],["4",22,"5. La nuit, les lumières"]];
+  $("out").innerHTML=`<h1>Le sapin de Noël (maquette)</h1><p>Il pousse à gauche de la maison, devant le petit arbre. Neige sur le sol, le toit, les arbres ; la mare gèle. Flocons qui tombent.</p><div class="grid">`
+    +V.map(([v,h,c])=>`<figure><iframe src="sapin.html?v=${v}&heure=${h}" title="${c}"></iframe><figcaption>${c}</figcaption></figure>`).join("")+`</div>`}
+</script>
+</body>
+</html>

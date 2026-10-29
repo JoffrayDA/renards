@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invités de Noël</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+p{margin:0 0 12px;opacity:.8}
+.fox{background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:8px;margin-bottom:10px}
+.fox strong{display:block;font-size:14px}
+.fox em{display:block;font-style:normal;font-size:12px;opacity:.65;margin-bottom:4px}
+.row{display:flex;flex-wrap:wrap;align-items:flex-end}
+.row figure{margin:0;width:110px;text-align:center}
+.row svg{display:block;width:100%}
+.row figcaption{font-size:11px;opacity:.6}
+.row figure.pt svg{background:#f3e6dc;border:2px solid #ead9cf;border-radius:12px;box-sizing:border-box;width:86px;margin:0 auto}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Invités de Noël (essai)</h1>
+<p>Six propositions : on en garde cinq ou six. Grelot est le héros de l'histoire du sapin.</p>
+<div id="out"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const XF=[
+  {id:"grelot",name:"Grelot",acc:"lutin",c:{b:"#e8a05e",ch:"#fff4e4",e:"#7a4a2a",s:"#7a4a2a",t:"#fff4e4"},why:"le lutin, héros de l'histoire : bonnet à grelot"},
+  {id:"barbeneige",name:"Barbe-Neige",acc:"barbe",c:{b:"#e6dcd6",ch:"#ffffff",e:"#9a8a80",s:"#9a8a80",t:"#ffffff"},why:"le Père Noël des renards : barbe, manteau, hotte"},
+  {id:"ramure",name:"Ramure",acc:"renne",c:{b:"#b07a52",ch:"#f7ead8",e:"#5a3a24",s:"#5a3a24",t:"#f7ead8"},why:"le renne : bois en branches, clochettes"},
+  {id:"guimauve",name:"Guimauve",acc:"chocolat",c:{b:"#fbe3ec",ch:"#ffffff",e:"#f0a8c0",s:"#f0a8c0",t:"#ffffff"},why:"tout moelleux, chocolat chaud"},
+  {id:"paillette",name:"Paillette",acc:"guirlande",c:{b:"#cfd6e2",ch:"#f8fafd",e:"#7f8aa6",s:"#7f8aa6",t:"#f8fafd"},why:"pelage argenté, guirlande en écharpe"},
+  {id:"bouleneige",name:"Boule-de-Neige",acc:"neige",c:{b:"#f6f9fd",ch:"#ffffff",e:"#cddbea",s:"#dfe8f2",t:"#ffffff"},why:"fait de neige : carotte, écharpe, bras en brindilles"}];
+const fig=(svg,cap,cls="")=>`<figure class="${cls}">${svg}<figcaption>${cap}</figcaption></figure>`;
+document.getElementById("out").innerHTML=XF.map(f=>`<div class="fox"><strong>${f.name}</strong><em>${f.why}</em><div class="row">`
+  +fig(foxArt(f),"assis")+fig(foxArt(f,{pose:"happy"}),"content")+fig(foxArt(f,{pose:"walk"}),"marche")+fig(foxArt(f,{pose:"sleep"}),"dodo")
+  +fig(foxArt(f,{portrait:1,expr:"joy"}),"portrait","pt")+fig(foxArt(f,{sil:1}),"silhouette","sil")+`</div></div>`).join("");
+</script>
+</body>
+</html>
