@@ -32,13 +32,19 @@ function drawBowl(){const v=foxes.find(f=>f.wild&&f.food);
 /* ---------- glands dans l'herbe ---------- */
 // les glands rapportés par les renards (R.pend) traînent dans l'herbe : 6 tas au plus, on les touche pour les ramasser
 const DROPS=[[122,352],[284,296],[48,336],[236,424],[340,452],[148,470]],dropEls=[];
-function drawDrops(){const n=Math.min(DROPS.length,R.pend||0);
+// chaque tas garde son nombre de glands (R.drops) : toucher un tas le vide, lui et pas un autre (29/10/2026 : avant, c'était
+// toujours le dernier tas qui disparaissait, et aucun quand il restait beaucoup de glands). Les nouveaux vont d'abord aux places vides.
+function syncDrops(){const d=R.drops=(R.drops||[]).slice(0,DROPS.length);
+  let have=0;for(let i=0;i<DROPS.length;i++)have+=d[i]=d[i]||0;
+  let extra=(R.pend||0)-have;if(extra<0){d.fill(0);extra=R.pend||0}
+  while(extra-->0){let i=d.indexOf(0);if(i<0)i=d.indexOf(Math.min(...d));d[i]++}}
+function drawDrops(){syncDrops();
   DROPS.forEach(([x,y],i)=>{let el=dropEls[i];
     if(!el){el=dropEls[i]=document.createElement("button");el.className="drop";el.type="button";el.setAttribute("aria-label","Des glands");el.innerHTML=acornSVG();
       el.style.cssText=pc(x,y)+`;z-index:${y}`;el.onpointerdown=e=>{e.stopPropagation();pickDrop(i)};$("actors").appendChild(el)}
-    el.hidden=i>=n})}
-function pickDrop(i){const n=Math.min(DROPS.length,R.pend||0);if(!n)return;const v=Math.ceil(R.pend/n);
-  R.pend-=v;R.glands+=v;save();$("glands").textContent=R.glands;drawDrops();
+    el.hidden=!R.drops[i]})}
+function pickDrop(i){syncDrops();const v=R.drops[i];if(!v)return;
+  R.drops[i]=0;R.pend-=v;R.glands+=v;save();$("glands").textContent=R.glands;drawDrops();
   const [x,y]=DROPS[i],p=document.createElement("div");p.className="plus";p.textContent=`+${v}`;p.style.cssText=pc(x,y-14);$("scene").appendChild(p);setTimeout(()=>p.remove(),900)}
 
 /* ---------- bulles ---------- */

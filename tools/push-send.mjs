@@ -3,6 +3,7 @@
 // fox / inco / arr = heures prévues en ms (0 = rien), tz = décalage horaire du téléphone en minutes.
 // Le script y note ce qu'il a envoyé (s_fox, s_inco, s_arr, last). Une notification par jour au plus, entre 9 h et 21 h.
 // Secrets GitHub : FIREBASE_SA (le fichier JSON du compte de service), VAPID_PRIVATE. --dry : affiche sans rien envoyer.
+// Lancé en boucle toutes les 5 min par le workflow (GitHub ne tenait pas le cron).
 import crypto from "node:crypto";
 
 const DRY = process.argv.includes("--dry"), TEST = process.argv.includes("--test"); // --test : un petit mot à tous, tout de suite
@@ -66,4 +67,6 @@ do {
   }
   page = r.nextPageToken || "";
 } while (page);
-console.log(`::notice::${seen} téléphone(s), ${sent} notification(s) envoyée(s)${TEST ? " (essai)" : ""}.`);
+// --quiet (la boucle toutes les 5 min) : une annotation seulement quand quelque chose part
+const msg = `${new Date(now).toISOString().slice(11, 16)} UTC : ${seen} téléphone(s), ${sent} notification(s) envoyée(s)${TEST ? " (essai)" : ""}.`;
+console.log(process.argv.includes("--quiet") && !sent ? msg : "::notice::" + msg);
