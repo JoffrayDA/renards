@@ -53,7 +53,17 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
 /* Mes chiffres : ce que les testeurs lisent à Joffray au bout d'une semaine (jours joués, histoires…) */
 .stats{font:inherit;color:var(--soft);background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px}
 #stats{border:2px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);padding:18px 20px;max-width:340px;width:calc(100% - 32px)}
-#stats::backdrop{background:rgba(91,66,80,.35)}
+#stats::backdrop,#cloud::backdrop{background:rgba(91,66,80,.35)}
+/* Sauvegarde en ligne (js/cloud.js) : le code pour retrouver sa partie sur un autre téléphone */
+#cloud{border:2px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);padding:18px 20px;max-width:340px;width:calc(100% - 32px);font-size:14px}
+#cloud h2{font-family:var(--display);font-weight:400;margin:0 0 8px;font-size:20px}#cloud h3{font-size:14px;margin:16px 0 6px;color:var(--coral-d)}
+#cloud p{margin:0 0 8px;color:var(--soft)}
+#cloud .code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:22px;font-weight:900;letter-spacing:2px;text-align:center;background:var(--bg);border:2px dashed var(--line);border-radius:14px;padding:10px 6px;margin:6px 0 8px;user-select:all;color:var(--ink)}
+#cloud input{font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:17px;letter-spacing:1px;text-transform:uppercase;width:100%;box-sizing:border-box;padding:9px 10px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);margin-bottom:8px}
+#cloud .sm{font:inherit;font-weight:900;border:0;border-radius:999px;padding:8px 16px;background:var(--coral);color:#fff;box-shadow:0 3px 0 var(--coral-d);cursor:pointer;margin:0 6px 8px 0}
+#cloud .sm.ghost{background:var(--bg);color:var(--ink);box-shadow:0 3px 0 var(--line)}
+#cloud .found{background:var(--bg);border-radius:12px;padding:10px 12px;margin:4px 0 8px}#cloud .found b{color:var(--ink)}
+#cloud .enter{margin-top:8px}
 #stats h2{font-family:var(--display);font-weight:400;margin:0 0 8px;font-size:20px}
 #stats dl{display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin:0 0 14px;font-size:14px}
 #stats dd{margin:0;font-weight:900;text-align:right}#stats dt.h{grid-column:1/-1;font-weight:900;margin-top:6px;color:var(--coral-d)}
@@ -89,10 +99,13 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
     <img src="img/clairiere.jpg" alt="Aperçu de la clairière">
     <div class="tx"><div><strong>La clairière</strong><span>Le soir, les clients du café suivent Roussette jusqu'à son refuge. Prends soin d'eux, et remplis la gamelle pour les renards sauvages.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
   </a></div>
-  <footer>Tes parties sont enregistrées sur cet appareil. <button class="stats" id="statsbtn" type="button">Mes chiffres</button></footer>
+  <footer><span id="savetx">Tes parties sont enregistrées sur cet appareil.</span> <button class="stats" id="cloudbtn" type="button">Sauvegarde</button> · <button class="stats" id="statsbtn" type="button">Mes chiffres</button></footer>
+  <dialog id="cloud"><h2>Sauvegarde</h2><div id="cloudin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button></dialog>
   <dialog id="stats"><h2>Mes chiffres</h2><div id="statsin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button></dialog>
 </main>
 <script src="js/music.js"></script>
+<script src="js/push.js"></script>
+<script src="js/cloud.js"></script>
 <script src="js/cafe/foxes.js"></script>
 <script src="js/foxart.js"></script>
 <script>
@@ -107,7 +120,7 @@ const frame=document.getElementById("game");
 // location.replace : charger un jeu dans le cadre n'ajoute pas d'entrée à l'historique (sinon « retour » rouvrirait l'ancien jeu)
 const load=url=>frame.contentWindow.location.replace(url);
 function openGame(url){load(url);frame.hidden=false;history.pushState({game:url},"")}
-function hide(){frame.hidden=true;load("about:blank");M("boite");try{waiting()}catch(e){}}
+function hide(){frame.hidden=true;load("about:blank");M("boite");try{waiting()}catch(e){}backup()}
 function closeGame(){if(frame.hidden)return;hide();if(history.state&&history.state.game)history.back()}
 addEventListener("popstate",()=>{if(!frame.hidden)hide()});
 // un nouveau renard arrive pour son histoire : sa silhouette noire sur la carte de la Clairière, rien d'autre
@@ -129,6 +142,35 @@ function showStats(){const st=rd(SK)||{days:[]},C=rd("cafe-renards-v1")||{},R=rd
     <dt class="h">La clairière</dt>${row("Histoires finies",Object.keys(R.souv||{}).length)}${row("Renards au refuge",Object.keys(R.res||{}).length)}${row("Photos",(R.photos||[]).length)}${row("Inconnus retrouvés",Object.values(inco).filter(s=>s.found).length)}${row("Glands",R.glands||0)}</dl>`;
   document.getElementById("stats").showModal()}
 document.getElementById("statsbtn").onclick=showStats;
+// sauvegarde en ligne (js/cloud.js) : à l'ouverture, en revenant d'un jeu, quand l'app passe en arrière-plan, et toutes les 2 min
+const fmtT=t=>{const d=new Date(t),td=new Date();return (d.toDateString()===td.toDateString()?"aujourd'hui":d.toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))+" à "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})};
+function saveLine(){const C=cget();if(C.t)document.getElementById("savetx").textContent="Tes parties sont sauvegardées en ligne."}
+function backup(){cloudSave().then(saveLine).catch(()=>{})}
+setTimeout(backup,2500);setInterval(backup,12e4);saveLine();
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup()});
+// ce qu'une partie contient, pour savoir laquelle on récupère
+function sumUp(data){let C={},R={};try{C=JSON.parse(data["cafe-renards-v1"]||"{}")}catch(e){}try{R=JSON.parse(data["clairiere-renards-v2"]||"{}")}catch(e){}
+  const stars=Object.values(C.stars||{}).reduce((a,b)=>a+b,0);
+  return `${C.name?`<b>${C.name}</b> · `:""}Café : journée <b>${C.day||0}</b>, <b>${stars}</b> étoiles · Clairière : <b>${Object.keys(R.res||{}).length}</b> renards, <b>${Object.keys(R.souv||{}).length}</b> histoires`}
+function cloudSheet(){const C=cget(),el=document.getElementById("cloudin");
+  el.innerHTML=(C.code&&C.t?`<p>Ton code de sauvegarde :</p><div class="code" id="mycode">${C.code}</div>
+    <button class="sm ghost" type="button" id="copycode">Copier le code</button>
+    <p>Note-le quelque part. Sur un autre téléphone, il permet de retrouver ta partie.</p><p>Dernière sauvegarde : ${fmtT(C.t)}.</p>`
+    :`<p>Ta partie sera sauvegardée en ligne dès que le téléphone sera connecté à Internet. Tu auras alors un code pour la retrouver.</p>`)
+    +`<h3>Retrouver une partie</h3><p>Tu as joué sur un autre téléphone ? Entre son code de sauvegarde.</p>
+    <input id="codein" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" maxlength="16">
+    <button class="sm" type="button" id="findcode">Chercher</button><div id="foundin"></div>`;
+  const cp=document.getElementById("copycode");if(cp)cp.onclick=()=>{try{navigator.clipboard.writeText(C.code);cp.textContent="Copié !"}catch(e){}};
+  document.getElementById("findcode").onclick=async()=>{const code=cleanCode(document.getElementById("codein").value),out=document.getElementById("foundin");
+    if(code.length!==14){out.innerHTML=`<p>Le code fait 12 lettres et chiffres, comme XXXX-XXXX-XXXX.</p>`;return}
+    if(code===C.code){out.innerHTML=`<p>C'est déjà le code de ce téléphone.</p>`;return}
+    out.innerHTML=`<p>Je cherche…</p>`;let s=null;try{s=await cloudLoad(code)}catch(e){out.innerHTML=`<p>Pas de connexion pour l'instant. Réessaie plus tard.</p>`;return}
+    if(!s){out.innerHTML=`<p>Aucune partie avec ce code. Vérifie les lettres.</p>`;return}
+    out.innerHTML=`<div class="found">Partie trouvée, sauvegardée ${fmtT(s.t)} :<br>${sumUp(s.data)}</div>
+      <p>Elle remplacera la partie de ce téléphone (${sumUp(snapshot())}).</p><button class="sm" type="button" id="usecode">Remplacer</button>`;
+    document.getElementById("usecode").onclick=()=>cloudApply(s)};
+  document.getElementById("cloud").showModal()}
+document.getElementById("cloudbtn").onclick=cloudSheet;
 setInterval(()=>{if(frame.hidden)try{waiting()}catch(e){}},30000);
 document.querySelectorAll("a.game").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();try{MUSIC.unlock()}catch(err){}openGame(a.getAttribute("href"))}));
 </script>
