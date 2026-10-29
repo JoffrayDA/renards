@@ -150,8 +150,8 @@ setTimeout(backup,2500);setInterval(backup,12e4);saveLine();
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup()});
 // ce qu'une partie contient, pour savoir laquelle on récupère
 function sumUp(data){let C={},R={};try{C=JSON.parse(data["cafe-renards-v1"]||"{}")}catch(e){}try{R=JSON.parse(data["clairiere-renards-v2"]||"{}")}catch(e){}
-  const stars=Object.values(C.stars||{}).reduce((a,b)=>a+b,0);
-  return `${C.name?`<b>${C.name}</b> · `:""}Café : journée <b>${C.day||0}</b>, <b>${stars}</b> étoiles · Clairière : <b>${Object.keys(R.res||{}).length}</b> renards, <b>${Object.keys(R.souv||{}).length}</b> histoires`}
+  const stars=Object.values(C.stars||{}).reduce((a,b)=>a+b,0),n=(k,w)=>`<b>${k}</b> ${w}${k>1?"s":""}`,f=Object.keys(R.res||{}).length,h=Object.keys(R.souv||{}).length;
+  return `${C.name?`<b>${C.name}</b> · `:""}Café : ${C.day?`journée <b>${C.day}</b>, ${n(stars,"étoile")}`:"pas commencé"} · Clairière : ${f?`${n(f,"renard")}, ${n(h,"histoire")}`:"pas commencée"}`}
 function cloudSheet(){const C=cget(),el=document.getElementById("cloudin");
   el.innerHTML=(C.code&&C.t?`<p>Ton code de sauvegarde :</p><div class="code" id="mycode">${C.code}</div>
     <button class="sm ghost" type="button" id="copycode">Copier le code</button>
