@@ -27,7 +27,8 @@ const storyPeek=()=>storyRain()&&scn.rain;
 const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},lampL:{x:60,y:214,name:"les lanternes"},stump:{x:85,y:288,name:"la souche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
-const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","cannelle","charbon","brume","moka","painepice","libellule","brioche","copeau","sesame","marquis","zaza","flocon","noisette","givre","comete","somnus","reglisse","aurore","maree","perle","yeti","gribouille"];
+// Copeau et Sésame (la maison) avancés juste après Biscuit le 29/10/2026 : Joffray trouvait l'intérieur trop long à débloquer
+const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","copeau","sesame","cannelle","charbon","brume","moka","painepice","libellule","brioche","marquis","zaza","flocon","noisette","givre","comete","somnus","reglisse","aurore","maree","perle","yeti","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
 const STORIES={
@@ -449,7 +450,8 @@ const chainDone=()=>ORDER.every(storyDone);
 const LAST="gribouille",OTHERS=FOXES.filter(f=>!f.event&&f.id!=="roussette"&&f.id!==LAST).map(f=>f.id);
 const lastReady=()=>OTHERS.every(id=>STORIES[id]&&storyDone(id));
 // un sauvage n'a son histoire qu'une fois croisé à la gamelle ; ensuite il s'installe au refuge (Joffray, 27/10/2026)
-const nextId=()=>ORDER.find(k=>!storyDone(k)&&(k!==LAST||lastReady())&&(!WILD[k]||R.met[k]||isRes(k)));
+// une histoire déjà commencée passe avant tout (l'ordre a changé le 29/10/2026 : on ne coupe personne au milieu)
+const nextId=()=>ORDER.find(k=>R.beat[k]>0&&!storyDone(k))||ORDER.find(k=>!storyDone(k)&&(k!==LAST||lastReady())&&(!WILD[k]||R.met[k]||isRes(k)));
 const wildLeft=()=>ORDER.filter(k=>WILD[k]&&!storyDone(k)&&!R.met[k]&&!isRes(k));
 // arrivé trop tôt (avant le 26/10/2026) : il repart, il reviendra en dernier
 if(isRes(LAST)&&!storyDone(LAST)&&!lastReady()){delete R.res[LAST];delete R.beat[LAST];delete R.who[LAST];save()}
