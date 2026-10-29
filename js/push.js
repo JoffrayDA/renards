@@ -2,7 +2,7 @@
    les heures où quelque chose l'attend (fox : un renard pour son histoire, inco : une visite à la gamelle, arr : un client
    du Café qui s'installe). GitHub lance tools/push-send.mjs toutes les 30 min, qui envoie : une par jour au plus, jamais la nuit.
    Pas de SDK Firebase : l'API REST suffit (connexion anonyme, une fiche par téléphone). */
-const PUSH={key:"",project:"",vapid:"BArwx5Jl1qA3zyPDMAvKgdNGRIJQXEPuMKAlvQ4ZclKWb1zjFQcxtvg4juYcGgWX5ObMOCn8lPZkijTorVQkji4"};
+const PUSH={key:"AIzaSyAxbw-c_VFhOx856MBlOKEw1JWpGKElLi0",project:"kitsune-cafe",vapid:"BArwx5Jl1qA3zyPDMAvKgdNGRIJQXEPuMKAlvQ4ZclKWb1zjFQcxtvg4juYcGgWX5ObMOCn8lPZkijTorVQkji4"};
 const PK="renards-push";
 const pget=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch(e){return {}}};
 const pset=o=>{try{localStorage.setItem(PK,JSON.stringify(o))}catch(e){}};
