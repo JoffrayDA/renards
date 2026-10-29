@@ -1,6 +1,6 @@
 /* La Clairière : les histoires. Voir docs/clairiere-v2.md, « Les histoires ».
    Une seule histoire à la fois, dans l'ordre d'ORDER. Le renard arrive pour son histoire (ou elle démarre s'il est déjà là),
-   6 h après la fin de la précédente (nextMorning). Une histoire est une suite de moments : un renard ou un endroit
+   de plus en plus tard après la fin de la précédente (storyGap : 30 min, 1 h, 2 h, 3 h… jusqu'à une journée). Une histoire est une suite de moments : un renard ou un endroit
    porte un signe, on le touche, le dialogue se joue, et le moment suivant s'ouvre aussitôt. Ni amitié, ni météo, ni attente.
    R.beat[id] = moments finis ; R.souv[id] = souvenir reçu ; R.nextAt = quand la prochaine histoire peut commencer ;
    R.who[id][i] = le renard touché pour un moment « * » (pour relire l'histoire).
@@ -11,9 +11,11 @@
 const VITE=/[?&]vite=1/.test(location.search);
 // une histoire toutes les 6 h (Joffray, 27/10/2026 : un renard par jour, « on va jamais s'en sortir ») ;
 // les parties qui attendaient le lendemain matin n'attendent pas plus de 6 h
-const STORY_GAP=6*36e5;
-function nextMorning(){return Date.now()+STORY_GAP}
-if(R.nextAt>Date.now()+STORY_GAP)R.nextAt=Date.now()+STORY_GAP;
+// l'attente avant le renard suivant monte petit à petit (29/10/2026, Joffray : « en crescendo », sinon ça va trop vite) :
+// 30 min après Mitaine, puis 1 h, 2 h, 3 h, et ainsi de suite jusqu'à une journée avant Gribouille, le dernier
+function storyGap(){const n=ORDER.filter(storyDone).length,G=[0,0,.5,1,2,3],last=ORDER.length-1;
+  const h=n<G.length?G[n]:Math.min(24,3+(n-5)*21/(last-5));return Math.round(h*2)/2*36e5}
+function nextMorning(){return Date.now()+storyGap()}
 if(VITE)R.nextAt=0;
 // une scène sous la pluie (rain:1 dans un moment ; la fin de Pain d'épice et Brioche, Joffray : « il faut absolument qu'il pleuve ») :
 // il pleut pendant le moment et encore 3 min après ; les renards de stay restent où ils sont, même sous la pluie
@@ -440,6 +442,7 @@ R.who=R.who||{};
 
 const beats=id=>STORIES[id].beats;
 const storyDone=id=>(R.beat[id]||0)>=beats(id).length;
+if(R.nextAt>Date.now()+storyGap())R.nextAt=Date.now()+storyGap(); // une attente déjà lancée ne dépasse jamais la nouvelle
 const chainDone=()=>ORDER.every(storyDone);
 // Gribouille vient en tout dernier, le 30e renard (demande de Joffray) : son histoire attend que tous les autres
 // renards aient fini la leur, même celles qui ne sont pas encore écrites
