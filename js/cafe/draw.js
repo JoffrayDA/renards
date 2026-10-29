@@ -85,7 +85,96 @@ const GX0=84,GX1=516,GY0=22,GY1=192; // la vitre de la véranda
 const PANES=[GX0,192,300,408,GX1];
 // motif animé qui défile dans la vitre (neige, feuilles, pétales)
 const fxPat=(id,w,h,c,to,dur)=>[`<pattern id="${id}" width="${w}" height="${h}" patternUnits="userSpaceOnUse">${c}<animateTransform attributeName="patternTransform" type="translate" from="0 0" to="${to}" dur="${dur}s" repeatCount="indefinite"/></pattern>`,`<rect x="${GX0}" y="${GY0}" width="${GX1-GX0}" height="${GY1-GY0}" fill="url(#${id})"/>`];
+// Le paysage derrière la vitre, refait le 29/10/2026 (Joffray : « J'adore ») : montagnes dans la brume, champs en patchwork,
+// chaumière qui fume au bout d'un chemin, prés et arbres de la saison. Halloween garde l'ancien dessin (outsideOld).
+const SCAPE={
+  printemps:{sky:["#9fd2f0","#e6f2f6","#fde7ef"],mt:["#c8c6e8","#e4e2f4"],cap:1,h:[["#cfe6b8","#b9d9a0"],["#b8dc96","#94c47a"],["#a4d486","#7fb46a"]],dot:"#8fbf7a",
+    fields:["#f2df8a","#cfe6a0","#e6c4e8"],hedge:"#6fa060",path:"#f0e2c8",fence:"#fff6ea",fx:"petales"},
+  ete:{sky:["#4fb4ec","#bfe6fb","#eaf7fb"],mt:["#a9c4e0","#cfe0f0"],cap:0,h:[["#bfe2a0","#a6d488"],["#a8d880","#86c262"],["#96cc6e","#6faa52"]],dot:"#6fae5e",
+    fields:["#f2cf5a","#b9a0e0","#d6ec9a"],hedge:"#5f9a4e",path:"#f2e2b8",fence:"#fff6ea",fx:""},
+  automne:{sky:["#f4a26a","#fbcf9c","#fde8c8"],mt:["#c99aa8","#e2c0bc"],cap:1,h:[["#e8c88e","#dcb072"],["#e2b46a","#cf9a4e"],["#d4a256","#b8823c"]],dot:"#d9823c",
+    fields:["#c9783c","#f2c45a","#a8b46a"],hedge:"#8a6a3e",path:"#e8d2a8",fence:"#f6e6d0",fx:"feuilles"},
+  hiver:{sky:["#1b2450","#3a467e","#6a6aa0"],mt:["#6a78a8","#8a96c4"],cap:2,h:[["#c4d2e8","#dfe7f3"],["#d6e0ef","#eef3fa"],["#e6edf7","#fbfdff"]],dot:"#5a7a7a",
+    fields:["#eef3fa","#dfe8f4","#f6f9fd"],hedge:"#9fb2c8",path:"#c9d6e6",fence:"#fbfdff",fx:"neige",night:1}
+};
 function outsideSVG(sea){
+  if(HW)return outsideOld(sea);
+  const P=SCAPE[sea],R=rng(11),f=n=>n.toFixed(1),l=(w=2.4)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`,fx=[];
+  const g=(id,a,b,x2=0,y2=1)=>`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  let defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.sky[0]}"/><stop offset=".7" stop-color="${P.sky[1]}"/><stop offset="1" stop-color="${P.sky[2]}"/></linearGradient>`
+    +g("pM",P.mt[0],P.mt[1])+P.h.map((h,i)=>g("pH"+i,h[0],h[1])).join("")
+    +`<radialGradient id="pSun"><stop offset="0" stop-color="#fffbe8" stop-opacity=".95"/><stop offset=".45" stop-color="#fff3cf" stop-opacity=".35"/><stop offset="1" stop-color="#fff3cf" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pBl" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffe4ee"/><stop offset="1" stop-color="#f4a6c0"/></radialGradient>
+    <radialGradient id="pGr" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#b9e49a"/><stop offset="1" stop-color="#5f9a4e"/></radialGradient>
+    <radialGradient id="pAu" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#d9603f"/></radialGradient>
+    <radialGradient id="pGlow"><stop offset="0" stop-color="#ffd66b" stop-opacity=".7"/><stop offset="1" stop-color="#ffd66b" stop-opacity="0"/></radialGradient>`;
+  let st=`<rect x="0" y="0" width="600" height="200" fill="url(#sky)"/>`,an="";
+  // ciel : soleil, arc-en-ciel, soleil couchant, ou nuit étoilée et lune
+  if(sea==="printemps")st+=`<circle cx="170" cy="56" r="90" fill="url(#pSun)"/><circle cx="170" cy="56" r="15" fill="#fffdf2"/>`+[["#f6a5b4",0],["#f7d77a",7],["#a9d68f",14],["#9ec3ef",21]].map(([c,o])=>`<path d="M${230+o} 150 A${130-o} ${108-o} 0 0 1 ${490-o} 150" fill="none" stroke="${c}" stroke-width="7" opacity=".45"/>`).join("");
+  if(sea==="ete"){an+=`<circle cx="430" cy="60" r="70" fill="url(#pSun)"/><g><animateTransform attributeName="transform" type="rotate" from="0 430 60" to="360 430 60" dur="30s" repeatCount="indefinite"/>${Array.from({length:12},(_,i)=>{const a=i*Math.PI/6;return `<path d="M${f(430+Math.cos(a)*29)} ${f(60+Math.sin(a)*29)} L${f(430+Math.cos(a)*38)} ${f(60+Math.sin(a)*38)}" stroke="#f2b84a" stroke-width="4" stroke-linecap="round"/>`}).join("")}</g>`;
+    st+=`<circle cx="430" cy="60" r="22" fill="#ffe07a" ${l()}/><circle cx="424" cy="58" r="2" fill="${INK}"/><circle cx="436" cy="58" r="2" fill="${INK}"/><path d="M427 64 q3 3 6 0" fill="none" ${l(2)}/><circle cx="419" cy="64" r="3.2" fill="#f6a5b4" opacity=".7"/><circle cx="441" cy="64" r="3.2" fill="#f6a5b4" opacity=".7"/>`}
+  if(sea==="automne")st+=`<circle cx="440" cy="112" r="96" fill="url(#pSun)"/><circle cx="440" cy="112" r="24" fill="#ffb46a" ${l()}/><path d="M60 70 Q200 56 330 74" fill="none" stroke="#ffe0c0" stroke-width="5" stroke-linecap="round" opacity=".55"/>`;
+  if(P.night){for(let i=0;i<34;i++){const x=GX0+6+R()*(GX1-GX0-12),y=GY0+4+R()*84,r=.7+R()*1.3;an+=`<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="#fff8dc"><animate attributeName="opacity" values="1;.2;1" dur="${f(2+R()*3)}s" repeatCount="indefinite"/></circle>`}
+    st+=`<circle cx="430" cy="58" r="40" fill="#fff6c8" opacity=".14"/><circle cx="430" cy="58" r="16" fill="#fff6c8" ${l(2.2)}/><circle cx="438" cy="52" r="13" fill="${P.sky[0]}"/>`}
+  // montagnes lointaines, neige au sommet, brume
+  st+=`<path d="M60 118 L130 70 L170 96 L230 58 L290 100 L340 80 L400 108 L460 66 L540 112 L600 96 V150 H60Z" fill="url(#pM)"/>`;
+  if(P.cap)st+=P.cap===2?`<path d="M60 118 L130 70 L170 96 L230 58 L290 100 L340 80 L400 108 L460 66 L540 112 L600 96 L600 104 L540 118 L460 82 L400 114 L340 92 L290 108 L230 76 L170 104 L130 86 L60 124Z" fill="#e8eef8" opacity=".9"/>`
+    :`<path d="M230 58 L218 70 L228 69 L236 76 L242 68 L250 72Z M460 66 L448 78 L458 77 L466 84 L472 76 L480 80Z M130 70 L121 79 L130 78 L136 83 L140 77Z" fill="#fff" opacity=".95"/>`;
+  st+=`<rect x="0" y="96" width="600" height="40" fill="${P.night?"#9aa6d0":"#fff"}" opacity="${P.night?.16:.28}"/>`;
+  // collines lointaines et leurs petits arbres (des sapins en hiver)
+  st+=`<path d="M0 132 Q80 112 170 124 Q260 108 350 122 Q440 110 600 124 V200 H0Z" fill="url(#pH0)"/>`;
+  for(let i=0;i<26;i++){const x=90+R()*420,y=118+R()*10,r=3+R()*2.4;st+=P.night?`<path d="M${f(x)} ${f(y-r*2)} L${f(x-r)} ${f(y+r*.6)} H${f(x+r)}Z" fill="${P.dot}"/>`:`<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${P.dot}" opacity=".9"/>`}
+  // champs en patchwork, haies, chaumière qui fume
+  st+=`<path d="M0 150 Q120 128 250 142 Q380 126 600 142 V200 H0Z" fill="url(#pH1)" ${l(2)}/>`;
+  st+=`<path d="M300 140 Q340 134 380 140 L392 156 Q350 150 306 156Z" fill="${P.fields[0]}" opacity=".85"/><path d="M180 146 Q220 138 262 144 L270 160 Q226 154 186 160Z" fill="${P.fields[1]}" opacity=".9"/><path d="M400 142 Q440 136 486 142 L494 158 Q450 152 404 158Z" fill="${P.fields[2]}" opacity=".75"/>`;
+  if(sea==="ete")st+=[0,1,2,3].map(i=>`<path d="M${404+i*3} ${146+i*3} Q448 ${140+i*3} ${488-i} ${146+i*3}" fill="none" stroke="#8a6ac4" stroke-width="1.6" opacity=".6"/>`).join("");
+  if(sea==="automne")st+=[[318,148],[346,146],[372,150]].map(([x,y])=>`<path d="M${x-7} ${y+4} Q${x} ${y-10} ${x+7} ${y+4}Z" fill="#f2c45a" ${l(1.4)}/><path d="M${x-4} ${y} h8" stroke="#c99a3a" stroke-width="1"/>`).join("");
+  st+=`<path d="M180 146 Q222 140 262 144 M300 140 Q340 134 380 140 M400 142 Q442 136 486 142" fill="none" stroke="${P.hedge}" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 5"/>`;
+  st+=`<g><rect x="338" y="122" width="24" height="16" rx="2" fill="#fbecd8" ${l(1.8)}/><path d="M334 124 L350 110 L366 124Z" fill="${P.night?"#f4f8fd":"#e48a7a"}" ${l(1.8)}/><rect x="356" y="110" width="4" height="8" fill="#b9a49a" ${l(1.2)}/><rect x="343" y="126" width="6" height="6" rx="1" fill="#ffe7a3" ${l(1)}/><rect x="352" y="128" width="5" height="10" rx="1" fill="#a8724c" ${l(1)}/></g>`;
+  if(P.night)st+=`<circle cx="346" cy="129" r="14" fill="url(#pGlow)"/>`;
+  an+=[0,1.4,2.8].map(d=>`<circle cx="358" cy="106" r="3" fill="${P.night?"#c9d0e8":"#fff"}" opacity="0"><animate attributeName="cy" values="106;88" dur="4.2s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.85;0" dur="4.2s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="r" values="2.4;5" dur="4.2s" begin="${d}s" repeatCount="indefinite"/></circle>`).join("");
+  // le pré devant : chemin, fleurs de la saison, barrière
+  st+=`<path d="M0 172 Q140 150 290 166 Q440 150 600 164 V200 H0Z" fill="url(#pH2)" ${l()}/>`;
+  st+=`<path d="M300 200 Q290 182 320 170 Q342 160 352 140 L358 140 Q352 164 330 176 Q310 186 318 200Z" fill="${P.path}" ${l(1.8)}/>`;
+  for(let i=0;i<34;i++){const x=90+R()*420,y=172+R()*20;if(x>296&&x<334)continue;
+    if(sea==="printemps"){const c=["#f47f9a","#ffd36a","#f6f1ea","#c9a8ec"][i%4];st+=`<path d="M${f(x)} ${f(y+6)} v-6" stroke="#5f9a5a" stroke-width="1.4"/><path d="M${f(x-2.4)} ${f(y)} q0 -4 2.4 -5 q2.4 1 2.4 5Z" fill="${c}" stroke="${INK}" stroke-width=".8"/>`}
+    else if(sea==="ete"){if(i%3)st+=`<path d="M${f(x)} ${f(y+6)} v-3 M${f(x)} ${f(y+6)} l-2 -3 M${f(x)} ${f(y+6)} l2 -3" stroke="#5f9a4e" stroke-width="1.2"/>`;else st+=`<path d="M${f(x)} ${f(y+8)} v-9" stroke="#5f9a4e" stroke-width="1.6"/>${[0,45,90,135,180,225,270,315].map(a=>`<ellipse cx="${f(x+3*Math.cos(a*Math.PI/180))}" cy="${f(y-2+3*Math.sin(a*Math.PI/180))}" rx="2" ry="1.1" fill="#ffd23a" transform="rotate(${a} ${f(x+3*Math.cos(a*Math.PI/180))} ${f(y-2+3*Math.sin(a*Math.PI/180))})"/>`).join("")}<circle cx="${f(x)}" cy="${f(y-2)}" r="1.8" fill="#8a5a3a"/>`}
+    else if(sea==="automne"){if(i%5===0)st+=`<ellipse cx="${f(x)}" cy="${f(y+2)}" rx="5" ry="3.6" fill="#f2a35c" stroke="${INK}" stroke-width="1"/><path d="M${f(x)} ${f(y-1.6)} q1 -2 2 -2" stroke="#6f9a60" stroke-width="1.4" fill="none"/>`;else st+=`<ellipse cx="${f(x)}" cy="${f(y+3)}" rx="2.4" ry="1.2" fill="${["#d9603f","#f2c45a","#c9783c"][i%3]}" transform="rotate(${i*37%180} ${f(x)} ${f(y+3)})"/>`}
+    else st+=i%4?`<ellipse cx="${f(x)}" cy="${f(y+3)}" rx="${f(3+R()*3)}" ry="1.6" fill="#fff"/>`:`<path d="M${f(x)} ${f(y-6)} L${f(x-3.4)} ${f(y+2)} H${f(x+3.4)}Z" fill="#4f7a6a"/><path d="M${f(x)} ${f(y-6)} L${f(x-2)} ${f(y-1)} H${f(x+2)}Z" fill="#fff"/>`}
+  st+=`<path d="M96 184 H262" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M96 184 H262" stroke="${P.fence}" stroke-width="2.6" stroke-linecap="round"/>`+[104,128,152,176,200,224,248].map(x=>`<path d="M${x} 194 V176 l3 -4 l3 4 V194Z" fill="${P.fence}" ${l(1.6)}/>`+(P.night?`<path d="M${x-.6} 173 q3 -3 7.2 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>`:"")).join("");
+  // les arbres de la saison
+  const trunk=(x,y,k)=>`<path d="M${x-3*k} ${y} Q${x-2*k} ${y-18*k} ${x} ${y-30*k} M${x} ${y-22*k} Q${x+8*k} ${y-28*k} ${x+14*k} ${y-34*k} M${x-1*k} ${y-18*k} Q${x-9*k} ${y-24*k} ${x-14*k} ${y-30*k}" fill="none" stroke="${INK}" stroke-width="${f(6*k)}" stroke-linecap="round"/><path d="M${x-3*k} ${y} Q${x-2*k} ${y-18*k} ${x} ${y-30*k} M${x} ${y-22*k} Q${x+8*k} ${y-28*k} ${x+14*k} ${y-34*k} M${x-1*k} ${y-18*k} Q${x-9*k} ${y-24*k} ${x-14*k} ${y-30*k}" fill="none" stroke="#9a6a48" stroke-width="${f(3.4*k)}" stroke-linecap="round"/>`;
+  const leafy=(x,y,k,grad,deco)=>{let s=trunk(x,y,k);const cl=[[-16,-34,13],[0,-44,15],[16,-36,12],[-6,-30,11],[10,-28,10],[-22,-26,8],[22,-28,8]];
+    cl.forEach(([dx,dy,r])=>s+=`<circle cx="${f(x+dx*k)}" cy="${f(y+dy*k)}" r="${f(r*k)}" fill="url(#${grad})" ${l(2)}/>`);
+    cl.forEach(([dx,dy,r])=>{s+=`<circle cx="${f(x+(dx-r*.3)*k)}" cy="${f(y+(dy-r*.35)*k)}" r="${f(r*.4*k)}" fill="#fff" opacity=".45"/>`;for(let j=0;j<2;j++){const a=R()*6.28,d=r*.5*k;s+=deco(x+dx*k+Math.cos(a)*d,y+dy*k+Math.sin(a)*d)}});
+    return s};
+  const pine=(x,y,k)=>{let s=`<rect x="${f(x-2.4*k)}" y="${f(y-8*k)}" width="${f(4.8*k)}" height="${f(8*k)}" fill="#8a5a3a" ${l(1.6)}/>`;
+    for(let t=0;t<3;t++){const yb=y-6*k-t*13*k,w=(18-t*5)*k,h=20*k;s+=`<path d="M${f(x)} ${f(yb-h)} L${f(x-w)} ${f(yb)} Q${f(x)} ${f(yb+3*k)} ${f(x+w)} ${f(yb)}Z" fill="#3f6f5a" ${l(2)}/><path d="M${f(x-w*.85)} ${f(yb-1)} Q${f(x-w*.4)} ${f(yb-h*.3)} ${f(x)} ${f(yb-h*.24)} Q${f(x+w*.4)} ${f(yb-h*.3)} ${f(x+w*.85)} ${f(yb-1)} Q${f(x)} ${f(yb+2*k)} ${f(x-w*.85)} ${f(yb-1)}Z" fill="#fff"/>`}
+    return s+`<path d="M${f(x-3*k)} ${f(y-6*k-26*k-20*k+6*k)} L${f(x)} ${f(y-6*k-26*k-20*k)} L${f(x+3*k)} ${f(y-6*k-26*k-20*k+6*k)}Z" fill="#fff"/>`};
+  const flower=(x,y)=>`<g transform="translate(${f(x)} ${f(y)})">${[0,72,144,216,288].map(b=>`<circle cx="${f(1.6*Math.cos(b*Math.PI/180))}" cy="${f(1.6*Math.sin(b*Math.PI/180))}" r="1.2" fill="#fff4f8"/>`).join("")}<circle r=".8" fill="#e2546e"/></g>`;
+  const apple=(x,y)=>`<circle cx="${f(x)}" cy="${f(y)}" r="1.9" fill="#e2445e" stroke="${INK}" stroke-width=".8"/>`;
+  const fall=(x,y)=>`<ellipse cx="${f(x)}" cy="${f(y)}" rx="2.2" ry="1.2" fill="#c9442e" opacity=".8"/>`;
+  const tree={printemps:(x,y,k)=>leafy(x,y,k,"pBl",flower)+`<ellipse cx="${f(x+6*k)}" cy="${f(y+2)}" rx="${f(20*k)}" ry="${f(3*k)}" fill="#f4a6c0" opacity=".5"/>`,
+    ete:(x,y,k)=>leafy(x,y,k,"pGr",apple),automne:(x,y,k)=>leafy(x,y,k,"pAu",fall)+`<ellipse cx="${f(x+6*k)}" cy="${f(y+2)}" rx="${f(20*k)}" ry="${f(3*k)}" fill="#e8834e" opacity=".55"/>`,hiver:(x,y,k)=>pine(x,y,k*1.2)}[sea];
+  st+=tree(128,188,.95)+tree(486,190,1.05)+tree(410,178,.6);
+  // réverbère allumé en hiver
+  if(P.night)st+=`<circle cx="230" cy="150" r="22" fill="url(#pGlow)"/><rect x="228" y="152" width="4" height="36" fill="#5b4a5e" ${l(1.6)}/><rect x="222" y="140" width="16" height="13" rx="3" fill="#ffe7a0" ${l(1.8)}/><path d="M220 140 h20 l-4 -5 h-12Z" fill="#5b4a5e" ${l(1.4)}/><path d="M220 135 q10 -3 20 0" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`;
+  // nuages en volume qui dérivent (pas la nuit)
+  const cloud=(x,y,k,dur)=>`<g opacity="${sea==="automne"?.9:1}"><animateTransform attributeName="transform" type="translate" values="0 0;18 0;0 0" dur="${dur}s" repeatCount="indefinite"/>${[[x-14*k,y,11*k],[x+2*k,y-7*k,15*k],[x+18*k,y,10*k]].map(([cx,cy,r])=>`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="${sea==="automne"?"#fff1e0":"#fff"}"/>`).join("")}<path d="M${f(x-25*k)} ${f(y+4*k)} Q${f(x)} ${f(y+12*k)} ${f(x+28*k)} ${f(y+4*k)}" fill="${sea==="automne"?"#f6d6c0":"#e2ecf6"}"/>${[[x-16*k,y-3*k,4*k],[x,y-11*k,5*k]].map(([cx,cy,r])=>`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="#fff" opacity=".9"/>`).join("")}</g>`;
+  if(!P.night)an+=cloud(260,64,1,22)+cloud(sea==="ete"?330:430,sea==="ete"?96:40,.8,28)+cloud(sea==="ete"?180:330,sea==="ete"?50:96,.55,19);
+  // papillons, oiseaux
+  const fly=(x,y,c,dl)=>`<g transform="translate(${x} ${y})"><g><animateMotion path="M0 0 C24 -18 50 14 76 -4 S120 -20 96 16 S30 20 0 0Z" dur="11s" begin="-${dl}s" repeatCount="indefinite"/><path d="M0 0 Q-9 -10 -10 -2 Q-8 4 0 0 Q9 -10 10 -2 Q8 4 0 0Z" fill="${c}" stroke="${INK}" stroke-width="1.4"><animateTransform attributeName="transform" type="scale" values="1 1;.3 1;1 1" dur=".35s" repeatCount="indefinite"/></path></g></g>`;
+  if(sea==="printemps")an+=fly(220,150,"#ffd36a",0);
+  if(sea==="ete")an+=fly(150,120,"#f6a5b4",0)+fly(330,104,"#c9b8f2",4);
+  if(sea==="automne")an+=`<g><animateTransform attributeName="transform" type="translate" values="-60 0;460 -20" dur="24s" repeatCount="indefinite"/>${[[150,70],[140,64],[160,64],[130,58],[170,58]].map(([x,y])=>`<path d="M${x-5} ${y} q2.5 -3 5 0 q2.5 -3 5 0" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`).join("")}</g>`;
+  // ce qui tombe : pétales, feuilles, neige
+  if(P.fx==="neige")fx.push(fxPat("fx1",40,40,`<circle cx="8" cy="10" r="2.3" fill="#fff"/><circle cx="28" cy="30" r="1.7" fill="#fff"/>`,"6 40",4.6),fxPat("fx2",26,26,`<circle cx="6" cy="6" r="1.3" fill="#fff" opacity=".85"/>`,"-4 26",3));
+  if(P.fx==="feuilles")fx.push(fxPat("fx1",64,64,`<ellipse cx="12" cy="14" rx="5" ry="2.6" fill="#e8835a" transform="rotate(30 12 14)"/><ellipse cx="44" cy="46" rx="4.4" ry="2.4" fill="#f2c060" transform="rotate(-40 44 46)"/><ellipse cx="50" cy="12" rx="4" ry="2.2" fill="#d9603f" transform="rotate(70 50 12)"/>`,"40 64",7));
+  if(P.fx==="petales")fx.push(fxPat("fx1",56,56,`<ellipse cx="10" cy="12" rx="3.6" ry="2.2" fill="#f9c4d2" transform="rotate(25 10 12)"/><ellipse cx="38" cy="40" rx="3.2" ry="2" fill="#fff0f4" transform="rotate(-35 38 40)"/>`,"30 56",8));
+  return {defs:defs+fx.map(x=>x[0]).join(""),st,an:an+fx.map(x=>x[1]).join("")};
+}
+// l'ancien paysage, gardé pour Halloween (ciel violet, citrouilles, chauves-souris)
+function outsideOld(sea){
   const O=HW?{...OUT[sea],sky:sea==="hiver"?OUT.hiver.sky:["#3c2e60","#c98a9a"],cloud:"#7d6aa6"}:OUT[sea],R=rng(11),fx=[];
   let defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${O.sky[0]}"/><stop offset="1" stop-color="${O.sky[1]}"/></linearGradient>`;
   let st=`<rect x="0" y="0" width="600" height="200" fill="url(#sky)"/>`,an="";
