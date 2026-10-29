@@ -2,7 +2,7 @@
    les heures où quelque chose l'attend (fox : un renard pour son histoire, inco : une visite à la gamelle, arr : un client
    du Café qui s'installe). GitHub lance tools/push-send.mjs toutes les 30 min, qui envoie : une par jour au plus, jamais la nuit.
    Pas de SDK Firebase : l'API REST suffit (connexion anonyme, une fiche par téléphone). */
-const PUSH={key:"AIzaSyAxbw-c_VFhOx856MBlOKEw1JWpGKElLi0",project:"kitsune-cafe",vapid:"BArwx5Jl1qA3zyPDMAvKgdNGRIJQXEPuMKAlvQ4ZclKWb1zjFQcxtvg4juYcGgWX5ObMOCn8lPZkijTorVQkji4"};
+const PUSH={key:"AIzaSyAxbw-c_VFhOx856MBlOKEw1JWpGKElLi0",project:"kitsune-cafe",vapid:"BAsAHBBOqsx2X4nrMCzkZcItxnTZ50AJZr2HuVy5U6HM-Y8HhnsBF0b9GPfEJ9DYCDNEEEl6G8Nq4VplgD90YFI"};
 const PK="renards-push";
 const pget=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch(e){return {}}};
 const pset=o=>{try{localStorage.setItem(PK,JSON.stringify(o))}catch(e){}};
@@ -23,7 +23,11 @@ const docUrl=uid=>`https://firestore.googleapis.com/v1/projects/${PUSH.project}/
 // écrit la fiche (seulement si quelque chose a changé) : l'abonnement, les heures prévues (0 = rien), le décalage horaire
 async function pushWrite(when){
   const reg=await navigator.serviceWorker.ready;
-  const sub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(PUSH.vapid)});
+  let sub=await reg.pushManager.getSubscription();
+  // abonné avec une ancienne clé (changée le 29/10/2026) : on se réabonne avec la nouvelle
+  const key=b64u(PUSH.vapid),old=sub&&sub.options.applicationServerKey&&new Uint8Array(sub.options.applicationServerKey);
+  if(sub&&old&&old.join()!==key.join()){await sub.unsubscribe();sub=null}
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
   const f={sub:JSON.stringify(sub),fox:when.fox||0,inco:when.inco||0,arr:when.arr||0,tz:new Date().getTimezoneOffset()},sig=JSON.stringify(f);
   if(pget().sig===sig)return;
   const P=await pushToken(),fields=Object.fromEntries(Object.entries(f).map(([k,v])=>[k,typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:v}]));

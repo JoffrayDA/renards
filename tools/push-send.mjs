@@ -16,7 +16,7 @@ let SA;
 try { SA = JSON.parse(process.env.FIREBASE_SA); } catch (e) { fail("FIREBASE_SA n'est pas le fichier JSON entier (il doit commencer par { et finir par }) :", e.message); }
 if (!SA.private_key || !SA.client_email) fail("FIREBASE_SA : il manque private_key ou client_email. Champs trouvés :", Object.keys(SA).join(", "));
 const now = Date.now();
-const VAPID_PUBLIC = "BArwx5Jl1qA3zyPDMAvKgdNGRIJQXEPuMKAlvQ4ZclKWb1zjFQcxtvg4juYcGgWX5ObMOCn8lPZkijTorVQkji4";
+const VAPID_PUBLIC = "BAsAHBBOqsx2X4nrMCzkZcItxnTZ50AJZr2HuVy5U6HM-Y8HhnsBF0b9GPfEJ9DYCDNEEEl6G8Nq4VplgD90YFI";
 // la clé collée dans le secret peut garder un retour à la ligne, des espaces ou des guillemets
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE.replace(/[\s"']/g, "");
 if (!/^[A-Za-z0-9_-]{43}$/.test(VAPID_PRIVATE)) fail(`VAPID_PRIVATE ne ressemble pas à la clé : ${VAPID_PRIVATE.length} caractères au lieu de 43 (elle commence par « ${VAPID_PRIVATE.slice(0, 3)} »).`);
