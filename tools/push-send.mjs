@@ -5,7 +5,7 @@
 // Secrets GitHub : FIREBASE_SA (le fichier JSON du compte de service), VAPID_PRIVATE. --dry : affiche sans rien envoyer.
 import crypto from "node:crypto";
 
-const DRY = process.argv.includes("--dry");
+const DRY = process.argv.includes("--dry"), TEST = process.argv.includes("--test"); // --test : un petit mot à tous, tout de suite
 // les erreurs s'affichent aussi en annotation sur la page du lancement (::error::), sans ouvrir le journal
 const fail = (...a) => { console.log("::error::" + a.map(x => typeof x === "string" ? x : JSON.stringify(x)).join(" ")); process.exit(1); };
 process.on("uncaughtException", e => fail("Erreur :", e.message));
@@ -25,7 +25,8 @@ webpush.setVapidDetails("https://joffrayda.github.io/renards/", VAPID_PUBLIC, VA
 const MSG = {
   fox: { t: "Quelqu'un t'attend", b: "Un renard vient d'arriver à la Clairière. Il a une histoire à te raconter." },
   inco: { t: "Quelqu'un est passé à la gamelle", b: "Il a laissé une photo. Viens voir qui c'est !" },
-  arr: { t: "Un nouveau renard au refuge", b: "Un client du Café vient s'installer à la Clairière." }
+  arr: { t: "Un nouveau renard au refuge", b: "Un client du Café vient s'installer à la Clairière." },
+  test: { t: "Coucou de la Clairière", b: "Les notifications marchent. Petit Pois te fait signe !" }
 };
 
 // jeton d'accès du compte de service (JWT signé, sans bibliothèque)
@@ -47,8 +48,8 @@ do {
     seen++;
     const d = Object.fromEntries(Object.entries(doc.fields || {}).map(([k, v]) => [k, val(v)]));
     const hour = new Date(now - (d.tz || 0) * 6e4).getUTCHours();
-    if (hour < 9 || hour >= 21 || now - (d.last || 0) < 20 * 36e5 || !d.sub) continue;
-    const k = ["fox", "inco", "arr"].find(k => d[k] && d[k] <= now && d[k] > (d["s_" + k] || 0));
+    if (!d.sub || !TEST && (hour < 9 || hour >= 21 || now - (d.last || 0) < 20 * 36e5)) continue;
+    const k = TEST ? "test" : ["fox", "inco", "arr"].find(k => d[k] && d[k] <= now && d[k] > (d["s_" + k] || 0));
     if (!k) continue;
     if (DRY) { console.log("enverrait", k, "à", doc.name.split("/").pop()); continue; }
     try { await webpush.sendNotification(JSON.parse(d.sub), JSON.stringify({ ...MSG[k], k, u: "clairiere.html" }), { TTL: 6 * 3600 }); }
@@ -58,10 +59,11 @@ do {
       else console.error("échec", e.statusCode, e.body);
       continue;
     }
+    sent++;
+    if (TEST) continue; // un essai ne compte pas dans la limite d'une par jour
     const fields = { ["s_" + k]: { integerValue: String(d[k]) }, last: { integerValue: String(now) } };
     await fetch(`https://firestore.googleapis.com/v1/${doc.name}?updateMask.fieldPaths=s_${k}&updateMask.fieldPaths=last`, { method: "PATCH", headers: H, body: JSON.stringify({ fields }) });
-    sent++;
   }
   page = r.nextPageToken || "";
 } while (page);
-console.log(`${seen} téléphone(s), ${sent} notification(s) envoyée(s).`);
+console.log(`::notice::${seen} téléphone(s), ${sent} notification(s) envoyée(s)${TEST ? " (essai)" : ""}.`);

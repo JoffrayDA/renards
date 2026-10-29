@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Envoyer un essai à tous les téléphones, tout de suite"
+        type: boolean
+        default: false
 jobs:
   send:
     runs-on: ubuntu-latest
@@ -14,7 +19,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save web-push@3.6.7
-      - run: node tools/push-send.mjs
+      - run: node tools/push-send.mjs ${{ inputs.test && '--test' || '' }}
         env:
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
           VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
