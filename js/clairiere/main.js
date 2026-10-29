@@ -24,7 +24,7 @@ if(GIFT&&OBJS[GIFT]&&!R.obj[GIFT]){R.obj[GIFT]=1;save();addObjSpots();setTimeout
 if(GIFT)history.replaceState(null,"",location.pathname);
 drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
 syncFoxes();drawObjs();fillObjs();
-chainTick(false);checkArrival();
+chainTick(false);if(checkArrival())syncFoxes(); // arrivé à l'ouverture : il est là tout de suite
 renderHud();
 $("b-bowl").innerHTML=acornSVG()+"Gamelle";
 $("b-bowl").onclick=bowlSheet;$("goal").onclick=()=>{if(!cur()&&envieGoal())return;journal()};$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;$("b-obj").onclick=objSheet;
@@ -42,7 +42,7 @@ setInterval(()=>{
   chainTick(true);checkArrival();if(R.news.some(x=>x.k==="arr")&&$("talk").hidden&&$("sheet").hidden)showNews();else renderStory();
   if(phaseNow()!==scn.phase)drawBg();
   const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}else if(rainTill&&!storyRain()){rainTill=0;drawGlow()} // fin de la scène sous la pluie : plus personne aux fenêtres
-  if(!foxes.some(f=>f.walk))syncFoxes();
+  syncFoxes();
   envieTick();wildNudge();
   renderHud();pushSync(pushPlan());
 },30000);

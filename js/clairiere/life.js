@@ -7,10 +7,11 @@ const foxes=[];
 function presentIds(){
   const ids=Object.keys(R.res);if(ids.length<=MAXHERE)return ids;
   const block=R.bowl&&R.bowl.type==="croquettes"&&R.here?R.here.block:Math.floor(Date.now()/(4*36e5));
-  if(R.here&&R.here.block===block)return [...new Set([...storyFoxes(),...R.here.ids.filter(isRes),...ids])].slice(0,MAXHERE);
+  // ceux de l'histoire en cours et les nouveaux venus du jour sont toujours là, même arrivés en cours de route (Joffray devait recharger)
+  const fresh=ids.filter(id=>Date.now()-R.res[id].at<864e5||(R.env&&R.env.cur&&R.env.cur.id===id)); // et celui qui a une petite envie
+  if(R.here&&R.here.block===block)return [...new Set([...storyFoxes(),...fresh,...R.here.ids.filter(isRes),...ids])].slice(0,MAXHERE);
   const r=rng(block%2147483646+1),pool=ids.slice();for(let i=pool.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  // ceux de l'histoire en cours et les nouveaux venus du jour sont toujours là
-  const fresh=ids.filter(id=>Date.now()-R.res[id].at<864e5),pick=[...new Set([...storyFoxes(),...fresh,...pool])].slice(0,MAXHERE);
+  const pick=[...new Set([...storyFoxes(),...fresh,...pool])].slice(0,MAXHERE);
   R.here={block,ids:pick};save();return pick;
 }
 
@@ -115,7 +116,7 @@ function tick(){
 // remet la scène d'accord avec la sauvegarde (nouvel arrivant, groupe qui change)
 function syncFoxes(){
   const want=presentIds();
-  for(const f of foxes.slice())if(!f.wild&&!want.includes(f.id))removeFox(f);
+  for(const f of foxes.slice())if(!f.wild&&!f.walk&&!want.includes(f.id))removeFox(f);
   const free=()=>SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj);
   for(const id of want)if(!foxes.some(f=>f.id===id)){const fs=free();makeFox(id,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}
 }
