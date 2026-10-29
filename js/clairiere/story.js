@@ -1,6 +1,6 @@
 /* La Clairière : les histoires. Voir docs/clairiere-v2.md, « Les histoires ».
    Une seule histoire à la fois, dans l'ordre d'ORDER. Le renard arrive pour son histoire (ou elle démarre s'il est déjà là),
-   de plus en plus tard après la fin de la précédente (storyGap : 30 min, 1 h, 2 h, 3 h… jusqu'à une journée). Une histoire est une suite de moments : un renard ou un endroit
+   de plus en plus tard après la fin de la précédente (storyGap : 30 min, 1 h, 2 h, 3 h… jusqu'à 15 h). Une histoire est une suite de moments : un renard ou un endroit
    porte un signe, on le touche, le dialogue se joue, et le moment suivant s'ouvre aussitôt. Ni amitié, ni météo, ni attente.
    R.beat[id] = moments finis ; R.souv[id] = souvenir reçu ; R.nextAt = quand la prochaine histoire peut commencer ;
    R.who[id][i] = le renard touché pour un moment « * » (pour relire l'histoire).
@@ -12,9 +12,9 @@ const VITE=/[?&]vite=1/.test(location.search);
 // une histoire toutes les 6 h (Joffray, 27/10/2026 : un renard par jour, « on va jamais s'en sortir ») ;
 // les parties qui attendaient le lendemain matin n'attendent pas plus de 6 h
 // l'attente avant le renard suivant monte petit à petit (29/10/2026, Joffray : « en crescendo », sinon ça va trop vite) :
-// 30 min après Mitaine, puis 1 h, 2 h, 3 h, et ainsi de suite jusqu'à une journée avant Gribouille, le dernier
+// 30 min après Mitaine, puis 1 h, 2 h, 3 h… jusqu'à 10 h ; enfin 12 h, et 15 h avant Gribouille, le dernier (environ 8 jours en tout)
 function storyGap(){const n=ORDER.filter(storyDone).length,G=[0,0,.5,1,2,3],last=ORDER.length-1;
-  const h=n<G.length?G[n]:Math.min(24,3+(n-5)*21/(last-5));return Math.round(h*2)/2*36e5}
+  const h=n<G.length?G[n]:n>=last?15:n===last-1?12:Math.min(10,3+(n-5)*7/(last-7));return Math.round(h*2)/2*36e5}
 function nextMorning(){return Date.now()+storyGap()}
 if(VITE)R.nextAt=0;
 // une scène sous la pluie (rain:1 dans un moment ; la fin de Pain d'épice et Brioche, Joffray : « il faut absolument qu'il pleuve ») :
