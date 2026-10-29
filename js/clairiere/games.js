@@ -144,8 +144,10 @@ const GAMES={
     A.tap=()=>{
       if(st==="wait"){st="miss";A.clear();pull(0);bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*220}px,60px)`;ring(16,2);A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1500)}
       else if(st==="bite"){st="won";pull(1);ex.setAttribute("opacity",0);bob.style.opacity=0;sh.style.opacity=0;
-        // pêche libre : un poisson une fois sur trois (Joffray : une sur dix, « trop long »), sinon ce qui traîne au fond de la mare
-        const j=g.free&&Math.random()>=.33?JUNK[Math.floor(Math.random()*JUNK.length)]:null;
+        // pêche libre : un poisson une fois sur trois (Joffray : une sur dix, « trop long »), sinon ce qui traîne au fond de la mare ;
+        // jamais plus de deux prises d'affilée sans poisson (R.fishDry) : Joffray en avait raté dix de suite (29/10/2026)
+        const j=g.free&&(R.fishDry||0)<2&&Math.random()>=1/3?JUNK[Math.floor(Math.random()*JUNK.length)]:null;
+        if(g.free){R.fishDry=j?(R.fishDry||0)+1:0;save()}
         if(j){show(j[0],j[2],j[1],false);A.say("Ce n'est pas un poisson… On relance ?");A.later(start,2300)}
         else if(!g.free){show("fish","Un poisson !","Tout orange, avec de grands yeux.",true);A.win(g.win||"Attrapé !")}
         else{const t=g.onFish();show("fish","Un poisson !",g.have()>=g.need?"De quoi remplir la gamelle !":`${g.have()} sur ${g.need} pour la gamelle`,true);A.say(t);A.later(start,2600)}}};
