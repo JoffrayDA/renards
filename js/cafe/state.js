@@ -58,5 +58,5 @@ let G=null,last=0,dirty=true,qDone=[];
 function qEvent(k,v=1,r){
   S.quests.forEach(q=>{if(q.done||q.k!==k||(q.r&&q.r!==r))return;
     if(k==="combo"){q.p=Math.max(q.p,v)}else q.p+=v;
-    if(q.p>=q.n){q.done=1;q.p=q.n;if(q.cdy)S.candy+=q.g;else S.coins+=q.g;qDone.push(q);toast(`Quête réussie : ${qText(q)} · +${q.g} ${q.cdy?"bonbons":"pièces"}`);if(G&&G.run){const el=$("chips");floatAt(el,`Quête réussie ! +${q.g}`,true)}}});
+    if(q.p>=q.n){q.done=1;q.p=q.n;if(q.cdy)S.candy+=q.g;else{S.coins+=q.g;addBells(1)}qDone.push(q);toast(`Quête réussie : ${qText(q)} · +${q.g} ${q.cdy?"bonbons":"pièces et 1 clochette"}`);if(G&&G.run){const el=$("chips");floatAt(el,`Quête réussie ! +${q.g}`,true)}}});
 }

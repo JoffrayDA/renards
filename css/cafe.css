@@ -312,3 +312,4 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 @keyframes hi-firefly{0%,100%{opacity:0;transform:translate(0,0)}50%{opacity:1;transform:translate(12px,-18px)}}
 @keyframes hi-blink{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){#hwintro *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+@media (max-width:420px){.mtop{gap:6px}.mtop .coin{padding:2px 8px 2px 3px;gap:3px}.mtop .coin svg{width:20px;height:20px}.mtop .mst{padding-left:8px;padding-right:8px}}

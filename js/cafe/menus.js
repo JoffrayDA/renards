@@ -33,7 +33,7 @@ function daySheet(d){
   if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,`Réussis cette journée pour l'ajouter à ta carte.`,"background:#e3f2d6"));
   const ok=Object.keys(OPTS).find(o=>OPTS[o].day===d);
   if(ok&&!S.own[ok])rw.push(itRow(icon(ok),`Option à gagner : ${OPTS[ok].name}`,OPTS[ok].desc,"background:#e3f2d6"));
-  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que 30 % des pièces. Les nouvelles étoiles restent payées par le coffre."));
+  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que la moitié des pièces. Les nouvelles étoiles restent payées par le coffre."));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★",st?"Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre.":"Chaque étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
   if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient dans toutes les journées, toutes saisons confondues : il paie le triple, mais il est pressé.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
@@ -78,7 +78,7 @@ function nightSheet(n){
   <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
   ${st<3?itRow(candySVG,"Coffre de bonbons","Chaque nouvelle étoile rapporte 8 bonbons, et ★★★ ouvre le grand coffre (+15)."):""}
   ${n===5&&!S.hwKeep?itRow(foxSVG(FOX.feufollet,{pose:"happy"}),"Récompense : Feu Follet","Réussis cette nuit et il restera au café toute l'année.","background:#efe4fb"):""}
-  ${st?itRow(icon("coeur"),"Nuit déjà réussie","La rejouer ne rapporte que 30 % des pièces."):""}
+  ${st?itRow(icon("coeur"),"Nuit déjà réussie","La rejouer ne rapporte que la moitié des pièces."):""}
   ${boostHTML(()=>nightSheet(n))}
   <div class="col" style="margin-top:6px"><button class="btn big wide" data-nplay="${n}" type="button">Commencer la nuit</button><button class="btn ghost wide" data-act="hw" type="button">Retour</button></div>`);
 }
@@ -102,7 +102,7 @@ function shop(){
     const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";
     const desc=nx?(n?`Maintenant : ${lvDesc(u,n)} <b>Niveau ${n+1} :</b> ${nx.d}`:nx.d)+(early?` (Arrive avec la saison ${chapOf(nx.from).name}.)`:""):lvDesc(u,n);
     return `<div class="it"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${nx.c}</span><button class="btn" data-buy="${u.id}" type="button" ${!early&&S.coins>=nx.c?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("");
-  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer, et le style rend ton café unique.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"],["boost","Bonus"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
+  openSheet(`<h2>Boutique</h2><p class="sub">Tu as <b>${S.coins} pièces</b> et <b>${bellsN()} clochette${bellsN()>1?"s":""}</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer, et le style rend ton café unique.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"],["boost","Bonus"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
   const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
 }
 function carnet(){

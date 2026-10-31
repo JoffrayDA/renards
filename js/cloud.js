@@ -2,7 +2,7 @@
    (connexion anonyme de js/push.js, à charger avant). Le code de sauvegarde (12 lettres et chiffres) permet de retrouver
    sa partie sur un autre téléphone : le connaître suffit, comme une clé (les règles interdisent de lister les sauvegardes).
    La copie part quand quelque chose a changé : à l'accueil, en quittant un jeu, quand l'app passe en arrière-plan. */
-const CK="renards-cloud",SAVED=["cafe-renards-v1","clairiere-renards-v2","clairiere-renards-v1","renards-stats","renards-son"];
+const CK="renards-cloud",SAVED=["cafe-renards-v1","clairiere-renards-v2","clairiere-renards-v1","renards-stats","renards-son","kitsune-bourse"];
 const cget=()=>{try{return JSON.parse(localStorage.getItem(CK))||{}}catch(e){return {}}};
 const cset=o=>{try{localStorage.setItem(CK,JSON.stringify(o))}catch(e){}};
 const ABC="23456789ABCDEFGHJKMNPQRSTUVWXYZ"; // sans 0/O, 1/I/L : le code se recopie à la main

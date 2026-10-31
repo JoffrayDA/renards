@@ -1,7 +1,7 @@
 /* Kitsune Café : affichage de la salle, du plateau et de la cuisine. */
 /* ---------- rendu ---------- */
 function renderHud(){
-  $("coins").textContent=S.coins;$("coins2").textContent=S.coins;
+  $("coins").textContent=S.coins;$("coins2").textContent=S.coins;$("bells").textContent=bellsN();
   if(HW)$("hwbtn").innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${starSum()}</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,mx=g*1.7,e=G.earned;

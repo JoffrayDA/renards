@@ -100,8 +100,8 @@ function complete(c){
   if(frac>=.5){S.happy[c.fox]=(S.happy[c.fox]||0)+1;G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo);if(G.combo===3)qEvent("combo3");if(G.combo>=3)buddyHop()}else G.combo=0;
   const cb=G.combo>=3?Math.min(G.combo,6)-1:0;
   let tot=base+tip+cb;if(c.vip){tot*=3;G.vipServed++;qEvent("vip")}
-  // la recette (objectif, étoiles) compte le prix payé ; on ne garde en pièces que le bénéfice, et 30 % quand on rejoue
-  const cost=c.order.reduce((a,o)=>a+itemCost(itemKey(o)),0),gain=Math.max(0,Math.round((tot-cost)*(G.replay?.3:1)));
+  // la recette (objectif, étoiles) compte le prix payé ; on ne garde en pièces que le bénéfice, et la moitié quand on rejoue (30 % avant le 30/10/2026)
+  const cost=c.order.reduce((a,o)=>a+itemCost(itemKey(o)),0),gain=Math.max(0,Math.round((tot-cost)*(G.replay?.5:1)));
   G.earned+=tot;G.cost+=cost;G.gain+=gain;S.coins+=gain;S.total+=gain;G.served++;S.served++;
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
   if(frac>=.6)qEvent("green");

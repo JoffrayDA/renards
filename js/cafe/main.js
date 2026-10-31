@@ -74,7 +74,7 @@ function loop(ts){
   if(dirty)render();else if(G&&G.run)updateBars();
   requestAnimationFrame(loop);
 }
-$("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;
+$("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;$("ic-b").innerHTML=bellSVG;
 if(HW)$("hwbtn").hidden=false;
 SEA=chapOf(curDay()).id;renderDecor();render();requestAnimationFrame(loop);
 openMap();

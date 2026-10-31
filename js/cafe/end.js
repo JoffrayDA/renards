@@ -15,6 +15,8 @@ function endDay(){
   const news=[];
   // le coffre ne paie que les étoiles nouvellement gagnées : rejouer reste utile sans devenir une ferme à pièces
   let chest=0;if(st>prev){chest=rnd(5,12)*(st-prev)+(st===3?15+2*d:0);S.coins+=chest}
+  // les nouvelles étoiles donnent aussi des clochettes, la monnaie rare des deux jeux (bourse.js) : une par étoile, deux de plus à ★★★
+  const bl=st>prev?st-prev+(st===3?2:0):0;if(bl)addBells(bl);
   if(st&&d===S.day)S.day++;
   const rk=Object.keys(REC).find(k=>REC[k].day===d);
   if(st&&rk&&!S.own[rk]){S.own[rk]=1;news.push(itRow(icon(rk),`Nouvelle recette : ${REC[rk].name}`,`Elle arrive sur ta carte dès la prochaine journée. ${REC[rk].desc}`,"background:#e3f2d6"))}
@@ -30,8 +32,9 @@ function endDay(){
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
   openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 30 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>
+  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
+  ${bl?itRow(bellSVG,`+${bl} clochette${bl>1?"s":""}`,"Les clochettes achètent les beaux objets de la boutique du jour, à la Clairière."):""}
   ${news.join("")}${albumRow()}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
@@ -54,7 +57,7 @@ function endNight(){
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
   const canNext=st&&n<5&&nightOpen(n+1);
   openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NIGHT_NAMES[n-1]}</b><br>${nxt}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 30 %</small>`:""}</div><div style="background:#efe4fb">Bonbons<b>+${G.candy+cb}</b></div></div>
+  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div><div style="background:#efe4fb">Bonbons<b>+${G.candy+cb}</b></div></div>
   ${cb?itRow(candySVG,`Coffre de la nuit : +${cb} bonbons`,st===3?"Trois étoiles : le grand coffre !":"Chaque nouvelle étoile d'une nuit rapporte des bonbons."):""}
   ${news.join("")}${albumRow()}${bRow}
   ${questHTML(qShow)}
