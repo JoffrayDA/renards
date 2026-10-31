@@ -163,7 +163,7 @@ function peekSVG(){const lit=dark(),head=lit?"#5b4250":"#7d6670",eye=lit?"#fff6c
   return [[146,0],[164,1.3],[218,.6],[236,2]].map(([x,d],i)=>`<g clip-path="url(#pk${i})"><clipPath id="pk${i}"><rect x="${x+1}" y="141" width="17" height="17"/></clipPath>
     <g class="peek" style="animation-delay:${-d}s"><path d="M${x+3} 152 l2 -7 l3 4 h3 l3 -4 l2 7 Z" fill="${head}"/><ellipse cx="${x+9.5}" cy="155" rx="7" ry="5.5" fill="${head}"/>
     <g class="blink" style="animation-delay:${-d*1.7}s"><circle cx="${x+7}" cy="153.5" r="1.3" fill="${eye}"/><circle cx="${x+12}" cy="153.5" r="1.3" fill="${eye}"/></g></g></g>`).join("")}
-function drawGlow(){$("glow").innerHTML=glowSVG()}
+function drawGlow(){$("glow").innerHTML=glowSVG()+(typeof decoGlow==="function"?decoGlow():"")}
 function drawPills(){$("phase").textContent=PH[phaseNow()].name+(scn.rain?" · il pleut":"")}
 
 /* ---------- gamelle (dans la scène) ---------- */

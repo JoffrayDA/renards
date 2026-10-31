@@ -43,7 +43,7 @@ function moveLight(f,dur){moveBadge(f,dur);if(!f.light)return;const L=f.light,g=
   if(dur!=null)L.style.transitionDuration=dur+"s";
   L.style.left=f.x/W*100+"%";L.style.top=f.y/H*100+"%";
   const i=L.firstChild;i.style.left=(left?120-g[0]:g[0])/120*100+"%";i.style.top=(g[1]+16)/116*100+"%"}
-function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";f.badge.style.transitionDuration="0s";if(f.light)f.light.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.y);settle(f)}
+function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";f.badge.style.transitionDuration="0s";if(f.light)f.light.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.z||sp.y);settle(f)}
 // choisit une pose qui va avec l'endroit, l'heure et la pluie
 function settle(f){
   const sp=f.spot;let poses=sp.poses.slice();
@@ -78,7 +78,7 @@ function arrive(f){
   if(w.legs.length){leg(f);return} // étape suivante (l'échelle de la cabane)
   if(w.to==="edge"){removeFox(f);return}
   if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");moveLight(f);f.until=Date.now()+9000+Math.random()*9000;drawGlow();log(`${FOX[f.id].name} rentre se mettre au chaud.`);return}
-  f.spot=w.to;f.el.style.zIndex=Math.round(f.y);settle(f);
+  f.spot=w.to;f.el.style.zIndex=Math.round(w.to.z||f.y);settle(f);
   if(f.wild&&w.to.bowl)log(`${nameOf(f.id)==='???'?'Un inconnu':FOX[f.id].name} mange à la gamelle !`);
 }
 // où aller ensuite
@@ -97,7 +97,8 @@ function choose(f){
   if(f.id==="luciole"&&dark()){const l=free.find(s=>s.lamp&&!scn.lamps[s.lamp]);if(l)return l}
   // de temps en temps, un renard va grignoter à la gamelle quand il y a des croquettes
   if(R.bowl&&R.bowl.type==="croquettes"&&!taken(SPOT.bowl)&&Math.random()<.25)return SPOT.bowl;
-  // les objets du refuge attirent les renards
+  // son objet préféré l'attire souvent (deco.js), les autres objets du refuge aussi
+  const fav=free.find(s=>s.fav===f.id);if(fav&&!isTarget(f.id)&&Math.random()<.5)return fav;
   const ob=free.filter(s=>s.obj);if(ob.length&&!objOf(f.spot)&&!isTarget(f.id)&&Math.random()<.25)return ob[Math.floor(Math.random()*ob.length)];
   const pool=free.filter(s=>(!s.lamp||f.id==="luciole")&&!s.obj);
   return pool[Math.floor(Math.random()*pool.length)]||null;

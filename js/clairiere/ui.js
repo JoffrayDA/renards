@@ -55,7 +55,7 @@ function tapFox(f){
   if(!f.wild&&storyTap(f.id))return;
   if(f.wild){bubble(f,known(f.id)?"un renard sauvage, il mange !":"un inconnu… Qui est-ce ?");return}
   if(envieTap(f))return; // une petite envie (envies.js)
-  if(snapObj(f))return; // un renard dans un objet : la photo d'abord
+  if(snapObj(f)||snapDeco(f))return; // un renard dans un objet, ou sur son objet préféré : la photo d'abord
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
   if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);hugFx(f);renderHud();bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur, +1 gland)")}
@@ -88,6 +88,10 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.buy)buyBowl(b.dataset.buy);
   else if(b.dataset.obj)buyObj(b.dataset.obj);
+  else if(b.dataset.dbuy)buyDeco(b.dataset.dbuy);
+  else if(b.dataset.dtab)shopSheet(b.dataset.dtab);
+  else if(b.dataset.dput)decoStart(b.dataset.dput);
+  else if(b.dataset.deco)decoStart();
   else if(b.dataset.house)buildHouse(b.dataset.house);
   else if(b.dataset.fox)foxSheet(b.dataset.fox);
   else if(b.dataset.reread)reread(b.dataset.reread);
@@ -109,6 +113,7 @@ function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))ret
   log(k==="croquettes"?"La gamelle est pleine de croquettes.":`${B.name} dans la gamelle. Qui va venir ?`)}
 
 function photoSVG(p){const f=FOX[p.id];
+  if(p.deco&&DECO[p.deco])return decoPhoto(p);
   if(p.obj&&HOBJ[p.obj])return `<svg viewBox="0 0 200 160" aria-hidden="true">${houseBack()}${HOBJ[p.obj].art(p.id)}</svg>`; // photo prise dans la maison
   if(p.obj&&OBJS[p.obj]&&OBJS[p.obj].photo)return OBJS[p.obj].photo(p.id); // les constructions ont leur propre photo
   if(p.obj)return `<svg viewBox="0 0 120 100" aria-hidden="true"><rect width="120" height="100" fill="#cfe3a8"/><path d="M0 34 Q30 26 60 32 Q90 26 120 34 V0 H0Z" fill="#8dbd86"/><g transform="translate(0 -6)">${(OBJS[p.obj]||OBJS.panier).svg(p.id).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g></svg>`;
@@ -143,7 +148,7 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
 const fmtDate=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" à "+new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 function photos(){
   const ps=R.photos.slice().reverse();
-  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p>${incoCards()}${ps.length&&incoCards()?`<h3 class="sec">Toutes les photos</h3>`:""}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${nameOf(p.id)}</b>${p.clue!=null?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.obj?`${(HOBJ[p.obj]||OBJS[p.obj]||OBJS.panier).in}, le `:""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
+  openSheet(`<h2>Album photos</h2><p class="sub">${ps.length?`${ps.length} photo${ps.length>1?"s":""}.`:"Aucune photo pour l'instant. Remplis la gamelle de baies, de poisson ou de miel, ou pose un objet du refuge."}</p>${incoCards()}${ps.length&&incoCards()?`<h3 class="sec">Toutes les photos</h3>`:""}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>${nameOf(p.id)}</b>${p.clue!=null?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.obj?`${(HOBJ[p.obj]||OBJS[p.obj]||OBJS.panier).in}, le `:p.deco&&DECO[p.deco]?`${DECO[p.deco].name}, le `:""}${fmtDate(p.t)}</figcaption></figure>`).join("")}</div>`);
 }
 
 function status(id,M){

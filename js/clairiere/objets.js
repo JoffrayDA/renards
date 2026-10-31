@@ -79,8 +79,9 @@ function snapObj(f){const o=objOf(f.spot);if(!o||f.walk)return false;const k=f.s
   const fl=document.createElement("div");fl.className="snapflash";$("scene").appendChild(fl);setTimeout(()=>fl.remove(),700);
   toast(`Clic ! ${FOX[f.id].name} ${o.in.toLowerCase()}. La photo est dans l'album.`);return true}
 
-function objSheet(){
-  openSheet(`<h2>Objets du refuge</h2><p class="sub">Pose un objet dans la clairière : il attire les renards dans des positions qu'on ne voit nulle part ailleurs. Touche-les pour les prendre en photo.</p>${Object.entries(OBJS).map(([k,o])=>`<div class="opt"><span class="thumb">${o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button></div>`).join("")}<p class="sub">D'autres objets arriveront bientôt.</p>`)}
+// l'onglet Refuge de la boutique (deco.js) : les objets en glands, à leur place fixe
+function objList(){
+  return `<p class="sub">Pose un objet dans la clairière : il attire les renards dans des positions qu'on ne voit nulle part ailleurs. Touche-les pour les prendre en photo.</p>${Object.entries(OBJS).map(([k,o])=>`<div class="opt"><span class="thumb">${o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`}
 function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
   R.glands-=o.price;R.obj[k]=1;save();addObjSpots();drawObjs();if(o.photo)drawBg();renderHud();closeSheet();
   log(`${o.name} : posé dans l'herbe. Qui va s'y installer ?`)}
