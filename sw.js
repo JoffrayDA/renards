@@ -5,7 +5,7 @@ const CACHE = "renards-v117";
 const FILES = ["./", "index.html", "cafe.html", "clairiere.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg", "css/cafe.css", "css/clairiere.css", "js/music.js", "js/foxart.js", "js/push.js", "js/cloud.js", "js/bourse.js", "js/avent.js",
   ...["foxes", "data", "state", "draw", "game", "render", "end", "menus", "map", "hwintro", "main"].map(n => `js/cafe/${n}.js`),
-  ...["data", "state", "scene", "life", "ui", "games", "objets", "sauvages", "story", "envies", "maison", "deco", "main"].map(n => `js/clairiere/${n}.js`)];
+  ...["data", "state", "scene", "life", "ui", "games", "objets", "sauvages", "story", "envies", "maison", "deco", "noel", "main"].map(n => `js/clairiere/${n}.js`)];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: "reload" }))))); self.skipWaiting(); });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))));
