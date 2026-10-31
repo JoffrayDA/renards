@@ -91,7 +91,7 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   else if(b.dataset.dbuy)buyDeco(b.dataset.dbuy);
   else if(b.dataset.dtab)shopSheet(b.dataset.dtab);
   else if(b.dataset.dput)decoStart(b.dataset.dput);
-  else if(b.dataset.deco)decoStart();
+  else if(b.dataset.deco)decoStart(null,b.dataset.deco);
   else if(b.dataset.house)buildHouse(b.dataset.house);
   else if(b.dataset.fox)foxSheet(b.dataset.fox);
   else if(b.dataset.reread)reread(b.dataset.reread);

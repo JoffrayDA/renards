@@ -227,10 +227,10 @@ HOBJ.couverture.art=id=>(id?foxAt(id,100,140,92,{pose:"sleep"}):"")+`<g filter="
 function enterHouse(){
   const all=foxes.filter(f=>!f.wild).map(f=>f.id).sort((a,b)=>i0(a+today())%97-i0(b+today())%97),night=phaseNow()==="nuit"; // d'autres têtes chaque jour
   const objs=hobjs().filter(k=>k!=="guirlandes"&&(!night||HOBJ[k].night)),inObj=objs.map((k,i)=>[k,all[i]]).filter(([,id])=>id);
-  const ids=all.slice(inObj.length),pl=seats(),here=ids.slice(0,pl.length),out=ids.length-here.length;
+  const hd=houseDecoSeats(all.slice(inObj.length),night),ids=hd.rest,pl=seats(),here=ids.slice(0,pl.length),out=ids.length-here.length; // les objets de la déco d'abord (deco.js)
   houseEl=document.createElement("div");houseEl.className="play house";
   houseEl.innerHTML=`<svg viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${houseSVG()}<g id="hfox"></g></svg><div class="psay">${night?"Tout le monde dort près du feu.":"La maison de Roussette."}${out?` ${out} renard${out>1?"s":""} reste${out>1?"nt":""} dehors : il manque de la place.`:""}</div>
-    <button class="btn ghost hgrow" type="button"${storyDone("copeau")?"":" hidden"}>Aménager</button><button class="btn pclose" type="button">Sortir</button>`;
+    <div class="hbtns"><button class="btn ghost hgrow" type="button"${storyDone("copeau")?"":" hidden"}>Aménager</button><button class="btn ghost hdeco" type="button"${Object.keys(DECO).some(k=>DECO[k].home&&(R.deco.inv[k]||R.deco.home.some(d=>d.k===k)))?"":" hidden"}>Décorer</button></div><button class="btn pclose" type="button">Sortir</button>`;
   const box=houseEl.querySelector("#hfox"),POSES=["sit","lie","groom","happy","sleep"];
   // les objets sans personne (la nuit, le thé et la musique s'arrêtent), puis ceux où un renard s'est installé : le toucher prend la photo
   for(const k of hobjs())if(k!=="guirlandes"&&!inObj.some(([o])=>o===k))grp(box,HOBJ[k].art(null),{transform:hPlace(k)});
@@ -245,10 +245,11 @@ function enterHouse(){
       toast(r?`${FOX[id].name} ronronne près du feu (+1 cœur, +1 gland).`:`${FOX[id].name} ${night?"dort, roulé en boule":"se chauffe les pattes"}.`);if(r)renderHud()}});
   houseEl.querySelector(".pclose").onpointerdown=e=>{e.stopPropagation();leaveHouse()};
   houseEl.querySelector(".hgrow").onpointerdown=e=>{e.stopPropagation();houseSheet()};
-  $("scene").appendChild(houseEl);
+  houseEl.querySelector(".hdeco").onpointerdown=e=>{e.stopPropagation();decoStart(null,"home")};
+  $("scene").appendChild(houseEl);drawHouseDeco(hd.seated);
 }
 const i0=id=>[...id].reduce((a,c)=>a+c.charCodeAt(0),0);
-function leaveHouse(){if(houseEl){houseEl.remove();houseEl=null}}
+function leaveHouse(){if(houseEl){if(decoMode)decoEnd();houseEl.remove();houseEl=null}}
 function houseSheet(){
   openSheet(`<h2>Aménager la maison</h2><p class="sub">Copeau a des idées plein la tête. Les objets attirent un renard : touche-le pour la photo. Tu as ${R.glands} glands.</p>${Object.entries(HOUSE).map(([k,o])=>`<div class="opt"><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-house="${k}" type="button" ${R.hup[k]||R.glands<o.price?"disabled":""}>${R.hup[k]?"Fait":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`)}
 function buildHouse(k){const o=HOUSE[k];if(R.hup[k]||R.glands<o.price)return;
