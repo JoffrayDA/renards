@@ -279,7 +279,7 @@ function decoOk(d){const {x,y}=d,o=DECO[d.k];if(x<14||x>386||x-o.w/2<2||x+o.w/2>
   if(y<266||y>474)return false;
   if(((x-95)/88)**2+((y-420)/44)**2<1)return false; // la mare
   if(Math.abs(x-200)<15)return false; // le chemin de pierres
-  const no=[[240,268,24],[85,304,32],[322,336,30],[284,404,22],[316,404,22],...Object.keys(R.obj).filter(k=>OBJS[k].spot.y>200).map(k=>[OBJS[k].spot.x,OBJS[k].spot.y,26])];
+  const no=[[240,268,24],[85,304,32],[322,336,30],[284,404,22],[316,404,22],...Object.keys(R.obj).filter(k=>OBJS[k].spot.y>200).map(k=>[OBJS[k].spot.x,OBJS[k].spot.y,26]),...noelNo()];
   if(no.some(([a,b,r])=>Math.hypot(x-a,y-b)<r))return false;
   return !R.deco.out.some(o=>o.u!==d.u&&Math.hypot(o.x-x,o.y-y)<12)}
 const scenePt=e=>{const r=$("scene").getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}};

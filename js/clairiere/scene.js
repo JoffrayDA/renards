@@ -40,7 +40,7 @@ function sideTree(x,flip,r){const X=v=>flip?2*x-v:v;let s=shade(x+10,252,40,8);
   s+=`<path d="M${X(x-4)} 236 Q${X(x-2)} 210 ${X(x-5)} 186 M${X(x+4)} 220 Q${X(x+5)} 200 ${X(x+3)} 176 M${X(x-1)} 166 q3 4 0 8" fill="none" stroke="#6a4430" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><ellipse cx="${X(x+2)}" cy="200" rx="2.6" ry="3.6" fill="#6a4430"/>`;
   s+=`<path d="M${X(x-14)} 254 q-4 -6 -1 -10 q4 3 3 9 M${X(x+16)} 255 q2 -7 6 -8 q1 5 -4 9" fill="#8fc07e" ${L(1.6)}/>`;
   return s+crown([[-22,132,26],[18,136,26],[-4,112,30],[-30,104,20],[26,106,22],[0,86,22]].map(([dx,y,R])=>[x+dx,y,R]),X,r)}
-function bgSVG(){
+function bgSVG(){if(noelOn())return noelBg(); // à Noël, la clairière est sous la neige (noel.js)
   const ph=phaseNow(),r=rng(11);let s=bgDefs(ph);
   s+=`<rect width="400" height="480" fill="url(#cGrass)"/><rect width="400" height="160" fill="url(#cSky)"/>`;
   // soleil (ou lune) et collines lointaines dans la brume
@@ -142,7 +142,7 @@ function house(){const night=dark();let s=shade(200,250,120,16);
 // les lumières passent au-dessus du voile de la nuit pour vraiment briller
 function glowSVG(){
   let s="";const lamps=(side,pts)=>pts.map(([x,y])=>{const on=scn.lamps[side];return (on?`<circle class="lit" cx="${x}" cy="${y+8}" r="14" fill="#ffe08a" opacity=".45"/>`:"")+`<path d="M${x} ${y} v3" stroke="${INK}" stroke-width="1.4"/><path d="M${x-4} ${y+3} h8 l-1 -2 h-6Z" fill="${INK}"/><rect x="${x-5}" y="${y+4}" width="10" height="12" rx="3.4" fill="${on?"#ffd36a":"#fbefd8"}" stroke="${INK}" stroke-width="1.8"/><path d="M${x-3} ${y+16} h6 l-1 2 h-4Z" fill="${INK}"/>`+(on?`<ellipse cx="${x}" cy="${y+50}" rx="20" ry="7" fill="#ffd98a" opacity=".22"/>`:"")}).join("");
-  s+=lamps("L",[[86,206],[60,214],[38,208]])+lamps("R",R.obj&&R.obj.balancoire?[[301,202]]:[[314,206],[340,214],[362,208]]);
+  s+=lamps("L",noelLampsL()||[[86,206],[60,214],[38,208]])+lamps("R",R.obj&&R.obj.balancoire?[[301,202]]:[[314,206],[340,214],[362,208]]);
   if(dark()){
     s+=[166,236].map(x=>`<circle cx="${x}" cy="141" r="26" fill="#ffe08a" opacity=".22"/>`).join("");
     s+=`<path d="M188 202 V147 Q193 139 202 137 V202Z" fill="#ffe08a" opacity=".35"/>`+[164,236].map(x=>`<ellipse cx="${x}" cy="236" rx="34" ry="12" fill="#ffd98a" opacity=".16"/>`).join("")+`<ellipse cx="198" cy="262" rx="26" ry="14" fill="#ffd98a" opacity=".2"/>`;
@@ -163,8 +163,8 @@ function peekSVG(){const lit=dark(),head=lit?"#5b4250":"#7d6670",eye=lit?"#fff6c
   return [[146,0],[164,1.3],[218,.6],[236,2]].map(([x,d],i)=>`<g clip-path="url(#pk${i})"><clipPath id="pk${i}"><rect x="${x+1}" y="141" width="17" height="17"/></clipPath>
     <g class="peek" style="animation-delay:${-d}s"><path d="M${x+3} 152 l2 -7 l3 4 h3 l3 -4 l2 7 Z" fill="${head}"/><ellipse cx="${x+9.5}" cy="155" rx="7" ry="5.5" fill="${head}"/>
     <g class="blink" style="animation-delay:${-d*1.7}s"><circle cx="${x+7}" cy="153.5" r="1.3" fill="${eye}"/><circle cx="${x+12}" cy="153.5" r="1.3" fill="${eye}"/></g></g></g>`).join("")}
-function drawGlow(){$("glow").innerHTML=glowSVG()+(typeof decoGlow==="function"?decoGlow():"")}
-function drawPills(){$("phase").textContent=PH[phaseNow()].name+(scn.rain?" · il pleut":"")}
+function drawGlow(){$("glow").innerHTML=glowSVG()+(typeof decoGlow==="function"?decoGlow():"")+noelGlow();drawSnow()}
+function drawPills(){$("phase").textContent=PH[phaseNow()].name+(scn.rain?noelOn()&&!storyRain()?" · il neige":" · il pleut":"")}
 
 /* ---------- gamelle (dans la scène) ---------- */
 function bowlSVG(type,n=3){const B=type&&BOWLS[type];
@@ -178,7 +178,8 @@ const cv=$("rain"),cx=cv.getContext("2d");let drops=[],splashes=[],lastT=perform
 // chaque goutte tombe jusqu'à un point du sol (vue de dessus) et y fait une petite éclaboussure (Joffray : la pluie ne touchait pas le sol)
 const newDrop=(w,h,y)=>({x:Math.random()*w*1.1,y:y??-10-Math.random()*h*.3,v:260+Math.random()*160,g:h*(.4+Math.random()*.6)});
 function sizeRain(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;cx.setTransform(d,0,0,d,0,0);drops=Array.from({length:90},()=>newDrop(r.width,r.height,Math.random()*r.height*.4));splashes=[]}
-function startRain(){if(raining||matchMedia("(prefers-reduced-motion: reduce)").matches)return;raining=true;lastT=performance.now();requestAnimationFrame(rainLoop)}
+function startRain(){if(noelOn()&&!storyRain())return; // à Noël, il neige à la place (noel.js)
+  if(raining||matchMedia("(prefers-reduced-motion: reduce)").matches)return;raining=true;lastT=performance.now();requestAnimationFrame(rainLoop)}
 function rainLoop(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;const w=cv.width/(devicePixelRatio||1),h=cv.height/(devicePixelRatio||1);cx.clearRect(0,0,w,h);
   if(scn.rain){cx.strokeStyle="rgba(214,232,255,.75)";cx.lineWidth=1.6;cx.lineCap="round";cx.beginPath();
     for(const d of drops){d.y+=d.v*dt;d.x-=d.v*dt*.12;if(d.y>=d.g){splashes.push({x:d.x,y:d.g,t:0});Object.assign(d,newDrop(w,h))}cx.moveTo(d.x,d.y);cx.lineTo(d.x+1.4,d.y-11)}cx.stroke();

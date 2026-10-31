@@ -451,13 +451,15 @@ const LAST="gribouille",OTHERS=FOXES.filter(f=>!f.event&&f.id!=="roussette"&&f.i
 const lastReady=()=>OTHERS.every(id=>STORIES[id]&&storyDone(id));
 // un sauvage n'a son histoire qu'une fois croisé à la gamelle ; ensuite il s'installe au refuge (Joffray, 27/10/2026)
 // une histoire déjà commencée passe avant tout (l'ordre a changé le 29/10/2026 : on ne coupe personne au milieu)
-const nextId=()=>ORDER.find(k=>R.beat[k]>0&&!storyDone(k))||ORDER.find(k=>!storyDone(k)&&(k!==LAST||lastReady())&&(!WILD[k]||R.met[k]||isRes(k)));
+// à Noël, le chapitre du sapin qui attend passe juste après (noel.js)
+const nextId=()=>ORDER.find(k=>R.beat[k]>0&&!storyDone(k))||noelNext()||ORDER.find(k=>!storyDone(k)&&(k!==LAST||lastReady())&&(!WILD[k]||R.met[k]||isRes(k)));
 const wildLeft=()=>ORDER.filter(k=>WILD[k]&&!storyDone(k)&&!R.met[k]&&!isRes(k));
 // arrivé trop tôt (avant le 26/10/2026) : il repart, il reviendra en dernier
 if(isRes(LAST)&&!storyDone(LAST)&&!lastReady()){delete R.res[LAST];delete R.beat[LAST];delete R.who[LAST];save()}
 // l'histoire en cours et le moment attendu (null si on attend le prochain renard)
-function cur(){if(!R.intro)return null;const id=nextId();if(!id||!isRes(id))return null;
-  const n=R.beat[id]||0;if(!n&&Date.now()<(R.nextAt||0))return null;return {id,n,b:beats(id)[n]}}
+// les chapitres de Noël n'attendent pas : leur renard arrive pendant l'histoire
+function cur(){if(!R.intro)return null;const id=nextId();if(!id||(!isRes(id)&&!isNoelStory(id)))return null;
+  const n=R.beat[id]||0;if(!n&&!isNoelStory(id)&&Date.now()<(R.nextAt||0))return null;return {id,n,b:beats(id)[n]}}
 // renards qui peuvent répondre à un moment « * » : les autres renards du refuge, pas celui d'avant
 function anyOk(c,fid){if(!isRes(fid)||(WILD[fid]&&!storyDone(fid))||fid===c.id)return false;const prev=(R.who[c.id]||{})[c.n-1];
   return fid!==prev||!foxes.some(f=>!f.wild&&f.id!==c.id&&f.id!==prev)}
@@ -472,7 +474,7 @@ function storyFoxes(){const c=cur();return c?[c.id,"petitpois",c.b.at,...(STORIE
 let storyKey="";
 function chainTick(live){const id=nextId(),c=cur();
   if(R.intro&&(c?c.id+c.n:"")!==storyKey)renderStory(); // l'attente d'un renard déjà là vient de finir
-  if(!R.intro||!id||isRes(id)||Date.now()<(R.nextAt||0))return;
+  if(!R.intro||!id||isRes(id)||isNoelStory(id)||Date.now()<(R.nextAt||0))return;
   R.res[id]={at:Date.now(),h:0,pet:""};save();
   // celui qui se cache (Pantoufle) file droit dans la maison
   if(live){const f=makeFox(id,null),fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp);setTimeout(()=>goTo(f,beats(id)[0].hide?"door":fs[Math.floor(Math.random()*fs.length)]||SPOT.g3),60);toast(`${FOX[id].name} arrive au refuge !`)}
@@ -506,7 +508,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
       if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;drawGlow()}goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
     if(c.id==="gaston"&&storyDone("gaston")){drawBg();log("La pêche est ouverte : touche la mare quand tu veux.")}
-    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();R.glands+=15;addBells(2);toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands, +2 clochettes`)}
+    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;if(!isNoelStory(c.id))R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();if(isNoelStory(c.id))drawBg();R.glands+=15;addBells(2);toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands, +2 clochettes`)}
     else toast("+3 glands");
     if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!metAny())setTimeout(firstLure,500);
     else if(storyDone(c.id))setTimeout(wildNudge,600);
@@ -573,7 +575,7 @@ function journal(){
     if(c&&c.id===id)return `<div class="opt now"><span class="thumb">${foxArt(f,{expr:"open",portrait:1})}</span><div class="txt"><strong>${S.title}</strong>${dots}<span>${c.b.goal}</span></div></div>`;
     if(id===nx)return `<div class="opt"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>${isRes(id)?S.title:"???"}</strong><span>${goalText().g}</span></div></div>`;
     return `<div class="opt unseen"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>???</strong><span>${isRes(id)?`${f.name} te racontera son histoire plus tard.`:"Une histoire à venir."}</span></div></div>`};
-  openSheet(`<h2>Les histoires</h2><p class="sub">Une histoire à la fois. Touche le renard ou l'endroit qui porte un <b class="markin">!</b> pour avancer.</p>${ORDER.map(row).join("")}`);
+  openSheet(`<h2>Les histoires</h2><p class="sub">Une histoire à la fois. Touche le renard ou l'endroit qui porte un <b class="markin">!</b> pour avancer.</p>${[...noelRows(),...ORDER].map(row).join("")}`);
 }
 
 // dans la fiche du renard : où en est son histoire

@@ -33,6 +33,8 @@ const ITEM={
   boot:`<path d="M-12 -16 h14 v18 h14 q6 0 6 8 v4 h-34Z" fill="#8a6a5a" ${O}/><path d="M-12 -10 h14" stroke="${INK}" stroke-width="2"/>`,
   algae:`<path d="M-10 14 q-6 -12 2 -20 q6 -8 0 -14 M0 14 q6 -10 -2 -18 q-4 -8 4 -14 M10 14 q-4 -10 4 -16" fill="none" stroke="#6f9a60" stroke-width="4" stroke-linecap="round"/>`,
   twig:`<path d="M-18 6 L18 -6 M2 0 l6 -10 M-6 3 l-4 8" fill="none" stroke="#a9785a" stroke-width="4" stroke-linecap="round"/>`,
+  // la clochette de Ramure (Noël)
+  bell:`<path d="M0 -16 C-9 -16 -11 -8 -11 -1 V5 L-14 10 H14 L11 5 V-1 C11 -8 9 -16 0 -16Z" fill="#f6cc4e" ${O}/><circle cy="13" r="3.6" fill="#e0a52e" ${O}/><path d="M-6 -8 q1 -4 5 -5" fill="none" stroke="#fff6cf" stroke-width="3" stroke-linecap="round"/><path d="M0 -16 l-7 -6 q-2 5 3 6 M0 -16 l7 -6 q2 5 -3 6" fill="#e2445e" ${O}/>`,
   leaf:`<path d="M-16 4 Q0 -18 16 -4 Q0 12 -16 4Z" fill="#b5d68f" ${O}/><path d="M-12 3 Q0 -2 12 -3" fill="none" stroke="#6f9a60" stroke-width="2"/>`
 };
 
@@ -217,17 +219,19 @@ const GAMES={
 
   /* Attraper : des lucioles volent dans tous les sens ; on les touche une à une. */
   catch(g,A){
-    const sv=A.sv,n=g.n||5,page=g.thing==="page";let got=0;
-    sv.innerHTML=page?`<rect width="400" height="480" fill="#bfe0f2"/><path d="M0 300 Q100 280 200 296 Q300 280 400 300 V480 H0Z" fill="#bcd99a"/>
+    const sv=A.sv,n=g.n||5,page=g.thing==="page",xmas=g.thing==="bell"||g.thing==="ball";let got=0;
+    // Noël : ciel d'hiver et neige ; grelots de Grelot ou boules de Paillette
+    sv.innerHTML=xmas?`<rect width="400" height="480" fill="#cfe3f2"/><path d="M0 320 Q100 296 200 314 Q300 296 400 320 V480 H0Z" fill="#f4f8fc" stroke="${INK}" stroke-width="2.4"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${(i*71)%300}" r="${1.4+i%3}" fill="#fff" opacity=".9"/>`).join("")}`:page?`<rect width="400" height="480" fill="#bfe0f2"/><path d="M0 300 Q100 280 200 296 Q300 280 400 300 V480 H0Z" fill="#bcd99a"/>
       ${[[60,90],[300,60],[200,140]].map(([x,y])=>`<path d="M${x} ${y} q20 -18 40 0 q16 -10 30 4 q-35 10 -70 -4Z" fill="#fff" opacity=".9"/>`).join("")}`:`<defs><radialGradient id="lg"><stop offset="0" stop-color="#fff6a0"/><stop offset=".35" stop-color="#ffe46a" stop-opacity=".8"/><stop offset="1" stop-color="#ffe46a" stop-opacity="0"/></radialGradient></defs>
       <rect width="400" height="480" fill="#3a3f78"/><path d="M0 330 Q100 300 200 320 Q300 300 400 330 V480 H0Z" fill="#4b6a5a"/>
       ${Array.from({length:18},(_,i)=>`<circle cx="${(i*97)%400}" cy="${(i*53)%260}" r="1.4" fill="#fff8d0" opacity=".8"/>`).join("")}`;
-    const bugs=Array.from({length:n},()=>{const b={x:60+Math.random()*280,y:80+Math.random()*300,a:Math.random()*6.3,s:70+Math.random()*50};
-      b.el=grp(sv,page?`<g filter="url(#wobble)"><rect x="-13" y="-16" width="26" height="32" rx="3" fill="#fffaf0" stroke="${INK}" stroke-width="2.4"/><path d="M-8 -9 h16 M-8 -3 h16 M-8 3 h11 M-8 9 h14" stroke="#cdb9ad" stroke-width="2"/></g><circle r="26" fill="transparent"/>`
+    let bugs0=0;const bugs=Array.from({length:n},()=>{const b={x:60+Math.random()*280,y:80+Math.random()*300,a:Math.random()*6.3,s:70+Math.random()*50};
+      b.el=grp(sv,xmas?(g.thing==="bell"?`<g filter="url(#wobble)">${ITEM.bell}</g><circle r="26" fill="transparent"/>`
+          :`<g filter="url(#wobble)"><circle r="13" fill="${["#e2445e","#5aa0dc","#f2c45a","#9a6ad6","#5fae6c"][bugs0++%5]}" stroke="${INK}" stroke-width="2.4"/><rect x="-4" y="-18" width="8" height="6" rx="1.4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g><circle cx="-4" cy="-4" r="3.4" fill="#fff" opacity=".8"/><circle r="26" fill="transparent"/>`):page?`<g filter="url(#wobble)"><rect x="-13" y="-16" width="26" height="32" rx="3" fill="#fffaf0" stroke="${INK}" stroke-width="2.4"/><path d="M-8 -9 h16 M-8 -3 h16 M-8 3 h11 M-8 9 h14" stroke="#cdb9ad" stroke-width="2"/></g><circle r="26" fill="transparent"/>`
         :`<circle r="30" fill="url(#lg)"/><circle r="5" fill="#fffbe0"/><circle r="26" fill="transparent"/>`);
       b.el.style.cursor="pointer";
       b.el.onpointerdown=e=>{e.stopPropagation();if(b.got||A.won)return;b.got=1;got++;b.el.classList.add("caught");setTimeout(()=>b.el.remove(),400);
-        if(got===n)A.win(g.win||(page?"Toutes les pages !":"Toutes attrapées !"));else A.say(`${got} sur ${n}… encore !`)};
+        if(got===n)A.win(g.win||(xmas?"Tous attrapés !":page?"Toutes les pages !":"Toutes attrapées !"));else A.say(`${got} sur ${n}… encore !`)};
       return b});
     A.say(g.say||`Attrape les ${n} lucioles !`);
     A.loop(dt=>{for(const b of bugs){if(b.got)continue;b.a+=(Math.random()-.5)*4*dt;b.x+=Math.cos(b.a)*b.s*dt;b.y+=Math.sin(b.a)*b.s*dt;

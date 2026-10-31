@@ -55,6 +55,15 @@ FOXES.push(
   {id:"mirabelle",event:"halloween",name:"Mirabelle",rar:"legend",acc:"magicienne",c:{b:"#c9a8ec",ch:"#fbf6ff",e:"#6a4f9a",s:"#6a4f9a",t:"#fbf6ff"},bio:"Une renarde sorcière. Ses potions sentent la myrtille, et ratent une fois sur deux."},
   {id:"paille",event:"halloween",name:"Brin de Paille",rar:"legend",acc:"epouvantail",stitch:true,c:{b:"#f0cf72",ch:"#fbeab4",e:"#c99a3a",s:"#d9ac48",t:"#f8e6a6"},bio:"Un renard épouvantail. Les corbeaux l'adorent, ce qui l'arrange bien."}
 );
+// invités de Noël (tools/noel.html) : l'histoire du sapin à la Clairière, du 1er décembre au 6 janvier ; les Nuits de Noël du Café viendront ensuite
+FOXES.push(
+  {id:"grelot",event:"noel",name:"Grelot",rar:"legend",acc:"lutin",c:{b:"#e8a05e",ch:"#fff4e4",e:"#7a4a2a",s:"#7a4a2a",t:"#fff4e4"},bio:"Un petit lutin du Grand Nord. Il fait gling-gling en marchant, et les sapins poussent pour lui."},
+  {id:"barbeneige",event:"noel",name:"Barbe-Neige",rar:"legend",acc:"barbe",c:{b:"#e6dcd6",ch:"#ffffff",e:"#9a8a80",s:"#9a8a80",t:"#ffffff"},bio:"Le vieux renard du traîneau. Il lit toutes les lettres des renards, même celles écrites avec la patte."},
+  {id:"ramure",event:"noel",name:"Ramure",rar:"legend",acc:"renne",c:{b:"#b07a52",ch:"#f7ead8",e:"#5a3a24",s:"#5a3a24",t:"#f7ead8"},bio:"Le renne de Barbe-Neige. Très fort pour tirer le traîneau, très mauvais pour glisser sur la glace."},
+  {id:"guimauve",event:"noel",name:"Guimauve",rar:"legend",acc:"chocolat",c:{b:"#fbe3ec",ch:"#ffffff",e:"#f0a8c0",s:"#f0a8c0",t:"#ffffff"},bio:"Toute moelleuse. Elle ne sort jamais sans son chocolat chaud."},
+  {id:"paillette",event:"noel",name:"Paillette",rar:"legend",acc:"guirlande",c:{b:"#cfd6e2",ch:"#f8fafd",e:"#7f8aa6",s:"#7f8aa6",t:"#f8fafd"},bio:"Elle fait ses guirlandes avec les étoiles qui tombent. Son pelage brille comme du givre."},
+  {id:"bouleneige",event:"noel",name:"Boule-de-Neige",rar:"legend",acc:"neige",c:{b:"#f6f9fd",ch:"#ffffff",e:"#cddbea",s:"#dfe8f2",t:"#ffffff"},bio:"Un renard fait de neige, avec une carotte et une écharpe. Il ne fond jamais, promis."}
+);
 FOXES.forEach(f=>{f.zone=f.zone||"clairiere";FOX[f.id]=f});
 const HWF=FOXES.filter(f=>f.event==="halloween");
 // déguisements des clients pendant Halloween (accessoires de foxSVG)

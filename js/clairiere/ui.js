@@ -163,7 +163,7 @@ function status(id,M){
 }
 function carnet(){
   const M=metIds(),n=ROSTER.filter(id=>R.res[id]||R.met[id]).length;
-  const extra=HWF.filter(f=>R.res[f.id]);
+  const extra=FOXES.filter(f=>f.event&&R.res[f.id]); // invités d'Halloween et de Noël passés au refuge
   const card=id=>{const f=FOX[id],s=status(id,M),r=RAR[f.rar];
     return `<button class="card${s.ok?"":" unseen"}" data-fox="${id}" type="button"><div class="pic ${r.cls}">${foxArt(f,{sil:!s.ok&&!s.seen})}</div><h3>${s.ok||s.seen?f.name:"???"}</h3>${R.res[id]?heartsHTML(R.res[id].h):""}<p>${s.txt}</p></button>`};
   openSheet(`<h2>Le carnet du refuge</h2><p class="sub">Le grand portrait : <b>${n} / ${ROSTER.length}</b> renards réunis. Quand tout le monde sera là, on fera une photo de famille.</p><div class="progress"><i style="width:${(n/ROSTER.length*100).toFixed(1)}%"></i></div><div class="grid">${ROSTER.map(card).join("")}${extra.map(f=>card(f.id)).join("")}</div>`);

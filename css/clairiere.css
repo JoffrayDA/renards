@@ -338,3 +338,10 @@ h1 .la{font-style:normal}
 .hdfox{width:15%}
 .play.house.decoing .pclose,.play.house.decoing .hbtns{display:none}
 .play.house.decoing svg #hfox{opacity:.45;pointer-events:none}
+/* Noël (js/clairiere/noel.js) : flocons qui tombent, éclats qui scintillent sur la neige, lumières du sapin */
+#snow{z-index:4;pointer-events:none}
+.flake{animation:nfall linear infinite}
+@keyframes nfall{0%{transform:translate(0,-30px)}50%{transform:translate(8px,240px)}100%{transform:translate(-4px,520px)}}
+.tw{animation:tw 1.8s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.25}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.flake,.tw{animation:none}.flake{display:none}}

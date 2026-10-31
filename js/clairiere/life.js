@@ -5,7 +5,7 @@ const foxes=[];
 // qui est dans la clairière : tout le monde s'il y a de la place, sinon un groupe qui change toutes les 4 heures
 // (avec des croquettes dans la gamelle, ceux qui étaient là restent)
 function presentIds(){
-  const ids=Object.keys(R.res);if(ids.length<=MAXHERE)return ids;
+  const ids=Object.keys(R.res).filter(id=>!noelAway(id)); if(ids.length<=MAXHERE)return ids; // les invités de Noël repartent après le 6 janvier
   const block=R.bowl&&R.bowl.type==="croquettes"&&R.here?R.here.block:Math.floor(Date.now()/(4*36e5));
   // ceux de l'histoire en cours et les nouveaux venus du jour sont toujours là, même arrivés en cours de route (Joffray devait recharger)
   const fresh=ids.filter(id=>Date.now()-R.res[id].at<864e5||(R.env&&R.env.cur&&R.env.cur.id===id)); // et celui qui a une petite envie
@@ -129,6 +129,6 @@ function wildVisit(id,food){
 }
 function rainChanged(){
   for(const f of foxes)if(!f.walk&&!f.inside&&!f.wild&&(scn.rain?!(f.spot&&f.spot.cov):Math.random()<.5))f.until=Date.now()+Math.random()*1500;
-  if(scn.rain){startRain();log("Il pleut. Tout le monde file sous le porche.")}else log("La pluie s'arrête.");
+  const sn=noelOn()&&!storyRain();if(scn.rain){startRain();log(sn?"Il neige à gros flocons. Tout le monde file sous le porche.":"Il pleut. Tout le monde file sous le porche.")}else log(sn?"La neige s'arrête.":"La pluie s'arrête.");
   drawGlow();drawPills();
 }
