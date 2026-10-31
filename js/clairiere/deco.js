@@ -142,6 +142,30 @@ const DECO={
   coffre:{name:"Coffre à jouets",home:1,b:20,w:58,h:66,fav:"galette",seat:{dx:-22,dy:2,poses:["sit","happy"]},desc:"Un coffre en bois peint, couvercle ouvert : une balle, une toupie, un renard en peluche.",
     art:L=>`${dSh(40)}<g ${L}${dWob}><path d="M-38 -40 L-34 -62 H34 L38 -40Z" fill="#c98f5c"/><circle cx="-14" cy="-44" r="9" fill="#f48aa6"/><path d="M6 -40 L14 -54 L22 -40Z" fill="#9ec3ef"/><path d="M-6 -44 Q-2 -54 6 -50" fill="none"/>
       <path d="M-40 -2 V-40 H40 V-2Z" fill="#e0b080"/></g><path d="M-40 -22 H40" stroke="#c98f5c" stroke-width="3"/><rect x="-6" y="-28" width="12" height="10" rx="2" fill="#f2c75c" ${L}/>${[[-28,-32],[26,-12]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3" fill="#f6a5b4"/>`).join("")}`},
+  // Noël : seulement dans le calendrier de l'Avent (accueil, js/avent.js), jamais dans la boutique
+  bonhomme:{name:"Bonhomme de neige",noel:1,w:52,h:124,fav:"givre",seat:{dx:26,dy:2,poses:["sit","happy"]},desc:"Trois boules de neige, une carotte et l'écharpe de quelqu'un. Il ne fond jamais, promis.",
+    art:L=>`${dSh(36)}<ellipse cx="0" cy="-4" rx="36" ry="7" fill="#fff"/><path d="M-16 -70 L-40 -88 M-31 -81 L-35 -93 M16 -70 L40 -86 M32 -80 L39 -91" fill="none" stroke="#7a4a35" stroke-width="3.4" stroke-linecap="round"/>
+      <g ${L}${dWob}><circle cx="0" cy="-28" r="27" fill="#f8fbff"/><circle cx="0" cy="-66" r="19" fill="#f8fbff"/><circle cx="0" cy="-96" r="14" fill="#f8fbff"/>
+      <path d="M-14 -101 Q-13 -118 0 -118 Q13 -118 14 -101 Q0 -97 -14 -101Z" fill="#6fae7a"/><circle cx="0" cy="-119" r="5" fill="#fffaf2"/>
+      <path d="M-15 -86 Q0 -78 15 -86 L15 -80 Q0 -72 -15 -80Z" fill="#e8505e"/><path d="M5 -79 L9 -60 L16 -62 L13 -80Z" fill="#e8505e"/><path d="M2 -95 L19 -92 L2 -89Z" fill="#f59a4b"/></g>
+      <path d="M-13 -102 Q0 -98 13 -102" fill="none" stroke="#fffaf2" stroke-width="3"/><path d="M8 -70 L14 -71 M9 -66 L15 -67" stroke="#fffaf2" stroke-width="1.6"/>
+      ${[[-5,-100,1.9],[5,-100,1.9],[0,-71,2.4],[0,-61,2.4],[0,-36,3],[0,-24,3]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${INK}"/>`).join("")}<path d="M-30 -40 Q-28 -50 -20 -54" fill="none" stroke="#dfe8f2" stroke-width="3" stroke-linecap="round"/>`},
+  luge:{name:"Luge en bois",noel:1,w:70,h:46,fav:"flocon",seat:{dx:-4,dy:-16,poses:["sit","lie","sleep"]},desc:"Une luge rouge aux patins brillants. Flocon dit qu'elle va plus vite que le vent.",
+    art:L=>`${dSh(42,-3)}<path d="M-42 -4 H34 Q48 -4 46 -16 Q44 -24 36 -20" fill="none" stroke="${INK}" stroke-width="6.4" stroke-linecap="round"/><path d="M-42 -4 H34 Q48 -4 46 -16 Q44 -24 36 -20" fill="none" stroke="#cfd8e2" stroke-width="3" stroke-linecap="round"/>
+      <path d="M-30 -4 V-14 M-4 -4 V-14 M22 -4 V-14" stroke="${INK}" stroke-width="3"/><g ${L}${dWob}><rect x="-44" y="-26" width="80" height="12" rx="4" fill="#d9584e"/></g>
+      <path d="M-24 -26 V-14 M-4 -26 V-14 M16 -26 V-14" stroke="#b8443e" stroke-width="2"/><path d="M36 -22 Q50 -32 44 -40" fill="none" stroke="#c9a06a" stroke-width="2.6" stroke-linecap="round"/><path d="M-38 -24 H28" stroke="#f08a7e" stroke-width="2" opacity=".8"/>`},
+  traineau:{name:"Traîneau de Barbe-Neige",noel:1,w:120,h:96,fav:"yeti",seat:{dx:6,dy:-36,poses:["sit","happy","sleep"]},desc:"Le traîneau du vieux Barbe-Neige, avec ses cadeaux encore dedans. Il l'a laissé ici « pour l'année prochaine ».",
+    art:L=>`${dSh(52,-3)}<path d="M-46 -4 H36 Q50 -4 48 -18 Q46 -26 38 -22" fill="none" stroke="${INK}" stroke-width="5.6" stroke-linecap="round"/><path d="M-46 -4 H36 Q50 -4 48 -18 Q46 -26 38 -22" fill="none" stroke="#f2c75c" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M-32 -4 V-16 M-4 -4 V-16 M24 -4 V-16" stroke="${INK}" stroke-width="2.6"/>
+      <g ${L}${dWob}><rect x="-44" y="-90" width="20" height="20" rx="2" fill="#7fb86a"/><rect x="-26" y="-84" width="16" height="15" rx="2" fill="#f6a5b4"/>
+      <path d="M-46 -16 V-66 Q-46 -74 -38 -72 L-30 -40 H20 Q28 -40 32 -52 Q36 -64 46 -60 Q50 -40 40 -24 Q34 -16 24 -16Z" fill="#d9584e"/></g>
+      <path d="M-34 -90 V-70 M-44 -80 H-24 M-18 -84 V-69" stroke="#f2c75c" stroke-width="2.4"/><path d="M-44 -26 H30" stroke="#f2c75c" stroke-width="3.4"/><path d="M-40 -60 L-34 -40" stroke="#f08a7e" stroke-width="2" opacity=".8"/>
+      ${[[-36,-33],[-12,-33],[12,-33]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6" fill="#f2c75c"/>`).join("")}<circle cx="44" cy="-56" r="3" fill="#f2c75c" ${L}/>`},
+  guirlpin:{name:"Guirlande de pommes de pin",noel:1,home:1,wall:1,w:100,h:54,desc:"Des branches de sapin, des pommes de pin et deux nœuds rouges. Toute la maison sent la forêt.",
+    art:L=>`<path d="M-44 -46 Q0 -6 44 -46" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="M-44 -46 Q0 -6 44 -46" fill="none" stroke="#5f9a5a" stroke-width="9.4" stroke-linecap="round"/>
+      <path d="M-36 -40 l-4 6 M-26 -32 l-3 7 M-14 -27 l-1 7 M14 -27 l1 7 M26 -32 l3 7 M36 -40 l4 6 M-30 -38 l2 -6 M-8 -28 l1 -6 M8 -28 l-1 -6 M30 -38 l-2 -6" stroke="#8fca7a" stroke-width="2" stroke-linecap="round"/>
+      ${[[-24,-22],[0,-16],[24,-22]].map(([x,y])=>`<g transform="translate(${x} ${y})"><ellipse cx="0" cy="4" rx="5.5" ry="8" fill="#a9785a" ${L}/><path d="M-4 1 Q0 4 4 1 M-4 6 Q0 9 4 6" fill="none" stroke="#7a4a35" stroke-width="1.4"/></g>`).join("")}
+      ${[-44,44].map(x=>`<g transform="translate(${x} -46)"><path d="M0 0 L-9 -6 V6Z M0 0 L9 -6 V6Z M0 0 L-5 12 M0 0 L5 12" fill="#e8505e" ${L}/><circle r="3" fill="#c9404e" ${L}/></g>`).join("")}`},
 };
 const dSvg=(k,part="art",cls="")=>{const o=DECO[k],L=`stroke="${INK}" stroke-width="${dLw(o.w)}" stroke-linejoin="round" stroke-linecap="round"`;
   return `<svg viewBox="-50 -${o.h} 100 ${o.h}" overflow="visible" aria-hidden="true"${cls}>${o[part](L)}</svg>`};
@@ -192,8 +216,8 @@ function decoSpots(){for(let i=SPOTS.length-1;i>=0;i--)if(SPOTS[i].deco){delete 
     SPOTS.push(sp);SPOT[sp.id]=sp;PLACE[sp.id]=s.dy<-4?`sur ${dThe(d.k)}`:`près ${dOf(d.k)}`} // pendant qu'on décore dehors, personne ne s'installe sur les objets
   // un renard dont l'endroit a disparu (objet rangé ou déplacé) va ailleurs
   for(const f of foxes)if(f.spot&&f.spot.deco!==undefined&&!SPOT[f.spot.id]){const fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco);place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}}
-const dThe=k=>({coussin:"le coussin",champis:"le champignon",banc:"le banc",puits:"le puits",hamac:"le hamac",brouette:"la brouette"})[k]||"l'objet";
-const dOf=k=>({lanterne:"du lampadaire",nichoir:"du nichoir",moulin:"du moulin",tente:"de la tente",longuevue:"de la longue-vue",arche:"de l'arche",carillon:"du carillon",fontaine:"de la fontaine",lampions:"des lampions",topiaire:"du renard en buis"})[k]||"de l'objet";
+const dThe=k=>({coussin:"le coussin",champis:"le champignon",banc:"le banc",puits:"le puits",hamac:"le hamac",brouette:"la brouette",luge:"la luge",traineau:"le traîneau"})[k]||"l'objet";
+const dOf=k=>({lanterne:"du lampadaire",nichoir:"du nichoir",moulin:"du moulin",tente:"de la tente",longuevue:"de la longue-vue",arche:"de l'arche",carillon:"du carillon",fontaine:"de la fontaine",lampions:"des lampions",topiaire:"du renard en buis",bonhomme:"du bonhomme de neige"})[k]||"de l'objet";
 function drawList(list,els,host){
   for(const u in els)if(!list.some(d=>d.u==u)){els[u].el.remove();els[u].fr&&els[u].fr.remove();delete els[u]}
   for(const d of list){const o=DECO[d.k];let e=els[d.u];

@@ -82,6 +82,62 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
 .paws svg{position:absolute;top:0;width:15px}
 @keyframes peek{to{transform:translateY(-4px) rotate(-4deg)}}
 @media (prefers-reduced-motion:reduce){.wait .bob{animation:none}}
+/* calendrier de l'Avent (js/avent.js) : la carte du haut, du 1er décembre au 6 janvier, et ses 24 cases */
+.avcard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:#fff;cursor:pointer;border:2px solid #b8443e;border-radius:22px;padding:10px 14px;
+  background:#d9584e;background-image:radial-gradient(#fff6 1.6px,transparent 2px),radial-gradient(#fff4 1.2px,transparent 1.6px);background-size:30px 30px,19px 19px;background-position:0 0,9px 12px;box-shadow:0 5px 0 #a8403a}
+.avcard[hidden]{display:none}.avcard:active{transform:translateY(4px);box-shadow:0 1px 0 #a8403a}
+.avcard .ic{flex:none;width:52px;height:52px}.avcard .ic svg{display:block;width:100%;height:100%}
+.avcard div{flex:1;min-width:0}.avcard strong{display:block;font-family:var(--display);font-weight:400;font-size:17px;white-space:nowrap}.avcard span{display:block;font-size:13.5px;opacity:.95}
+.avcard .go{background:#fffaf2;color:#d9584e;box-shadow:0 3px 0 #a8403a}
+.avcard.todo .ic{animation:avwig 1.3s ease-in-out infinite}
+@keyframes avwig{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-8deg)}80%{transform:rotate(7deg)}90%{transform:rotate(-4deg)}}
+#avent{border:2px solid #b8443e;border-radius:24px;background:#fffaf2;color:var(--ink);padding:16px 14px 14px;max-width:420px;width:calc(100% - 24px);box-sizing:border-box;overflow:visible}
+#avent::backdrop{background:rgba(70,40,50,.5)}
+#avent h2{font-family:var(--display);font-weight:400;margin:0 0 4px;font-size:21px;color:#b8443e;text-align:center}
+.avline{margin:0 0 8px;text-align:center;font-weight:700}
+.avgels{display:flex;align-items:center;gap:8px;background:#eaf3fb;border-radius:14px;padding:6px 10px;font-size:12.5px;color:#4e6a86;margin-bottom:10px}
+.avgels .gl{display:flex;gap:2px;flex:none}.avgels i{width:22px;height:22px;color:#c9d3dc}.avgels i.on{color:#5aa0dc}.avgels i svg{display:block;width:100%}
+.avgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px;border-radius:16px;background:#7a4a35;background-image:linear-gradient(#0000 0 0);box-shadow:inset 0 0 0 3px #5b3a2a}
+.avc{position:relative;aspect-ratio:1;border:0;padding:0;margin:0;background:#4a2c20;border-radius:9px;perspective:260px;cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent}
+.avc.big{grid-column:span 2;aspect-ratio:auto}
+.avc .in{position:absolute;inset:0;display:grid;place-items:center;border-radius:9px;background:#fff3df;overflow:hidden}
+.avc .gift{display:flex;justify-content:center;width:78%}.avc .gift svg{width:100%;max-width:44px;display:block}
+.avc.big .gift{width:auto;gap:4px}.avc.big .gift svg{width:40px}
+.avc small{position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:10px;font-weight:900;color:var(--ink)}
+.avc .door{position:absolute;inset:0;border-radius:9px;display:grid;place-items:center;transform-origin:0 50%;transition:transform .6s cubic-bezier(.3,.1,.3,1.3);backface-visibility:hidden;
+  background:#e8505e;box-shadow:inset 0 0 0 2px #b8443e,inset 0 -5px 0 #0001}
+.avc:nth-child(3n+1) .door{background:#6fae7a;box-shadow:inset 0 0 0 2px #4f8a5a,inset 0 -5px 0 #0001}
+.avc:nth-child(3n+2) .door{background:#f2c75c;box-shadow:inset 0 0 0 2px #d1a238,inset 0 -5px 0 #0001}
+.avc .door b{font-family:var(--display);font-weight:400;font-size:19px;color:#fffaf2;text-shadow:0 2px 0 #0003}
+.avc.big .door b{font-size:24px}
+.avc .door::after{content:"";position:absolute;right:6px;top:50%;width:5px;height:5px;border-radius:50%;background:#fff8;margin-top:-2px}
+.avc.s-lock .door{filter:saturate(.55) brightness(.92)}
+.avc.s-today .door{animation:avglow 1.2s ease-in-out infinite alternate}
+@keyframes avglow{to{box-shadow:inset 0 0 0 2px #fff,0 0 12px 3px #ffe9a0}}
+.avc.s-gel .door{background:#cfe3f4!important;box-shadow:inset 0 0 0 2px #8fb6da!important}.avc.s-gel .door b{color:#5a86b0;text-shadow:none}
+.avc.s-gel .door em{position:absolute;top:3px;right:3px;width:14px;color:#5aa0dc}.avc.s-gel .door em svg{display:block}
+.avc.s-lost .in{background:#e3dcd8}.avc .melt{width:40%;color:#b9aea8}.avc.big .melt{width:24%}.avc .melt svg{display:block}
+.avc.opening .door{transform:rotateY(-112deg)}
+.avc.nope{animation:avno .35s}
+@keyframes avno{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.avbag{display:flex;justify-content:center;gap:16px;margin:10px 0 4px;font-weight:900}.avbag span{display:flex;align-items:center;gap:4px}.avbag svg{width:22px;height:22px}
+#avent .enter{display:block;margin:10px auto 0;animation:none}
+#avtip{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:99px;padding:7px 14px;font-size:13px;white-space:nowrap;z-index:3}
+#avtip[hidden],#avreveal[hidden]{display:none}
+#avreveal{position:absolute;inset:0;border-radius:22px;background:#fffaf2f7;display:grid;place-items:center;z-index:2;overflow:hidden auto}
+.avr-in{position:relative;z-index:1;text-align:center;padding:16px;animation:avpop .45s cubic-bezier(.3,.1,.3,1.5)}
+@keyframes avpop{from{transform:scale(.4);opacity:0}}
+.avr-d{margin:0;font-family:var(--display);color:#b8443e}
+.avr-g{margin:10px 0}.avr-g strong{display:block;font-family:var(--display);font-weight:400;font-size:20px}.avr-g>span:not(.avr-art){display:block;color:var(--soft);font-size:13.5px;max-width:260px;margin:2px auto 0}
+.avr-art{display:block;width:96px;height:96px;margin:0 auto 4px;animation:avbob 1.6s ease-in-out infinite alternate}.avr-art svg{display:block;width:100%;height:100%}
+.multi .avr-g{margin:6px 0}.multi .avr-art{width:64px;height:64px}.multi .avr-g strong{font-size:17px}
+.avr-art.gel{width:72px;height:72px;color:#5aa0dc}
+.avr-g.star .avr-art{filter:drop-shadow(0 0 10px #ffd85a)}
+@keyframes avbob{to{transform:translateY(-6px) rotate(3deg)}}
+.avno{font:inherit;background:none;border:0;color:var(--soft);text-decoration:underline;margin-top:8px;cursor:pointer}
+.sparkle{position:absolute;left:50%;top:42%;width:10px;height:10px;border-radius:50%;background:var(--c);opacity:0;animation:avsp 1s ease-out .1s forwards}
+@keyframes avsp{0%{opacity:1;transform:rotate(var(--a)) translateY(0) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateY(calc(-1*var(--r))) scale(.4)}}
+@media (prefers-reduced-motion:reduce){.avcard.todo .ic,.avc.s-today .door,.avr-art,.avr-in{animation:none}.avc .door{transition:none}}
 </style>
 </head>
 <body>
@@ -89,6 +145,7 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
 <iframe id="game" title="Jeu" hidden></iframe>
 <main>
   <div class="top"><img src="icons/icon-192.png" alt=""><div><h1>Kitsune Café</h1><p>Un café tenu par des renards, et une clairière pour souffler.</p></div><button class="snd" data-sound type="button" style="margin-left:auto"></button></div>
+  <button class="avcard" id="avcard" type="button" hidden><span class="ic"><svg viewBox="0 0 52 52" aria-hidden="true"><g stroke="#5b4250" stroke-width="2.4" stroke-linejoin="round"><path d="M6 22L26 6L46 22V46H6Z" fill="#fff3df"/><path d="M3 23L26 4L49 23" fill="none" stroke="#fffaf2" stroke-width="5" stroke-linecap="round"/><path d="M3 23L26 4L49 23" fill="none" stroke-linecap="round"/><rect x="11" y="25" width="12" height="9" rx="2" fill="#e8505e"/><rect x="29" y="25" width="12" height="9" rx="2" fill="#6fae7a"/><rect x="11" y="36" width="12" height="8" rx="2" fill="#f2c75c"/><rect x="29" y="36" width="12" height="8" rx="2" fill="#e8505e"/><circle cx="26" cy="15" r="4" fill="#f6cc4e"/></g></svg></span><div><strong>Calendrier de l'Avent</strong><span id="avsub"></span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
   <a class="game" href="cafe.html">
     <img src="img/cafe.jpg" alt="Aperçu du café">
     <div class="tx"><div><strong>Le café</strong><span>Sers les commandes avant que les clients s'impatientent, décroche tes étoiles et traverse les quatre saisons.</span></div><span class="go"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
@@ -102,10 +159,13 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
   <footer><span id="savetx">Tes parties sont enregistrées sur cet appareil.</span> <button class="stats" id="cloudbtn" type="button">Sauvegarde</button> · <button class="stats" id="statsbtn" type="button">Mes chiffres</button></footer>
   <dialog id="cloud"><h2>Sauvegarde</h2><div id="cloudin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button></dialog>
   <dialog id="stats"><h2>Mes chiffres</h2><div id="statsin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button></dialog>
+  <dialog id="avent"><h2>Calendrier de l'Avent</h2><div id="aventin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button><div id="avtip" hidden></div><div id="avreveal" hidden></div></dialog>
 </main>
 <script src="js/music.js"></script>
 <script src="js/push.js"></script>
 <script src="js/cloud.js"></script>
+<script src="js/bourse.js"></script>
+<script src="js/avent.js"></script>
 <script src="js/cafe/foxes.js"></script>
 <script src="js/foxart.js"></script>
 <script>
@@ -120,7 +180,7 @@ const frame=document.getElementById("game");
 // location.replace : charger un jeu dans le cadre n'ajoute pas d'entrée à l'historique (sinon « retour » rouvrirait l'ancien jeu)
 const load=url=>frame.contentWindow.location.replace(url);
 function openGame(url){load(url);frame.hidden=false;history.pushState({game:url},"")}
-function hide(){frame.hidden=true;load("about:blank");M("boite");try{waiting()}catch(e){}backup()}
+function hide(){frame.hidden=true;load("about:blank");M("boite");try{waiting()}catch(e){}try{avCard()}catch(e){}backup()}
 function closeGame(){if(frame.hidden)return;hide();if(history.state&&history.state.game)history.back()}
 addEventListener("popstate",()=>{if(!frame.hidden)hide()});
 // un nouveau renard arrive pour son histoire : sa silhouette noire sur la carte de la Clairière, rien d'autre
@@ -130,6 +190,7 @@ function waiting(){let R=null;try{R=JSON.parse(localStorage.getItem("clairiere-r
   const w=document.getElementById("wait");w.hidden=!on;document.getElementById("paws").hidden=!on;document.getElementById("gwrap").classList.toggle("on",on);
   if(on)document.getElementById("wsil").innerHTML=foxArt(f).replace(/ filter="url\(#wobble\)"/g,"")}
 try{waiting()}catch(e){}
+try{avInit()}catch(e){}
 // jours où l'app a été ouverte (pour le test : qui revient au bout d'une semaine ?) et ce que chaque jeu a avancé
 const SK="renards-stats",rd=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
 function markDay(){const st=rd(SK)||{days:[]},d=new Date().toISOString().slice(0,10);if(!st.days.includes(d))st.days.push(d);try{localStorage.setItem(SK,JSON.stringify(st))}catch(e){}}

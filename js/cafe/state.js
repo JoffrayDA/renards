@@ -1,6 +1,7 @@
 /* Kitsune Café : sauvegarde (S), migrations, portes, quêtes. */
 /* ---------- état ---------- */
 let S;
+deliverGifts(); // les cadeaux du calendrier de l'Avent (bourse.js), avant de lire la sauvegarde
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
 if(!S||!S.own)S={day:1,coins:0,own:{},seen:{},stars:{},quests:[],qp:{},streak:0,lastDay:"",total:0,served:0,ver:3,best:{},guest:{},pass:{},style:{wall:"rose",counter:"bois",acc:""}};
 if(!S.ver){

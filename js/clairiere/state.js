@@ -1,5 +1,6 @@
 /* La Clairière : sauvegarde (R), lien avec le Café, simulation page fermée, arrivées. */
 const load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+deliverGifts(); // les cadeaux du calendrier de l'Avent (bourse.js), avant de lire la sauvegarde
 let R=load(KEY);
 if(!R||R.ver!==2){
   // nouvelle partie ; de l'ancienne Clairière (v1, restée intacte) on ne garde que les renards déjà croisés
