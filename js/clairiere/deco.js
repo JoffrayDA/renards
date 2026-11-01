@@ -23,14 +23,17 @@ function fBirds(){const S=`stroke="${INK}" stroke-width="2.2" stroke-linejoin="r
     flap=d=>rot("0 -1 -4;-70 -1 -4;0 -1 -4","",d),
     BLUE=["#8ec5f0","#5f9fd6"],GOLD=["#ffd36b","#eaa93a",1],PINK=["#f6a5b4","#d9788c"];
   // l'oiseau qui vient se poser : l'aile bat en vol, se replie quand il est posé (de .3 à .7 du trajet)
-  const land=[],lk=[];for(let t=0;t<=1.0001;t+=.025){const fl=t<.3||t>.7;land.push(fl&&Math.round(t*40)%2?"-70 -1 -4":"0 -1 -4");lk.push(t.toFixed(3))}
+  // l'oiseau rose : posé un moment, puis une boucle autour de la fontaine et retour au même endroit (avant, il partait hors de l'image et
+  // réapparaissait d'un coup) ; il se retourne pendant la moitié de la boucle où il vole vers la droite
+  const land=[],lk=[];for(let t=0;t<=1.0001;t+=.025){land.push(t>.45&&t<.99&&Math.round(t*40)%2?"-70 -1 -4":"0 -1 -4");lk.push(t.toFixed(3))}
+  const loop=["0,0"],lt=["0"];for(let i=0;i<=24;i++){const a=-i/24*2*Math.PI;loop.push(`${(-56+56*Math.cos(a)).toFixed(1)},${(52*Math.sin(a)-14*Math.sin(-a/2)).toFixed(1)}`);lt.push((.45+.55*i/24).toFixed(3))}
   return `<g transform="translate(-27 -66)"><g>${rot("0 0 8;0 0 8;-38 0 8;-38 0 8;0 0 8;0 0 8","0;.35;.45;.6;.68;1",4)}
       ${bird(BLUE,`<animateTransform attributeName="transform" type="rotate" values="0 -1 -4;0 -1 -4;-40 -1 -4;0 -1 -4;-40 -1 -4;0 -1 -4;-40 -1 -4;0 -1 -4;0 -1 -4" keyTimes="0;.7;.73;.76;.79;.82;.85;.88;1" dur="4s" repeatCount="indefinite"/>`)}</g>
       ${[[-12,-2,0],[-6,-6,.1],[2,-4,.2],[-16,-6,.15]].map(([x,y,d])=>`<circle cx="${x}" cy="${y}" r="1.8" fill="#bfe3f2" stroke="#fff" stroke-width=".8" opacity="0"><animate attributeName="opacity" values="0;0;1;0" keyTimes="0;.42;.5;.62" dur="4s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="cy" values="${y};${y};${y-12};${y-2}" keyTimes="0;.42;.52;.62" dur="4s" begin="${d}s" repeatCount="indefinite"/></circle>`).join("")}</g>
     <g transform="translate(0 -104)"><g><animateMotion path="M-58 0 C-58 -26 58 -26 58 0 C58 26 -58 26 -58 0Z" dur="6s" repeatCount="indefinite"/>
       <g><animateTransform attributeName="transform" type="scale" values="-1.3 1.3;1.3 1.3" keyTimes="0;.5" calcMode="discrete" dur="6s" repeatCount="indefinite"/>${bird(GOLD,flap(.24),0)}</g></g></g>
-    <g transform="translate(24 -66)"><g><animateMotion path="M70 -96 Q24 -70 0 0 Q-34 -76 -96 -120" keyPoints="0;.44;.44;1" keyTimes="0;.3;.7;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
-      <g transform="scale(1.2)">${bird(PINK,`<animateTransform attributeName="transform" type="rotate" values="${land.join(";")}" keyTimes="${lk.join(";")}" calcMode="discrete" dur="8s" repeatCount="indefinite"/>`)}</g></g></g>`}
+    <g transform="translate(24 -66)"><g><animateMotion values="${loop.join(";")}" keyTimes="${lt.join(";")}" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+      <g transform="scale(1.2)"><g><animateTransform attributeName="transform" type="scale" values="1 1;-1 1;1 1" keyTimes="0;.725;.995" calcMode="discrete" dur="8s" repeatCount="indefinite"/>${bird(PINK,`<animateTransform attributeName="transform" type="rotate" values="${land.join(";")}" keyTimes="${lk.join(";")}" calcMode="discrete" dur="8s" repeatCount="indefinite"/>`)}</g></g></g></g>`}
 const dLw=w=>(1.35*100/w).toFixed(2); // même épaisseur de trait que les renards, quelle que soit la taille de l'objet
 const dWob=LITE?"":` filter="url(#wobble)"`;
 const dSh=(rx,cy=-4)=>`<ellipse cx="0" cy="${cy}" rx="${rx}" ry="5" fill="#3d2a35" opacity=".16"/>`;
