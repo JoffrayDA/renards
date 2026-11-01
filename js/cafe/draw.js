@@ -1,6 +1,8 @@
 /* Kitsune Café : icônes, pièce, bonbon, la salle (véranda) et le comptoir. */
 /* ---------- dessins ---------- */
 const K=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+// pendant une Nuit de Noël, pas de décor d'Halloween même si les deux fêtes se chevauchent (noelnuits.js)
+const XNV=()=>typeof G!=="undefined"&&!!G&&!!G.noel,HWV=()=>HW&&!XNV();
 const ICON={
   bin:`<path d="M9 12 H31 L28 35 H12Z" fill="#f59a8b" ${K}/><path d="M6 11 H34 M16 7 H24" fill="none" ${K}/><path d="M16 17 L17 30 M24 17 L23 30" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`,
   cafe:`<ellipse cx="18" cy="34" rx="14" ry="3" fill="#f7b7c3" ${K}/><path d="M28 16 Q36 16 35 22 Q34 28 27 27" fill="none" ${K}/><path d="M7 14 H29 V25 Q29 33 18 33 Q7 33 7 25Z" fill="#fff" ${K}/><ellipse cx="18" cy="14" rx="11" ry="2.8" fill="#8a5a3a" ${K}/><path d="M14 9 q-2 -3 0 -6 M21 9 q-2 -3 0 -6" fill="none" stroke="#cdbfc7" stroke-width="2" stroke-linecap="round"/><path d="M16 26 c-1.5-1.3-3-2.3-3-3.5 a1.5 1.5 0 0 1 3-.5 a1.5 1.5 0 0 1 3 .5 c0 1.2-1.5 2.2-3 3.5z" fill="#f6a5b4"/>`,
@@ -63,7 +65,7 @@ Object.assign(ICON,{
   "smoothie@halloween":glass("#9fdc7a",`<circle cx="16" cy="22" r="2.4" fill="#d6f5c0" stroke="${INK}" stroke-width="1.3"/><circle cx="22" cy="27" r="1.8" fill="#d6f5c0" stroke="${INK}" stroke-width="1.3"/><circle cx="16" cy="11" r="3.2" fill="#c8f0a8" stroke="${INK}" stroke-width="1.5"/><circle cx="22" cy="7" r="2.3" fill="#c8f0a8" stroke="${INK}" stroke-width="1.4"/><path d="M26 2 L23 20" stroke="#9a6ac0" stroke-width="3" stroke-linecap="round"/>`),
   "gateau@halloween":slice("#f2a35c","#fff5e8","#6a4a7a",`<ellipse cx="22" cy="10" rx="6" ry="4.6" fill="#f2a35c" stroke="${INK}" stroke-width="1.8"/><path d="M22 5.6 q0 -3 3 -4" fill="none" stroke="#6fae5e" stroke-width="2.4" stroke-linecap="round"/><path d="M8 13 l2 -2 2 2 M30 18 l2 -2 2 2" fill="none" stroke="#f7d77a" stroke-width="1.6" stroke-linecap="round"/>`)
 });
-const iconIn=(k,sea)=>(typeof G!=="undefined"&&G&&G.noel&&ICON[k+"@noel"])||(HW&&ICON[k+"@halloween"])||ICON[k+"@"+sea]||ICON[k]||"";
+const iconIn=(k,sea)=>(typeof G!=="undefined"&&G&&G.noel&&ICON[k+"@noel"])||(HWV()&&ICON[k+"@halloween"])||ICON[k+"@"+sea]||ICON[k]||"";
 // options dessinées par-dessus l'article : mousse de lait (café crème), chantilly et cerise
 const OPTV={
   lait:`<path d="M8 13 Q7 6 13 7 Q15 2 20 4.5 Q25 2 27 7 Q32 7 30 13Z" fill="#fffaf2" ${K}/><path d="M15.5 9.6 c1-1.4 3-1 3 .5 c0-1.5 2-1.9 3-.5 c-.5 1-2 1.8-3 2.3 c-1-.5-2.5-1.3-3-2.3z" fill="#e8c9a8"/>`,
@@ -98,7 +100,7 @@ const SCAPE={
     fields:["#eef3fa","#dfe8f4","#f6f9fd"],hedge:"#9fb2c8",path:"#c9d6e6",fence:"#fbfdff",fx:"neige",night:1}
 };
 function outsideSVG(sea){
-  if(HW)return outsideOld(sea);
+  if(HWV())return outsideOld(sea);
   const P=SCAPE[sea],R=rng(11),f=n=>n.toFixed(1),l=(w=2.4)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`,fx=[];
   const g=(id,a,b,x2=0,y2=1)=>`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
   let defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.sky[0]}"/><stop offset=".7" stop-color="${P.sky[1]}"/><stop offset="1" stop-color="${P.sky[2]}"/></linearGradient>`
@@ -175,10 +177,10 @@ function outsideSVG(sea){
 }
 // l'ancien paysage, gardé pour Halloween (ciel violet, citrouilles, chauves-souris)
 function outsideOld(sea){
-  const O=HW?{...OUT[sea],sky:sea==="hiver"?OUT.hiver.sky:["#3c2e60","#c98a9a"],cloud:"#7d6aa6"}:OUT[sea],R=rng(11),fx=[];
+  const O=HWV()?{...OUT[sea],sky:sea==="hiver"?OUT.hiver.sky:["#3c2e60","#c98a9a"],cloud:"#7d6aa6"}:OUT[sea],R=rng(11),fx=[];
   let defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${O.sky[0]}"/><stop offset="1" stop-color="${O.sky[1]}"/></linearGradient>`;
   let st=`<rect x="0" y="0" width="600" height="200" fill="url(#sky)"/>`,an="";
-  if(HW&&sea!=="hiver"){
+  if(HWV()&&sea!=="hiver"){
     for(let i=0;i<22;i++){const x=GX0+8+R()*(GX1-GX0-16),y=GY0+6+R()*70,r=.8+R()*1.3;an+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#fff8dc"><animate attributeName="opacity" values="1;.2;1" dur="${(2+R()*3).toFixed(1)}s" repeatCount="indefinite"/></circle>`}
     st+=`<circle cx="430" cy="66" r="44" fill="#fff3c4" opacity=".35" filter="url(#soft)"/><circle cx="430" cy="66" r="24" fill="#fff3c4" stroke="${INK}" stroke-width="2.4"/><circle cx="422" cy="60" r="4" fill="#efdca0"/><circle cx="437" cy="73" r="5" fill="#efdca0"/><circle cx="440" cy="58" r="2.4" fill="#efdca0"/>`;
   }else if(sea==="hiver"){
@@ -197,17 +199,17 @@ function outsideOld(sea){
   an+=cloud(160,92,1,22)+cloud(330,52,.8,28)+cloud(262,118,.6,19);
   // collines et paysage : les mêmes dessins que sur la carte
   st+=`<path d="M0 150 Q90 112 190 138 T380 128 T600 136 V200 H0Z" fill="${O.hill[0]}" ${BO}/>`;
-  if(sea==="hiver"||HW)st+=`<rect x="290" y="114" width="26" height="18" rx="2" fill="#f7d9c4" ${BO}/><path d="M285 116 L303 100 L321 116Z" fill="#fff" ${BO}/><rect x="297" y="119" width="9" height="8" rx="1.5" fill="#ffd66b"/><circle cx="301" cy="123" r="12" fill="#ffd66b" opacity=".45" filter="url(#soft)"/>`;
+  if(sea==="hiver"||HWV())st+=`<rect x="290" y="114" width="26" height="18" rx="2" fill="#f7d9c4" ${BO}/><path d="M285 116 L303 100 L321 116Z" fill="#fff" ${BO}/><rect x="297" y="119" width="9" height="8" rx="1.5" fill="#ffd66b"/><circle cx="301" cy="123" r="12" fill="#ffd66b" opacity=".45" filter="url(#soft)"/>`;
   const F=DECO[sea];
   [[150,146,.5,0],[372,140,.45,0],[248,142,.4,sea==="ete"?1:0]].forEach(([x,y,k,i])=>st+=F[i](x,y,k));
   st+=`<path d="M0 172 Q130 148 270 166 T600 158 V200 H0Z" fill="${O.hill[1]}" ${BO}/>`;
   const near={printemps:[[112,182,.8,0],[214,180,.65,1],[396,182,.6,2],[492,186,.85,0]],ete:[[110,184,.8,0],[200,182,.75,1],[226,184,.6,1],[392,184,.62,1],[490,188,.85,0]],automne:[[110,184,.8,0],[210,180,.7,2],[392,182,.65,1],[490,188,.85,0]],hiver:[[112,184,.85,0],[212,182,.75,1],[392,184,.7,0],[488,188,.9,1]]}[sea];
   near.forEach(([x,y,k,i])=>st+=F[i](x,y,k));
-  if(HW)[[160,190,.7],[300,192,.85],[446,190,.6]].forEach(([x,y,k])=>st+=jack(x,y,k));
+  if(HWV())[[160,190,.7],[300,192,.85],[446,190,.6]].forEach(([x,y,k])=>st+=jack(x,y,k));
   if(sea==="hiver")st+=`<circle cx="345" cy="122" r="24" fill="#ffd66b" opacity=".45" filter="url(#soft)"/><rect x="342" y="128" width="6" height="56" fill="#5b4a5e" ${BO}/><rect x="334" y="114" width="22" height="16" rx="4" fill="#ffe7a0" ${BO}/>`;
   if(sea==="ete")[[150,120,"#f6a5b4",0],[330,104,"#c9b8f2",4]].forEach(([x,y,c,dl])=>an+=`<g transform="translate(${x} ${y})"><g><animateMotion path="M0 0 C24 -18 50 14 76 -4 S120 -20 96 16 S30 20 0 0Z" dur="11s" begin="-${dl}s" repeatCount="indefinite"/><path d="M0 0 Q-9 -10 -10 -2 Q-8 4 0 0 Q9 -10 10 -2 Q8 4 0 0Z" fill="${c}" stroke="${INK}" stroke-width="1.6"><animateTransform attributeName="transform" type="scale" values="1 1;.3 1;1 1" dur=".35s" repeatCount="indefinite"/></path></g></g>`);
   // chauves-souris qui passent devant la lune
-  if(HW)[[300,70,0,1],[400,96,3,.8],[200,60,6,.7]].forEach(([x,y,dl,k])=>an+=`<g transform="translate(${x} ${y}) scale(${k})"><g><animateMotion path="M0 0 C40 -30 90 20 130 -10 S170 -40 120 10 S20 30 0 0Z" dur="9s" begin="-${dl}s" repeatCount="indefinite"/><path d="M0 0 Q-6 -8 -16 -6 Q-12 -2 -13 3 Q-8 0 -6 4 Q-3 0 0 0 Q3 0 6 4 Q8 0 13 3 Q12 -2 16 -6 Q6 -8 0 0Z" fill="#3d2a35"><animateTransform attributeName="transform" type="scale" values="1 1;1 .3;1 1" dur=".4s" repeatCount="indefinite"/></path><circle r="3.4" fill="#3d2a35"/></g></g>`);
+  if(HWV())[[300,70,0,1],[400,96,3,.8],[200,60,6,.7]].forEach(([x,y,dl,k])=>an+=`<g transform="translate(${x} ${y}) scale(${k})"><g><animateMotion path="M0 0 C40 -30 90 20 130 -10 S170 -40 120 10 S20 30 0 0Z" dur="9s" begin="-${dl}s" repeatCount="indefinite"/><path d="M0 0 Q-6 -8 -16 -6 Q-12 -2 -13 3 Q-8 0 -6 4 Q-3 0 0 0 Q3 0 6 4 Q8 0 13 3 Q12 -2 16 -6 Q6 -8 0 0Z" fill="#3d2a35"><animateTransform attributeName="transform" type="scale" values="1 1;1 .3;1 1" dur=".4s" repeatCount="indefinite"/></path><circle r="3.4" fill="#3d2a35"/></g></g>`);
   if(sea==="hiver")fx.push(fxPat("fx1",40,40,`<circle cx="8" cy="10" r="2.3" fill="#fff"/><circle cx="28" cy="30" r="1.7" fill="#fff"/>`,"6 40",4.6),fxPat("fx2",26,26,`<circle cx="6" cy="6" r="1.3" fill="#fff" opacity=".85"/>`,"-4 26",3));
   if(sea==="automne")fx.push(fxPat("fx1",64,64,`<ellipse cx="12" cy="14" rx="5" ry="2.6" fill="#e8835a" transform="rotate(30 12 14)"/><ellipse cx="44" cy="46" rx="4.4" ry="2.4" fill="#f2c060" transform="rotate(-40 44 46)"/><ellipse cx="50" cy="12" rx="4" ry="2.2" fill="#d9603f" transform="rotate(70 50 12)"/>`,"40 64",7));
   if(sea==="printemps")fx.push(fxPat("fx1",56,56,`<ellipse cx="10" cy="12" rx="3.6" ry="2.2" fill="#f9c4d2" transform="rotate(25 10 12)"/><ellipse cx="38" cy="40" rx="3.2" ry="2" fill="#fff0f4" transform="rotate(-35 38 40)"/>`,"30 56",8));
@@ -260,12 +262,21 @@ function roomSVG(night){
   }
   if(S.own.guirlande){s+=`<path d="M-10 ${GY0} Q150 62 300 30 T610 ${GY0}" fill="none" stroke="${INK}" stroke-width="2"/>`;
     for(let i=0;i<14;i++){const x=10+i*44,t=x<300?x/300:(x-300)/300,y=x<300?GY0+(30-GY0)*t+24*Math.sin(Math.PI*t):30+(GY0-30)*t-14*Math.sin(Math.PI*t);
-      const c=(HW?["#f2a35c","#b48ae0","#f7d77a","#8fca7a"]:["#f2c75c","#f47f9a","#9ec3ef","#8fca7a"])[i%4];s+=`<circle cx="${x}" cy="${y+6}" r="${night?14:10}" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><rect x="${x-2.6}" y="${y-1}" width="5.2" height="3.6" rx="1" fill="#9a8f88" stroke="${INK}" stroke-width="1.2"/><ellipse cx="${x}" cy="${y+6}" rx="4.5" ry="6" fill="${c}" stroke="${INK}" stroke-width="2"/><ellipse cx="${x-1.4}" cy="${y+4}" rx="1.4" ry="2" fill="#fff" opacity=".7"/>`}}
-  if(HW){
+      const c=(HWV()?["#f2a35c","#b48ae0","#f7d77a","#8fca7a"]:["#f2c75c","#f47f9a","#9ec3ef","#8fca7a"])[i%4];s+=`<circle cx="${x}" cy="${y+6}" r="${night?14:10}" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><rect x="${x-2.6}" y="${y-1}" width="5.2" height="3.6" rx="1" fill="#9a8f88" stroke="${INK}" stroke-width="1.2"/><ellipse cx="${x}" cy="${y+6}" rx="4.5" ry="6" fill="${c}" stroke="${INK}" stroke-width="2"/><ellipse cx="${x-1.4}" cy="${y+4}" rx="1.4" ry="2" fill="#fff" opacity=".7"/>`}}
+  if(HWV()){
     [[GX0+6,GY0,1],[GX1-6,GY0,-1]].forEach(([x,y,d])=>{s+=`<g fill="none" stroke="#fff" stroke-width="1.6" opacity=".8">${[0,30,60,90].map(a=>{const r=a*Math.PI/180;return `<path d="M${x} ${y} L${x+d*Math.cos(r)*46} ${y+Math.sin(r)*46}"/>`}).join("")}${[16,30,44].map(r=>`<path d="M${x+d*r} ${y} Q${x+d*r*.8} ${y+r*.4} ${x+d*r*.87} ${y+r*.5} Q${x+d*r*.55} ${y+r*.65} ${x+d*r*.5} ${y+r*.87} Q${x+d*r*.3} ${y+r*.75} ${x} ${y+r}"/>`).join("")}</g>`});
     s+=jack(150,GY1+2,.62)+jack(452,GY1+2,.52)+jack(66,84,.42);
     s+=`<path d="M${GX0} ${GY0+4} Q300 ${GY0+44} ${GX1} ${GY0+4}" fill="none" stroke="${INK}" stroke-width="1.8"/>`;
     for(let i=1;i<9;i++){const t=i/9,x=GX0+(GX1-GX0)*t,y=GY0+11+80*t*(1-t);s+=`<path d="M${x} ${y} q-5 -6 -12 -4 q3 3 2 6 q4 -2 5 2 q2 -2 5 -4 q3 2 5 4 q1 -4 5 -2 q-1 -3 2 -6 q-7 -2 -12 4Z" fill="${i%2?"#5f4f72":"#f2a35c"}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`}
+  }
+  // Nuit de Noël : guirlande de sapin à nœuds rouges et boules, petit sapin décoré près de la porte
+  if(XNV()){
+    s+=`<path d="M${GX0} ${GY0+4} Q300 ${GY0+44} ${GX1} ${GY0+4}" fill="none" stroke="#3f6a4f" stroke-width="7" stroke-linecap="round"/><path d="M${GX0} ${GY0+4} Q300 ${GY0+44} ${GX1} ${GY0+4}" fill="none" stroke="#5f9468" stroke-width="3.4" stroke-dasharray="2 5" stroke-linecap="round"/>`;
+    for(let i=1;i<9;i++){const t=i/9,x=GX0+(GX1-GX0)*t,y=GY0+6+80*t*(1-t);s+=i%2?`<path d="M${x} ${y} l-7 -5 v10Z M${x} ${y} l7 -5 v10Z" fill="#e0505a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="${x}" cy="${y}" r="2.6" fill="#c7454f" stroke="${INK}" stroke-width="1.4"/>`
+      :`<path d="M${x} ${y} v6" stroke="${INK}" stroke-width="1.4"/><circle cx="${x}" cy="${y+11}" r="5.4" fill="${["#f2c45a","#9ec3ef","#f6a5b4","#c9a8ec"][i%4]}" stroke="${INK}" stroke-width="1.8"/><circle cx="${x-1.6}" cy="${y+9.4}" r="1.4" fill="#fff" opacity=".8"/>`}
+    const tx=452,ty=GY1+2;s+=`<rect x="${tx-5}" y="${ty-12}" width="10" height="12" fill="#a9785a" ${BO}/><path d="M${tx} ${ty-78} L${tx+22} ${ty-46} H${tx+12} L${tx+30} ${ty-12} H${tx-30} L${tx-12} ${ty-46} H${tx-22}Z" fill="#5f9468" ${BO}/>`
+      +[[-12,-24,"#e0505a"],[10,-30,"#f2c45a"],[-4,-48,"#9ec3ef"],[16,-18,"#f6a5b4"],[2,-60,"#e0505a"]].map(([dx,dy,c])=>`<circle cx="${tx+dx}" cy="${ty+dy}" r="3.6" fill="${c}" stroke="${INK}" stroke-width="1.4"/>`).join("")
+      +`<path d="M${tx} ${ty-90} l3 6.4 7 .8 -5.2 4.8 1.4 7 -6.2 -3.6 -6.2 3.6 1.4 -7 -5.2 -4.8 7 -.8z" fill="#ffe680" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`;
   }
   if(S.own.lanternes)[[232,"#f59a8b"],[368,"#f2c75c"],[440,"#c9b8f2"]].forEach(([x,c],i)=>{const y=i===1?58:48;s+=`<path d="M${x} ${GY0} V${y-14}" stroke="${INK}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="22" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><ellipse cx="${x}" cy="${y}" rx="12" ry="14" fill="${c}" ${BO}/><path d="M${x} ${y-14} V${y+14} M${x-6} ${y-12} Q${x-10} ${y} ${x-6} ${y+12} M${x+6} ${y-12} Q${x+10} ${y} ${x+6} ${y+12}" fill="none" stroke="${INK}" stroke-width="1.5"/><ellipse cx="${x-4}" cy="${y-5}" rx="2.4" ry="4" fill="#fff" opacity=".55"/><rect x="${x-5}" y="${y-17}" width="10" height="4" rx="1.4" fill="#5b4250"/><rect x="${x-5}" y="${y+13}" width="10" height="4" rx="1.4" fill="#5b4250"/>`});
   return s;
@@ -273,7 +284,7 @@ function roomSVG(night){
 // mélange une couleur avec du blanc (k = part de blanc), pour éclairer le haut des collines
 const kMix=(c,k,to=255)=>"#"+[1,3,5].map(i=>Math.round(parseInt(c.slice(i,i+2),16)*(1-k)+to*k).toString(16).padStart(2,"0")).join("");
 function bgSVG(){
-  const o=outsideSVG(SEA),night=SEA==="hiver"||HW,H=OUT[SEA].hill;
+  const o=outsideSVG(SEA),night=SEA==="hiver"||HWV(),H=OUT[SEA].hill;
   // collines en volume : éclairées en haut, plus sombres en bas ; brume au pied des collines lointaines ; lumière du ciel
   const hg=(id,c)=>`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${kMix(c,.35)}"/><stop offset=".5" stop-color="${c}"/><stop offset="1" stop-color="${kMix(c,.18,40)}"/></linearGradient>`;
   o.defs+=hg("kH0",H[0])+hg("kH1",H[1])+`<linearGradient id="kMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity="${night?.12:.45}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;

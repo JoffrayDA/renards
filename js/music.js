@@ -117,6 +117,15 @@ const MUSIC=(()=>{
         for(let i=0;i<16;i++)I.hat(t+i*B/4,i%2?.018:.03);[.5,1.5,2.5,3.5].forEach(x=>I.openhat(t+x*B,.02));
         [1.5,3.5].forEach(x=>I.stab(c.map(m=>m+12),t+x*B,.04));
         melody((m,tt)=>I.marimba(m+12,tt,.17),this.mel,b,t,B)}},
+    // les Nuits de Noël (js/cafe/noelnuits.js) : le refrain de Jingle Bells (domaine public), grelots de traîneau
+    noel:{name:"Nuits de Noël",bpm:118,beats:4,bars:8,
+      ch:[[48,52,55],[48,52,55],[48,52,55],[48,52,55],[53,57,60],[48,52,55],[50,55,59],[55,59,62]],
+      mel:[[[64,1],[64,1],[64,2]],[[64,1],[64,1],[64,2]],[[64,1],[67,1],[60,1.5],[62,.5]],[[64,4]],
+           [[65,1],[65,1],[65,1.5],[65,.5]],[[65,1],[64,1],[64,1],[64,.5],[64,.5]],[[64,1],[62,1],[62,1],[64,1]],[[62,2],[67,2]]],
+      bar(b,t,B){const c=this.ch[b];
+        for(let i=0;i<8;i++)I.shaker(t+i*B/2,i%2?.03:.05);[0,2].forEach(x=>I.kick(t+x*B,.3));[1,3].forEach(x=>I.snare(t+x*B,.07));
+        [0,1,2,3].forEach(x=>I.pluck((x%2?c[2]:c[0])+12,t+x*B,.04,.4,2400));I.bass(c[0]-12,t,B*1.8,.18);I.bass(c[0]-5,t+2*B,B*1.8,.15);
+        melody((m,tt)=>I.box(m+12,tt,.16,1.2),this.mel,b,t,B)}},
     fantomes:{name:"Petits fantômes",bpm:104,beats:4,bars:8,
       ch:[[57,60,64],[53,57,60],[50,53,57],[52,56,59],[57,60,64],[53,57,60],[50,53,57],[52,56,59]],
       mel:[[[76,.5],[77,.5],[76,.5],[75,.5],[76,1],[72,1]],[[77,1],[76,.5],[74,.5],[72,1],[69,1]],[[74,.5],[77,.5],[81,1],[80,.5],[81,.5],[77,1]],[[76,2],[68,1],[71,1]],
@@ -156,6 +165,19 @@ const MUSIC=(()=>{
       [[53,57,60],[52,56,59]].forEach((c,i)=>I.pad(c,T+.3+i*2*B,2*B,.022));
       const E=T+.3+6*B;I.pad([45,52,57,59,64],E,2.2,.03);I.box(81,E,.12,2.4);I.box(88,E+.15,.08,2.4);I.bass(33,E,2.2,.2)  // accord final
     }}
+    ,
+    // Nuits de Noël (js/cafe/noelintro.js) : grelots, la lune, le traîneau qui passe, les lumières du sapin, le refrain au titre
+    noelintro:{len:10,play(t){
+      const B=60/118;
+      I.pad([48,52,55,60],t,4.6,.028);wind(t,2.4,.03);
+      [72,76,79,84].forEach((m,i)=>I.box(m,t+.3+i*.3,.12,1.6));                                // la lune se lève
+      for(let i=0;i<20;i++)I.shaker(t+2.2+i*.09,.05);for(let i=0;i<6;i++)I.box(96-i*2,t+2.3+i*.16,.06,.5);  // le traîneau passe
+      [79,83,86,91,95].forEach((m,i)=>I.box(m,t+3.4+i*.18,.1,1));                              // les lumières du sapin
+      [4.2,4.35,4.5].forEach((x,i)=>{I.marimba([67,71,74][i],t+x,.18);I.wood(t+x,.07)});        // les invités sautent
+      const T=t+5.3;I.kick(T,.4);I.openhat(T,.05);I.stab([60,64,67,72],T,.05);I.bass(36,T,1.4,.22);
+      melody((m,tt)=>I.box(m+12,tt,.16,1.1),[[[64,1],[64,1],[64,2],[64,1],[64,1],[64,2],[64,1],[67,1],[60,1.5],[62,.5],[64,4]]],0,T+.3,B);
+      for(let i=0;i<24;i++)I.shaker(T+.3+i*B/2,i%2?.03:.05);
+      const E=T+.3+12*B;I.pad([48,55,60,64],E,2,.03);I.box(84,E,.12,2.4);I.bass(36,E,2,.2)}}
   };
   let jtimer=null;
   function jingle(id){const J=JINGLES[id];if(!J||!on||!unlocked)return;init();if(C.state==="suspended")C.resume();

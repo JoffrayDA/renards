@@ -38,7 +38,7 @@ function spawn(){
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1)*(G.boost.patience?1.3:1);
-  const costume=HW&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé
+  const costume=HW&&!G.noel&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé
   // dans la file, il patiente aussi, mais plus longtemps (il voit qu'on s'active)
   G.cust.push({id:++uid,fox:f.id,spot:-1,order:genOrder(),pat,patMax:pat,state:"queue",qp:pat*1.2,vip,born:G.t,costume});
   if(costume){const ck=f.id+":"+costume;if(!S.costSeen[ck]&&S.seen[f.id])toast(`Nouveau déguisement : ${f.name} ${COSTNAME[costume]} !`);S.costSeen[ck]=(S.costSeen[ck]||0)+1}
@@ -108,7 +108,7 @@ function complete(c){
   if(frac>=.6)qEvent("green");
   c.state="happy";c.leave=1;
   // Halloween : les clients déguisés donnent des bonbons (2 s'ils sont servis vite), les invités d'Halloween 5
-  const cdy=HW?(FOX[c.fox].event==="halloween"?5:c.costume?(frac>=.5?2:1):0):0;
+  const cdy=HW&&!G.noel?(FOX[c.fox].event==="halloween"?5:c.costume?(frac>=.5?2:1):0):0;
   if(cdy){S.candy+=cdy;G.candy+=cdy;qEvent("candy",cdy)}
   if(c.costume)qEvent("costume");
   // album d'Halloween : servir chacun des invités une fois donne la Couronne de citrouilles à Roussette

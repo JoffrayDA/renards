@@ -320,3 +320,29 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .nn b{font-family:var(--display);font-weight:400;font-size:18px;color:#b8443e}.nn span{font-size:12px;color:#d6a93a}.nn span em{font-style:normal;color:#e6dcd6}
 .nn.ok{background:#fde8ea}.nn.nlock{opacity:.5;border-color:#d8ccd4;cursor:default}.nn.nlock b,.nn.nlock span{color:var(--ink-soft)}
 .mbar .btn.hw.xmas{background:#c7454f;box-shadow:0 4px 0 #8f2f38}
+/* animation d'ouverture des Nuits de Noël (js/cafe/noelintro.js) : reprend les pièces de celle d'Halloween (classes hi-) */
+#noelintro{position:fixed;inset:0;z-index:40;overflow:hidden;background:#121a44;cursor:pointer;animation:hi-in .5s ease-out}
+#noelintro.hi-out{opacity:0;transition:opacity .35s}
+.ni-aurora{opacity:0;animation:hi-show 2s ease-out .4s forwards,ni-aur 7s ease-in-out 2.4s infinite alternate;transform-origin:50% 30%}
+.ni-sleigh{position:absolute;left:0;top:0;width:min(58vmin,320px);z-index:2;opacity:0;animation:ni-fly 2.4s cubic-bezier(.4,.1,.6,.9) 2s forwards}
+.ni-sl-in{position:relative;display:flex;align-items:flex-end}
+.ni-sl-in svg{display:block;width:100%}
+.ni-ram{width:36%;margin-right:-6%;animation:hi-bounce .3s ease-in-out infinite alternate}
+.ni-sl-body{width:62%}
+.ni-bn{position:absolute;right:14%;bottom:34%;width:30%}
+.ni-trail{position:absolute;left:96%;top:62%;width:70%;height:6px;border-radius:6px;background:linear-gradient(90deg,#fff6c0,rgba(255,246,192,0));box-shadow:0 0 10px 3px rgba(255,240,170,.5)}
+.ni-title b{color:#fffaf2;text-shadow:0 3px 0 #8f2f38,0 0 22px rgba(255,120,120,.7)}
+.ni-ground{background:linear-gradient(transparent 50%,#fffaf2 50%)}
+.ni-cafe{opacity:0;animation:hi-show .8s ease-out .9s forwards}
+.ni-win{animation-delay:1.5s}
+.ni-tree{opacity:0;animation:hi-show .8s ease-out 1.2s forwards}
+.ni-lt{opacity:0;transform-box:fill-box;transform-origin:center;animation:hi-light .4s cubic-bezier(.3,1.6,.5,1) forwards,hi-flicker 1.2s ease-in-out infinite}
+.ni-star{opacity:0;transform-box:fill-box;transform-origin:center;animation:hi-light .7s cubic-bezier(.3,1.8,.5,1) 4.5s forwards,ni-spin 6s linear 5.2s infinite}
+.ni-crew{top:44%}
+.ni-snow{position:absolute;inset:0;pointer-events:none;z-index:3}
+.ni-flake{position:absolute;top:-10px;border-radius:50%;background:#fff;opacity:.9;animation:ni-fall linear infinite}
+@keyframes ni-fly{0%{opacity:1;transform:translate(105vw,24vh) rotate(-4deg)}100%{opacity:1;transform:translate(-70vw,2vh) rotate(-10deg)}}
+@keyframes ni-aur{from{transform:skewX(-6deg) translateX(-4%)}to{transform:skewX(6deg) translateX(4%)}}
+@keyframes ni-spin{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.12)}}
+@keyframes ni-fall{to{transform:translate(var(--dx),110vh)}}
+@media (prefers-reduced-motion:reduce){#noelintro *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

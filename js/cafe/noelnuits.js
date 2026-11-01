@@ -29,7 +29,7 @@ Object.assign(ICON,{
 
 /* ---------- jouer une nuit ---------- */
 function newNoel(n){const N=NOEL_NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.noel=n;G.cfg={...G.cfg,goal:noelGoal(n)};G.replay=(S.noelStars[n]||0)>0;
-  SEA="hiver";renderDecor();dirty=true} // le dehors est sous la neige, quelle que soit la saison du jour de référence
+  SEA="hiver";renderDecor();dirty=true;MUSIC.want("noel")} // le dehors est sous la neige, quelle que soit la saison du jour de référence
 function endNoel(){
   const n=G.noel,g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,prev=S.noelStars[n]||0;
   G.run=0;
@@ -61,7 +61,9 @@ function noelSheet(){const tot=Object.values(S.noelStars).reduce((a,b)=>a+b,0),d
     return `<button class="nn${op?"":" nlock"}${st?" ok":""}" data-noelnight="${n}" type="button" aria-label="${NOEL_NAMES[i]}"><b>${n}</b><span>${st?`${"★".repeat(st)}<em>${"★".repeat(3-st)}</em>`:op?"Jouer":`<svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><rect x="5" y="9" width="10" height="8" rx="2" fill="currentColor"/><path d="M7 9 V6 a3 3 0 0 1 6 0 V9" fill="none" stroke="currentColor" stroke-width="2"/></svg>`}</span></button>`};
   openSheet(`<h2>Les nuits de Noël</h2><p class="sub">Jusqu'au 6 janvier, le café sert sa carte de Noël : vin chaud, pain d'épice, sucres d'orge, bûche… Les invités de Noël passent en VIP et donnent un sucre d'orge. Chaque nouvelle étoile rapporte des sucres d'orge, à dépenser dans la boutique de Noël de la Clairière. Tu en as <b>${sucresN()}</b>.</p>
   <p class="sub" style="margin:0 0 6px"><b>${done} / ${NOEL_NIGHTS.length} nuits</b> · ${tot} étoiles${S.noelKeep?" · Guimauve vient toute l'année":" · réussis la Grande nuit de Noël pour garder Guimauve au café"}</p>
-  <div class="nngrid">${NOEL_NIGHTS.map(cell).join("")}</div>`);
+  <div class="nngrid">${NOEL_NIGHTS.map(cell).join("")}</div>
+  <p class="sub" style="margin:0 0 6px"><b>Les invités de Noël</b> · ils passent en VIP pendant les nuits</p><div class="fgrid" style="grid-template-columns:repeat(3,1fr);max-width:380px;margin:0 auto 12px">${NOELF.map(f=>`<div class="fc hwc">${foxSVG(f,{pose:"happy"})}${f.name}</div>`).join("")}</div>
+  <div class="col"><button class="btn ghost wide" data-act="noelintro" type="button">Revoir l'animation</button></div>`);
 }
 function noelNightSheet(n){
   if(!noelNightOpen(n)){const N=NOEL_NIGHTS[n-1];toast(!xmasDay()?"Les nuits de Noël sont finies pour cette année.":S.day<=N.base?`Réussis d'abord le jour ${N.base}.`:"Réussis d'abord la nuit précédente.");return}
