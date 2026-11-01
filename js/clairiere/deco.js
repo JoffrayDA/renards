@@ -5,19 +5,32 @@
    R.deco = {inv:{clé:nombre en réserve}, out:[{u,k,x,y,f}] posés dehors, home:[…] dans la maison, n : compteur des u, sold:{d:jour, ks:[…]}}.
    Dessins : viewBox "-50 -h 100 h", le pied de l'objet au point (0,0) ; w = largeur dans la scène (400 × 480). */
 R.deco=R.deco||{inv:{},out:[],home:[],n:0,sold:{}};
-// les oiseaux de la fontaine (01/11/2026, Joffray : « qu'on les voie voler autour ») : un qui se baigne sur le bord et s'ébroue,
-// deux qui tournent autour en battant des ailes, un qui vient se poser puis repart. SMIL hors du filtre qui fait trembler le trait ;
-// sur une photo, les animations sont retirées et chacun reste à sa place de départ.
-function fBirds(){const S=`stroke="${INK}" stroke-width="1.7" stroke-linejoin="round"`,
-    bird=(c,wing="")=>`<ellipse rx="8" ry="6" fill="${c}" ${S}/><circle cx="-6" cy="-4" r="4.6" fill="${c}" ${S}/><circle cx="-7.4" cy="-4.8" r="1.1" fill="${INK}"/><path d="M-10.4 -4 l-4 1.4 l4 1.4Z" fill="#f59a6b" ${S}/><path d="M7 -1 l7 -3 v6Z" fill="${c}" ${S}/>
-      <path d="M-1 -3 q6 -12 13 -7 q-4 6 -13 7Z" fill="#fffaf2" ${S}>${wing}</path>`,
-    flap=d=>`<animateTransform attributeName="transform" type="scale" values="1 1;1 -.7;1 1" dur="${d}s" repeatCount="indefinite"/>`,
-    fly=(path,dur,c,x,y,mirror)=>`<g transform="translate(${x} ${y})"><g><animateMotion path="${path}" dur="${dur}s" repeatCount="indefinite"/><g transform="scale(${mirror?-1.4:1.4} 1.4)">${bird(c,flap(.22))}</g></g></g>`;
-  return `<g transform="translate(-28 -62) scale(1.25)"><g><animateTransform attributeName="transform" type="rotate" values="0;0;24;0;-14;0;0" keyTimes="0;.5;.6;.68;.76;.84;1" dur="3.2s" repeatCount="indefinite"/>${bird("#9ec3ef")}</g>
-      ${[[-4,-6,0],[4,-8,.15],[10,-4,.3]].map(([x,y,d])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#bfe3f2" opacity="0"><animate attributeName="opacity" values="0;0;1;0" keyTimes="0;.6;.7;.9" dur="3.2s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="cy" values="${y};${y};${y-10};${y-4}" keyTimes="0;.6;.75;.9" dur="3.2s" begin="${d}s" repeatCount="indefinite"/></circle>`).join("")}</g>
-    ${fly("M0 0 C60 -40 120 -14 96 26 C70 66 -14 54 -28 14 C-36 -8 -16 -10 0 0Z",5.2,"#f6a5b4",-30,-110,1)}
-    ${fly("M0 0 C-56 -32 -110 8 -82 40 C-56 72 26 54 32 18 C34 0 14 -6 0 0Z",6.4,"#f2c45a",40,-120,0)}
-    <g transform="translate(26 -58)"><g><animateMotion path="M60 -90 Q20 -60 0 0 L0 0 Q-30 -70 -90 -110" keyPoints="0;.42;.42;1" keyTimes="0;.3;.7;1" calcMode="linear" dur="7s" repeatCount="indefinite"/><g transform="scale(1.3)">${bird("#c9a8ec",flap(.2))}</g></g></g>`}
+// les oiseaux de la fontaine (01/11/2026, Joffray : « qu'on les voie voler autour », puis « retire un oiseau, tu peux mieux faire ») :
+// un qui se baigne sur le bord (il trempe la tête puis s'ébroue), un qui tourne autour, un qui vient se poser puis repart.
+// Des oiseaux ronds dessinés comme les renards : ventre crème, joue rose, aile qui bat depuis l'épaule. SMIL hors du filtre
+// qui fait trembler le trait ; sur une photo, les animations sont retirées et chacun reste à sa place de départ.
+function fBirds(){const S=`stroke="${INK}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
+  // un oiseau tourné vers la gauche, pieds en (0, 8) ; wing : l'animation de l'aile
+  const bird=([c,d,tuft],wing="",feet=1)=>`<path d="M8 -1 L19 -6 L18 -1 L20 3 L8 4Z" fill="${d}" ${S}/>
+    ${feet?`<path d="M-2 6 v3 M3 6 v3 M-4 9 h4 M1 9 h4" fill="none" stroke="#e08a4c" stroke-width="1.8" stroke-linecap="round"/>`:""}
+    <path d="M-11 -4 C-11 -13 1 -14 6 -9 C11 -4 11 4 4 6.5 C-4 9 -11 4 -11 -4Z" fill="${c}" ${S}/>
+    <path d="M-10 0 C-8 5 -1 7 4 5 C-1 3 -6 1 -10 0Z" fill="#fff4e6"/>
+    ${tuft?`<path d="M-5 -12 q-1 -6 3 -7 M-3 -12 q2 -5 6 -4" fill="none" ${S}/>`:""}
+    <path d="M-11 -6.4 L-16 -4.6 L-11 -3Z" fill="#f2a24c" ${S}/>
+    <circle cx="-6" cy="-7" r="1.7" fill="${INK}"/><circle cx="-6.6" cy="-7.7" r=".6" fill="#fff"/><ellipse cx="-5.4" cy="-3.2" rx="2.2" ry="1.3" fill="#f6a5b4" opacity=".85"/>
+    <g>${wing}<path d="M-1 -4 C2 -10 10 -9 12 -3 C8 -1 3 -1 -1 -4Z" fill="${d}" ${S}/><path d="M4 -4 q3 -2 6 -1 M3 -6 q3 -2 6 -1" fill="none" stroke="${INK}" stroke-width="1.3" stroke-linecap="round" opacity=".6"/></g>`;
+  const rot=(vals,kt,dur,o="")=>`<animateTransform attributeName="transform" type="rotate" values="${vals}"${kt?` keyTimes="${kt}"`:""} dur="${dur}s" repeatCount="indefinite" ${o}/>`,
+    flap=d=>rot("0 -1 -4;-70 -1 -4;0 -1 -4","",d),
+    BLUE=["#8ec5f0","#5f9fd6"],GOLD=["#ffd36b","#eaa93a",1],PINK=["#f6a5b4","#d9788c"];
+  // l'oiseau qui vient se poser : l'aile bat en vol, se replie quand il est posé (de .3 à .7 du trajet)
+  const land=[],lk=[];for(let t=0;t<=1.0001;t+=.025){const fl=t<.3||t>.7;land.push(fl&&Math.round(t*40)%2?"-70 -1 -4":"0 -1 -4");lk.push(t.toFixed(3))}
+  return `<g transform="translate(-27 -66)"><g>${rot("0 0 8;0 0 8;-38 0 8;-38 0 8;0 0 8;0 0 8","0;.35;.45;.6;.68;1",4)}
+      ${bird(BLUE,`<animateTransform attributeName="transform" type="rotate" values="0 -1 -4;0 -1 -4;-40 -1 -4;0 -1 -4;-40 -1 -4;0 -1 -4;-40 -1 -4;0 -1 -4;0 -1 -4" keyTimes="0;.7;.73;.76;.79;.82;.85;.88;1" dur="4s" repeatCount="indefinite"/>`)}</g>
+      ${[[-12,-2,0],[-6,-6,.1],[2,-4,.2],[-16,-6,.15]].map(([x,y,d])=>`<circle cx="${x}" cy="${y}" r="1.8" fill="#bfe3f2" stroke="#fff" stroke-width=".8" opacity="0"><animate attributeName="opacity" values="0;0;1;0" keyTimes="0;.42;.5;.62" dur="4s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="cy" values="${y};${y};${y-12};${y-2}" keyTimes="0;.42;.52;.62" dur="4s" begin="${d}s" repeatCount="indefinite"/></circle>`).join("")}</g>
+    <g transform="translate(0 -104)"><g><animateMotion path="M-58 0 C-58 -26 58 -26 58 0 C58 26 -58 26 -58 0Z" dur="6s" repeatCount="indefinite"/>
+      <g><animateTransform attributeName="transform" type="scale" values="-1.3 1.3;1.3 1.3" keyTimes="0;.5" calcMode="discrete" dur="6s" repeatCount="indefinite"/>${bird(GOLD,flap(.24),0)}</g></g></g>
+    <g transform="translate(24 -66)"><g><animateMotion path="M70 -96 Q24 -70 0 0 Q-34 -76 -96 -120" keyPoints="0;.44;.44;1" keyTimes="0;.3;.7;1" calcMode="linear" dur="8s" repeatCount="indefinite"/>
+      <g transform="scale(1.2)">${bird(PINK,`<animateTransform attributeName="transform" type="rotate" values="${land.join(";")}" keyTimes="${lk.join(";")}" calcMode="discrete" dur="8s" repeatCount="indefinite"/>`)}</g></g></g>`}
 const dLw=w=>(1.35*100/w).toFixed(2); // même épaisseur de trait que les renards, quelle que soit la taille de l'objet
 const dWob=LITE?"":` filter="url(#wobble)"`;
 const dSh=(rx,cy=-4)=>`<ellipse cx="0" cy="${cy}" rx="${rx}" ry="5" fill="#3d2a35" opacity=".16"/>`;
@@ -76,10 +89,13 @@ const DECO={
       <path d="M-40 -44 L-50 -36" fill="none" stroke-width="${(1.35*100/66*2.6).toFixed(2)}"/><path d="M-40 -44 L-50 -36" stroke="#a9785a" stroke-width="2.6"/>
       <path d="M-40 -44 Q0 -58 40 -44 Q0 -36 -40 -44Z" fill="#f2d27a"/></g>${[-28,-14,2,18,30].map(x=>`<path d="M${x} -47 l3 -6 M${x+4} -46 l-2 -7" stroke="#d9b45a" stroke-width="1.6"/>`).join("")}`,
     front:L=>`<g ${L}${dWob}><path d="M-41 -44 L-30 -20 H30 L41 -44 Q0 -36 -41 -44Z" fill="#7fb0c8"/><circle cx="34" cy="-14" r="12" fill="#5b4250"/><circle cx="34" cy="-14" r="5" fill="#c9c2bc"/></g><path d="M-32 -36 H32" stroke="#a8cfe0" stroke-width="2.4"/>`},
-  tente:{name:"Petite tente",p:1500,w:84,h:80,fav:"charbon",seat:{dx:0,dy:4,poses:["sleep","lie","sit"]},
+  // on dort dedans (Joffray : « les renards peuvent aller dans la tente ? ») : le devant de la tente passe devant le renard, sa tête dépasse par l'entrée
+  tente:{name:"Petite tente",p:1500,w:110,h:80,fav:"charbon",seat:{dx:0,dy:-3,poses:["sleep","lie","sit"]},
     desc:"Une tente à rayures jaunes, l'entrée grande ouverte. On y dort comme en camping.",
-    art:L=>`${dSh(46,-2)}<g ${L}${dWob}><path d="M-46 -2 L0 -74 L46 -2Z" fill="#f6d27a"/><path d="M-16 -2 L0 -42 L16 -2Z" fill="#6a5060"/><path d="M-16 -2 L0 -42 L-26 -6Z M16 -2 L0 -42 L26 -6Z" fill="#fbe7b0"/></g>
-      <path d="M-30 -26 L-12 -52 M30 -26 L12 -52 M-40 -12 L-6 -64 M40 -12 L6 -64" stroke="#f2b25a" stroke-width="3.4" opacity=".8"/><path d="M0 -74 V-82" stroke="${INK}" stroke-width="2.4"/><path d="M0 -82 l10 3 l-10 3Z" fill="#f48aa6" ${L}/>`},
+    art:L=>`${dSh(46,-2)}<g ${L}${dWob}><path d="M-46 -2 L0 -74 L46 -2Z" fill="#f6d27a"/><path d="M-22 -2 L0 -52 L22 -2Z" fill="#6a5060"/></g><path d="M-18 -4 L0 -46 L18 -4Z" fill="#7d6272" opacity=".6"/><ellipse cx="0" cy="-5" rx="18" ry="3" fill="#fbe7b0" opacity=".5"/>`,
+    front:L=>`<g ${L}${dWob}><path fill-rule="evenodd" d="M-46 -2 L0 -74 L46 -2Z M-22 -2 L0 -52 L22 -2Z" fill="#f6d27a"/><path d="M-22 -2 L0 -52 L-32 -6Z M22 -2 L0 -52 L32 -6Z" fill="#fbe7b0"/></g>
+      <path d="M-34 -21 L-15 -48 M34 -21 L15 -48 M-42 -10 L-31 -26 M42 -10 L31 -26 M-12 -62 L-6 -66 M12 -62 L6 -66" stroke="#f2b25a" stroke-width="3.4" opacity=".8" stroke-linecap="round"/><path d="M0 -74 V-82" stroke="${INK}" stroke-width="2.4"/><path d="M0 -82 l10 3 l-10 3Z" fill="#f48aa6" ${L}/>
+      <path d="M-46 -2 L0 -74 L46 -2" fill="none" ${L}/>`},
   longuevue:{name:"Longue-vue",p:1600,w:50,h:96,fav:"comete",seat:{dx:-16,dy:2,poses:["up","sit"]},
     desc:"Une longue-vue en laiton sur son trépied, pointée vers le ciel. La nuit, on y voit les étoiles filantes.",
     art:L=>`${dSh(26)}<g ${L}${dWob}><path d="M0 -48 L-24 -2 M0 -48 L24 -2 M0 -48 L4 -2" fill="none" stroke-width="${(1.35*100/40*2.4).toFixed(2)}"/><path d="M0 -48 L-24 -2 M0 -48 L24 -2 M0 -48 L4 -2" stroke="#a9785a" stroke-width="4"/>
@@ -101,10 +117,18 @@ const DECO={
       <g transform="translate(32 -130)"><g><animateTransform attributeName="transform" type="rotate" values="-6;6;-6" dur="2.6s" repeatCount="indefinite"/><ellipse cx="0" cy="6" rx="16" ry="4" fill="#a9785a" ${L}/>
       ${[[-12,30],[-6,40],[0,46],[6,38],[12,28]].map(([x,l])=>`<path d="M${x} 8 V${12}" stroke="${INK}" stroke-width="1"/><rect x="${x-2.4}" y="12" width="4.8" height="${l}" rx="2" fill="#d9c27a" ${L}/>`).join("")}
       <path d="M0 52 V58" stroke="${INK}" stroke-width="1"/><path d="M-6 70 Q-6 58 0 58 Q6 58 6 70Z" fill="#f6cc4e" ${L}/></g></g>`},
-  fontaine:{name:"Fontaine aux oiseaux",b:25,w:56,h:84,fav:"libellule",seat:{dx:18,dy:2,poses:["sit","up"]},
+  fontaine:{name:"Fontaine aux oiseaux",b:25,w:62,h:84,fav:"libellule",seat:{dx:20,dy:2,poses:["sit","up"]},
     desc:"Une vasque de pierre où les oiseaux viennent boire et s'éclabousser.",
-    art:L=>`${dSh(30)}<g ${L}${dWob}><path d="M-20 -2 Q-22 -10 -10 -12 L-7 -46 H7 L10 -12 Q22 -10 20 -2Z" fill="#cfc6bd"/><path d="M-42 -52 Q0 -26 42 -52 Q0 -60 -42 -52Z" fill="#b9b0a7"/><ellipse cx="0" cy="-53" rx="34" ry="5" fill="#9ec3ef"/>
-      </g><ellipse cx="8" cy="-53" rx="10" ry="2" fill="none" stroke="#fff" stroke-width="1.6"><animate attributeName="rx" values="4;16" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="2.4s" repeatCount="indefinite"/></ellipse>
+    art:L=>`${dSh(32)}<g ${L}${dWob}><path d="M-22 -2 Q-24 -9 -15 -11 H15 Q24 -9 22 -2Z" fill="#cbc2b8"/><path d="M-13 -11 Q-15 -14 -9 -15 H9 Q15 -14 13 -11Z" fill="#ddd5cc"/>
+      <path d="M-7 -15 Q-10 -30 -6 -42 H6 Q10 -30 7 -15Z" fill="#d8cfc6"/><path d="M-8 -30 H8" fill="none"/>
+      <path d="M-44 -52 Q-38 -36 0 -35 Q38 -36 44 -52Z" fill="#c4bbb1"/><path d="M-12 -38 Q0 -44 12 -38 L7 -42 H-7Z" fill="#b5aca2" stroke="none"/>
+      <ellipse cx="0" cy="-52" rx="45" ry="9" fill="#e6dfd7"/><ellipse cx="0" cy="-52.5" rx="37" ry="5.6" fill="#9fd3f0"/></g>
+      <path d="M-3 -40 Q-1 -34 -4 -28 M3 -26 Q6 -20 3 -16" fill="none" stroke="#9a9086" stroke-width="1.4" stroke-linecap="round" opacity=".6"/>
+      <path d="M-26 -54.5 Q-10 -57 6 -55.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/><path d="M14 -51 q8 -1 14 -2.4" fill="none" stroke="#d6f0fb" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M-38 -49 Q-30 -44 -18 -43" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+      <path d="M8 -15 q4 -8 0 -16 q-3 -6 1 -11" fill="none" stroke="#6f9a60" stroke-width="2" stroke-linecap="round"/>${[[9,-20,30],[8,-29,-30],[10,-37,20]].map(([x,y,r])=>`<path transform="translate(${x} ${y}) rotate(${r})" d="M0 0 q5 -4 8 0 q-4 4 -8 0Z" fill="#8fc07e" stroke="${INK}" stroke-width="1.3"/>`).join("")}
+      <path d="M-24 -2 q-3 -6 2 -9 q4 3 3 9 M18 -2 q3 -7 8 -6 q0 5 -6 7" fill="#8fc07e" stroke="${INK}" stroke-width="1.6"/>${[[-27,-6,"#fff3a8"],[26,-7,"#ffd1dc"]].map(([x,y,c])=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<circle cx="${(2.6*Math.cos(a*Math.PI/180)).toFixed(1)}" cy="${(2.6*Math.sin(a*Math.PI/180)).toFixed(1)}" r="2.1" fill="${c}" stroke="#c9a0b0" stroke-width=".6"/>`).join("")}<circle r="1.4" fill="#f2c45a"/></g>`).join("")}
+      ${[0,1.3].map(d=>`<ellipse cx="6" cy="-52.5" rx="6" ry="1.4" fill="none" stroke="#fff" stroke-width="1.4" opacity="0"><animate attributeName="rx" values="3;18" dur="2.6s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="ry" values=".8;3.2" dur="2.6s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0" dur="2.6s" begin="${d}s" repeatCount="indefinite"/></ellipse>`).join("")}
       ${fBirds()}`},
   lampions:{name:"Guirlande de lampions",b:20,w:110,h:104,gl:[[-30,-72],[-14,-66],[2,-64],[18,-66],[34,-72]],fav:"painepice",seat:{dx:0,dy:2,poses:["sit","up"]},
     desc:"Cinq lampions de papier entre deux perches. Le soir, ils éclairent tout le coin de la clairière.",
@@ -181,7 +205,8 @@ const DECO={
       ${[-44,44].map(x=>`<g transform="translate(${x} -46)"><path d="M0 0 L-9 -6 V6Z M0 0 L9 -6 V6Z M0 0 L-5 12 M0 0 L5 12" fill="#e8505e" ${L}/><circle r="3" fill="#c9404e" ${L}/></g>`).join("")}`},
 };
 const dSvg=(k,part="art",cls="")=>{const o=DECO[k],L=`stroke="${INK}" stroke-width="${dLw(o.w)}" stroke-linejoin="round" stroke-linecap="round"`;
-  return `<svg viewBox="-50 -${o.h} 100 ${o.h}" overflow="visible" aria-hidden="true"${cls}>${o[part](L)}</svg>`};
+  // "all" : l'objet entier pour les vignettes (boutique, réserve) ; dans la scène, le devant (brouette, hamac, tente) est un calque à part
+  return `<svg viewBox="-50 -${o.h} 100 ${o.h}" overflow="visible" aria-hidden="true"${cls}>${part==="all"?o.art(L)+(o.front?o.front(L):""):o[part](L)}</svg>`};
 const dPrice=o=>o.b?`${bellSVG} ${o.b}`:`${coinIcon()} ${o.p}`;
 const coinIcon=()=>`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f2c75c" stroke="${INK}" stroke-width="2"/><circle cx="12" cy="12" r="6.4" fill="#e9b949"/><g fill="${INK}"><ellipse cx="12" cy="14.2" rx="2.6" ry="2.1"/><circle cx="8.9" cy="11" r="1.1"/><circle cx="11" cy="9.3" r="1.1"/><circle cx="13" cy="9.3" r="1.1"/><circle cx="15.1" cy="11" r="1.1"/></g></svg>`;
 
@@ -211,7 +236,7 @@ let shopTab="jour";
 function shopSheet(tab){if(tab)shopTab=tab;
   const own=Object.keys(DECO).filter(k=>R.deco.inv[k]||allDeco().some(d=>d.k===k)),has=h=>own.some(k=>!!DECO[k].home===h);
   const card=(k,buy)=>{const o=DECO[k],sold=soldToday(k),can=o.b?bellsN()>=o.b:cafeCoins()>=o.p,n=R.deco.inv[k]||0,on=allDeco().filter(d=>d.k===k).length;
-    return `<div class="opt${o.b?" rare":""}"><span class="thumb dthumb">${dSvg(k)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}${o.fav&&!buy?" Quelqu'un l'adore, on dirait…":""}</span>${buy?(o.home?`<span class="dcount">Pour la maison</span>`:""):`<span class="dcount">${on?`${on} posé${on>1?"s":""}`:""}${on&&n?" · ":""}${n?`${n} en réserve`:""}</span>`}</div>
+    return `<div class="opt${o.b?" rare":""}"><span class="thumb dthumb">${dSvg(k,"all")}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}${o.fav&&!buy?" Quelqu'un l'adore, on dirait…":""}</span>${buy?(o.home?`<span class="dcount">Pour la maison</span>`:""):`<span class="dcount">${on?`${on} posé${on>1?"s":""}`:""}${on&&n?" · ":""}${n?`${n} en réserve`:""}</span>`}</div>
       ${buy?`<button class="btn" data-dbuy="${k}" type="button" ${sold||!can?"disabled":""}>${sold?"Acheté":dPrice(o)}</button>`:n?`<button class="btn" data-dput="${k}" type="button">Poser</button>`:""}</div>`};
   const body=shopTab==="jour"?`<p class="sub">Nouveaux objets ${untilMidnight()}. Chaque objet revient régulièrement : rien n'est perdu pour toujours.</p>${shopToday().map(k=>card(k,1)).join("")}`
     :shopTab==="mes"?(own.length?`${has(false)?`<button class="btn big wide" data-deco="out" type="button">Décorer la clairière</button>`:""}${has(true)&&houseOpen()?`<button class="btn big wide" data-deco="home" type="button">Décorer la maison</button>`:""}<p class="sub">Fais glisser les objets du doigt pour les placer où tu veux.</p>${own.map(k=>card(k,0)).join("")}`:`<p class="sub">Tu n'as encore aucun objet. Va voir la boutique du jour !</p>`)
@@ -332,7 +357,7 @@ function decoAdd(k){
   freeAt(d,!o.home?[280,Math.max(470,H-20),200,350]:o.wall?[130,250,330,180]:[320,H-8,200,336],L.filter(q=>!!DECO[q.k].wall===!!o.wall));
   R.deco.inv[k]--;if(!R.deco.inv[k])delete R.deco.inv[k];L.push(d);decoSel=d.u;save();drawDeco();drawDBar()}
 function drawDBar(){const ks=Object.keys(R.deco.inv).filter(k=>!!DECO[k].home===(dWhere==="home")),os=dWhere==="out"?Object.keys(R.obj).filter(k=>objMoves(k)&&!objOn(k)):[];
-  $("decobar").innerHTML=`<div class="dinv">${ks.length||os.length?os.map(k=>`<button class="dchip" data-dadd="o:${k}" type="button">${OBJS[k].svg()}</button>`).join("")+ks.map(k=>`<button class="dchip" data-dadd="${k}" type="button">${dSvg(k)}<b>${R.deco.inv[k]}</b></button>`).join(""):`<span class="sub">Touche un objet pour le déplacer.</span>`}</div><button class="btn" data-dend="1" type="button">Terminé</button>`}
+  $("decobar").innerHTML=`<div class="dinv">${ks.length||os.length?os.map(k=>`<button class="dchip" data-dadd="o:${k}" type="button">${OBJS[k].svg()}</button>`).join("")+ks.map(k=>`<button class="dchip" data-dadd="${k}" type="button">${dSvg(k,"all")}<b>${R.deco.inv[k]}</b></button>`).join(""):`<span class="sub">Touche un objet pour le déplacer.</span>`}</div><button class="btn" data-dend="1" type="button">Terminé</button>`}
 // k : un objet à poser tout de suite ; w : "out" (la clairière) ou "home" (la maison), sinon celui de l'objet
 function decoStart(k,w){w=k?(DECO[k].home?"home":"out"):w||"out";
   if(w==="home"&&!houseOpen()){toast("La maison n'est pas encore ouverte.");return}
