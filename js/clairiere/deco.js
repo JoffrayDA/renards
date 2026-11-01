@@ -5,6 +5,19 @@
    R.deco = {inv:{clé:nombre en réserve}, out:[{u,k,x,y,f}] posés dehors, home:[…] dans la maison, n : compteur des u, sold:{d:jour, ks:[…]}}.
    Dessins : viewBox "-50 -h 100 h", le pied de l'objet au point (0,0) ; w = largeur dans la scène (400 × 480). */
 R.deco=R.deco||{inv:{},out:[],home:[],n:0,sold:{}};
+// les oiseaux de la fontaine (01/11/2026, Joffray : « qu'on les voie voler autour ») : un qui se baigne sur le bord et s'ébroue,
+// deux qui tournent autour en battant des ailes, un qui vient se poser puis repart. SMIL hors du filtre qui fait trembler le trait ;
+// sur une photo, les animations sont retirées et chacun reste à sa place de départ.
+function fBirds(){const S=`stroke="${INK}" stroke-width="1.7" stroke-linejoin="round"`,
+    bird=(c,wing="")=>`<ellipse rx="8" ry="6" fill="${c}" ${S}/><circle cx="-6" cy="-4" r="4.6" fill="${c}" ${S}/><circle cx="-7.4" cy="-4.8" r="1.1" fill="${INK}"/><path d="M-10.4 -4 l-4 1.4 l4 1.4Z" fill="#f59a6b" ${S}/><path d="M7 -1 l7 -3 v6Z" fill="${c}" ${S}/>
+      <path d="M-1 -3 q6 -12 13 -7 q-4 6 -13 7Z" fill="#fffaf2" ${S}>${wing}</path>`,
+    flap=d=>`<animateTransform attributeName="transform" type="scale" values="1 1;1 -.7;1 1" dur="${d}s" repeatCount="indefinite"/>`,
+    fly=(path,dur,c,x,y,mirror)=>`<g transform="translate(${x} ${y})"><g><animateMotion path="${path}" dur="${dur}s" repeatCount="indefinite"/><g transform="scale(${mirror?-1.4:1.4} 1.4)">${bird(c,flap(.22))}</g></g></g>`;
+  return `<g transform="translate(-28 -62) scale(1.25)"><g><animateTransform attributeName="transform" type="rotate" values="0;0;24;0;-14;0;0" keyTimes="0;.5;.6;.68;.76;.84;1" dur="3.2s" repeatCount="indefinite"/>${bird("#9ec3ef")}</g>
+      ${[[-4,-6,0],[4,-8,.15],[10,-4,.3]].map(([x,y,d])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#bfe3f2" opacity="0"><animate attributeName="opacity" values="0;0;1;0" keyTimes="0;.6;.7;.9" dur="3.2s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="cy" values="${y};${y};${y-10};${y-4}" keyTimes="0;.6;.75;.9" dur="3.2s" begin="${d}s" repeatCount="indefinite"/></circle>`).join("")}</g>
+    ${fly("M0 0 C60 -40 120 -14 96 26 C70 66 -14 54 -28 14 C-36 -8 -16 -10 0 0Z",5.2,"#f6a5b4",-30,-110,1)}
+    ${fly("M0 0 C-56 -32 -110 8 -82 40 C-56 72 26 54 32 18 C34 0 14 -6 0 0Z",6.4,"#f2c45a",40,-120,0)}
+    <g transform="translate(26 -58)"><g><animateMotion path="M60 -90 Q20 -60 0 0 L0 0 Q-30 -70 -90 -110" keyPoints="0;.42;.42;1" keyTimes="0;.3;.7;1" calcMode="linear" dur="7s" repeatCount="indefinite"/><g transform="scale(1.3)">${bird("#c9a8ec",flap(.2))}</g></g></g>`}
 const dLw=w=>(1.35*100/w).toFixed(2); // même épaisseur de trait que les renards, quelle que soit la taille de l'objet
 const dWob=LITE?"":` filter="url(#wobble)"`;
 const dSh=(rx,cy=-4)=>`<ellipse cx="0" cy="${cy}" rx="${rx}" ry="5" fill="#3d2a35" opacity=".16"/>`;
@@ -91,8 +104,8 @@ const DECO={
   fontaine:{name:"Fontaine aux oiseaux",b:25,w:56,h:84,fav:"libellule",seat:{dx:18,dy:2,poses:["sit","up"]},
     desc:"Une vasque de pierre où les oiseaux viennent boire et s'éclabousser.",
     art:L=>`${dSh(30)}<g ${L}${dWob}><path d="M-20 -2 Q-22 -10 -10 -12 L-7 -46 H7 L10 -12 Q22 -10 20 -2Z" fill="#cfc6bd"/><path d="M-42 -52 Q0 -26 42 -52 Q0 -60 -42 -52Z" fill="#b9b0a7"/><ellipse cx="0" cy="-53" rx="34" ry="5" fill="#9ec3ef"/>
-      <g transform="translate(-26 -60)"><ellipse rx="9" ry="7" fill="#9ec3ef"/><path d="M-8 -3 l-7 1 l6 3Z" fill="#f59a6b"/><path d="M8 0 l7 -4 v8Z" fill="#9ec3ef"/></g></g>
-      <circle cx="-30" cy="-62" r="1.5" fill="#5b4250"/><ellipse cx="8" cy="-53" rx="10" ry="2" fill="none" stroke="#fff" stroke-width="1.6"><animate attributeName="rx" values="4;16" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="2.4s" repeatCount="indefinite"/></ellipse>`},
+      </g><ellipse cx="8" cy="-53" rx="10" ry="2" fill="none" stroke="#fff" stroke-width="1.6"><animate attributeName="rx" values="4;16" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="2.4s" repeatCount="indefinite"/></ellipse>
+      ${fBirds()}`},
   lampions:{name:"Guirlande de lampions",b:20,w:110,h:104,gl:[[-30,-72],[-14,-66],[2,-64],[18,-66],[34,-72]],fav:"painepice",seat:{dx:0,dy:2,poses:["sit","up"]},
     desc:"Cinq lampions de papier entre deux perches. Le soir, ils éclairent tout le coin de la clairière.",
     art:L=>`${dSh(48,-3)}<g ${L}${dWob}><path d="M-46 -2 V-100 M46 -2 V-100" fill="none" stroke-width="${(1.35*100/110*2.4).toFixed(2)}"/><path d="M-46 -2 V-100 M46 -2 V-100" stroke="#a9785a" stroke-width="2.4"/></g>
@@ -189,7 +202,7 @@ const soldToday=k=>R.deco.sold.d===dayN()&&R.deco.sold.ks.includes(k);
 function buyDeco(k){const o=DECO[k];if(soldToday(k)||!shopToday().includes(k))return;
   if(o.b){if(bellsN()<o.b)return;addBells(-o.b)}else if(!spendCoins(o.p))return;
   if(R.deco.sold.d!==dayN())R.deco.sold={d:dayN(),ks:[]};R.deco.sold.ks.push(k);
-  R.deco.inv[k]=(R.deco.inv[k]||0)+1;save();toast(`${o.name} : acheté ! Pose-le ${o.home?"dans la maison":"dans la clairière"}.`);shopSheet("jour")}
+  R.deco.inv[k]=(R.deco.inv[k]||0)+1;save();decoStart(k);toast(`${o.name} : fais-le glisser où tu veux, puis touche Terminé.`)} // on le pose tout de suite
 const untilMidnight=()=>{const d=new Date(),m=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1),h=Math.ceil((m-d)/36e5);return h>1?`dans ${h} h`:"dans moins d'une heure"};
 
 R.deco.home=R.deco.home||[];
@@ -226,7 +239,7 @@ function drawList(list,els,host){
     // un tapis passe sous tout le monde ; le devant d'un objet (canapé, hamac) passe devant son renard
     for(const el of [e.el,e.fr].filter(Boolean)){el.style.cssText=pc(d.x,d.y)+`;width:${o.w/W*100}%;z-index:${d.k==="tapisrond"?1:Math.round(d.y)+(el===e.fr?2:0)}`;el.classList.toggle("flipped",!!d.f)}
     e.el.classList.toggle("sel",decoMode&&decoSel===d.u);e.el.classList.toggle("bad",decoMode&&decoSel===d.u&&!decoOk(d))}}
-function drawDeco(){drawList(R.deco.out,decoEls,$("actors"));
+function drawDeco(){drawList(R.deco.out,decoEls,$("actors"));drawObjs();
   if(hdHost!==houseEl){hdHost=houseEl;hdEls={}}
   if(houseEl)drawList(R.deco.home,hdEls,houseEl);
   drawDTool()}
@@ -265,7 +278,13 @@ const hbusy=()=>hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;return [x+100*s,y+120*s
 // où on peut poser. Dehors : dans l'herbe, pas dans la mare, ni sur le chemin, la gamelle, la souche, le tas de feuilles,
 // le banc ou un objet du refuge. Dans la maison : au mur (pas sur la cheminée ni la fenêtre), ou par terre hors du tapis
 // (c'est le coin dodo), des meubles de Copeau et de l'âtre (le feu doit rester visible).
-function decoOk(d){const {x,y}=d,o=DECO[d.k];if(x<14||x>386||x-o.w/2<2||x+o.w/2>398)return false; // l'objet tient en entier dans l'image
+// un objet du refuge (panier, potager…) : mêmes règles dehors, loin de la déco et des autres objets
+function objOk(sp){const k=sp.obj,hw=27*(OBJS[k].k||1),{x,y}=sp;if(x-hw<2||x+hw>398||y<266||y>H-6)return false;
+  if(((x-95)/88)**2+((y-420)/44)**2<1||Math.abs(x-200)<hw*.6+8)return false;
+  if([[240,268,30],[85,304,36],[322,336,34],[284,404,28],[316,404,28],...noelNo()].some(([a,b,r])=>Math.hypot(x-a,y-b)<r))return false;
+  if(Object.keys(R.obj).some(q=>q!==k&&objOn(q)&&OBJS[q].spot.y>200&&Math.hypot(OBJS[q].spot.x-x,OBJS[q].spot.y-y)<hw+(OBJS[q].r||26)))return false;
+  return !R.deco.out.some(d=>Math.hypot(d.x-x,d.y-y)<hw+DECO[d.k].w*.3)}
+function decoOk(d){if(d.obj)return objOk(d);const {x,y}=d,o=DECO[d.k];if(x<14||x>386||x-o.w/2<2||x+o.w/2>398)return false; // l'objet tient en entier dans l'image
   if(o.home){
     if(o.wall){if(y<120||y>252||(x+o.w/2>116&&x-o.w/2<284)||Math.hypot(x-65,y-190)<50)return false}
     else{if(y<318||y>H-6||(y<358&&x>128&&x<272)||((x-200)/178)**2+((y-412)/62)**2<1||hbusy().some(([a,b])=>Math.hypot(x-a,y-b)<34))return false}
@@ -273,51 +292,67 @@ function decoOk(d){const {x,y}=d,o=DECO[d.k];if(x<14||x>386||x-o.w/2<2||x+o.w/2>
   if(y<266||y>H-6)return false;
   if(((x-95)/88)**2+((y-420)/44)**2<1)return false; // la mare
   if(Math.abs(x-200)<15)return false; // le chemin de pierres
-  const no=[[240,268,24],[85,304,32],[322,336,30],[284,404,22],[316,404,22],...Object.keys(R.obj).filter(k=>OBJS[k].spot.y>200).map(k=>[OBJS[k].spot.x,OBJS[k].spot.y,OBJS[k].r||26]),...noelNo()];
+  const no=[[240,268,24],[85,304,32],[322,336,30],[284,404,22],[316,404,22],...Object.keys(R.obj).filter(k=>objOn(k)&&OBJS[k].spot.y>200).map(k=>[OBJS[k].spot.x,OBJS[k].spot.y,OBJS[k].r||26]),...noelNo()];
   if(no.some(([a,b,r])=>Math.hypot(x-a,y-b)<r))return false;
   return !R.deco.out.some(o=>o.u!==d.u&&Math.hypot(o.x-x,o.y-y)<12)}
 const scenePt=e=>{const r=$("scene").getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}};
-const findDeco=u=>allDeco().find(o=>o.u===u);
+// "o:panier" : un objet du refuge, déplacé par son endroit (OBJS[k].spot) ; sa place est gardée dans R.objAt
+const objItem=u=>{const k=u.slice(2),sp=OBJS[k]&&OBJS[k].spot;if(!sp||!objOn(k))return null;sp.u=u;sp.f=(R.objAt[k]||{}).f||0;return sp};
+const keepObj=sp=>{R.objAt[sp.obj]={x:sp.x,y:sp.y,f:sp.f||0}};
+const findDeco=u=>typeof u==="string"?objItem(u):allDeco().find(o=>o.u===u);
 function decoDown(e,u){e.stopPropagation();const d=findDeco(u);if(!d)return;
   if(!decoMode){const o=DECO[d.k],msg=`${o.name}. ${o.fav?(R.photos.some(p=>p.id===o.fav&&(p.deco===d.k||p.deco&&p.deco.k===d.k))?`${FOX[o.fav].name} l'adore.`:"Quelqu'un l'adore, on dirait… Reviens voir qui s'y installe."):o.desc}`;toast(msg);return}
   decoSel=u;const p=scenePt(e);dDrag={u,dx:d.x-p.x,dy:d.y-p.y,x0:d.x,y0:d.y,moved:0};e.currentTarget.setPointerCapture(e.pointerId);drawDeco()}
 function decoMove(e){if(!dDrag)return;const d=findDeco(dDrag.u),p=scenePt(e);
   d.x=Math.round(p.x+dDrag.dx);d.y=Math.round(p.y+dDrag.dy);dDrag.moved=1;drawDeco()}
 function decoUp(){if(!dDrag)return;const d=findDeco(dDrag.u);
-  if(!decoOk(d)){d.x=dDrag.x0;d.y=dDrag.y0;if(dDrag.moved)toast(DECO[d.k].home?(DECO[d.k].wall?"Pas ici : accroche-le au mur, loin de la cheminée.":"Pas ici : le tapis, c'est pour dormir."):"Pas ici : trouve un coin d'herbe libre.")}
-  dDrag=null;save();drawDeco()}
+  if(!decoOk(d)){d.x=dDrag.x0;d.y=dDrag.y0;if(dDrag.moved)toast(d.obj?"Pas ici : trouve un coin d'herbe libre.":DECO[d.k].home?(DECO[d.k].wall?"Pas ici : accroche-le au mur, loin de la cheminée.":"Pas ici : le tapis, c'est pour dormir."):"Pas ici : trouve un coin d'herbe libre.")}
+  if(d.obj)keepObj(d);dDrag=null;save();drawDeco()}
 addEventListener("pointermove",decoMove);addEventListener("pointerup",decoUp);addEventListener("pointercancel",decoUp);
 // la petite barre au-dessus de l'objet choisi : retourner, ranger
 function drawDTool(){let t=$("dtool");const d=decoMode&&findDeco(decoSel);
   if(!d){if(t)t.hidden=true;return}
   if(!t){t=document.createElement("div");t.id="dtool";t.innerHTML=`<button data-dt="flip" type="button" aria-label="Retourner"><svg viewBox="0 0 24 24"><path d="M9 6 L3 12 L9 18 M15 6 L21 12 L15 18 M3 12 H21" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button data-dt="away" type="button" aria-label="Ranger"><svg viewBox="0 0 24 24"><path d="M4 9 H20 L18.5 20 H5.5Z M3 6 H21 V9 H3Z M10 13 H14" fill="#f6d9b8" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg></button>`;
     t.onpointerdown=e=>e.stopPropagation();t.onclick=e=>{const b=e.target.closest("button");if(b)decoTool(b.dataset.dt)};$("scene").appendChild(t)}
-  t.hidden=!!dDrag;t.style.cssText=pc(Math.max(36,Math.min(364,d.x)),Math.max(48,d.y-DECO[d.k].h*dk(d)-4))}
+  t.hidden=!!dDrag;t.style.cssText=pc(Math.max(36,Math.min(364,d.x)),Math.max(48,d.y-(d.obj?52*(OBJS[d.obj].k||1):DECO[d.k].h*dk(d))-4))}
 function decoTool(a){const d=findDeco(decoSel);if(!d)return;
+  if(d.obj){if(a==="flip"){d.f=d.f?0:1;keepObj(d)}else{R.objAt[d.obj]={...R.objAt[d.obj],away:1};decoSel=null;addObjSpots()}save();drawDeco();drawDBar();return}
   if(a==="flip")d.f=d.f?0:1;else{const L=DECO[d.k].home?R.deco.home:R.deco.out;L.splice(L.indexOf(d),1);R.deco.inv[d.k]=(R.deco.inv[d.k]||0)+1;decoSel=null}
   save();drawDeco();drawDBar()}
 // poser un objet de la réserve : au coin libre le plus proche du centre, loin des autres objets, puis on le déplace du doigt
-function decoAdd(k){if(!R.deco.inv[k])return;const o=DECO[k],L=o.home?R.deco.home:R.deco.out,d={u:++R.deco.n,k,x:200,y:340,f:0};let best=null,bd=1e9;
-  const [y0,y1,cx,cy]=!o.home?[280,470,200,350]:o.wall?[130,250,330,180]:[320,472,200,336];
+// un objet du refuge rangé revient de la même façon, au coin d'herbe libre le plus proche du centre
+function freeAt(d,[y0,y1,cx,cy],L){let best=null,bd=1e9;
   for(let y=y0;y<=y1;y+=8)for(let x=24;x<=376;x+=8){d.x=x;d.y=y;if(!decoOk(d))continue;
-    const near=Math.min(99,...L.filter(q=>!!DECO[q.k].wall===!!o.wall).map(q=>Math.hypot(q.x-x,(q.y-y)*1.6))),c=Math.hypot(x-cx,y-cy)+(near<64?(64-near)*20:0);if(c<bd){bd=c;best=[x,y]}}
-  if(best)[d.x,d.y]=best;
+    const near=Math.min(99,...L.map(q=>Math.hypot(q.x-x,(q.y-y)*1.6))),c=Math.hypot(x-cx,y-cy)+(near<64?(64-near)*20:0);if(c<bd){bd=c;best=[x,y]}}
+  if(best)[d.x,d.y]=best}
+function decoAdd(k){
+  if(k.startsWith("o:")){const ok=k.slice(2),sp=OBJS[ok].spot;R.objAt[ok]={f:0};addObjSpots();sp.u=k;sp.f=0;
+    freeAt(sp,[280,Math.max(470,H-40),200,Math.min(H-60,420)],R.deco.out.concat(Object.keys(R.obj).filter(q=>q!==ok&&objOn(q)).map(q=>OBJS[q].spot)));keepObj(sp);decoSel=k;save();drawDeco();drawDBar();return}
+  if(!R.deco.inv[k])return;const o=DECO[k],L=o.home?R.deco.home:R.deco.out,d={u:++R.deco.n,k,x:200,y:340,f:0};
+  freeAt(d,!o.home?[280,Math.max(470,H-20),200,350]:o.wall?[130,250,330,180]:[320,H-8,200,336],L.filter(q=>!!DECO[q.k].wall===!!o.wall));
   R.deco.inv[k]--;if(!R.deco.inv[k])delete R.deco.inv[k];L.push(d);decoSel=d.u;save();drawDeco();drawDBar()}
-function drawDBar(){const ks=Object.keys(R.deco.inv).filter(k=>!!DECO[k].home===(dWhere==="home"));
-  $("decobar").innerHTML=`<div class="dinv">${ks.length?ks.map(k=>`<button class="dchip" data-dadd="${k}" type="button">${dSvg(k)}<b>${R.deco.inv[k]}</b></button>`).join(""):`<span class="sub">Touche un objet pour le déplacer.</span>`}</div><button class="btn" data-dend="1" type="button">Terminé</button>`}
+function drawDBar(){const ks=Object.keys(R.deco.inv).filter(k=>!!DECO[k].home===(dWhere==="home")),os=dWhere==="out"?Object.keys(R.obj).filter(k=>objMoves(k)&&!objOn(k)):[];
+  $("decobar").innerHTML=`<div class="dinv">${ks.length||os.length?os.map(k=>`<button class="dchip" data-dadd="o:${k}" type="button">${OBJS[k].svg()}</button>`).join("")+ks.map(k=>`<button class="dchip" data-dadd="${k}" type="button">${dSvg(k)}<b>${R.deco.inv[k]}</b></button>`).join(""):`<span class="sub">Touche un objet pour le déplacer.</span>`}</div><button class="btn" data-dend="1" type="button">Terminé</button>`}
 // k : un objet à poser tout de suite ; w : "out" (la clairière) ou "home" (la maison), sinon celui de l'objet
 function decoStart(k,w){w=k?(DECO[k].home?"home":"out"):w||"out";
   if(w==="home"&&!houseOpen()){toast("La maison n'est pas encore ouverte.");return}
   closeSheet();dWhere=w;
   if(w==="home"){if(!houseEl)enterHouse();houseEl.classList.add("decoing");houseEl.querySelectorAll(".hdfox").forEach(x=>x.remove())}
   else{if(houseEl)leaveHouse();
-    for(const f of foxes)if(f.spot&&f.spot.deco){const fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco);place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}}
+    // personne sur la déco ni dans les objets par terre pendant qu'on les déplace (leurs endroits reviennent à la fin)
+    for(const k in R.obj)if(objMoves(k)&&SPOT[OBJS[k].spot.id]){const sp=OBJS[k].spot;SPOTS.splice(SPOTS.indexOf(sp),1);delete SPOT[sp.id]}
+    for(const f of foxes)if(f.spot&&(f.spot.deco||f.spot.obj&&objMoves(f.spot.obj))){f.walk=null;const fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco);place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}}
   decoMode=true;decoSel=null;$("scene").classList.add("decoing");
   decoSpots();$("decobar").hidden=false;document.querySelector(".actions").hidden=true;$("goal").classList.add("off");
   toast(w==="home"?"Fais glisser les objets du doigt : au mur, ou par terre autour du tapis.":"Fais glisser les objets du doigt. Touche-en un pour le retourner ou le ranger.");drawDBar();if(k)decoAdd(k);drawDeco()}
 function decoEnd(){decoMode=false;decoSel=null;$("scene").classList.remove("decoing");$("decobar").hidden=true;document.querySelector(".actions").hidden=false;$("goal").classList.remove("off");
   if(dWhere==="home"&&houseEl){leaveHouse();enterHouse()}
-  decoSpots();drawDeco();drawGlow()}
+  addObjSpots();decoSpots();drawDeco();drawGlow()}
 $("decobar").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.dadd)decoAdd(b.dataset.dadd);else if(b.dataset.dend)decoEnd()};
 $("scene").addEventListener("pointerdown",()=>{if(decoMode&&decoSel!=null&&!dDrag){decoSel=null;drawDeco()}});
+// le bouton Décorer, sous l'appareil photo : dehors, ou dans la maison si on y est (plus besoin de passer par la boutique)
+const decoBtn=document.createElement("button");decoBtn.className="cam decobtn";decoBtn.type="button";decoBtn.setAttribute("aria-label","Décorer");
+decoBtn.innerHTML=`<svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M19 4 L28 13 L16 25 L7 16Z" fill="#9ec3ef"/><path d="M7 16 Q3 20 4 27 Q11 28 16 25" fill="#f6a5b4"/><path d="M12 11 L21 20" fill="none"/></g></svg>`;
+decoBtn.onpointerdown=e=>{e.stopPropagation();if(shooting)camMode(false);decoStart(null,houseEl?"home":"out")};
+$("scene").appendChild(decoBtn);
 decoSpots();drawDeco();

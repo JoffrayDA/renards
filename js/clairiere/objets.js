@@ -85,22 +85,30 @@ const objOf=sp=>sp&&sp.obj&&OBJS[sp.obj];
 const basketSVG=id=>OBJS.panier.svg(id); // gardé pour les anciens appels
 
 // les endroits des objets posés rejoignent ceux de la clairière
-function addObjSpots(){for(const k in R.obj){const sp=OBJS[k].spot;if(!SPOT[sp.id]){SPOTS.push(sp);SPOT[sp.id]=sp}}
-  if(R.obj.balancoire){SPOT.lampR.x=284;Object.assign(OBJS.panier.spot,{x:376,y:306})}} // la balançoire prend la place sous la lanterne de droite, le panier va au pied de l'arbre
+// les objets posés par terre se déplacent et se rangent comme la déco (01/11/2026, Joffray : posés au hasard, impossible de les bouger) ;
+// la cabane et la balançoire restent dans l'arbre. Leur place : R.objAt[k] = {x, y, f (retourné), away (rangé)}
+R.objAt=R.objAt||{};
+const objMoves=k=>!OBJS[k].photo,objOn=k=>!!R.obj[k]&&!(R.objAt[k]||{}).away;
+function addObjSpots(){
+  if(R.obj.balancoire){SPOT.lampR.x=284;Object.assign(OBJS.panier.spot,{x:376,y:306})} // la balançoire prend la place sous la lanterne de droite, le panier va au pied de l'arbre
+  for(const k in R.obj){const sp=OBJS[k].spot,a=R.objAt[k];if(a&&a.x!=null&&objMoves(k)){sp.x=a.x;sp.y=a.y}
+    if(objOn(k)&&!SPOT[sp.id]){SPOTS.push(sp);SPOT[sp.id]=sp}
+    if(!objOn(k)&&SPOT[sp.id]){SPOTS.splice(SPOTS.indexOf(sp),1);delete SPOT[sp.id]}}}
 addObjSpots();
 const objEls={};
 // l'objet vide reste visible ; quand un renard est dedans, c'est lui qui le dessine (draw dans life.js)
 function drawObjs(){
-  for(const k in R.obj){const o=OBJS[k],sp=o.spot;let el=objEls[k];
-    if(!el){el=objEls[k]=document.createElement("button");el.className="obj";el.type="button";el.setAttribute("aria-label",o.name);
-      el.style.cssText=pc(sp.x,sp.y)+`;z-index:${sp.y}`+(o.k?`;width:${13.5*o.k}%`:"");el.innerHTML=o.svg();
-      el.onpointerdown=e=>{e.stopPropagation();toast(k==="cabane"?"La cabane est vide. Les renards y montent pour regarder la clairière quand il fait beau.":k==="balancoire"?"La balançoire attend quelqu'un. Ça grince un peu.":o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":k==="feuilles"?"Rien ne bouge dans les feuilles… pour l'instant. Les renards adorent s'y cacher quand il fait beau.":k==="potager"?"Les carottes poussent tranquillement. Un jardinier passera bien.":k==="carton"?"Un carton vide. Pas pour longtemps.":k==="tunnel"?"Le tunnel est vide… enfin, on croit.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
+  for(const k in R.obj){const o=OBJS[k],sp=o.spot,a=R.objAt[k]||{};let el=objEls[k];
+    if(!el){el=objEls[k]=document.createElement("button");el.className="obj"+(objMoves(k)?" movable":"");el.type="button";el.setAttribute("aria-label",o.name);el.innerHTML=o.svg();
+      el.onpointerdown=e=>{if(decoMode){if(objMoves(k))decoDown(e,"o:"+k);return}e.stopPropagation();toast(k==="cabane"?"La cabane est vide. Les renards y montent pour regarder la clairière quand il fait beau.":k==="balancoire"?"La balançoire attend quelqu'un. Ça grince un peu.":o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":k==="feuilles"?"Rien ne bouge dans les feuilles… pour l'instant. Les renards adorent s'y cacher quand il fait beau.":k==="potager"?"Les carottes poussent tranquillement. Un jardinier passera bien.":k==="carton"?"Un carton vide. Pas pour longtemps.":k==="tunnel"?"Le tunnel est vide… enfin, on croit.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
       $("actors").appendChild(el)}
-    el.hidden=foxes.some(f=>f.spot===sp&&!f.walk)}
+    el.style.cssText=pc(sp.x,sp.y)+`;z-index:${sp.y}`+(o.k?`;width:${13.5*o.k}%`:"");el.classList.toggle("flipped",!!a.f);
+    el.classList.toggle("sel",decoMode&&decoSel==="o:"+k);el.classList.toggle("bad",decoMode&&decoSel==="o:"+k&&!decoOk(sp));
+    el.hidden=!objOn(k)||foxes.some(f=>f.spot===sp&&!f.walk)}
 }
 // au retour, il y a souvent déjà quelqu'un dans un objet
 function fillObjs(){if(scn.rain)return;
-  for(const k in R.obj){const sp=OBJS[k].spot;if(taken(sp)||Math.random()>.6)continue;
+  for(const k in R.obj){const sp=OBJS[k].spot;if(!objOn(k)||taken(sp)||Math.random()>.6)continue;
     const pool=foxes.filter(f=>!f.wild&&!f.walk&&!f.inside&&!isTarget(f.id)&&!objOf(f.spot));if(!pool.length)return;
     place(pool[Math.floor(Math.random()*pool.length)],sp)}
   drawObjs()}
@@ -109,5 +117,7 @@ function fillObjs(){if(scn.rain)return;
 function objList(){
   return `<p class="sub">Pose un objet dans la clairière : il attire les renards dans des positions qu'on ne voit nulle part ailleurs. Sors l'appareil photo pour les prendre.</p>${Object.entries(OBJS).map(([k,o])=>`<div class="opt"><span class="thumb">${o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`}
 function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
-  R.glands-=o.price;R.obj[k]=1;save();addObjSpots();drawObjs();if(o.photo)drawBg();renderHud();closeSheet();
-  toast(`${o.name} : posé dans l'herbe. Qui va s'y installer ?`)}
+  R.glands-=o.price;R.obj[k]=1;renderHud();
+  // un objet par terre : on le pose tout de suite où on veut, en mode Décorer
+  if(objMoves(k)){R.objAt[k]={away:1};save();addObjSpots();decoStart(null,"out");decoAdd("o:"+k);toast(`${o.name} : fais-le glisser où tu veux, puis touche Terminé.`);return}
+  save();addObjSpots();drawObjs();drawBg();closeSheet();toast(`${o.name} : Copeau l'installe dans l'arbre. Qui va y grimper ?`)}

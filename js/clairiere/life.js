@@ -31,7 +31,7 @@ function draw(f){
   const ob=!f.walk&&objOf(f.spot);f.el.style.width=ob&&ob.k?13.5*ob.k+"%":""; // les grands objets (potager, tunnel)
   if(f.walk&&f.walk.climb)f.el.innerHTML=`<div class="flip"><div class="bob">${foxArt(art,{pose:"up"})}</div></div>`; // il grimpe à l'échelle
   else if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
-  else if(objOf(f.spot))f.el.innerHTML=`<div class="flip">${objOf(f.spot).svg(f.id)}</div>`; // dans un objet du refuge (objets.js)
+  else if(objOf(f.spot)){f.el.innerHTML=`<div class="flip">${objOf(f.spot).svg(f.id)}</div>`;f.el.classList.toggle("left",!!(R.objAt[f.spot.obj]||{}).f)} // dans un objet du refuge (objets.js)
   else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
   setBadge(f); // « ! » de l'histoire, « … » d'une petite envie ou cœur du câlin (envies.js)
   f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);drawObjs();

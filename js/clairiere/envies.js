@@ -23,7 +23,7 @@ const ENVIES={
   copain:{ok:()=>!scn.rain,friend:1,goal:"chercher un ami",
     ask:fr=>`Tu peux aller chercher ${FOX[fr].name} ? J'aimerais m'asseoir sur le banc avec ${FOX[fr].name}.`,
     thx:fr=>`Merci ! Avec ${FOX[fr].name}, on va regarder passer les nuages.`},
-  panier:{ok:()=>R.obj.panier&&!scn.rain&&!taken(SPOT.basket),basket:1,goal:"la sieste dans le panier",
+  panier:{ok:()=>objOn("panier")&&!scn.rain&&!taken(SPOT.basket),basket:1,goal:"la sieste dans le panier",
     ask:"Je tombe de sommeil… Je peux faire la sieste dans ton panier ?",thx:"Zzz… merci… il sent bon l'osier…"},
   ricochet:{ok:()=>!scn.rain,ask:"Tu fais des ricochets avec moi ? Trois rebonds, pour commencer.",goal:"des ricochets",
     game:{k:"ricochet",need:3},thx:"Trois rebonds ! Tu deviens fort."},
