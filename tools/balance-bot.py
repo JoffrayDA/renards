@@ -12,6 +12,7 @@ Usage     : python tools/balance-bot.py [jours...]   (par défaut : une sélecti
             python tools/balance-bot.py --calibrer       (propose la table GOALS de cafe.html)
             python tools/balance-bot.py --economie       (pièces d'un bon joueur face aux achats du kit)
             python tools/balance-bot.py --nuits          (propose la table NIGHTS des Nuits d'Halloween)
+            python tools/balance-bot.py --noel           (propose la table NOEL_NIGHTS des 24 Nuits de Noël)
 
 Une journée tire ses commandes avec une graine propre au jour : le même jour se rejoue à l'identique,
 donc une seule partie par vitesse suffit pour le calibrage.
@@ -75,14 +76,16 @@ def own_for(day):
     return own
 
 
+NOEL_BASES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 30, 33, 36, 39]
 CALIB = "--calibrer" in sys.argv
 ECO = "--economie" in sys.argv
 NUITS = "--nuits" in sys.argv
+NOEL = "--noel" in sys.argv
 PERFECT = 0.25   # réaction du bot « parfait » : ★★★ demande environ 94 % de son score
 STAR3 = 1.8
 GOOD, PASS = 0.8, 1.08   # le bon joueur doit toujours réussir (★), avec un peu de marge
 SEEDS_TRIED = 16
-days = list(range(1, 41)) if CALIB or ECO or NUITS else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
+days = list(range(1, 41)) if CALIB or ECO or NUITS or NOEL else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
 with sync_playwright() as p:
     browser = p.chromium.launch()
     page = browser.new_page()
@@ -115,6 +118,24 @@ with sync_playwright() as p:
             print(f"jour {d:>2} : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {g}, objectif {goals[-1]}", file=sys.stderr)
         print("const SEED=[" + ",".join(map(str, seeds)) + "];")
         print("const GOALS=[" + ",".join(map(str, goals)) + "];")
+        browser.close(); sys.exit()
+    if NOEL:
+        # Nuits de Noël : 24 nuits sur le rythme de jours de référence de plus en plus loin (graines 60 à 79), même règle que --nuits
+        out = []
+        for n, base in enumerate(NOEL_BASES, 1):
+            ref = page.evaluate(BOT, [base, own_for(base), PERFECT, None])[0]
+            best = None
+            for k in range(60, 80):
+                e = page.evaluate(BOT, [base, own_for(base), PERFECT, k])[0]
+                g = page.evaluate(BOT, [base, own_for(base), GOOD, k])[0]
+                score = abs(e - ref) + 4 * max(0, e / STAR3 - g / PASS)
+                if best is None or score < best[0]:
+                    best = (score, k, e, g)
+            _, k, e, g = best
+            goal = round(min(e / STAR3, g / PASS))
+            out.append(f"{{base:{base},seed:{k},goal:{goal}}}")
+            print(f"nuit {n} (jour {base}) : référence {ref}, graine {k} -> parfait {e}, bon {g}, objectif {goal}", file=sys.stderr, flush=True)
+        print("const NOEL_NIGHTS=[" + ",".join(out) + "];")
         browser.close(); sys.exit()
     if NUITS:
         # Nuits d'Halloween : le rythme d'un jour de référence, avec d'autres commandes (graines 20 à 59).

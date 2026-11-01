@@ -36,7 +36,7 @@ onTap($("tray"),e=>{const p=e.target.closest("[data-opt]");if(p&&G&&G.run){apply
 $("back").onclick=()=>{if(G&&G.run)pauseMenu();else openMap()};
 $("open-menu").onclick=openMap;
 function onAct(a){
-  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="costumes")costumesSheet();else if(a==="hwintro"){closeSheet();hwIntro(hwSheet)}else if(a==="quests")questsSheet();
+  if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="noel")noelSheet();else if(a==="costumes")costumesSheet();else if(a==="hwintro"){closeSheet();hwIntro(hwSheet)}else if(a==="quests")questsSheet();
   else if(a==="map")openMap();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
@@ -55,6 +55,8 @@ $("sheet").addEventListener("click",e=>{
   if(b.dataset.bbuy){const bo=BOOSTS.find(x=>x.id===b.dataset.bbuy);if(S.coins<bo.c)return;S.coins-=bo.c;S.boost[bo.id]=(S.boost[bo.id]||0)+1;save();renderHud();toast(`${bo.name} : +1 en réserve`);
     const y=$("sheet-in").scrollTop;if(boostCtx){boostSel.add(bo.id);boostCtx()}else shop();$("sheet-in").scrollTop=y;return}
   if(b.dataset.hwshop!==undefined){shopTab="hw";shop();return}
+  if(b.dataset.noelnight){noelNightSheet(+b.dataset.noelnight);return}
+  if(b.dataset.nnplay){closeSheet();newNoel(+b.dataset.nnplay);return}
   if(b.dataset.night){nightSheet(+b.dataset.night);return}
   if(b.dataset.nplay){closeSheet();newNight(+b.dataset.nplay);return}
   if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<nx.c||(nx.from&&S.day<nx.from))return;S.coins-=nx.c;S.own[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
@@ -76,5 +78,6 @@ function loop(ts){
 }
 $("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;$("ic-b").innerHTML=bellSVG;
 if(HW)$("hwbtn").hidden=false;
+if(xmasDay())$("noelbtn").hidden=false; // les nuits de Noël (noelnuits.js)
 SEA=chapOf(curDay()).id;renderDecor();render();requestAnimationFrame(loop);
 openMap();

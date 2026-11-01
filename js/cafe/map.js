@@ -150,6 +150,7 @@ function renderMap(){
   gates.forEach(g=>{const c=CHAP[g.i],op=gateOpen(c);h+=`<button class="gbtn${!op&&S.day>=c.from?" want":""}" style="${pc(g.x,g.u+44)}" data-gate="${g.i}" type="button" aria-label="Porte ${c.name} : ${c.gate} étoiles"></button>`});
   guests.forEach(g=>{const c=CHAP[g.i],ok=S.guest[c.guest];h+=`<button class="mguest${ok?" ok":""}" style="${pc(g.x,g.u)}" data-guest="${g.i}" type="button" aria-label="Invité d'honneur ${c.name}">${foxSVG(FOX[c.guest],{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?FOX[c.guest].name:`${chapStars(c)}/30 ★`}</em></button>`});
   if(HW)h+=`<button class="mhw" style="${pc(322,104)}" data-act="hw" type="button" aria-label="Les nuits d'Halloween"><svg viewBox="0 0 90 70" aria-hidden="true"><g stroke="${INK}">${ghostie(66,40,.8)}${jack(36,66,1.25)}${jack(66,68,.7)}</g></svg><em>Nuits ${Object.values(S.hwStars).filter(x=>x).length} / 5</em></button>`;
+  if(xmasDay())h+=`<button class="mhw mnoel" style="${pc(HW?78:322,104)}" data-act="noel" type="button" aria-label="Les nuits de Noël">${sapinMini()}<em>Noël ${Object.values(S.noelStars).filter(x=>x).length} / ${NOEL_NIGHTS.length}</em></button>`;
   h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG({...FOX.roussette,acc:styleOf("acc").id||undefined},{pose:"happy"})}</div>`;
   const w=$("mwrap");w.style.aspectRatio=`${MW}/${H}`;w.innerHTML=h;
   mapLabel();

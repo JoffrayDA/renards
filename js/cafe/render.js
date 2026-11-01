@@ -2,10 +2,11 @@
 /* ---------- rendu ---------- */
 function renderHud(){
   $("coins").textContent=S.coins;$("coins2").textContent=S.coins;$("bells").textContent=bellsN();
+  if(xmasDay())$("noelbtn").innerHTML=`Noël <span class="hwn">${sucreSVG}${sucresN()}</span>`;
   if(HW)$("hwbtn").innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${starSum()}</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,mx=g*1.7,e=G.earned;
-  $("hud").innerHTML=`<span class="pill day">${G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map(m=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e}/${g}</b></div>`;
+  $("hud").innerHTML=`<span class="pill day">${G.noel?`Noël ${G.noel}`:G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${[1,1.35,1.7].map(m=>`<span class="tick${e>=g*m?" on":""}" style="left:${m/1.7*100}%">★</span>`).join("")}</div><b>${e}/${g}</b></div>`;
   $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait"||c.state==="walkin"||c.state==="queue").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
 }
 function render(){
@@ -19,7 +20,7 @@ function render(){
     // position : la file à gauche (petits renards), sa place au comptoir, ou la sortie à droite
     const left=inQ?5+(qi++)*6:c.state==="walkout"?114:X[c.spot];
     const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(itemKey(o))}</span>`).join("");
-    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}`,bub=!walking&&!inQ?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}`,bub=!walking&&!inQ?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
     const inner=bub+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit"});
     let el=custEl(c);
     // un nouveau client apparaît hors champ à gauche, puis la transition CSS le fait marcher jusqu'à sa place

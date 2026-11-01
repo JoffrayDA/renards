@@ -313,3 +313,10 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 @keyframes hi-blink{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){#hwintro *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
 @media (max-width:420px){.mtop{gap:6px}.mtop .coin{padding:2px 8px 2px 3px;gap:3px}.mtop .coin svg{width:20px;height:20px}.mtop .mst{padding-left:8px;padding-right:8px}}
+/* les nuits de Noël (noelnuits.js) */
+.mnoel{width:62px}.mnoel em{background:#c7454f;box-shadow:0 2px 0 #8f2f38}
+.nngrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.nn{border:2px solid #b8443e;border-radius:14px;background:#fffaf2;color:var(--ink);padding:8px 4px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 3px 0 #e6c8c0}
+.nn b{font-family:var(--display);font-weight:400;font-size:18px;color:#b8443e}.nn span{font-size:12px;color:#d6a93a}.nn span em{font-style:normal;color:#e6dcd6}
+.nn.ok{background:#fde8ea}.nn.nlock{opacity:.5;border-color:#d8ccd4;cursor:default}.nn.nlock b,.nn.nlock span{color:var(--ink-soft)}
+.mbar .btn.hw.xmas{background:#c7454f;box-shadow:0 4px 0 #8f2f38}

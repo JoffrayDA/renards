@@ -33,7 +33,8 @@ const VAR={
   // pendant Halloween, quelle que soit la saison
   halloween:{cookie:["Cookie fantôme","cookies fantômes"],smoothie:["Potion de sorcière","potions de sorcière"],gateau:["Gâteau citrouille","parts de gâteau citrouille"]}
 };
-const vName=(k,sea=SEA)=>(HW&&VAR.halloween[k])||VAR[sea][k]||[REC[k].nm,REC[k].npl];
+// pendant une Nuit de Noël, la carte de Noël passe avant tout (noelnuits.js)
+const vName=(k,sea=SEA)=>(typeof G!=="undefined"&&G&&G.noel&&VAR.noel&&VAR.noel[k])||(HW&&VAR.halloween[k])||VAR[sea][k]||[REC[k].nm,REC[k].npl];
 for(const k in REC){const r=REC[k];r.nm=r.name;r.npl=r.pl;Object.defineProperty(r,"name",{get:()=>vName(k)[0]});Object.defineProperty(r,"pl",{get:()=>vName(k)[1]})}
 /* La carte : 4 saisons de 10 journées. Une porte demande un total d'étoiles, et un invité d'honneur rejoint le café quand toute la saison est en ★★★. */
 const CHAP=[

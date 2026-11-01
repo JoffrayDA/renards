@@ -31,10 +31,10 @@ function genOrder(){
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
   const here=new Set(G.cust.map(c=>c.fox));
-  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[])];
+  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[]),...(S.noelKeep?[FOX.guimauve]:[])];
   let f,vip=false;
   // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
-  if(G.rng()<vipCh){vip=true;const pool=(HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:[...VIPS,...wildMet()]).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
+  if(G.rng()<vipCh){vip=true;const pool=(G.noel?NOELF:HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:[...VIPS,...wildMet()]).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1)*(G.boost.patience?1.3:1);
@@ -42,7 +42,7 @@ function spawn(){
   // dans la file, il patiente aussi, mais plus longtemps (il voit qu'on s'active)
   G.cust.push({id:++uid,fox:f.id,spot:-1,order:genOrder(),pat,patMax:pat,state:"queue",qp:pat*1.2,vip,born:G.t,costume});
   if(costume){const ck=f.id+":"+costume;if(!S.costSeen[ck]&&S.seen[f.id])toast(`Nouveau déguisement : ${f.name} ${COSTNAME[costume]} !`);S.costSeen[ck]=(S.costSeen[ck]||0)+1}
-  if(vip)toast(f.event?`${f.name} est là ! Sers-le vite : il paie ×3 et donne 5 bonbons.`:`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
+  if(vip)toast(f.event==="noel"?`${f.name} est là ! Sers-le vite : il paie ×3 et donne un sucre d'orge.`:f.event?`${f.name} est là ! Sers-le vite : il paie ×3 et donne 5 bonbons.`:`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
   if(!S.seen[f.id])G.newFox.push(f.name);
   S.seen[f.id]=(S.seen[f.id]||0)+1;
   G.spawned++;dirty=true;return true;
@@ -108,11 +108,12 @@ function complete(c){
   if(frac>=.6)qEvent("green");
   c.state="happy";c.leave=1;
   // Halloween : les clients déguisés donnent des bonbons (2 s'ils sont servis vite), les invités d'Halloween 5
-  const cdy=HW?(FOX[c.fox].event?5:c.costume?(frac>=.5?2:1):0):0;
+  const cdy=HW?(FOX[c.fox].event==="halloween"?5:c.costume?(frac>=.5?2:1):0):0;
   if(cdy){S.candy+=cdy;G.candy+=cdy;qEvent("candy",cdy)}
   if(c.costume)qEvent("costume");
   // album d'Halloween : servir chacun des invités une fois donne la Couronne de citrouilles à Roussette
-  if(FOX[c.fox].event){qEvent("hwguest");if(!S.hwServed[c.fox]){S.hwServed[c.fox]=1;const k=HWF.filter(f=>S.hwServed[f.id]).length;toast(`Album d'Halloween : ${FOX[c.fox].name} ! (${k} / ${HWF.length})`);if(k===HWF.length&&!S.own["st-acc-couronne"]){S.own["st-acc-couronne"]=1;G.albumNew=1}}}
+  if(G.noel&&FOX[c.fox].event==="noel"){addSucres(1);G.sucres=(G.sucres||0)+1} // un invité de Noël donne un sucre d'orge
+  if(FOX[c.fox].event==="halloween"){qEvent("hwguest");if(!S.hwServed[c.fox]){S.hwServed[c.fox]=1;const k=HWF.filter(f=>S.hwServed[f.id]).length;toast(`Album d'Halloween : ${FOX[c.fox].name} ! (${k} / ${HWF.length})`);if(k===HWF.length&&!S.own["st-acc-couronne"]){S.own["st-acc-couronne"]=1;G.albumNew=1}}}
   const el=custEl(c);if(el){burst(el);floatAt(el,`+${tot}`,true);if(cb){const n=G.combo;setTimeout(()=>floatAt(el,`Combo ×${n}`),250)}if(cdy)setTimeout(()=>floatAt(el,`+${cdy} bonbon${cdy>1?"s":""}`),cb?500:250)}
   dirty=true;
 }

@@ -63,7 +63,7 @@ Object.assign(ICON,{
   "smoothie@halloween":glass("#9fdc7a",`<circle cx="16" cy="22" r="2.4" fill="#d6f5c0" stroke="${INK}" stroke-width="1.3"/><circle cx="22" cy="27" r="1.8" fill="#d6f5c0" stroke="${INK}" stroke-width="1.3"/><circle cx="16" cy="11" r="3.2" fill="#c8f0a8" stroke="${INK}" stroke-width="1.5"/><circle cx="22" cy="7" r="2.3" fill="#c8f0a8" stroke="${INK}" stroke-width="1.4"/><path d="M26 2 L23 20" stroke="#9a6ac0" stroke-width="3" stroke-linecap="round"/>`),
   "gateau@halloween":slice("#f2a35c","#fff5e8","#6a4a7a",`<ellipse cx="22" cy="10" rx="6" ry="4.6" fill="#f2a35c" stroke="${INK}" stroke-width="1.8"/><path d="M22 5.6 q0 -3 3 -4" fill="none" stroke="#6fae5e" stroke-width="2.4" stroke-linecap="round"/><path d="M8 13 l2 -2 2 2 M30 18 l2 -2 2 2" fill="none" stroke="#f7d77a" stroke-width="1.6" stroke-linecap="round"/>`)
 });
-const iconIn=(k,sea)=>(HW&&ICON[k+"@halloween"])||ICON[k+"@"+sea]||ICON[k]||"";
+const iconIn=(k,sea)=>(typeof G!=="undefined"&&G&&G.noel&&ICON[k+"@noel"])||(HW&&ICON[k+"@halloween"])||ICON[k+"@"+sea]||ICON[k]||"";
 // options dessinées par-dessus l'article : mousse de lait (café crème), chantilly et cerise
 const OPTV={
   lait:`<path d="M8 13 Q7 6 13 7 Q15 2 20 4.5 Q25 2 27 7 Q32 7 30 13Z" fill="#fffaf2" ${K}/><path d="M15.5 9.6 c1-1.4 3-1 3 .5 c0-1.5 2-1.9 3-.5 c-.5 1-2 1.8-3 2.3 c-1-.5-2.5-1.3-3-2.3z" fill="#e8c9a8"/>`,

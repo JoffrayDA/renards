@@ -7,6 +7,7 @@ function buddyRow(){if(!S.own.serveur)return "";const id=buddy(),f=FOX[id],td=to
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
 const albumRow=()=>G.albumNew?itRow(foxSVG({...FOX.roussette,acc:"couronne"},{pose:"happy"}),"Album d'Halloween complet !",`Tu as servi les ${HWF.length} invités : ${ME()} gagne la Couronne de citrouilles (dans la boutique, onglet Style).`,"background:#efe4fb"):"";
 function endDay(){
+  if(G.noel)return endNoel();
   if(G.night)return endNight();
   const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=G.day,prev=S.stars[d]||0,before=starSum();
   G.run=0;
