@@ -87,13 +87,13 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
   background:#d9584e;background-image:radial-gradient(#fff6 1.6px,transparent 2px),radial-gradient(#fff4 1.2px,transparent 1.6px);background-size:30px 30px,19px 19px;background-position:0 0,9px 12px;box-shadow:0 5px 0 #a8403a}
 .avcard[hidden]{display:none}.avcard:active{transform:translateY(4px);box-shadow:0 1px 0 #a8403a}
 .avcard .ic{flex:none;width:52px;height:52px}.avcard .ic svg{display:block;width:100%;height:100%}
-.avcard div{flex:1;min-width:0}.avcard strong{display:block;font-family:var(--display);font-weight:400;font-size:17px;white-space:nowrap}.avcard span{display:block;font-size:13.5px;opacity:.95}
-.avcard .go{background:#fffaf2;color:#d9584e;box-shadow:0 3px 0 #a8403a}
+.avcard div{flex:1;min-width:0}.avcard strong{display:block;font-family:var(--display);font-weight:400;font-size:17px;line-height:1.2}.avcard span{display:block;font-size:13.5px;opacity:.95}
+.avcard .go{display:grid;background:#fffaf2;color:#d9584e;box-shadow:0 3px 0 #a8403a} /* sinon « .avcard span » la met en bloc et la flèche n'est plus centrée */
 .avcard.todo .ic{animation:avwig 1.3s ease-in-out infinite}
 @keyframes avwig{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-8deg)}80%{transform:rotate(7deg)}90%{transform:rotate(-4deg)}}
 #avent{border:2px solid #b8443e;border-radius:24px;background:#fffaf2;color:var(--ink);padding:16px 14px 14px;max-width:420px;width:calc(100% - 24px);box-sizing:border-box;overflow:visible}
 #avent::backdrop{background:rgba(70,40,50,.5)}
-#avent h2{font-family:var(--display);font-weight:400;margin:0 0 4px;font-size:21px;color:#b8443e;text-align:center}
+#avent h2{font-family:var(--display);font-weight:400;margin:0 0 4px;padding:0 38px;font-size:21px;color:#b8443e;text-align:center}
 .avline{margin:0 0 8px;text-align:center;font-weight:700}
 .avgels{display:flex;align-items:center;gap:8px;background:#eaf3fb;border-radius:14px;padding:6px 10px;font-size:12.5px;color:#4e6a86;margin-bottom:10px}
 .avgels .gl{display:flex;gap:2px;flex:none}.avgels i{width:22px;height:22px;color:#c9d3dc}.avgels i.on{color:#5aa0dc}.avgels i svg{display:block;width:100%}
@@ -122,6 +122,7 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
 @keyframes avno{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .avbag{display:flex;justify-content:center;gap:16px;margin:10px 0 4px;font-weight:900}.avbag span{display:flex;align-items:center;gap:4px}.avbag svg{width:22px;height:22px}
 #avent .enter{display:block;margin:10px auto 0;animation:none}
+#avent{position:relative}#avent .avx{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:2px solid #ead9cc;background:#fffaf2;color:#b8443e;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 3px 0 #ead9cc;z-index:2}
 #avtip{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:99px;padding:7px 14px;font-size:13px;white-space:nowrap;z-index:3}
 #avtip[hidden],#avreveal[hidden]{display:none}
 #avreveal{position:absolute;inset:0;border-radius:22px;background:#fffaf2f7;display:grid;place-items:center;z-index:2;overflow:hidden auto}
@@ -159,7 +160,7 @@ footer{color:var(--soft);font-size:12.5px;text-align:center}
   <footer><span id="savetx">Tes parties sont enregistrées sur cet appareil.</span> <button class="stats" id="cloudbtn" type="button">Sauvegarde</button> · <button class="stats" id="statsbtn" type="button">Mes chiffres</button></footer>
   <dialog id="cloud"><h2>Sauvegarde</h2><div id="cloudin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button></dialog>
   <dialog id="stats"><h2>Mes chiffres</h2><div id="statsin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button></dialog>
-  <dialog id="avent"><h2>Calendrier de l'Avent</h2><div id="aventin"></div><button class="enter" type="button" onclick="this.closest('dialog').close()">Fermer</button><div id="avtip" hidden></div><div id="avreveal" hidden></div></dialog>
+  <dialog id="avent"><button class="avx" type="button" aria-label="Fermer" onclick="this.closest('dialog').close()"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button><h2>Calendrier de l'Avent</h2><div id="aventin"></div><div id="avtip" hidden></div><div id="avreveal" hidden></div></dialog>
 </main>
 <script src="js/music.js"></script>
 <script src="js/push.js"></script>
