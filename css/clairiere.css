@@ -379,3 +379,12 @@ h1 .la{font-style:normal}
 .obj.sel svg{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 4px #f59a8b)}
 .obj.bad svg{opacity:.45;filter:drop-shadow(0 0 4px #e0505a)}
 .dchip svg{max-height:100%}
+/* l'atelier de Noël (atelier.js) */
+.tengrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tencard{background:var(--card-2);border-radius:16px;padding:8px;text-align:center}
+.tencard .pic{background:#e6f0f8;border-radius:12px;aspect-ratio:1}.tencard .pic svg{display:block;width:100%}
+.tencard b{display:block;margin:4px 0}
+.tenrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.tenrow .btn{font-size:12.5px;padding:6px 9px;display:inline-flex;align-items:center;gap:3px}.tenrow .btn svg{width:16px;height:16px}
+.opt.nq{background:#fde8ea}.opt.nq.done{background:#e3f2d6}
+.wallet span svg{vertical-align:middle}

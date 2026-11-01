@@ -183,7 +183,7 @@ const STORIES={
       ["painepice","sad","Tout le monde ici a quelqu'un. Moi, je fais des gâteaux… et je les mange tout seul."],
       ["painepice","shy","J'aimerais trouver quelqu'un. Quelqu'un rien que pour moi. Tu m'aides ?"]]},
     {at:"*",goal:"Demande à un renard s'il connaît quelqu'un pour Pain d'épice.",lines:id=>[
-      ["me","open",`${FOX[id].name}, tu connais quelqu'un pour Pain d'épice ?`],
+      ["me","open",`${nameOf(id)}, tu connais quelqu'un pour Pain d'épice ?`],
       [id,"surprise","Quelqu'un ? Ici, on se connaît tous depuis toujours…"],
       [id,"open","Essaie la forêt. Un signal, le soir, ça se voit de très loin."]]},
     {at:"@lampL",lamps:1,game:{k:"firefly",say:"Attrape la luciole dorée : elle portera le signal jusqu'au fond de la forêt !",win:"Le signal est parti !"},goal:"Envoie un signal à la forêt depuis les lanternes.",lines:[
@@ -360,7 +360,7 @@ const STORIES={
       ["reglisse","open",`Bonsoir, ${ME()}. Je connais tous les tunnels de la forêt. Et tous les secrets de tes renards.`],
       ["reglisse","shy","Ils me les racontent. Je ne répète jamais. Enfin… presque jamais."]]},
     {at:"*",goal:"Demande à un renard s'il a déjà confié un secret à Réglisse.",lines:id=>[
-      ["me","open",`${FOX[id].name}, tu as déjà raconté un secret à Réglisse ?`],
+      ["me","open",`${nameOf(id)}, tu as déjà raconté un secret à Réglisse ?`],
       [id,"shy","…Peut-être. Mais il ne l'a jamais répété. C'est pour ça qu'on lui dit tout."],
       [id,"surprise","Par contre, lui, il en a un. Il gratte toujours sous la souche."]]},
     {at:"@stump",goal:"Va voir ce que Réglisse cache sous la souche.",lines:[
@@ -373,7 +373,7 @@ const STORIES={
       ["aurore","sad",`${ME()}… Personne ne me reconnaît jamais. La nuit, mon pelage change : rose, puis vert, puis violet.`],
       ["aurore","shy","Le lendemain, tout le monde croit que je suis une autre. Alors je reste seule."]]},
     {at:"*",goal:"Demande à un renard s'il reconnaîtrait Aurore.",lines:id=>[
-      ["me","open",`${FOX[id].name}, si Aurore change de couleur, tu la reconnais ?`],
+      ["me","open",`${nameOf(id)}, si Aurore change de couleur, tu la reconnais ?`],
       [id,"open","À sa voix, bien sûr. Et à sa façon de pencher la tête quand elle écoute."],
       [id,"joy","La couleur, c'est juste une surprise en plus."]]},
     {at:"aurore",goal:"Dis à Aurore ce que les autres ont répondu.",lines:[
@@ -418,9 +418,9 @@ const STORIES={
     {at:"*",leave:1,goal:"Demande à un renard de poser pour Gribouille.",lines:id=>[
       [id,"joy","Poser ? Avec plaisir !"],
       [id,"surprise","…Oh, un papillon ! Je reviens !"],
-      ["me","sad",`Et hop, plus de ${FOX[id].name}. Essayons avec quelqu'un d'autre.`]]},
+      ["me","sad",`Et hop, plus de ${nameOf(id)}. Essayons avec quelqu'un d'autre.`]]},
     {at:"*",game:{k:"still",say:"Chasse les mouches, sinon il éternue !",win:"Ne bouge plus… Voilà !"},goal:"Essaie avec un autre renard.",lines:id=>[
-      ["gribouille","joy",`Un portrait de ${FOX[id].name} ! Mon premier !`],
+      ["gribouille","joy",`Un portrait de ${nameOf(id)} ! Mon premier !`],
       ["gribouille","sad","Mais un renard tout seul sur un tableau, ça fait un peu triste…"],
       ["me","open","Et si on vous peignait tous ensemble ?"],
       ["gribouille","surprise","Le grand portrait ! Appelle tout le monde devant la maison !"]]},
@@ -477,7 +477,7 @@ function chainTick(live){const id=nextId(),c=cur();
   if(!R.intro||!id||isRes(id)||isNoelStory(id)||Date.now()<(R.nextAt||0))return;
   R.res[id]={at:Date.now(),h:0,pet:""};save();
   // celui qui se cache (Pantoufle) file droit dans la maison
-  if(live){const f=makeFox(id,null),fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp);setTimeout(()=>goTo(f,beats(id)[0].hide?"door":fs[Math.floor(Math.random()*fs.length)]||SPOT.g3),60);toast(`${FOX[id].name} arrive au refuge !`)}
+  if(live){const f=makeFox(id,null),fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp);setTimeout(()=>goTo(f,beats(id)[0].hide?"door":fs[Math.floor(Math.random()*fs.length)]||SPOT.g3),60);toast(`${nameOf(id)} arrive au refuge !`)}
   renderStory();
 }
 // un renard qui vient pendant l'histoire (Luciole) entre par la forêt et va à l'endroit voulu
@@ -497,6 +497,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
   if(at.startsWith("@")?c.b.at!==at:!isTarget(at))return false;
   const b=c.b;
   if(b.arrive)bringIn(b.arrive,SPOT[b.at.slice(1)]||SPOT.g3);
+  (b.with||[]).forEach((id,i)=>bringIn(id,[SPOT.g1,SPOT.g2,SPOT.g3][i])); // d'autres arrivent avec lui (les frileux)
   if(b.lamps){scn.lamps={L:true,R:true};drawGlow()}
   if(b.gather)gather();
   if(b.at==="*")(R.who[c.id]=R.who[c.id]||{})[c.n]=at;
@@ -508,7 +509,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
       if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;drawGlow()}goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
     if(c.id==="gaston"&&storyDone("gaston")){drawBg();toast("La pêche est ouverte : touche la mare quand tu veux.")}
-    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;if(!isNoelStory(c.id))R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();if(isNoelStory(c.id))drawBg();R.glands+=15;addBells(2);toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands, +2 clochettes`)}
+    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;if(!isNoelStory(c.id))R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();if(isNoelStory(c.id))drawBg();R.glands+=15;addBells(2);if(STORIES[c.id].end)STORIES[c.id].end();toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands, +2 clochettes`)}
     else toast("+3 glands");
     if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!metAny())setTimeout(firstLure,500);
     else if(storyDone(c.id))setTimeout(wildNudge,600);
@@ -548,7 +549,7 @@ function goalText(){const c=cur();
   const id=nextId();
   if(!id)return {t:"Histoires",wait:storyDone(LAST)||!wildLeft().length,g:storyDone(LAST)?"Toutes les histoires sont finies.":wildLeft().length?"Des renards sauvages rôdent encore autour de la gamelle. Remplis-la : chacun a une histoire à raconter.":"La suite des histoires arrive bientôt."};
   const w=R.nextAt-Date.now()>36e5?"un peu plus tard":"bientôt"; // pas d'heure précise (Joffray)
-  return {t:"Prochaine histoire",wait:1,g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
+  return {t:"Prochaine histoire",wait:1,g:isRes(id)?`${nameOf(id)} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
 }
 function renderStory(){
   const c=cur(),nf=nextId()||"";if(R.nextFox!==nf){R.nextFox=nf;save()} // lu par l'accueil
@@ -570,11 +571,11 @@ function renderStory(){
 function journal(){
   const c=cur(),nx=nextId();
   const row=id=>{const S=STORIES[id],n=R.beat[id]||0,N=beats(id).length,f=FOX[id];
-    if(storyDone(id))return `<div class="opt"><span class="thumb">${foxArt(f,{expr:"joy",portrait:1})}</span><div class="txt"><strong>${S.title}</strong><span>${f.name} · terminée. Souvenir : ${R.souv[id]||S.souv}.</span></div><button class="btn ghost" data-reread="${id}" type="button">Relire</button></div>`;
+    if(storyDone(id))return `<div class="opt"><span class="thumb">${foxArt(f,{expr:"joy",portrait:1})}</span><div class="txt"><strong>${S.title}</strong><span>${nameOf(id)} · terminée. Souvenir : ${R.souv[id]||S.souv}.</span></div><button class="btn ghost" data-reread="${id}" type="button">Relire</button></div>`;
     const dots=`<span class="dots">${Array.from({length:N},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
     if(c&&c.id===id)return `<div class="opt now"><span class="thumb">${foxArt(f,{expr:"open",portrait:1})}</span><div class="txt"><strong>${S.title}</strong>${dots}<span>${c.b.goal}</span></div></div>`;
     if(id===nx)return `<div class="opt"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>${isRes(id)?S.title:"???"}</strong><span>${goalText().g}</span></div></div>`;
-    return `<div class="opt unseen"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>???</strong><span>${isRes(id)?`${f.name} te racontera son histoire plus tard.`:"Une histoire à venir."}</span></div></div>`};
+    return `<div class="opt unseen"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>???</strong><span>${isRes(id)?`${nameOf(id)} te racontera son histoire plus tard.`:"Une histoire à venir."}</span></div></div>`};
   openSheet(`<h2>Les histoires</h2><p class="sub">Une histoire à la fois. Touche le renard ou l'endroit qui porte un <b class="markin">!</b> pour avancer.</p>${[...noelRows(),...ORDER].map(row).join("")}`);
 }
 

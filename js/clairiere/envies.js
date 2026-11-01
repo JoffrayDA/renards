@@ -125,7 +125,7 @@ function setBadge(f){const B=f.badge;B.innerHTML="";if(f.wild)return;
   if(isTarget(f.id))B.innerHTML=`<i class="mark">!</i>`;
   else if(envBadge(f.id))B.innerHTML=`<i class="envie">${DOTS}</i>`;
   else if(wantsHug(f.id))B.innerHTML=`<i class="want">${HEART}</i>`;moveBadge(f)}
-function envGoal(){const c=envCur();if(!c)return null;const E=envDef(c),n=FOX[c.id].name;
+function envGoal(){const c=envCur();if(!c)return null;const E=envDef(c),n=nameOf(c.id);
   if(c.step==="ask")return {t:"Petite envie",g:`${n} a une petite envie : touche-le.`};
   if(E.friend)return {t:"Petite envie",g:`Va chercher ${FOX[c.friend].name} pour ${n}.`};
   if(E.basket)return {t:"Petite envie",g:`${n} fait la sieste dans le panier : va le voir.`};
@@ -144,7 +144,7 @@ function envieTap(f){const c=envCur();if(!c||gameOn)return false;const E=envDef(
       else{setBadge(envFox(c.friend)||f);setBadge(f);renderStory()}});
     return true}
   if(c.step==="go"&&E.friend&&f.id===c.friend){
-    talk([[c.friend,"joy",`${FOX[c.id].name} m'attend sur le banc ? J'arrive !`]],()=>{
+    talk([[c.friend,"joy",`${nameOf(c.id)} m'attend sur le banc ? J'arrive !`]],()=>{
       const a=envFox(c.id);for(const [x,sp] of [[a,SPOT.bench1],[f,SPOT.bench2]])if(x&&!x.walk){if(x.inside){x.inside=false;x.el.classList.remove("inside");x.x=DOOR.x;x.y=DOOR.y}if(x.spot!==sp)goTo(x,sp)}
       envieDone(c)});return true}
   if(c.step==="go"&&E.basket&&f.id===c.id&&f.spot===SPOT.basket){shootFox(f);envieDone(c);return true}
@@ -156,8 +156,8 @@ function envieTap(f){const c=envCur();if(!c||gameOn)return false;const E=envDef(
 
 // l'envie est faite : merci, +5 glands et un cœur
 function envieDone(c){const E=envDef(c),f=envFox(c.id);
-  R.env.cur=null;R.env.last=Date.now();R.glands+=5;const r=R.res[c.id];if(r)r.h++;save();
+  R.env.cur=null;R.env.last=Date.now();R.glands+=5;const r=R.res[c.id];if(r)r.h++;save();const nm=noelEvent("envie");if(nm)setTimeout(()=>toast(nm),2500);
   talk([[c.id,"joy",txt(E.thx,c.friend)]],()=>{
     if(f){if(E.to&&!f.walk&&SPOT[E.to]&&!taken(SPOT[E.to]))goTo(f,SPOT[E.to]);else if(!f.walk&&!E.basket&&!E.friend){f.pose="happy";f.until=Date.now()+3000;draw(f)}hugFx(f)}
     for(const x of foxes)if(!x.wild)setBadge(x);
-    renderHud();renderStory();toast(`Petite envie faite ! +5 glands, +1 cœur pour ${FOX[c.id].name}.`)})}
+    renderHud();renderStory();toast(`Petite envie faite ! +5 glands, +1 cœur pour ${nameOf(c.id)}.`)})}

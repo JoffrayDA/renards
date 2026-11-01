@@ -95,6 +95,7 @@ function deliver(c,el){
   if(c.order.every(o=>o.done))complete(c);dirty=true;
 }
 function complete(c){
+  {const m=noelEvent("serve");if(m)toast(m)} // la quête de Noël du jour (tenues.js)
   const frac=Math.max(0,c.pat/c.patMax),base=c.order.reduce((a,o)=>a+itemPrice(itemKey(o)),0);
   let tip=Math.round(base*.45*frac*tipMult()*(G.boost.tips?2:1));
   if(frac>=.5){S.happy[c.fox]=(S.happy[c.fox]||0)+1;G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);qEvent("combo",G.combo);if(G.combo===3)qEvent("combo3");if(G.combo>=3)buddyHop()}else G.combo=0;

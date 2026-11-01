@@ -11,6 +11,7 @@ function endDay(){
   const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=G.day,prev=S.stars[d]||0,before=starSum();
   G.run=0;
   if(!G.lost&&st)qEvent("perfect");if(st===3)qEvent("stars3");
+  if(st){const m=noelEvent("star");if(m)setTimeout(()=>toast(m),1200)}
   S.stars[d]=Math.max(prev,st);S.best[d]=Math.max(S.best[d]||0,e);
   const news=[];
   // le coffre ne paie que les étoiles nouvellement gagnées : rejouer reste utile sans devenir une ferme à pièces

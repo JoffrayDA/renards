@@ -83,7 +83,7 @@ let talkQ=[],talkDone=null;
 function talk(lines,done){talkQ=lines.slice();talkDone=done||null;nextLine()}
 function nextLine(){const el=$("talk");
   if(!talkQ.length){el.hidden=true;const d=talkDone;talkDone=null;if(d)d();return}
-  const [id,expr,txt]=talkQ.shift(),f=id==="me"?{...FOX.roussette,name:ME()}:FOX[id];
+  const [id,expr,txt]=talkQ.shift(),f=id==="me"?{...FOX.roussette,name:ME()}:{...FOX[id],name:nameOf(id)}; // un inconnu ne dit pas son nom
   el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false}
 $("talk").onclick=nextLine;
 const INTRO=[
@@ -93,7 +93,7 @@ const INTRO=[
   ["petitpois","surprise","Et dans la forêt, il y a des renards sauvages ! Ils sentent la nourriture de très loin. Essaie de remplir la gamelle."]
 ];
 const arrLines=id=>[[id,"joy",`Bonsoir ${ME()} ! Ton café m'a tellement plu que j'ai suivi ta trace jusqu'ici. Je peux rester ?`],
-  ["petitpois","joy",`Bienvenue au refuge, ${FOX[id].name} ! Il y a de la place pour tout le monde.`]];
+  ["petitpois","joy",`Bienvenue au refuge, ${nameOf(id)} ! Il y a de la place pour tout le monde.`]];
 
 /* ---------- feuilles ---------- */
 let afterSheet=null; // ce qui se passe quand on ferme la feuille (par exemple le dialogue d'arrivée)
@@ -176,7 +176,7 @@ function carnet(){
 }
 function foxSheet(id){
   const f=FOX[id],r=R.res[id],M=metIds(),s=status(id,M),show=s.ok||s.seen;
-  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`,"carnet");
+  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}${r||id==="roussette"?tenueHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`,"carnet");
 }
 
 /* ---------- nouvelles au retour ---------- */

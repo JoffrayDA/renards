@@ -17,7 +17,7 @@ const dkey=p=>p.deco&&(p.deco.k||p.deco),pkey=p=>p.bowl?null:p.obj||(p.deco&&p.a
 function keepShot(p,host){const k=pkey(p),old=R.photos.findIndex(q=>q.id===p.id&&!q.bowl&&pkey({at:"out",...q})===k);
   if(old>=0)R.photos.splice(old,1);R.photos.push(p);save();camMode(false);
   const fl=document.createElement("div");fl.className="snapflash";host.appendChild(fl);setTimeout(()=>fl.remove(),700);
-  toast(`Clic ! ${old>=0?"Nouvelle photo de":"Une photo de"} ${FOX[p.id].name}, rangée dans son dossier.`)}
+  toast(`Clic ! ${old>=0?"Nouvelle photo de":"Une photo de"} ${nameOf(p.id)}, rangée dans son dossier.`);const m=noelEvent("photo");if(m)setTimeout(()=>toast(m),1800)}
 // dehors : le renard tel qu'on le voit, dans son objet ou sur sa déco
 function shootFox(f){
   if(f.wild){bubble(f,"trop farouche pour une photo… Regarde l'album : la gamelle le photographie.");return}
@@ -76,9 +76,9 @@ function photos(){bgCache.clear();
   const by={};for(const p of R.photos){if(INC[p.id]&&!incOf(p.id).found)continue;(by[p.id]=by[p.id]||[]).push(p)}
   const ids=Object.keys(by).sort((a,b)=>Math.max(...by[b].map(p=>p.t))-Math.max(...by[a].map(p=>p.t)));
   const n=R.photos.length;
-  openSheet(`<h2>Album photos</h2><p class="sub">${n?`${n} photo${n>1?"s":""}. Touche l'appareil photo dans la scène, puis un renard.`:"Aucune photo pour l'instant. Touche l'appareil photo dans la scène, puis un renard. La gamelle prend aussi des photos de ses visiteurs."}</p>${incoCards()}${ids.length?`<h3 class="sec">Par renard</h3><div class="grid">${ids.map(id=>`<button class="card" data-pfold="${id}" type="button"><div class="pic ${RAR[FOX[id].rar].cls}">${foxArt(FOX[id],{expr:"joy",portrait:1})}</div><h3>${FOX[id].name}</h3><p>${by[id].length} photo${by[id].length>1?"s":""}</p></button>`).join("")}</div>`:""}`);
+  openSheet(`<h2>Album photos</h2><p class="sub">${n?`${n} photo${n>1?"s":""}. Touche l'appareil photo dans la scène, puis un renard.`:"Aucune photo pour l'instant. Touche l'appareil photo dans la scène, puis un renard. La gamelle prend aussi des photos de ses visiteurs."}</p>${incoCards()}${ids.length?`<h3 class="sec">Par renard</h3><div class="grid">${ids.map(id=>`<button class="card" data-pfold="${id}" type="button"><div class="pic ${RAR[FOX[id].rar].cls}">${foxArt(FOX[id],{expr:"joy",portrait:1})}</div><h3>${nameOf(id)}</h3><p>${by[id].length} photo${by[id].length>1?"s":""}</p></button>`).join("")}</div>`:""}`);
 }
 function photoFolder(id){bgCache.clear();
   const ps=R.photos.filter(p=>p.id===id).sort((a,b)=>b.t-a.t);
-  openSheet(`<h2>${FOX[id].name}</h2><p class="sub">${ps.length} photo${ps.length>1?"s":""}. Une par pose : en reprendre une remplace l'ancienne.</p><div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption>${pcap(p)}</figcaption></figure>`).join("")}</div>`,"photos");
+  openSheet(`<h2>${nameOf(id)}</h2><p class="sub">${ps.length} photo${ps.length>1?"s":""}. Une par pose : en reprendre une remplace l'ancienne.</p><div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption>${pcap(p)}</figcaption></figure>`).join("")}</div>`,"photos");
 }

@@ -198,7 +198,11 @@ function foxArt(f,o={}){
     body=tailBack(ex==="surprise"?-14:0)+ears(ex==="surprise"?-3:0,ex==="sad"?-26:ex==="shy"?-12:0)+bun(T,88,36)+faceOf(Y,ex==="joy"||ex==="open"?ex:ex)+paws(89);
   }
   // Mûre : le bout du museau teint par les baies
-  body+=markOf(Y)+(f.muzzle&&!sil?`<ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="${f.muzzle}" opacity=".55" stroke="none"/>`:"")+acc(T,Y,N,W);
+  // la tenue d'hiver (js/tenues.js) : le bonnet remplace ce qu'il porte sur la tête, l'écharpe ce qu'il porte au cou
+  const wr=!sil&&!o.nowear&&typeof wearOf==="function"?wearOf(f.id):null;
+  const hideAcc=wr&&(wr.h&&["feuille","gland","bob","bonnet","bonnetnuit","beret","etoile"].includes(f.acc)||wr.s&&["echarpe","noeud","collier"].includes(f.acc));
+  body+=markOf(Y)+(f.muzzle&&!sil?`<ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="${f.muzzle}" opacity=".55" stroke="none"/>`:"")+(hideAcc?"":acc(T,Y,N,W))
+    +(wr&&wr.s?tenScarf(f.id,N,W):"")+(wr&&wr.h?tenHat(f.id,T,geo.hw):"");
   const fxG=fx?`<g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${fx}</g>`:"";
   const zz=pose==="sleep"?`<text class="zz" x="70" y="42" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="80" y="32" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
   if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}</g></svg>`;

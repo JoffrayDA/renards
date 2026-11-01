@@ -243,9 +243,9 @@ function shopSheet(tab){if(tab)shopTab=tab;
       ${buy?`<button class="btn" data-dbuy="${k}" type="button" ${sold||!can?"disabled":""}>${sold?"Acheté":dPrice(o)}</button>`:n?`<button class="btn" data-dput="${k}" type="button">Poser</button>`:""}</div>`};
   const body=shopTab==="jour"?`<p class="sub">Nouveaux objets ${untilMidnight()}. Chaque objet revient régulièrement : rien n'est perdu pour toujours.</p>${shopToday().map(k=>card(k,1)).join("")}`
     :shopTab==="mes"?(own.length?`${has(false)?`<button class="btn big wide" data-deco="out" type="button">Décorer la clairière</button>`:""}${has(true)&&houseOpen()?`<button class="btn big wide" data-deco="home" type="button">Décorer la maison</button>`:""}<p class="sub">Fais glisser les objets du doigt pour les placer où tu veux.</p>${own.map(k=>card(k,0)).join("")}`:`<p class="sub">Tu n'as encore aucun objet. Va voir la boutique du jour !</p>`)
-    :objList();
-  openSheet(`<h2>Boutique</h2><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span><span>${acornSVG()} ${R.glands}</span></div>
-    <div class="tabs">${[["jour","Du jour"],["mes","Mes objets"],["refuge","Refuge"]].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-dtab="${k}" type="button">${n}</button>`).join("")}</div>${body}
+    :shopTab==="noel"?noelTab():objList();
+  openSheet(`<h2>Boutique</h2><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span><span>${acornSVG()} ${R.glands}</span>${atelierOn()?`<span>${sucreSVG} ${sucresN()}</span><span>${pelSVG} ${pelN()}</span>`:""}</div>
+    <div class="tabs">${[["jour","Du jour"],["mes","Mes objets"],["refuge","Refuge"],...(atelierOn()?[["noel","Noël"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-dtab="${k}" type="button">${n}</button>`).join("")}</div>${body}
     <p class="sub">Les pièces se gagnent au Café, les clochettes avec les étoiles du Café, ses quêtes et les histoires du refuge.</p>`)}
 
 /* ---------- dans la scène et dans la maison ---------- */
@@ -289,7 +289,7 @@ function drawHouseDeco(seated){
   for(const s of seated){const el=document.createElement("div");el.className="fox hdfox";el.innerHTML=`<div class="flip">${foxArt(FOX[s.id],{pose:s.pose})}</div>`;
     el.style.cssText=pc(s.x,s.y)+`;z-index:${Math.round(s.z)}`;
     el.onpointerdown=e=>{e.stopPropagation();if(decoMode)return;if(shooting){const d=R.deco.home.find(d=>d.k===s.k);shootHome({id:s.id,x:s.x,y:s.y,pose:s.pose,w:54,deco:d&&{k:d.k,x:d.x,y:d.y,f:d.f?1:0}});return}
-      const r=pet(s.id);toast(r?`${FOX[s.id].name} est ravi (+1 cœur, +1 gland).`:`${FOX[s.id].name} se prélasse.`);if(r)renderHud()};
+      const r=pet(s.id);toast(r?`${nameOf(s.id)} est ravi (+1 cœur, +1 gland).`:`${nameOf(s.id)} se prélasse.`);if(r)renderHud()};
     houseEl.appendChild(el)}
   drawDeco()}
 // la photo : l'objet et son renard préféré, cadrés pour tenir dans l'image (le renard à sa place : dessus, dedans ou à côté)

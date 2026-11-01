@@ -42,8 +42,8 @@ const AV_ART={
 const BOOST_N={patience:"Tisane calmante",tips:"Pot à pourboires",vip:"Invitations dorées"};
 const DECO_N={bonhomme:["Bonhomme de neige","À poser dans la Clairière : Boutique, puis Mes objets."],guirlpin:["Guirlande de pommes de pin","Pour un mur de la maison : Boutique, puis Mes objets."],
   luge:["Luge en bois","À poser dans la Clairière. Un renard viendra s'y asseoir."],traineau:["Traîneau de Barbe-Neige","Le gros cadeau : à poser dans la Clairière, cadeaux compris."]};
-const NOEL_N={bonnet:["Bonnet à pompon","Ta première tenue : tu pourras la mettre à un renard du refuge."],houx:["Couronne de houx","Pour la porte du Café."],
-  echarpe:["Écharpe tricotée","Une tenue toute douce pour un renard du refuge."],etoile:["Étoile dorée du sapin","Tu as ouvert les 24 cases ! Elle ira tout en haut du grand sapin."]};
+const NOEL_N={bonnet:["Ton bonnet à pompon","Le tien, rouge à flocons : Roussette le porte sur la carte du Café. Mamie Brindille tricote ceux des renards du refuge."],houx:["Couronne de houx","Pour la porte du Café."],
+  echarpe:["Ton écharpe tricotée","Assortie à ton bonnet. Roussette la porte sur la carte du Café."],etoile:["Étoile dorée du sapin","Tu as ouvert les 24 cases ! Elle ira tout en haut du grand sapin."]};
 function avLabel(g){
   if(g.coins)return [AV_ART.coins,`${g.coins} pièces`,"Dans ta bourse du Café."];
   if(g.sucres)return [AV_ART.sucres,`${g.sucres} sucres d'orge`,"La monnaie de Noël, pour la boutique de Noël."];
