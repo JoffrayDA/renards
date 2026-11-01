@@ -112,6 +112,7 @@ Refondue le 24/10/2026 (fiche : `docs/clairiere-v2.md`). Le Café, c'est la tens
 
 - Sur iPhone, le Café ramait beaucoup : Safari recalcule le filtre SVG `#wobble` à chaque image dès qu'un renard bouge. Couper le filtre sur iOS (`LITE` dans `js/foxart.js`, `?lite=1` pour tester) a réglé le problème (confirmé par la copine de Joffray). Pas de filtre SVG coûteux sous une animation.
 
+- Un commentaire ajouté en fin de ligne peut avaler le code qui suit sur la même ligne (`continue; // commentaireconst s=…`) : la Clairière de Joffray restait vide le 01/11/2026, seulement quand la gamelle était pleine. Toujours repasser à la ligne après un commentaire inséré, et tester les chemins rares (gamelle pleine, simulation page fermée). Si un script plante, `clairiere.html` affiche l'erreur en bas de l'écran (« Oups, un bug »), à demander en capture.
 - Une classe CSS globale peut casser un jeu : `.flash` (photo) donnait `pointer-events:none` aux flaques de la danse de Plouf, qui avaient la même classe ; Joffray ne pouvait plus toucher les flaques sur son téléphone. Nommer les classes globales de façon unique (`snapflash`), et `-webkit-tap-highlight-color:transparent` évite les carrés bleus d'Android.
 
 - « On dirait un jeu pour enfant de 2 ans » : la première version était trop simple visuellement. Il veut du très mignon, du soigné, avec de l'ambiance (pluie, lumière, détails).
