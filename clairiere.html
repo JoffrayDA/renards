@@ -16,6 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
 <link rel="stylesheet" href="css/clairiere.css">
+<!-- si un script plante, on l'affiche en bas de l'écran : Joffray peut l'envoyer en capture (01/11/2026, Clairière vide sur son téléphone) -->
+<script>addEventListener("error",e=>{const d=document.createElement("div");d.style.cssText="position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#fff;border:2px solid #e0505a;border-radius:12px;padding:8px 10px;font:12px/1.4 system-ui;color:#5b4250";d.textContent="Oups, un bug : "+e.message+" ("+String(e.filename||"").split("/").pop()+":"+e.lineno+")";(document.body||document.documentElement).appendChild(d)})</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
