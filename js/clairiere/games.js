@@ -80,7 +80,7 @@ const GAMES={
         <linearGradient id="fwat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${W0}"/><stop offset="1" stop-color="${W1}"/></linearGradient>
         <radialGradient id="fglow"><stop offset="0" stop-color="#fff6c8" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient>
         <radialGradient id="fray"><stop offset="0" stop-color="#ffe9a6"/><stop offset="1" stop-color="#ffe9a6" stop-opacity="0"/></radialGradient></defs>
-      <rect y="-160" width="400" height="320" fill="url(#fsky)"/>
+      <rect y="-320" width="400" height="480" fill="url(#fsky)"/>
       ${wet?CLOUDS:night?`<circle cx="320" cy="52" r="20" fill="#fff4cf"/><circle cx="312" cy="46" r="5" fill="#f1e2b0"/>${[[40,30],[120,58],[200,24],[260,70],[370,22],[90,90]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#fff8d0"/>`).join("")}`
         :`<circle cx="320" cy="52" r="22" fill="#fff3b8" opacity=".9"/>${[[70,46],[200,30]].map(([x,y])=>`<path d="M${x} ${y} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff" opacity=".85"/>`).join("")}`}
       <rect y="150" width="400" height="330" fill="url(#fwat)"/>
@@ -160,7 +160,7 @@ const GAMES={
      Avec catch : il tombe au milieu de pommes de pin, il faut le toucher en l'air avant qu'il se casse par terre. */
   shake(g,A){
     const sv=A.sv,n=g.n||7,it=g.item||"jar";let k=0,st="shake",dn=0;
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#bfe0f2"/><rect y="380" width="400" height="100" fill="#bcd99a"/>
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><rect y="380" width="400" height="100" fill="#bcd99a"/>
       <g filter="url(#wobble)"><path d="M178 470 Q186 380 180 260 L222 260 Q216 380 226 470Z" fill="#a9785a" ${O}/></g>
       <g id="crown" class="crown"><g filter="url(#wobble)">${[[200,170,92],[120,200,60],[284,200,62],[160,110,58],[246,112,60]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}
         ${[[150,180],[250,150],[205,230],[290,215],[120,140]].map(([x,y])=>`<path d="M${x} ${y} q8 -6 16 0" fill="none" stroke="#6f9a60" stroke-width="3" stroke-linecap="round"/>`).join("")}</g>
@@ -195,7 +195,7 @@ const GAMES={
     const sv=A.sv,P=[[88,150],[206,128],[322,166],[136,262],[272,284],[80,388],[214,402],[330,380]],tries=g.tries||3,
       gags=[["snail","Un escargot. Il n'a rien vu."],["cone","Une pomme de pin. Pas ça…"],["pebble","Un caillou tout lisse."],["leaf","Rien que des feuilles."]];
     let good=0,left=tries,st="look",gen=0;
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#c9e2a4"/>${Array.from({length:30},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="its"></g><g id="piles"></g>`;
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${Array.from({length:30},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="its"></g><g id="piles"></g>`;
     const its=sv.querySelector("#its"),box=sv.querySelector("#piles");
     const piles=P.map(([x,y],i)=>{const it=grp(its,"",{transform:`translate(${x} ${y})`,opacity:0});
       const pile=grp(box,`<g class="pin"><g filter="url(#wobble)">${[[-26,4,"#f2a35c",-12],[0,-8,"#e8794e",8],[24,2,"#f6c065",-4],[-10,10,"#e98a5a",14],[14,12,"#f2a35c",-8],[0,0,"#f6c065",4]].map(([dx,dy,c,r])=>`<path d="M${dx-20} ${dy} Q${dx} ${dy-20} ${dx+20} ${dy} Q${dx} ${dy+8} ${dx-20} ${dy}Z" fill="${c}" transform="rotate(${r} ${dx} ${dy})" ${O}/>`).join("")}</g></g>`,{transform:`translate(${x} ${y})`,class:"pile"});
@@ -221,9 +221,9 @@ const GAMES={
   catch(g,A){
     const sv=A.sv,n=g.n||5,page=g.thing==="page",xmas=g.thing==="bell"||g.thing==="ball";let got=0;
     // Noël : ciel d'hiver et neige ; grelots de Grelot ou boules de Paillette
-    sv.innerHTML=xmas?`<rect y="-160" width="400" height="640" fill="#cfe3f2"/><path d="M0 320 Q100 296 200 314 Q300 296 400 320 V480 H0Z" fill="#f4f8fc" stroke="${INK}" stroke-width="2.4"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${(i*71)%300}" r="${1.4+i%3}" fill="#fff" opacity=".9"/>`).join("")}`:page?`<rect y="-160" width="400" height="640" fill="#bfe0f2"/><path d="M0 300 Q100 280 200 296 Q300 280 400 300 V480 H0Z" fill="#bcd99a"/>
+    sv.innerHTML=xmas?`<rect y="-320" width="400" height="800" fill="#cfe3f2"/><path d="M0 320 Q100 296 200 314 Q300 296 400 320 V480 H0Z" fill="#f4f8fc" stroke="${INK}" stroke-width="2.4"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${(i*71)%300}" r="${1.4+i%3}" fill="#fff" opacity=".9"/>`).join("")}`:page?`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><path d="M0 300 Q100 280 200 296 Q300 280 400 300 V480 H0Z" fill="#bcd99a"/>
       ${[[60,90],[300,60],[200,140]].map(([x,y])=>`<path d="M${x} ${y} q20 -18 40 0 q16 -10 30 4 q-35 10 -70 -4Z" fill="#fff" opacity=".9"/>`).join("")}`:`<defs><radialGradient id="lg"><stop offset="0" stop-color="#fff6a0"/><stop offset=".35" stop-color="#ffe46a" stop-opacity=".8"/><stop offset="1" stop-color="#ffe46a" stop-opacity="0"/></radialGradient></defs>
-      <rect y="-160" width="400" height="640" fill="#3a3f78"/><path d="M0 330 Q100 300 200 320 Q300 300 400 330 V480 H0Z" fill="#4b6a5a"/>
+      <rect y="-320" width="400" height="800" fill="#3a3f78"/><path d="M0 330 Q100 300 200 320 Q300 300 400 330 V480 H0Z" fill="#4b6a5a"/>
       ${Array.from({length:18},(_,i)=>`<circle cx="${(i*97)%400}" cy="${(i*53)%260}" r="1.4" fill="#fff8d0" opacity=".8"/>`).join("")}`;
     let bugs0=0;const bugs=Array.from({length:n},()=>{const b={x:60+Math.random()*280,y:80+Math.random()*300,a:Math.random()*6.3,s:70+Math.random()*50};
       b.el=grp(sv,xmas?(g.thing==="bell"?`<g filter="url(#wobble)">${ITEM.bell}</g><circle r="26" fill="transparent"/>`
@@ -245,7 +245,7 @@ const GAMES={
     const sv=A.sv,COL=["#ff9ec4","#8fd3ff","#a6f08a","#c9a6ff","#ff7a8a","#7ff0d8"];let done=0;
     sv.innerHTML=`<defs>${COL.map((c,i)=>`<radialGradient id="ffc${i}"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="${c}" stop-opacity=".85"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`).join("")}
         <radialGradient id="ffsky" cx=".5" cy=".55" r=".7"><stop offset="0" stop-color="#7a6bb8" stop-opacity=".7"/><stop offset="1" stop-color="#3a3f78" stop-opacity="0"/></radialGradient><radialGradient id="ffg"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#ffd23a"/><stop offset="1" stop-color="#ffb800" stop-opacity="0"/></radialGradient></defs>
-      <rect y="-160" width="400" height="640" fill="#3a3f78"/><rect y="-160" width="400" height="640" fill="url(#ffsky)"/><circle cx="61" cy="239" r="90" fill="url(#ffg)" opacity=".35"/>${Array.from({length:22},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.37%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%240}" r="1.4" fill="#fff8d0"/>`).join("")}
+      <rect y="-320" width="400" height="800" fill="#3a3f78"/><rect y="-320" width="400" height="800" fill="url(#ffsky)"/><circle cx="61" cy="239" r="90" fill="url(#ffg)" opacity=".35"/>${Array.from({length:22},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.37%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%240}" r="1.4" fill="#fff8d0"/>`).join("")}
       <g filter="url(#wobble)"><path d="M0 340 Q100 310 200 330 Q300 310 400 340 V480 H0Z" fill="#4b6a5a" ${O}/>
         <rect x="56" y="250" width="10" height="110" rx="4" fill="#7a5a4a" ${O}/><rect x="44" y="222" width="34" height="34" rx="9" fill="#ffe9a6" ${O}/></g>
       <g id="flies"></g>`;
@@ -273,7 +273,7 @@ const GAMES={
      Un raté et le caillou coule : on recommence. Il faut need rebonds d'affilée. */
   ricochet(g,A){
     const sv=A.sv,need=g.need||4,X0=40,WG=320,HALF=26;let t=0,k=0,per=.9,st="aim";
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#bfe0f2"/><g filter="url(#wobble)"><path d="M0 170 Q100 150 200 164 Q300 150 400 170 V200 H0Z" fill="#8dbd86" ${O}/></g>
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><g filter="url(#wobble)"><path d="M0 170 Q100 150 200 164 Q300 150 400 170 V200 H0Z" fill="#8dbd86" ${O}/></g>
       <rect y="196" width="400" height="200" fill="#a9d3e6"/><path d="M60 240 q30 -8 60 0 M220 300 q26 -8 52 0 M120 350 q24 -6 48 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
       <rect y="392" width="400" height="88" fill="#d9c6a4"/><g id="rings"></g><g id="pips"></g>
       <circle id="stone" cx="40" cy="300" r="9" fill="#cfc6c0" stroke="${INK}" stroke-width="2.6" style="transition:transform .16s ease-out,opacity .3s"/>
@@ -303,7 +303,7 @@ const GAMES={
     const sv=A.sv,id=g.who||g.target,name=FOX[id].name,RD=g.rounds||[[3,4,.5],[3,7,.36],[4,9,.3]],Y=338,
       COL=["#f6b3c4","#9ec3ef","#f2d27a"],LOOT=[["wool","une pelote de laine"],["cone","une pomme de pin"],["leaf","une feuille"],["pebble","un caillou"]];
     let r=0,st="show",cs=[],under=null,sw=null,q=[];
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#bcd99a"/><rect y="-160" width="400" height="200" fill="#bfe0f2"/><g filter="url(#wobble)">
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bcd99a"/><rect y="-320" width="400" height="360" fill="#bfe0f2"/><g filter="url(#wobble)">
       <rect x="-10" y="40" width="420" height="230" fill="#f0c99a" ${O}/>${[80,120,160,200,240].map(y=>`<path d="M0 ${y} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
       ${[40,280].map(x=>`<rect x="${x}" y="100" width="80" height="72" rx="8" fill="#ffe9a6" ${O}/><path d="M${x+40} 100 V172 M${x} 136 H${x+80}" stroke="${INK}" stroke-width="3"/>`).join("")}
       <path d="M156 270 V140 Q200 104 244 140 V270Z" fill="#6a4434" ${O}/><circle cx="232" cy="210" r="4" fill="#f2c45a"/>
@@ -358,7 +358,7 @@ const GAMES={
     const MOT={stripe:`<path d="M-10 -14 H10 M-10 -5 H10" stroke="#fff" stroke-width="3.4"/>`,dot:`<circle cx="-4" cy="-15" r="2.6" fill="#fff"/><circle cx="4" cy="-6" r="2.6" fill="#fff"/><circle cx="-3" cy="3" r="2.6" fill="#fff"/>`,
       heart:`<path d="M0 -2 C-8 -7 -9 -12 -6 -15 Q-3 -17 0 -13 Q3 -17 6 -15 C9 -12 8 -7 0 -2Z" fill="#fff"/>`,star:`<path d="M0 -17 l2.6 5.4 5.8 .8 -4.2 4 1 5.8 -5.2 -2.8 -5.2 2.8 1 -5.8 -4.2 -4 5.8 -.8Z" fill="#fff"/>`};
     const sock=([c,m])=>`<g filter="url(#wobble)"><path d="M-10 -26 H10 V6 H20 Q28 6 28 14 Q28 22 20 22 H-2 Q-10 22 -10 14Z" fill="${c}" ${O}/><rect x="-12" y="-31" width="24" height="9" rx="3" fill="#fffaf2" ${O}/></g>${MOT[m]}`;
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#c9e2a4"/>${Array.from({length:24},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="cards"></g>`;
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${Array.from({length:24},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="cards"></g>`;
     const box=sv.querySelector("#cards"),deck=[...Array(K).keys(),...Array(K).keys()].sort(()=>Math.random()-.5);
     const cards=deck.map((k,i)=>{const c={k,slot:i,up:false,done:false};
       c.el=grp(box,`<g class="mflip"><g class="back"><rect x="-56" y="-43" width="112" height="86" rx="16" fill="#f6b3c4" stroke="${INK}" stroke-width="3"/>
@@ -392,7 +392,7 @@ const GAMES={
     const sv=A.sv,n=g.n||8,miss=g.miss||3;let got=0,lost=0,bx=200,tx=200,next=.6,st="play",fr=[];
     const APPLE=`<circle r="13" fill="#e0564f" ${O}/><path d="M0 -12 q2 -6 6 -8" stroke="${INK}" stroke-width="2.4" fill="none"/><path d="M3 -16 q8 -4 10 2 q-6 3 -10 -2Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.8"/><path d="M-7 -4 q2 -4 6 -4" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
       ROT=`<circle r="13" fill="#a68a52" ${O}/><circle cx="-4" cy="2" r="3" fill="#6f5a34"/><circle cx="5" cy="-4" r="2.2" fill="#6f5a34"/><path d="M5 3 q7 -3 9 4 q-5 3 -9 -4Z" fill="#f3b9c8" stroke="${INK}" stroke-width="1.6"/><circle cx="11" cy="4" r="1" fill="${INK}"/>`;
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#bfe0f2"/><rect y="400" width="400" height="80" fill="#bcd99a"/>
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><rect y="400" width="400" height="80" fill="#bcd99a"/>
       <g filter="url(#wobble)">${[[60,40,70],[170,20,80],[290,30,76],[380,60,60],[110,90,56],[240,96,60]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}</g>
       ${[[50,80],[140,60],[210,110],[300,70],[360,100],[100,120]].map(([x,y])=>`<g transform="translate(${x} ${y}) scale(.7)">${APPLE}</g>`).join("")}
       <g id="fr"></g><g id="bk"><g filter="url(#wobble)"><path d="M-48 -24 H48 L38 20 H-38Z" fill="#d9a777" ${O}/><path d="M-44 -8 H44 M-41 6 H41" stroke="#b07a50" stroke-width="2.4"/><rect x="-52" y="-30" width="104" height="10" rx="5" fill="#c08a5c" ${O}/></g></g>`;
@@ -416,7 +416,7 @@ const GAMES={
   /* Le tas de feuilles (Cannelle) : on pousse les feuilles du doigt jusqu'au tas, avant que le vent se lève. */
   rake(g,A){
     const sv=A.sv,N=g.n||16,T=g.time||20,PX=200,PY=260;let st="play",left=T,lv=[],last=null;
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#c9e2a4"/>${Array.from({length:26},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${Array.from({length:26},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}
       <ellipse cx="${PX}" cy="${PY}" rx="70" ry="46" fill="#e8d3a8" stroke="#b9925e" stroke-width="3" stroke-dasharray="8 7"/><g id="lv"></g>
       <rect x="40" y="456" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="458" width="316" height="8" rx="4" fill="#f2a35c"/>`;
     const box=sv.querySelector("#lv"),bar=sv.querySelector("#bar"),COL=["#f2a35c","#e8794e","#f6c065","#e0564f"];
@@ -444,10 +444,10 @@ const GAMES={
     const ROCK=k=>`<g filter="url(#wobble)"><path d="M-30 18 Q-34 -10 -12 -18 ${k%2?"l4 -12 l6 10 l8 -10 l4 12":""} Q30 -16 32 18Z" fill="#8f8790" ${O}/></g><path d="M-16 -6 q6 -4 12 -2" stroke="#b5aeb6" stroke-width="3" fill="none" stroke-linecap="round"/>`;
     sv.innerHTML=`<defs><radialGradient id="lgh"><stop offset="0" stop-color="#000"/><stop offset=".6" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient>
         <radialGradient id="lwarm"><stop offset="0" stop-color="#ffe9a6" stop-opacity=".45"/><stop offset="1" stop-color="#ffe9a6" stop-opacity="0"/></radialGradient>
-        <mask id="lm"><rect y="-160" width="400" height="640" fill="#fff"/><circle id="hole" r="86" fill="url(#lgh)"/></mask></defs>
-      <rect y="-160" width="400" height="640" fill="#56627a"/><rect y="100" width="400" height="380" fill="#5f7d68"/>
+        <mask id="lm"><rect y="-320" width="400" height="800" fill="#fff"/><circle id="hole" r="86" fill="url(#lgh)"/></mask></defs>
+      <rect y="-320" width="400" height="800" fill="#56627a"/><rect y="100" width="400" height="380" fill="#5f7d68"/>
       <g id="things">${S.map((_,i)=>`<g class="rk" data-i="${i}">${ROCK(i)}</g>`).join("")}<g id="cfox">${foxAt(id,0,22,70,{pose:"sit"})}</g></g>
-      <circle id="warm" r="90" fill="url(#lwarm)"/><rect y="-160" width="400" height="640" fill="#1c2236" opacity=".99" mask="url(#lm)"/>
+      <circle id="warm" r="90" fill="url(#lwarm)"/><rect y="-320" width="400" height="800" fill="#1c2236" opacity=".99" mask="url(#lm)"/>
       <g id="lamp"><path d="M0 -50 v10" stroke="${INK}" stroke-width="3"/><rect x="-9" y="-40" width="18" height="22" rx="5" fill="#ffe9a6" stroke="${INK}" stroke-width="2.6"/></g>`;
     const hole=sv.querySelector("#hole"),warm=sv.querySelector("#warm"),lamp=sv.querySelector("#lamp"),cf=sv.querySelector("#cfox"),rks=[...sv.querySelectorAll(".rk")];
     const place=()=>{let r=0;S.forEach(([x,y],i)=>{if(i===slot)cf.setAttribute("transform",`translate(${x} ${y})`);else rks[r++].setAttribute("transform",`translate(${x} ${y})`)});
@@ -463,30 +463,81 @@ const GAMES={
   },
 
   /* Le parapluie-feuille (Brume) : un renard se promène sous la pluie ; on garde la feuille au-dessus de lui du doigt. */
+  /* Le parapluie-feuille (Brume), refait le 01/11/2026 (Joffray : « il fait pitié niveau graphisme et difficulté ») :
+     Petit Pois cueille trois champignons dans le sous-bois, un nuage noir le suit. On glisse la feuille du doigt au-dessus de lui ;
+     il trottine d'un champignon à l'autre, s'arrête pour cueillir, repart parfois en courant. La pluie forcit, de grosses gouttes
+     tombent des branches, et des coups de vent penchent la pluie (annoncés). Trois gouttes sur lui et on recommence. */
   umbrella(g,A){
-    const sv=A.sv,id=g.who||g.target,D=g.time||12,wet=g.wet||3;let st,t,w,ux=200,tx=200,fxx=200,drops=[],acc=0;
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#a9bccd"/><g filter="url(#wobble)">${[[60,30,60],[170,14,70],[290,26,66],[390,40,50]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#7d8ea3" ${O}/>`).join("")}</g>
-      <rect y="440" width="400" height="40" fill="#8fb07f"/><g id="dr"></g><g id="wf"><g id="wfi">${foxAt(id,0,0,84,{pose:"walk"})}</g></g>
-      <g id="umb"><path d="M0 -4 V22 q0 8 -8 8" fill="none" stroke="#7a5a4a" stroke-width="4" stroke-linecap="round"/><g filter="url(#wobble)"><path d="M-64 4 Q-46 -36 0 -40 Q46 -36 64 4 Q32 -6 0 4 Q-32 -6 -64 4Z" fill="#7fb27f" ${O}/></g><path d="M0 -36 V2 M0 -18 l-22 8 M0 -18 l22 8" stroke="#5f8f5c" stroke-width="2.2" fill="none"/></g>
-      <rect x="40" y="456" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="458" width="0" height="8" rx="4" fill="#9ec3ef"/>`;
-    const dr=sv.querySelector("#dr"),wf=sv.querySelector("#wf"),wfi=sv.querySelector("#wfi"),umb=sv.querySelector("#umb"),bar=sv.querySelector("#bar");
-    drag(A,p=>{tx=Math.max(40,Math.min(360,p.x))});
-    const reset=()=>{st="play";t=0;w=0;drops.forEach(d=>d.el.remove());drops=[];A.say(g.say||`Garde la feuille au-dessus de ${FOX[id].name} !`)};
-    A.loop(dt=>{ux+=(tx-ux)*Math.min(1,dt*16);umb.setAttribute("transform",`translate(${ux.toFixed(1)} 336)`);if(st!=="play")return;
-      t+=dt;bar.setAttribute("width",(316*Math.min(1,t/D)).toFixed(1));
-      const nx=200+Math.sin(t*.75)*110+Math.sin(t*1.7)*30,dir=nx>=fxx?1:-1;fxx=nx;
-      wf.setAttribute("transform",`translate(${fxx.toFixed(1)} 444)`);wfi.setAttribute("transform",`scale(${dir} 1)`);
-      acc+=dt*(16+t*1.5);while(acc>=1){acc--;drops.push({x:Math.random()*400,y:-10,el:grp(dr,`<path d="M0 0 v14" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>`)})}
-      // on teste le passage entre deux images : à faible cadence, une goutte sauterait par-dessus la feuille
-      for(const d of drops){const y0=d.y;d.y+=440*dt;
-        if(y0<340&&d.y>=318&&Math.abs(d.x-ux)<62){d.done=1;d.el.remove();continue}
-        if(y0<420&&d.y>=376&&Math.abs(d.x-fxx)<24){d.done=1;d.el.remove();w++;
-          if(w>=wet){st="lost";A.say(`${FOX[id].name} est trempé ! On recommence.`);A.later(reset,1400);return}
-          A.say(`Une goutte sur ${FOX[id].name} ! Encore ${wet-w} et il est trempé.`);continue}
-        if(d.y>470){d.done=1;d.el.remove();continue}
+    const sv=A.sv,id=g.who||g.target,wet=g.wet||3,NM=3,LW=50,GY=430,CY=-EXT+130; // CY : le nuage, sous la consigne
+    let st,t,w,ux=200,tx=200,fx=60,fdir=1,goal,pause,run,picked,acc,drops,splashes,mush,wind,gust,gustAt,cx;
+    const r=rng(17),tree=(x,y,k,c)=>`<g transform="translate(${x} ${y}) scale(${k})"><path d="M-6 0 V-60" stroke="#4a3a40" stroke-width="10" stroke-linecap="round"/><circle cy="-80" r="36" fill="${c}"/><circle cx="-26" cy="-58" r="24" fill="${c}"/><circle cx="26" cy="-60" r="26" fill="${c}"/></g>`;
+    const mushSVG=`<g><path d="M-4 0 V-9 h8 V0Z" fill="#fff6ea" stroke="${INK}" stroke-width="2"/><path d="M-12 -8 Q0 -24 12 -8Z" fill="#e0564f" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="-4" cy="-13" r="2" fill="#fff"/><circle cx="4" cy="-11" r="1.6" fill="#fff"/></g>`;
+    sv.innerHTML=`<defs><linearGradient id="usky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d6c86"/><stop offset=".6" stop-color="#9aabbf"/><stop offset="1" stop-color="#c3cfd8"/></linearGradient>
+        <linearGradient id="ugr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fa36f"/><stop offset="1" stop-color="#5f8a5a"/></linearGradient>
+        <radialGradient id="umist" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#usky)"/>
+      <path d="M-10 300 Q60 250 130 280 Q200 240 270 276 Q340 248 410 270 V480 H-10Z" fill="#8a9cab" opacity=".7"/>
+      <g opacity=".55">${[[20,330,1.1,"#6d8577"],[110,316,.8,"#6d8577"],[300,320,.95,"#6d8577"],[390,330,1.2,"#6d8577"]].map(a=>tree(...a)).join("")}</g>
+      <ellipse cx="120" cy="300" rx="160" ry="30" fill="url(#umist)"/><ellipse cx="320" cy="320" rx="150" ry="26" fill="url(#umist)"/>
+      <g filter="url(#wobble)">${[[-6,420,1.25,"#4f7a5a"],[408,424,1.35,"#4f7a5a"]].map(a=>tree(...a)).join("")}
+        <path d="M-10 ${GY-14} Q100 ${GY-26} 200 ${GY-16} Q300 ${GY-28} 410 ${GY-14} V480 H-10Z" fill="url(#ugr)" ${O}/>
+        <path d="M-10 ${GY+8} Q120 ${GY} 220 ${GY+6} Q320 ${GY-2} 410 ${GY+8} V480 H-10Z" fill="#a98a66" stroke="${INK}" stroke-width="2.4"/></g>
+      ${[[70,GY+20,26],[250,GY+24,34],[350,GY+16,18]].map(([x,y,w])=>`<ellipse class="upud" cx="${x}" cy="${y}" rx="${w}" ry="5" fill="#8fb3c8" stroke="${INK}" stroke-width="1.6"/>`).join("")}
+      ${Array.from({length:22},()=>{const x=r()*400,y=GY-18+r()*12;return `<path d="M${x.toFixed(0)} ${y.toFixed(0)} q-2 -7 -5 -9 M${x.toFixed(0)} ${y.toFixed(0)} q0 -9 1 -11 M${x.toFixed(0)} ${y.toFixed(0)} q2 -7 6 -8" fill="none" stroke="#4f7a4a" stroke-width="1.8" stroke-linecap="round"/>`}).join("")}
+      <g id="ubg" opacity=".35"></g><g id="um"></g><g id="usp"></g>
+      <g id="cloud"><g filter="url(#wobble)"><path d="M-70 10 Q-80 -14 -52 -18 Q-46 -44 -14 -38 Q4 -60 32 -42 Q66 -48 66 -16 Q86 -6 72 12 Z" fill="#59647a" ${O}/></g><path d="M-40 -6 q8 -6 16 0 M8 -14 q10 -6 20 0" fill="none" stroke="#7d899e" stroke-width="3" stroke-linecap="round"/></g>
+      <g id="wf"><g id="wfi"><g class="uf0">${foxAt(id,0,0,82,{pose:"walk"})}</g><g class="uf1" display="none">${foxAt(id,0,0,82,{pose:"walk",frame:1})}</g><g class="uf2" display="none">${foxAt(id,0,0,82,{pose:"eat"})}</g></g></g>
+      <g id="dr"></g>
+      <g id="umb"><path d="M0 -2 V26 q0 9 -9 9" fill="none" stroke="#7a5a4a" stroke-width="4.4" stroke-linecap="round"/>
+        <g filter="url(#wobble)"><path d="M-${LW+4} 6 Q-${LW-4} -34 0 -40 Q${LW-4} -34 ${LW+4} 6 Q${LW*.5} -4 0 5 Q-${LW*.5} -4 -${LW+4} 6Z" fill="#7fb27f" ${O}/></g>
+        <path d="M0 -37 V3 M0 -24 l-${LW*.42} 12 M0 -24 l${LW*.42} 12 M0 -12 l-${LW*.6} 13 M0 -12 l${LW*.6} 13" stroke="#5f8f5c" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <path d="M-${LW*.7} -16 Q-${LW*.4} -30 -10 -33" fill="none" stroke="#b9dcae" stroke-width="3" stroke-linecap="round"/></g>
+      <g id="ui"></g><g id="wnd" opacity="0"></g>`;
+    const $$=q=>sv.querySelector(q),dr=$$("#dr"),bg=$$("#ubg"),um=$$("#um"),sp=$$("#usp"),wf=$$("#wf"),wfi=$$("#wfi"),umb=$$("#umb"),cloud=$$("#cloud"),ui=$$("#ui"),wnd=$$("#wnd");
+    const fr=[$$(".uf0"),$$(".uf1"),$$(".uf2")],show=k=>fr.forEach((e,i)=>e.setAttribute("display",i===k?"inline":"none"));
+    // le décor de la pluie (fines rayures pâles), pour l'ambiance seulement
+    for(let i=0;i<40;i++)grp(bg,`<path d="M${(r()*440-20).toFixed(0)} ${(r()*400-40).toFixed(0)} l-3 16" stroke="#e8f2f8" stroke-width="1.4" stroke-linecap="round"/>`);
+    drag(A,p=>{tx=Math.max(30,Math.min(370,p.x))});
+    const hud=()=>{ui.innerHTML=`<g transform="translate(14 ${CY-62})">${Array.from({length:wet},(_,i)=>`<path transform="translate(${i*24} 0)" d="M9 2 Q16 12 16 17 a7 7 0 0 1 -14 0 Q2 12 9 2Z" fill="${i<wet-w?"#9ec3ef":"none"}" stroke="${INK}" stroke-width="2" opacity="${i<wet-w?1:.35}"/>`).join("")}</g>
+      <g transform="translate(${400-14-NM*26} ${CY-62})">${Array.from({length:NM},(_,i)=>`<g transform="translate(${i*26+12} 22)" opacity="${i<picked?1:.3}">${mushSVG}</g>`).join("")}</g>`};
+    const placeMush=()=>{um.innerHTML="";const x=picked%2?60+r()*80:260+r()*80;goal={x,el:grp(um,`<g transform="translate(${x.toFixed(0)} ${GY-2})">${mushSVG}</g>`)}};
+    const reset=()=>{st="play";t=0;w=0;picked=0;acc=0;pause=0;run=0;wind=0;gust=0;gustAt=5+r()*2;fx=60;cx=fx;ux=tx=fx; // la feuille part au-dessus de lui
+      drops&&drops.forEach(d=>d.el.remove());drops=[];splashes&&splashes.forEach(s=>s.el.remove());splashes=[];
+      placeMush();hud();A.say(g.say||`Petit Pois cueille des champignons sous un nuage ! Glisse la feuille au-dessus de lui.`)};
+    const splash=(x,y,big)=>{const e=grp(sp,`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><ellipse rx="3" ry="1.2" fill="none" stroke="#e8f4fb" stroke-width="1.8"/>${big?`<circle cx="-5" cy="-5" r="1.6" fill="#e8f4fb"/><circle cx="5" cy="-6" r="1.6" fill="#e8f4fb"/>`:""}</g>`);splashes.push({el:e,t:0})};
+    let ft=0;
+    A.loop(dt=>{ux+=(tx-ux)*Math.min(1,dt*14);umb.setAttribute("transform",`translate(${ux.toFixed(1)} 342) rotate(${((tx-ux)*.08).toFixed(1)})`);
+      for(const s of splashes){s.t+=dt;const k=s.t/.35;s.el.setAttribute("opacity",(1-k).toFixed(2));s.el.firstChild.setAttribute("transform",s.el.firstChild.getAttribute("transform").replace(/ scale\([^)]*\)/,"")+` scale(${(1+k*2.4).toFixed(2)})`);if(k>=1){s.el.remove();s.done=1}}
+      splashes=splashes.filter(s=>!s.done);
+      if(st!=="play")return;
+      t+=dt;
+      // Petit Pois : va au champignon, s'arrête pour le cueillir, repart ; de plus en plus vite, parfois en courant
+      if(pause>0){pause-=dt;show(2);if(pause<=0){picked++;hud();goal.el.remove();
+          if(picked>=NM){st="won";A.win(g.win||"Pas une goutte ! Trois champignons au sec.");return}
+          placeMush();if(r()<.45){run=1.6;A.say("Il a vu le suivant : il court !")}}}
+      else{const sp0=(46+t*2.2)*(run>0?1.9:1);run-=dt;const d=goal.x-fx;
+        if(Math.abs(d)<4){pause=.9+r()*.5}else{fdir=Math.sign(d);fx+=fdir*Math.min(Math.abs(d),sp0*dt)}
+        ft+=dt;show(Math.floor(ft/.16)%2)}
+      wf.setAttribute("transform",`translate(${fx.toFixed(1)} ${GY})`);wfi.setAttribute("transform",`scale(${fdir} 1)`);
+      // le nuage le suit, en retard
+      cx+=(fx-cx)*Math.min(1,dt*1.3);cloud.setAttribute("transform",`translate(${(cx+Math.sin(t*1.3)*10).toFixed(1)} ${(CY+Math.sin(t*2)*4).toFixed(1)})`);
+      // coups de vent : annoncés, ils penchent la pluie pendant 2,5 s
+      if(t>=gustAt&&gust<=0){gust=2.5;wind=(r()<.5?-1:1)*(80+t*3);gustAt=t+5+r()*3;A.say(wind<0?"Coup de vent vers la gauche !":"Coup de vent vers la droite !");
+        wnd.innerHTML=[0,1,2].map(i=>`<path d="M${wind<0?320:80} ${150+i*40} q${wind<0?-40:40} -10 ${wind<0?-90:90} 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>`).join("");wnd.setAttribute("opacity","1")}
+      if(gust>0){gust-=dt;if(gust<=0){wind=0;wnd.setAttribute("opacity","0")}}
+      // les gouttes : surtout sous le nuage, de plus en plus ; parfois une grosse goutte tombée d'une branche
+      acc+=dt*(t<1.5?2:9+t*1.1); // une seconde et demie pour prendre la feuille en main
+      while(acc>=1){acc--;const big=r()<.1,ox=r()<.75?cx+(r()*2-1)*70:r()*400;
+        drops.push({x:ox-wind*.9,y:CY+8,vx:wind,vy:big?560:380+r()*90,big,el:grp(dr,big?`<path d="M0 -6 Q5 3 5 6 a5 5 0 0 1 -10 0 Q-5 3 0 -6Z" fill="#cfe6f4" stroke="${INK}" stroke-width="1.6"/>`:`<path d="M0 0 l${(wind*-.03).toFixed(1)} -14" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>`)})}
+      for(const d of drops){const y0=d.y;d.y+=d.vy*dt;d.x+=d.vx*dt;
+        // on teste le passage entre deux images : à faible cadence, une goutte sauterait par-dessus la feuille
+        if(y0<342&&d.y>=324&&Math.abs(d.x-ux)<LW){d.done=1;d.el.remove();splash(d.x,324,d.big);continue}
+        if(y0<GY-50&&d.y>=GY-56&&Math.abs(d.x-fx)<22){d.done=1;d.el.remove();w++;hud();splash(d.x,GY-56,1);
+          if(w>=wet){st="lost";show(0);A.say("Petit Pois est trempé ! On recommence.");A.later(reset,1400);return}
+          A.say(w===wet-1?"Attention, plus qu'une goutte !":"Plic ! Une goutte sur Petit Pois.");continue}
+        if(d.y>GY+10){d.done=1;d.el.remove();splash(d.x,GY+12+r()*20,0);continue}
         d.el.setAttribute("transform",`translate(${d.x.toFixed(1)} ${d.y.toFixed(1)})`)}
-      drops=drops.filter(d=>!d.done);
-      if(t>=D){st="won";A.win(g.win||"Pas une goutte !")}});
+      drops=drops.filter(d=>!d.done)});
     reset();
   },
 
@@ -494,7 +545,7 @@ const GAMES={
      avant la fin du temps. Le marteau tape là où on touche. */
   nails(g,A){
     const sv=A.sv,N=g.n||5,T=g.time||12;let st="play",left=T,ns=[];
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#d9b98c"/>${[0,1,2,3,4,5,6,7].map(i=>`<path d="M0 ${30+i*60} H400" stroke="#c49a68" stroke-width="3"/>`).join("")}
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#d9b98c"/>${[0,1,2,3,4,5,6,7].map(i=>`<path d="M0 ${30+i*60} H400" stroke="#c49a68" stroke-width="3"/>`).join("")}
       <g filter="url(#wobble)"><rect x="100" y="70" width="200" height="360" rx="14" fill="#b9814a" ${O}/>${[140,180,220,260].map(x=>`<path d="M${x} 74 V426" stroke="#9a6a3c" stroke-width="2.4"/>`).join("")}
       ${[120,330].map(y=>`<rect x="92" y="${y}" width="96" height="34" rx="6" fill="#a9a2a0" ${O}/><path d="M100 ${y+8} l14 4 M130 ${y+22} l18 -6 M160 ${y+10} l12 6" stroke="#c9763c" stroke-width="2.4" opacity=".7"/>`).join("")}
       <circle cx="270" cy="250" r="9" fill="#f2c45a" ${O}/><path d="M270 256 v14" stroke="${INK}" stroke-width="4" stroke-linecap="round"/></g>
@@ -523,7 +574,7 @@ const GAMES={
   /* La course (Moka) : des pierres numérotées ; on saute dessus dans l'ordre avant que Moka arrive au drapeau. */
   order(g,A){
     const sv=A.sv,id=g.who||g.target,N=g.n||10,T=g.time||10;let k=0,t=0,st="play",ps=[];
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#c9e2a4"/>
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>
       <path d="M40 132 H360" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M40 132 H360" stroke="#d9c6a4" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10"/>
       <path d="M360 132 V100" stroke="${INK}" stroke-width="3"/><path d="M360 100 l22 7 l-22 7Z" fill="#e0564f" stroke="${INK}" stroke-width="2.4"/>
       <g id="rme">${faceAt("roussette",0,0,40)}</g><g id="rmo">${faceAt(id,0,0,40)}</g><g id="st"></g>`;
@@ -547,7 +598,7 @@ const GAMES={
     const sv=A.sv,ids=Object.keys(R.res).filter(i=>i!=="gribouille"),n=Math.max(1,ids.length);
     const cols=Math.ceil(Math.sqrt(n*1.8)),rows=Math.ceil(n/cols),cw=292/cols,ch=170/rows,sz=Math.min(cw*1.15,ch*1.25,96);
     let st="look";
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
       <path d="M110 340 L70 470 M290 340 L330 470 M200 340 V470" stroke="#a9785a" stroke-width="10" stroke-linecap="round"/>
       <defs><clipPath id="pc"><rect x="46" y="66" width="308" height="268" rx="4"/></clipPath><clipPath id="gr"><rect id="grr" x="250" y="250" width="0" height="110"/></clipPath></defs>
       <rect x="34" y="54" width="332" height="292" rx="10" fill="#c08a5c" stroke="${INK}" stroke-width="3.4"/>
@@ -572,7 +623,7 @@ const GAMES={
   simon(g,A){
     const sv=A.sv,id=g.who||g.target,P=[[110,230],[290,230],[110,390],[290,390]],COL=["#9ec3ef","#b7a6e6","#9fd8c4","#f3b9c8"],L=g.rounds||[3,4,5],NOTE=[72,76,79,84],STEP=g.step||520;
     let r=0,seq=[],idx=0,st="show";
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#c9e2a4"/>${P.map(([x,y],i)=>`<g class="pud" data-i="${i}"><ellipse cx="${x}" cy="${y}" rx="70" ry="34" fill="${COL[i]}" stroke="${INK}" stroke-width="3"/><path d="M${x-40} ${y-6} q20 -8 40 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`).join("")}<g id="hopper" style="transition:transform .22s cubic-bezier(.3,1.5,.5,1)">${foxAt(id,0,0,90)}</g>`;
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${P.map(([x,y],i)=>`<g class="pud" data-i="${i}"><ellipse cx="${x}" cy="${y}" rx="70" ry="34" fill="${COL[i]}" stroke="${INK}" stroke-width="3"/><path d="M${x-40} ${y-6} q20 -8 40 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>`).join("")}<g id="hopper" style="transition:transform .22s cubic-bezier(.3,1.5,.5,1)">${foxAt(id,0,0,90)}</g>`;
     const hopper=sv.querySelector("#hopper"),puds=[...sv.querySelectorAll(".pud")];
     const splash=i=>{replay(puds[i],"flash");try{MUSIC.note(NOTE[i])}catch(e){}const [x,y]=P[i];const s=grp(sv,`<g class="splash">${[-30,-12,12,30].map(dx=>`<circle cx="${x+dx}" cy="${y-10}" r="5" fill="#fff"/>`).join("")}</g>`);setTimeout(()=>s.remove(),500)};
     const jump=i=>{const [x,y]=P[i];hopper.style.transform=`translate(${x}px,${y+8}px)`;A.later(()=>splash(i),170)};
@@ -591,7 +642,7 @@ const GAMES={
     const sv=A.sv,ids=g.all?foxes.filter(f=>!f.wild&&f.id!=="gribouille").map(f=>f.id).slice(0,6):[g.target],N=ids.length;
     const dur=g.all?11:8,w=N>1?Math.min(120,340/Math.ceil(N/2)):190;
     const pos=ids.map((id,i)=>N===1?[200,380]:[(i%Math.ceil(N/2)+.5)*(360/Math.ceil(N/2))+20,i<Math.ceil(N/2)?300:430]);
-    sv.innerHTML=`<rect y="-160" width="400" height="640" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
       <rect x="40" y="112" width="320" height="20" rx="10" fill="#fff" stroke="${INK}" stroke-width="3"/><rect id="bar" x="43" y="115" width="0" height="14" rx="7" fill="#9ec3ef"/>
       <text x="200" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="${INK}">${g.label||"Gribouille peint…"}</text>`;
     const models=ids.map((id,i)=>grp(sv,foxAt(id,pos[i][0],pos[i][1],w),{class:"model"}));
