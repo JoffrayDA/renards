@@ -15,7 +15,7 @@ function pushInvite(){if(!pushOk()||pushOn()||R.pushAsk)return;if(!$("talk").hid
 $("ic-g").innerHTML=acornSVG();$("ic-f").innerHTML=fishSVG();$("actors").appendChild(pondEl);
 $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});
 $("actors").appendChild(bowlEl);
-scn.rain=rainNow();
+scn.rain=rainNow();decoRefresh("fontaine");
 simulate(false);
 const togGot=syncTogether();
 // un objet offert par lien (?cadeau=cabane), une seule fois : pour que Joffray voie la cabane sans attendre ses glands

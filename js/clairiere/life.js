@@ -133,5 +133,6 @@ function wildVisit(id,food){
 function rainChanged(){
   for(const f of foxes)if(!f.walk&&!f.inside&&!f.wild&&(scn.rain?!(f.spot&&f.spot.cov):Math.random()<.5))f.until=Date.now()+Math.random()*1500;
   if(scn.rain)startRain();
+  decoRefresh("fontaine");
   drawGlow();drawPills();
 }

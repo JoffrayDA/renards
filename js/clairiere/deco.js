@@ -9,7 +9,10 @@ R.deco=R.deco||{inv:{},out:[],home:[],n:0,sold:{}};
 // un qui se baigne sur le bord (il trempe la tête puis s'ébroue), un qui tourne autour, un qui vient se poser puis repart.
 // Des oiseaux ronds dessinés comme les renards : ventre crème, joue rose, aile qui bat depuis l'épaule. SMIL hors du filtre
 // qui fait trembler le trait ; sur une photo, les animations sont retirées et chacun reste à sa place de départ.
-function fBirds(){const S=`stroke="${INK}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
+// sous la pluie (ou la neige), les oiseaux sont à l'abri (Joffray : « plus réaliste ») ; une photo garde la météo de sa prise (shotAt)
+// (scn.rain et pas rainNow() : celle-ci ne marche qu'une fois noel.js chargé)
+function fBirds(){if(shotAt?shotAt.wet:scn.rain)return "";
+  const S=`stroke="${INK}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
   // un oiseau tourné vers la gauche, pieds en (0, 8) ; wing : l'animation de l'aile
   const bird=([c,d,tuft],wing="",feet=1)=>`<path d="M8 -1 L19 -6 L18 -1 L20 3 L8 4Z" fill="${d}" ${S}/>
     ${feet?`<path d="M-2 6 v3 M3 6 v3 M-4 9 h4 M1 9 h4" fill="none" stroke="#e08a4c" stroke-width="1.8" stroke-linecap="round"/>`:""}
@@ -267,6 +270,8 @@ function drawList(list,els,host){
     // un tapis passe sous tout le monde ; le devant d'un objet (canapé, hamac) passe devant son renard
     for(const el of [e.el,e.fr].filter(Boolean)){el.style.cssText=pc(d.x,d.y)+`;width:${o.w/W*100}%;z-index:${d.k==="tapisrond"?1:Math.round(d.y)+(el===e.fr?2:0)}`;el.classList.toggle("flipped",!!d.f)}
     e.el.classList.toggle("sel",decoMode&&decoSel===d.u);e.el.classList.toggle("bad",decoMode&&decoSel===d.u&&!decoOk(d))}}
+// redessine un objet dont l'image dépend du moment (la fontaine et ses oiseaux, quand la pluie commence ou s'arrête)
+function decoRefresh(k){for(const els of [decoEls,hdEls])for(const u in els){const d=allDeco().find(q=>q.u==u);if(d&&d.k===k)els[u].el.innerHTML=dSvg(k)}}
 function drawDeco(){drawList(R.deco.out,decoEls,$("actors"));drawObjs();
   if(hdHost!==houseEl){hdHost=houseEl;hdEls={}}
   if(houseEl)drawList(R.deco.home,hdEls,houseEl);
