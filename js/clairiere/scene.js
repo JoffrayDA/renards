@@ -113,6 +113,10 @@ function extGrass(c=["#86b06e","#9cc47f","#6f9a5a"]){if(EXT<8)return "";const r=
   for(let i=0;i<Math.round(EXT/5);i++){const x=r()*400,y=478+r()*(EXT-4),k=.8+r()*.5;s+=`<path d="M${f1(x)} ${f1(y)} q-2 -4 -5 -6 q4 1 5 4 q0 -5 1 -8 q1 4 0 8 q2 -3 5 -4 q-3 2 -5 6Z" fill="${c[i%3?0:1]}" stroke="${c[2]}" stroke-width="1" transform="translate(${f1(x*(1-k))} ${f1(y*(1-k))}) scale(${f1(k)})"/>`}
   if(c[0]==="#86b06e")for(let i=0;i<Math.round(EXT/14);i++){const x=20+r()*360,y=484+r()*(EXT-14),col=["#ffd1dc","#fff3a8","#d9c7f2","#ffffff"][i%4];
     s+=`<path d="M${f1(x)} ${f1(y+9)} q-1 -5 0 -9" fill="none" stroke="#6f9a60" stroke-width="1.4"/><g transform="translate(${f1(x)} ${f1(y)})">${[0,72,144,216,288].map(a=>`<circle cx="${f1(3*Math.cos(a*Math.PI/180))}" cy="${f1(3*Math.sin(a*Math.PI/180))}" r="2.5" fill="${col}" stroke="#c9a0b0" stroke-width=".6"/>`).join("")}<circle r="1.8" fill="#f2c45a"/></g>`}
+  // sur les bords : des champignons et des cailloux moussus, pour que l'herbe en plus ne soit pas vide
+  if(c[0]==="#86b06e"&&EXT>=60){const y1=Math.round(480+(EXT-80)*.5),y2=Math.round(480+(EXT-80)*.1);
+    s+=shade(22,y1+2,16,4)+[[14,y1,7,"#e0564f"],[26,y1+3,5,"#f2c45a"],[20,y1-6,4,"#e0564f"]].map(([x,y,r,col])=>`<path d="M${x-1.6} ${y} v${-r*.9} h3.2 v${r*.9}Z" fill="#fff6ea" ${L(1.4)}/><path d="M${x-r} ${y-r*.8} Q${x} ${y-r*2.2} ${x+r} ${y-r*.8}Z" fill="${col}" ${L(1.6)}/><circle cx="${x-r*.3}" cy="${y-r*1.3}" r="${f1(r*.2)}" fill="#fff"/>`).join("");
+    s+=shade(384,y2+3,20,5)+`<path d="M368 ${y2+2} q-2 -12 10 -14 q12 -2 16 8 q4 8 -4 8Z" fill="#cfc6c0" ${L(2)}/><path d="M370 ${y2-6} q6 -6 16 -6" fill="none" stroke="#8fbf6e" stroke-width="3.4" stroke-linecap="round"/><path d="M386 ${y2+3} q4 -6 10 -4 q2 6 -4 6Z" fill="#bdb3ad" ${L(1.6)}/>`}
   return s}
 /* la maison de Roussette, en rondins */
 function house(){const night=dark();let s=shade(200,250,120,16);
@@ -158,7 +162,7 @@ function glowSVG(){
   }
   if(storyPeek())s+=peekSVG();
   if(phaseNow()==="nuit"){const r=rng(5);for(let i=0;i<16;i++)s+=`<circle cx="${(r()*400).toFixed(1)}" cy="${(r()*60).toFixed(1)}" r="${(.8+r()*1.2).toFixed(1)}" fill="#fff8d0" opacity=".8"/>`;
-    if(!scn.rain)for(let i=0;i<7;i++)s+=`<circle class="fly" style="animation-delay:${(-r()*5).toFixed(1)}s" cx="${(30+r()*340).toFixed(1)}" cy="${(260+r()*190).toFixed(1)}" r="2" fill="#fff6a0"/>`}
+    if(!scn.rain)for(let i=0;i<7;i++)s+=`<circle class="fly" style="animation-delay:${(-r()*5).toFixed(1)}s" cx="${(30+r()*340).toFixed(1)}" cy="${(260+r()*(Math.max(190,H-340))).toFixed(1)}" r="2" fill="#fff6a0"/>`}
   // renards à l'intérieur : des silhouettes derrière les vitres
   foxes.filter(f=>f.inside).slice(0,4).forEach((f,i)=>{const x=[156,170,228,242][i];s+=`<g opacity=".55"><path d="M${x-7} 158 Q${x-8} 148 ${x-5} 144 L${x-6} 136 L${x-1} 142 Q${x} 141 ${x+1} 142 L${x+6} 136 L${x+5} 144 Q${x+8} 148 ${x+7} 158Z" fill="${INK}"/></g>`});
   // fumée de la cheminée

@@ -15,7 +15,14 @@ const putBourse=b=>{try{localStorage.setItem(BOURSE_KEY,JSON.stringify(b))}catch
 /* Les cadeaux venus d'ailleurs (calendrier de l'Avent, sur l'accueil) attendent dans b.gift = {coins, boost:{id:n}, deco:{clé:n}}.
    deliverGifts les range dans les sauvegardes qui existent déjà : chaque jeu l'appelle avant de lire la sienne
    (sinon il réécrirait par-dessus), l'accueil juste après avoir ouvert une case (aucun jeu n'est alors ouvert). */
-function deliverGifts(){const b=bourse(),g=b.gift;if(!g)return;
+// les clochettes n'arrivent qu'avec les nouvelles étoiles : les parties commencées avant la bourse (31/10/2026) n'en avaient aucune
+// (Joffray : tout le Café réussi, 0 clochette). Une fois, on rattrape ce qui aurait été gagné : étoiles du Café (+2 à ★★★),
+// histoires finies de la Clairière (+2), moins ce qu'on a déjà.
+function retroBells(b){if(b.retro)return;b.retro=1;let n=0;
+  try{const C=JSON.parse(localStorage.getItem("cafe-renards-v1"));for(const st of Object.values((C&&C.stars)||{}))n+=st+(st===3?2:0)}catch(e){}
+  try{const R=JSON.parse(localStorage.getItem("clairiere-renards-v2"));n+=2*Object.keys((R&&R.souv)||{}).length}catch(e){}
+  b.bells=Math.max(b.bells||0,n);putBourse(b)}
+function deliverGifts(){const b=bourse(),g=b.gift;retroBells(b);if(!g)return;
   const rw=(k,ok,f)=>{let s=null;try{s=JSON.parse(localStorage.getItem(k))}catch(e){}if(!s||!ok(s))return false;f(s);try{localStorage.setItem(k,JSON.stringify(s));return true}catch(e){return false}};
   if((g.coins||g.boost)&&rw("cafe-renards-v1",C=>C.own,C=>{C.coins=(C.coins||0)+(g.coins||0);C.boost=C.boost||{};for(const k in g.boost||{})C.boost[k]=(C.boost[k]||0)+g.boost[k]})){delete g.coins;delete g.boost}
   if(g.deco&&rw("clairiere-renards-v2",R=>R.ver===2,R=>{R.deco=R.deco||{inv:{},out:[],home:[],n:0,sold:{}};for(const k in g.deco)R.deco.inv[k]=(R.deco.inv[k]||0)+g.deco[k]}))delete g.deco;

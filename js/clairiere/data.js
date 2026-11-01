@@ -36,7 +36,7 @@ const SPOTS=[
   {id:"g7",x:120,y:462,poses:["sit","lie","up"]}
 ];
 // l'herbe en plus (EXT) a aussi ses endroits, au-dessus de la ligne d'objectif
-{const band=EXT-80;if(band>20)[[110,.35],[300,.65],[52,.9]].slice(0,band>60?3:2).forEach(([x,k],i)=>SPOTS.push({id:"g"+(8+i),x,y:Math.round(480+band*k),poses:["sit","happy","groom","lie","sleep"]}))}
+{const band=EXT-80;if(band>20)[[110,.25],[330,.85],[46,.95]].slice(0,band>60?3:2).forEach(([x,k],i)=>SPOTS.push({id:"g"+(8+i),x,y:Math.round(480+band*k),poses:["sit","happy","groom","lie","sleep"]}))}
 const SPOT=Object.fromEntries(SPOTS.map(s=>[s.id,s]));
 const DOOR={x:200,y:240},EDGE={x:-40,y:330}; // EDGE : là où les sauvages entrent et repartent, côté forêt
 const ACT={sit:"se repose",happy:"joue",sleep:"dort",lie:"paresse",groom:"fait sa toilette",up:"regarde le ciel",eat:"mange"};

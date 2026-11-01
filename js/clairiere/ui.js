@@ -1,11 +1,25 @@
 /* La Clairière : interface (compteurs, bulles, dialogues, gamelle, carnet, photos). */
 function acornSVG(){return `<svg viewBox="0 0 24 24" aria-hidden="true"><g filter="url(#wobble)" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"><path d="M5 10 Q5 21 12 22 Q19 21 19 10Z" fill="#d9a06a"/><path d="M3.5 10.5 Q12 2 20.5 10.5 Q12 13 3.5 10.5Z" fill="#a9785a"/><path d="M12 6 q1 -3 3 -4" fill="none"/></g></svg>`}
 const HEART=`<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20 C4 14 1.5 10 1.5 6.5 A5 5 0 0 1 12 4.5 A5 5 0 0 1 22.5 6.5 C22.5 10 20 14 12 20Z" fill="#f48aa6" stroke="#5b4250" stroke-width="2.2" stroke-linejoin="round"/><path d="M5.5 7 q.5 -2 2.5 -2.4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-// câlin : le renard frotte sa tête comme un chat, des petits cœurs s'envolent
-function hugFx(f){f.badge.querySelector(".want")?.remove();f.el.classList.remove("hug");void f.el.offsetWidth;f.el.classList.add("hug");
-  clearTimeout(f.hugT);f.hugT=setTimeout(()=>f.el.classList.remove("hug"),1700);
-  for(let i=0;i<5;i++){const h=document.createElement("i");h.className="lovep";h.innerHTML=HEART;
-    h.style.cssText=pc(f.x+(i-2)*8,f.y-38)+`;animation-delay:${(i*.16).toFixed(2)}s;--dx:${(i-2)*14}px`;$("scene").appendChild(h);setTimeout(()=>h.remove(),2400)}}
+// câlin : le renard frotte sa tête comme un chat, des petits cœurs s'envolent ; de temps en temps, il fait une figure
+// (Joffray : « une roulade de temps en temps, impressionne-moi ») : roulade, salto, toupie, boing, zoomies, chacune avec ses effets.
+// Jamais dans un objet (la balançoire ferait la roulade avec lui) ni en marchant ; une figure à chaque niveau d'amitié gagné.
+const TRICKS={roll:{ms:1000,fx:"dust",notes:[67,71,74]},salto:{ms:1100,fx:"stars",notes:[72,76,79,84]},toupie:{ms:1100,fx:"swirl",notes:[76,74,72,74,76]},
+  boing:{ms:1100,fx:"rings",notes:[60,67,72]},zoom:{ms:1200,fx:"dust",notes:[79,77,79,77,84]}};
+function hugFx(f,o={}){const can=!f.walk&&!f.inside&&!objOf(f.spot),ks=Object.keys(TRICKS);
+  const k=can&&(o.big||Math.random()<(o.p??.5))?(o.big?"salto":ks[Math.floor(Math.random()*ks.length)]):"rub",T=TRICKS[k];
+  f.badge.querySelector(".want")?.remove();f.el.classList.remove("hug");f.el.dataset.trick=k;void f.el.offsetWidth;f.el.classList.add("hug");
+  clearTimeout(f.hugT);f.hugT=setTimeout(()=>f.el.classList.remove("hug"),T?T.ms+100:1700);
+  if(o.hearts!==false)for(let i=0;i<5;i++){const h=document.createElement("i");h.className="lovep";h.innerHTML=HEART;
+    h.style.cssText=pc(f.x+(i-2)*8,f.y-38)+`;animation-delay:${(i*.16+(T?.35:0)).toFixed(2)}s;--dx:${(i-2)*14}px`;$("scene").appendChild(h);setTimeout(()=>h.remove(),2800)}
+  if(!T)return;
+  T.notes.forEach((n,i)=>setTimeout(()=>{try{MUSIC.note(n)}catch(e){}},i*110));
+  // les effets autour du renard : poussière, étoiles, tourbillon, ondes
+  const N=T.fx==="stars"?(o.big?14:9):T.fx==="rings"?3:7;
+  for(let i=0;i<N;i++){const p=document.createElement("i"),a=i/N*6.28+Math.random()*.4,d=T.fx==="stars"?34+Math.random()*26:18+Math.random()*16;
+    p.className="tfx "+T.fx;p.style.cssText=pc(f.x,f.y-(T.fx==="dust"||T.fx==="rings"?2:26))+`;--dx:${(Math.cos(a)*d).toFixed(0)}px;--dy:${(Math.sin(a)*d*(T.fx==="dust"?.35:1)-(T.fx==="dust"?6:0)).toFixed(0)}px;animation-delay:${(T.fx==="rings"?i*.28:k==="salto"?.45+Math.random()*.2:Math.random()*.25).toFixed(2)}s`;
+    if(T.fx==="stars")p.innerHTML=`<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="M0 -9 L2.4 -2.6 L9 -2.4 L3.8 1.8 L5.6 8.4 L0 4.6 L-5.6 8.4 L-3.8 1.8 L-9 -2.4 L-2.4 -2.6Z" fill="${["#ffe08a","#f6a5b4","#9ec3ef","#c9a8ec"][i%4]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+    $("scene").appendChild(p);setTimeout(()=>p.remove(),2200)}}
 const heartsHTML=h=>{const l=lvOf(h);return `<span class="hs5" aria-label="Amitié ${l} sur 5">${"♥".repeat(l)}<i>${"♥".repeat(5-l)}</i></span>`};
 function renderHud(){$("glands").textContent=R.glands;$("fishc").hidden=!R.fish;$("fishn").textContent=R.fish;drawBowl();drawDrops()}
 const fishSVG=()=>`<svg viewBox="-24 -16 48 32" aria-hidden="true"><g filter="url(#wobble)">${ITEM.fish}</g></svg>`;
@@ -59,8 +73,8 @@ function tapFox(f){
   if(envieTap(f))return; // une petite envie (envies.js)
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
-  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);hugFx(f);renderHud();bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur, +1 gland)")}
-  else bubble(f,what);
+  if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);hugFx(f,{big:r===2,p:.7});renderHud();bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur, +1 gland)")}
+  else{bubble(f,what);if(Math.random()<.3)hugFx(f,{p:1,hearts:false})} // déjà câliné aujourd'hui : une figure de temps en temps
 }
 
 /* ---------- boîte de dialogue ---------- */

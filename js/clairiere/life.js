@@ -28,6 +28,7 @@ function makeFox(id,spot,o={}){
 function removeFox(f){f.el.remove();f.badge.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
 function draw(f){
   const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
+  const ob=!f.walk&&objOf(f.spot);f.el.style.width=ob&&ob.k?13.5*ob.k+"%":""; // les grands objets (potager, tunnel)
   if(f.walk&&f.walk.climb)f.el.innerHTML=`<div class="flip"><div class="bob">${foxArt(art,{pose:"up"})}</div></div>`; // il grimpe à l'échelle
   else if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
   else if(objOf(f.spot))f.el.innerHTML=`<div class="flip">${objOf(f.spot).svg(f.id)}</div>`; // dans un objet du refuge (objets.js)

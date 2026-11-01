@@ -31,7 +31,7 @@ function shootHome(p){keepShot({t:Date.now(),h:hourNow(),at:"home",wet:scn.rain?
 
 /* ---------- le dessin d'une photo ---------- */
 // cadrage (largeur, décalage vertical du centre) autour du renard ; 6 × 5
-const SHOT={cabane:[150,-36],balancoire:[170,-62],panier:[120,-18],feuilles:[120,-16]};
+const SHOT={potager:[160,-28],tunnel:[120,-26],cabane:[150,-36],balancoire:[170,-62],panier:[120,-18],feuilles:[120,-16]};
 let shotN=0;const bgCache=new Map();
 // le décor à l'heure de la photo : on le redessine comme s'il était cette heure-là (shotAt, lu par hourNow et noelDay)
 const atTime=(p,f)=>{shotAt=p;try{return f()}finally{shotAt=null}};
@@ -58,7 +58,7 @@ function shotSVG(p){const s=shotOf(p);if(!s)return p.deco&&DECO[p.deco]?decoPhot
   if(home&&HOBJ[s.obj]){const [x,y,k]=HOBJ[s.obj].at;vw=200*k;cx=x+100*k;cy=y+80*k;fox=`<g transform="${hPlace(s.obj)}">${HOBJ[s.obj].art(s.id)}</g>`}
   else{const [w,dy]=SHOT[s.obj]||[120,-24];vw=w;cx=s.x;cy=s.y+dy;
     const art=s.obj&&OBJS[s.obj]?OBJS[s.obj].svg(s.id):foxArt(FOX[s.id],{pose:s.pose});
-    fox=(s.deco?atDeco(s.deco,"art"):"")+atFox(art,s.x,s.y,s.f,s.w||54)+(s.deco&&DECO[s.deco.k].front?atDeco(s.deco,"front"):"")}
+    fox=(s.deco?atDeco(s.deco,"art"):"")+atFox(art,s.x,s.y,s.f,s.w||54*(s.obj&&OBJS[s.obj]&&OBJS[s.obj].k||1))+(s.deco&&DECO[s.deco.k].front?atDeco(s.deco,"front"):"")}
   const vh=vw*5/6,vx=Math.max(0,Math.min(400-vw,cx-vw/2)),vy=Math.max(0,Math.min(H0-vh,cy-vh/2)),pre=`s${++shotN}`;
   const ph=PH[atTime(s,phaseNow)];
   let fx="";
