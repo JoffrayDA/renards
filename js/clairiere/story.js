@@ -507,7 +507,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
     for(const [fid,sp] of b.after||[]){const f=foxes.find(x=>x.id===fid&&!x.wild);if(!f||f.walk)continue;
       if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;drawGlow()}goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
-    if(c.id==="gaston"&&storyDone("gaston")){drawBg();log("La pêche est ouverte : touche la mare quand tu veux.")}
+    if(c.id==="gaston"&&storyDone("gaston")){drawBg();toast("La pêche est ouverte : touche la mare quand tu veux.")}
     if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;if(!isNoelStory(c.id))R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();if(isNoelStory(c.id))drawBg();R.glands+=15;addBells(2);toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands, +2 clochettes`)}
     else toast("+3 glands");
     if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!metAny())setTimeout(firstLure,500);
@@ -526,7 +526,7 @@ function firstLure(){if(R.lure)return;R.lure=1;save();
   talk([["petitpois","open","Avant d'aller dormir… J'ai cueilli des baies des bois. On les met dans la gamelle ?"],
     ["petitpois","joy","Des fois, quand tout le monde dort, un renard sauvage vient manger. Il laisse toujours une trace…"],
     ["petitpois","joy","Reviens demain : on regardera ensemble qui est venu !"]],
-    ()=>{R.bowl={type:"baies",until:Date.now()+BOWLS.baies.hours*36e5};save();renderHud();drawBowl();log("Des baies des bois dans la gamelle. Qui va venir ?")})}
+    ()=>{R.bowl={type:"baies",until:Date.now()+BOWLS.baies.hours*36e5};save();renderHud();drawBowl();toast("Des baies des bois dans la gamelle. Qui va venir ?")})}
 
 // il ne reste que les sauvages jamais croisés : Petit Pois le dit une fois et remplit la gamelle de baies
 // (sinon un joueur qui ne touche pas à la gamelle restait bloqué avant Gribouille)
@@ -535,7 +535,7 @@ function wildNudge(){if(R.wildNudge||!R.intro||cur()||nextId()||!wildLeft().leng
   talk([["petitpois","surprise",`${ME()}, tu as entendu ? Ça gratte dans les buissons, tous les soirs.`],
     ["petitpois","open","Ce sont les renards sauvages. Ils ont chacun une histoire, mais ils ne sortent que pour manger."],
     ["petitpois","joy","Je mets des baies dans la gamelle. Après, il faudra du poisson, ou même du miel : chacun a ses goûts. Regarde la fiche des sauvages dans le carnet !"]],
-    ()=>{if(!R.bowl){R.bowl={type:"baies",until:Date.now()+BOWLS.baies.hours*36e5};save()}renderHud();log("La gamelle attend les sauvages.")})}
+    ()=>{if(!R.bowl){R.bowl={type:"baies",until:Date.now()+BOWLS.baies.hours*36e5};save()}renderHud();toast("La gamelle attend les sauvages.")})}
 
 /* ---------- repères : signes, endroit qui brille, objectif ---------- */
 const hotEl=document.createElement("button");hotEl.className="hot";hotEl.type="button";hotEl.hidden=true;
@@ -546,9 +546,9 @@ function goalText(){const c=cur();
   if(c)return {t:`${STORIES[c.id].title} · ${c.n+1} sur ${beats(c.id).length}`,g:c.b.goal};
   const e=envGoal();if(e)return e; // pas d'histoire en cours : la petite envie du moment
   const id=nextId();
-  if(!id)return {t:"Histoires",g:storyDone(LAST)?"Toutes les histoires sont finies.":wildLeft().length?"Des renards sauvages rôdent encore autour de la gamelle. Remplis-la : chacun a une histoire à raconter.":"La suite des histoires arrive bientôt."};
+  if(!id)return {t:"Histoires",wait:storyDone(LAST)||!wildLeft().length,g:storyDone(LAST)?"Toutes les histoires sont finies.":wildLeft().length?"Des renards sauvages rôdent encore autour de la gamelle. Remplis-la : chacun a une histoire à raconter.":"La suite des histoires arrive bientôt."};
   const w=R.nextAt-Date.now()>36e5?"un peu plus tard":"bientôt"; // pas d'heure précise (Joffray)
-  return {t:"Prochaine histoire",g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
+  return {t:"Prochaine histoire",wait:1,g:isRes(id)?`${FOX[id].name} aura quelque chose à te raconter ${w}.`:`Quelqu'un approche par la forêt… Il arrivera ${w}.`};
 }
 function renderStory(){
   const c=cur(),nf=nextId()||"";if(R.nextFox!==nf){R.nextFox=nf;save()} // lu par l'accueil
@@ -563,7 +563,7 @@ function renderStory(){
   const s=c&&c.b.at.startsWith("@")&&TG[c.b.at.slice(1)];
   hotEl.hidden=!s;if(s){hotEl.style.cssText=pc(s.x,s.y);hotEl.setAttribute("aria-label",s.name)}
   if(!R.intro){$("goal").hidden=true;return}
-  const g=goalText();$("goal").hidden=false;$("goal").innerHTML=`<span><b>${g.t}</b>${g.g}</span><i aria-hidden="true">›</i>`;
+  const g=goalText();$("goal").hidden=!!g.wait;$("goal").innerHTML=`<span><b>${g.t}</b>${g.g}</span><i aria-hidden="true">›</i>`;
 }
 
 /* ---------- le journal des histoires ---------- */

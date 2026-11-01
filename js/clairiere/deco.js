@@ -237,12 +237,6 @@ function decoGlow(){if(!dark())return "";let s="";
   return s&&`<defs><radialGradient id="dGl"><stop offset="0" stop-color="#ffe7a3" stop-opacity=".85"/><stop offset=".4" stop-color="#ffd27a" stop-opacity=".35"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient></defs>${s}`}
 
 /* ---------- les renards sur les objets, et les photos ---------- */
-function snapFav(id,k,host){if(R.photos.some(p=>p.deco===k&&p.id===id))return false;
-  R.photos.push({id,deco:k,t:Date.now()});save();
-  const fl=document.createElement("div");fl.className="snapflash";host.appendChild(fl);setTimeout(()=>fl.remove(),700);
-  toast(`Clic ! ${FOX[id].name} adore son ${DECO[k].name.toLowerCase()}. La photo est dans l'album.`);return true}
-// dehors : un renard sur son objet préféré, le toucher prend une photo (une par objet)
-function snapDeco(f){const sp=f.spot;if(!sp||!sp.deco||sp.fav!==f.id||f.walk)return false;return snapFav(f.id,sp.deco,$("scene"))}
 // dans la maison : qui s'installe sur les objets (le préféré d'abord s'il est là, sinon quelqu'un une fois sur deux ; le canapé a trois places)
 function houseDecoSeats(ids,night){const rest=ids.slice(),seated=[];
   for(const d of R.deco.home){const o=DECO[d.k];if(!o.seat)continue;
@@ -253,7 +247,7 @@ function houseDecoSeats(ids,night){const rest=ids.slice(),seated=[];
 function drawHouseDeco(seated){
   for(const s of seated){const el=document.createElement("div");el.className="fox hdfox";el.innerHTML=`<div class="flip">${foxArt(FOX[s.id],{pose:s.pose})}</div>`;
     el.style.cssText=pc(s.x,s.y)+`;z-index:${Math.round(s.z)}`;
-    el.onpointerdown=e=>{e.stopPropagation();if(decoMode)return;if(s.id===DECO[s.k].fav&&snapFav(s.id,s.k,houseEl))return;
+    el.onpointerdown=e=>{e.stopPropagation();if(decoMode)return;if(shooting){const d=R.deco.home.find(d=>d.k===s.k);shootHome({id:s.id,x:s.x,y:s.y,pose:s.pose,w:54,deco:d&&{k:d.k,x:d.x,y:d.y,f:d.f?1:0}});return}
       const r=pet(s.id);toast(r?`${FOX[s.id].name} est ravi (+1 cœur, +1 gland).`:`${FOX[s.id].name} se prélasse.`);if(r)renderHud()};
     houseEl.appendChild(el)}
   drawDeco()}
@@ -274,9 +268,9 @@ const hbusy=()=>hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;return [x+100*s,y+120*s
 function decoOk(d){const {x,y}=d,o=DECO[d.k];if(x<14||x>386||x-o.w/2<2||x+o.w/2>398)return false; // l'objet tient en entier dans l'image
   if(o.home){
     if(o.wall){if(y<120||y>252||(x+o.w/2>116&&x-o.w/2<284)||Math.hypot(x-65,y-190)<50)return false}
-    else{if(y<318||y>474||(y<358&&x>128&&x<272)||((x-200)/178)**2+((y-412)/62)**2<1||hbusy().some(([a,b])=>Math.hypot(x-a,y-b)<34))return false}
+    else{if(y<318||y>H-6||(y<358&&x>128&&x<272)||((x-200)/178)**2+((y-412)/62)**2<1||hbusy().some(([a,b])=>Math.hypot(x-a,y-b)<34))return false}
     return !R.deco.home.some(q=>q.u!==d.u&&!!DECO[q.k].wall===!!o.wall&&Math.hypot(q.x-x,q.y-y)<12)}
-  if(y<266||y>474)return false;
+  if(y<266||y>H-6)return false;
   if(((x-95)/88)**2+((y-420)/44)**2<1)return false; // la mare
   if(Math.abs(x-200)<15)return false; // le chemin de pierres
   const no=[[240,268,24],[85,304,32],[322,336,30],[284,404,22],[316,404,22],...Object.keys(R.obj).filter(k=>OBJS[k].spot.y>200).map(k=>[OBJS[k].spot.x,OBJS[k].spot.y,26]),...noelNo()];
@@ -285,7 +279,7 @@ function decoOk(d){const {x,y}=d,o=DECO[d.k];if(x<14||x>386||x-o.w/2<2||x+o.w/2>
 const scenePt=e=>{const r=$("scene").getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}};
 const findDeco=u=>allDeco().find(o=>o.u===u);
 function decoDown(e,u){e.stopPropagation();const d=findDeco(u);if(!d)return;
-  if(!decoMode){const o=DECO[d.k],msg=`${o.name}. ${o.fav?(R.photos.some(p=>p.deco===d.k)?`${FOX[o.fav].name} l'adore.`:"Quelqu'un l'adore, on dirait… Reviens voir qui s'y installe."):o.desc}`;if(houseEl)toast(msg);else log(msg);return}
+  if(!decoMode){const o=DECO[d.k],msg=`${o.name}. ${o.fav?(R.photos.some(p=>p.id===o.fav&&(p.deco===d.k||p.deco&&p.deco.k===d.k))?`${FOX[o.fav].name} l'adore.`:"Quelqu'un l'adore, on dirait… Reviens voir qui s'y installe."):o.desc}`;toast(msg);return}
   decoSel=u;const p=scenePt(e);dDrag={u,dx:d.x-p.x,dy:d.y-p.y,x0:d.x,y0:d.y,moved:0};e.currentTarget.setPointerCapture(e.pointerId);drawDeco()}
 function decoMove(e){if(!dDrag)return;const d=findDeco(dDrag.u),p=scenePt(e);
   d.x=Math.round(p.x+dDrag.dx);d.y=Math.round(p.y+dDrag.dy);dDrag.moved=1;drawDeco()}
@@ -320,10 +314,10 @@ function decoStart(k,w){w=k?(DECO[k].home?"home":"out"):w||"out";
     for(const f of foxes)if(f.spot&&f.spot.deco){const fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco);place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}}
   decoMode=true;decoSel=null;$("scene").classList.add("decoing");
   decoSpots();$("decobar").hidden=false;document.querySelector(".actions").hidden=true;$("goal").classList.add("off");
-  log(w==="home"?"Fais glisser les objets du doigt : au mur, ou par terre autour du tapis.":"Fais glisser les objets du doigt. Touche-en un pour le retourner ou le ranger.");drawDBar();if(k)decoAdd(k);drawDeco()}
+  toast(w==="home"?"Fais glisser les objets du doigt : au mur, ou par terre autour du tapis.":"Fais glisser les objets du doigt. Touche-en un pour le retourner ou le ranger.");drawDBar();if(k)decoAdd(k);drawDeco()}
 function decoEnd(){decoMode=false;decoSel=null;$("scene").classList.remove("decoing");$("decobar").hidden=true;document.querySelector(".actions").hidden=false;$("goal").classList.remove("off");
   if(dWhere==="home"&&houseEl){leaveHouse();enterHouse()}
-  decoSpots();drawDeco();drawGlow();log(dWhere==="home"?"La maison est toute belle.":"Ta clairière est toute belle.")}
+  decoSpots();drawDeco();drawGlow()}
 $("decobar").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.dadd)decoAdd(b.dataset.dadd);else if(b.dataset.dend)decoEnd()};
 $("scene").addEventListener("pointerdown",()=>{if(decoMode&&decoSel!=null&&!dDrag){decoSel=null;drawDeco()}});
 decoSpots();drawDeco();

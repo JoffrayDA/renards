@@ -1,6 +1,6 @@
 /* La Clairière : les objets du refuge (docs/clairiere-v2.md, décisions du 26/10/2026).
    On achète un objet avec des glands, on le pose dans la clairière ; il attire un renard dans une pose
-   qu'on ne voit pas ailleurs, et on le touche pour le prendre en photo (album). Panier (sieste), pot de fleurs.
+   qu'on ne voit pas ailleurs, à prendre en photo avec l'appareil (photo.js). Panier (sieste), pot de fleurs.
    R.obj[k] = objet posé ; une photo d'objet : {id, obj, t} dans R.photos (à côté des visites de la gamelle).
    Chaque objet a son endroit (spot.obj = k) ; svg(id) le dessine avec le renard dedans (ou vide), dans le repère du renard. */
 R.obj=R.obj||{};
@@ -61,7 +61,7 @@ function drawObjs(){
   for(const k in R.obj){const o=OBJS[k],sp=o.spot;let el=objEls[k];
     if(!el){el=objEls[k]=document.createElement("button");el.className="obj";el.type="button";el.setAttribute("aria-label",o.name);
       el.style.cssText=pc(sp.x,sp.y)+`;z-index:${sp.y}`;el.innerHTML=o.svg();
-      el.onpointerdown=e=>{e.stopPropagation();log(k==="cabane"?"La cabane est vide. Les renards y montent pour regarder la clairière quand il fait beau.":k==="balancoire"?"La balançoire attend quelqu'un. Ça grince un peu.":o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":k==="feuilles"?"Rien ne bouge dans les feuilles… pour l'instant. Les renards adorent s'y cacher quand il fait beau.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
+      el.onpointerdown=e=>{e.stopPropagation();toast(k==="cabane"?"La cabane est vide. Les renards y montent pour regarder la clairière quand il fait beau.":k==="balancoire"?"La balançoire attend quelqu'un. Ça grince un peu.":o.nap?"Le panier attend son dormeur. Les renards y viennent faire la sieste quand il fait beau.":k==="feuilles"?"Rien ne bouge dans les feuilles… pour l'instant. Les renards adorent s'y cacher quand il fait beau.":"Le pot attend quelqu'un. Les renards aiment s'y asseoir quand il fait beau.")};
       $("actors").appendChild(el)}
     el.hidden=foxes.some(f=>f.spot===sp&&!f.walk)}
 }
@@ -72,16 +72,9 @@ function fillObjs(){if(scn.rain)return;
     place(pool[Math.floor(Math.random()*pool.length)],sp)}
   drawObjs()}
 
-// toucher un renard dans un objet : clic, une photo pour l'album (une par renard et par objet)
-function snapObj(f){const o=objOf(f.spot);if(!o||f.walk)return false;const k=f.spot.obj;
-  if(R.photos.some(p=>p.obj===k&&p.id===f.id))return false;
-  R.photos.push({id:f.id,obj:k,t:Date.now()});save();
-  const fl=document.createElement("div");fl.className="snapflash";$("scene").appendChild(fl);setTimeout(()=>fl.remove(),700);
-  toast(`Clic ! ${FOX[f.id].name} ${o.in.toLowerCase()}. La photo est dans l'album.`);return true}
-
 // l'onglet Refuge de la boutique (deco.js) : les objets en glands, à leur place fixe
 function objList(){
   return `<p class="sub">Pose un objet dans la clairière : il attire les renards dans des positions qu'on ne voit nulle part ailleurs. Touche-les pour les prendre en photo.</p>${Object.entries(OBJS).map(([k,o])=>`<div class="opt"><span class="thumb">${o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`}
 function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
   R.glands-=o.price;R.obj[k]=1;save();addObjSpots();drawObjs();if(o.photo)drawBg();renderHud();closeSheet();
-  log(`${o.name} : posé dans l'herbe. Qui va s'y installer ?`)}
+  toast(`${o.name} : posé dans l'herbe. Qui va s'y installer ?`)}

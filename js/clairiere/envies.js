@@ -108,7 +108,7 @@ function envieTick(){
   else{const ks=Object.keys(ENVIES).filter(fits);if(!ks.length)return;k=ks[Math.floor(Math.random()*ks.length)]}
   if(k==="copain"&&!friend)friend=mates[Math.floor(Math.random()*mates.length)];
   R.env.cur={id:f.id,k,m,step:"ask",friend};R.env.n++;R.env.lastK=k;save();
-  setBadge(f);renderStory();log(`${FOX[f.id].name} a une petite envie. Touche-le pour savoir laquelle.`);
+  setBadge(f);renderStory();
 }
 
 // ce renard est attendu par l'envie du moment (lui, ou l'ami à aller chercher)
@@ -147,7 +147,7 @@ function envieTap(f){const c=envCur();if(!c||gameOn)return false;const E=envDef(
     talk([[c.friend,"joy",`${FOX[c.id].name} m'attend sur le banc ? J'arrive !`]],()=>{
       const a=envFox(c.id);for(const [x,sp] of [[a,SPOT.bench1],[f,SPOT.bench2]])if(x&&!x.walk){if(x.inside){x.inside=false;x.el.classList.remove("inside");x.x=DOOR.x;x.y=DOOR.y}if(x.spot!==sp)goTo(x,sp)}
       envieDone(c)});return true}
-  if(c.step==="go"&&E.basket&&f.id===c.id&&f.spot===SPOT.basket){snapObj(f);envieDone(c);return true}
+  if(c.step==="go"&&E.basket&&f.id===c.id&&f.spot===SPOT.basket){shootFox(f);envieDone(c);return true}
   // jeu ou histoire du soir interrompus (Joffray était bloqué sur « sauter dans les flaques ») : on relance en touchant le renard
   if(c.step==="go"&&f.id===c.id&&(E.game||E.tale)){
     if(E.game)playGame({...E.game,target:c.id},()=>envieDone(c));else talk(E.tale.map(t=>["me","open",t]),()=>envieDone(c));

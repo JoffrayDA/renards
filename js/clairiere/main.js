@@ -31,7 +31,7 @@ $("b-bowl").onclick=bowlSheet;$("goal").onclick=()=>{if(!cur()&&envieGoal())retu
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
 if(!R.intro)talk(INTRO,()=>{R.intro=1;save();showNews()});else showNews();
 renderStory();envieTick();drawBell();pushSync(pushPlan());
-log(togGot.length?togGot.map(([id,n])=>`${FOX[id].name} a passé ${n} journée${n>1?"s":""} avec toi au Café : +${n} cœur${n>1?"s":""}.`).join(" "):Object.keys(R.res).length>1?"Bienvenue au refuge.":"Petit Pois t'attendait.");
+if(togGot.length)toast(togGot.map(([id,n])=>`${FOX[id].name} a passé ${n} journée${n>1?"s":""} avec toi au Café : +${n} cœur${n>1?"s":""}.`).join(" "));
 
 setInterval(tick,100);
 // toutes les 30 s : simulation (glands, gamelle, sauvages), arrivées, moment de la journée, pluie

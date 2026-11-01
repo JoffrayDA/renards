@@ -4,7 +4,9 @@ const scn={lamps:{L:false,R:false},rain:false,phase:""};
 /* ---------- moments de la journée (heure réelle) et météo ---------- */
 const PH={aube:{sky:["#ffd2bd","#fde9d8"],tint:"#ffb7a0",a:.12,name:"Aube"},jour:{sky:["#bfe0f2","#e9f5ee"],tint:"#fff",a:0,name:"Journée"},crepu:{sky:["#b99ad6","#f7c1a0"],tint:"#8a6ab0",a:.22,name:"Crépuscule"},nuit:{sky:["#252b62","#47467f"],tint:"#262c6a",a:.45,name:"Nuit"}};
 // ?heure=22 force l'heure, pour tester
-const QH=new URLSearchParams(location.search).get("heure"),hourNow=()=>QH!=null?+QH:new Date().getHours();
+// une photo se redessine à l'heure où elle a été prise (shotAt, photo.js)
+let shotAt=null;
+const QH=new URLSearchParams(location.search).get("heure"),hourNow=()=>shotAt?shotAt.h??new Date(shotAt.t).getHours():QH!=null?+QH:new Date().getHours();
 const phaseNow=()=>{const h=hourNow();return h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit"};
 const dark=()=>["crepu","nuit"].includes(phaseNow());
 // il pleut par tranches de 3 heures, une fois sur deux (demande de Joffray) ; la même pluie pour tout le monde au même moment
@@ -56,7 +58,7 @@ function bgSVG(){if(noelOn())return noelBg(); // à Noël, la clairière est sou
       s+=`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(R)}" fill="url(#${fill})" ${ln}/><ellipse cx="${f1(x-R*.3)}" cy="${f1(y-R*.45)}" rx="${f1(R*.45)}" ry="${f1(R*.26)}" fill="#e2f2d6" opacity="${[.35,.3,.28][row]}"/>`}});
   s+=`<rect y="40" width="400" height="80" fill="${ph==="nuit"?"#5a5f98":"#eef6ee"}" opacity=".14"/>`;
   s+=`<path d="M0 150 Q100 132 200 146 Q300 132 400 150 L400 200 L0 200Z" fill="#6fa070" ${L(2.6)}/><path d="M0 156 Q100 140 200 152 Q300 140 400 156" fill="none" stroke="#8fc07e" stroke-width="3" opacity=".7"/>`;
-  s+=`<rect x="0" y="168" width="400" height="320" fill="url(#cGrass)"/>`;
+  s+=`<rect x="0" y="168" width="400" height="${H-160}" fill="url(#cGrass)"/>`;
   // taches de lumière, petites touffes, trèfles, cailloux, fleurs sur tige
   for(let i=0;i<9;i++){const x=r()*400,y=190+r()*280;s+=`<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(26+r()*30)}" ry="${f1(7+r()*6)}" fill="#e6f3c6" opacity=".45"/>`}
   for(let i=0;i<52;i++){const x=r()*400,y=180+r()*295,k=.8+r()*.5;s+=`<path d="M${f1(x)} ${f1(y)} q-2 -4 -5 -6 q4 1 5 4 q0 -5 1 -8 q1 4 0 8 q2 -3 5 -4 q-3 2 -5 6Z" fill="${i%3?"#86b06e":"#9cc47f"}" stroke="#6f9a5a" stroke-width="1" transform="translate(${f1(x*(1-k))} ${f1(y*(1-k))}) scale(${f1(k)})"/>`}
@@ -64,8 +66,9 @@ function bgSVG(){if(noelOn())return noelBg(); // à Noël, la clairière est sou
   for(let i=0;i<8;i++){const x=20+r()*360,y=200+r()*270;s+=`<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="3.4" ry="2.2" fill="#d8d0c4" stroke="#9a8f86" stroke-width="1"/><ellipse cx="${f1(x-.8)}" cy="${f1(y-.7)}" rx="1.6" ry=".8" fill="#f0ebe2"/>`}
   for(let i=0;i<16;i++){const x=20+r()*360,y=280+r()*190,c=["#ffd1dc","#fff3a8","#d9c7f2","#ffffff"][i%4];
     s+=`<path d="M${f1(x)} ${f1(y+9)} q-1 -5 0 -9" fill="none" stroke="#6f9a60" stroke-width="1.4"/><path d="M${f1(x)} ${f1(y+6)} q-5 -2 -6 1 q3 2 6 -1Z" fill="#8fc07e"/><g transform="translate(${f1(x)} ${f1(y)})">${[0,72,144,216,288].map(a=>`<circle cx="${f1(3*Math.cos(a*Math.PI/180))}" cy="${f1(3*Math.sin(a*Math.PI/180))}" r="2.5" fill="${c}" stroke="#c9a0b0" stroke-width=".6"/>`).join("")}<circle r="1.7" fill="#f2b84a"/></g>`}
+  s+=extGrass();
   // chemin de pierres plates, un peu de mousse
-  [[200,272],[193,296],[206,322],[196,350],[205,392],[196,430],[204,466]].forEach(([x,y],i)=>{const w=13-i*.3;
+  [[200,272],[193,296],[206,322],[196,350],[205,392],[196,430],[204,466],[195,504],[205,544],[196,586],[204,626]].filter(([,y])=>y<H-6).forEach(([x,y],i)=>{const w=13-i*.3;
     s+=shade(x+3,y+3,w+4,7,.8)+`<ellipse cx="${x}" cy="${y}" rx="${w}" ry="6" fill="#ddd5ca" ${L(2.2)}/><ellipse cx="${x-2}" cy="${y-1.6}" rx="${f1(w*.6)}" ry="2.4" fill="#efe9e0"/><path d="M${f1(x+w*.3)} ${y+4.6} q4 -1 ${f1(w*.5)} -3" fill="none" stroke="#8fbf6e" stroke-width="2.2" stroke-linecap="round"/>`});
   s+=`<g filter="url(#wobble)">`;
   // arbres sur les côtés ; la branche de la balançoire sort de l'arbre de droite (les cordes et la planche sont dans objets.js)
@@ -103,8 +106,14 @@ function bgSVG(){if(noelOn())return noelBg(); // à Noël, la clairière est sou
   s+=`</g>`;
   // lumière : un voile chaud le jour, un léger vignettage, le grain du papier
   if(ph==="jour")s+=`<circle cx="330" cy="20" r="220" fill="url(#cSun)" opacity=".18"/>`;
-  return s+`<rect width="400" height="480" fill="url(#cVig)"/><rect width="400" height="480" fill="url(#cGrain)"/>`;
+  return s+`<rect width="400" height="${H}" fill="url(#cVig)"/><rect width="400" height="${H}" fill="url(#cGrain)"/>`;
 }
+// l'herbe en plus sous la scène (EXT) : touffes, trèfles et fleurs, tirés à part pour ne pas changer le reste du décor
+function extGrass(c=["#86b06e","#9cc47f","#6f9a5a"]){if(EXT<8)return "";const r=rng(31);let s="";
+  for(let i=0;i<Math.round(EXT/5);i++){const x=r()*400,y=478+r()*(EXT-4),k=.8+r()*.5;s+=`<path d="M${f1(x)} ${f1(y)} q-2 -4 -5 -6 q4 1 5 4 q0 -5 1 -8 q1 4 0 8 q2 -3 5 -4 q-3 2 -5 6Z" fill="${c[i%3?0:1]}" stroke="${c[2]}" stroke-width="1" transform="translate(${f1(x*(1-k))} ${f1(y*(1-k))}) scale(${f1(k)})"/>`}
+  if(c[0]==="#86b06e")for(let i=0;i<Math.round(EXT/14);i++){const x=20+r()*360,y=484+r()*(EXT-14),col=["#ffd1dc","#fff3a8","#d9c7f2","#ffffff"][i%4];
+    s+=`<path d="M${f1(x)} ${f1(y+9)} q-1 -5 0 -9" fill="none" stroke="#6f9a60" stroke-width="1.4"/><g transform="translate(${f1(x)} ${f1(y)})">${[0,72,144,216,288].map(a=>`<circle cx="${f1(3*Math.cos(a*Math.PI/180))}" cy="${f1(3*Math.sin(a*Math.PI/180))}" r="2.5" fill="${col}" stroke="#c9a0b0" stroke-width=".6"/>`).join("")}<circle r="1.8" fill="#f2c45a"/></g>`}
+  return s}
 /* la maison de Roussette, en rondins */
 function house(){const night=dark();let s=shade(200,250,120,16);
   s+=`<rect x="232" y="44" width="22" height="42" rx="3" fill="#b9a49a" ${L()}/>`+[[234,50,9],[244,50,8],[236,59,10],[247,59,6],[234,68,7],[242,68,10],[236,77,9],[246,77,7]].map(([x,y,w])=>`<rect x="${x}" y="${y}" width="${w}" height="7" rx="2.4" fill="#cfbcb2" stroke="#9a857b" stroke-width="1.2"/>`).join("")+`<rect x="229" y="40" width="28" height="7" rx="2" fill="#a8938a" ${L(2.2)}/>`;

@@ -52,7 +52,7 @@ function settle(f){
   if(FOX[f.id].sleepy&&sp.poses.includes("sleep"))poses=poses.concat(["sleep","sleep","sleep"]);
   f.pose=sp.lamp&&f.id==="luciole"?"up":poses[Math.floor(Math.random()*poses.length)];
   if(sp.bowl)f.pose="eat";
-  if(sp.lamp&&f.id==="luciole"&&dark()&&!scn.lamps[sp.lamp]){scn.lamps[sp.lamp]=true;drawGlow();log("Luciole allume les lanternes.")}
+  if(sp.lamp&&f.id==="luciole"&&dark()&&!scn.lamps[sp.lamp]){scn.lamps[sp.lamp]=true;drawGlow()}
   f.walk=null;f.until=Date.now()+(f.pose==="sleep"?16000:7000)+Math.random()*12000;
   if(f.wild)f.until=Date.now()+14000;
   if(objOf(sp)){f.pose=objOf(sp).pose;f.until=Date.now()+30000+Math.random()*30000} // un long moment dans un objet du refuge
@@ -71,15 +71,17 @@ function leg(f){
   const w=f.walk,to=w.legs.shift(),from={x:f.x,y:f.y},d=Math.hypot(to.x-from.x,to.y-from.y),dur=to.climb?Math.max(1.5,d/24):Math.max(.8,d/38);
   Object.assign(w,{t0:Date.now(),dur:dur*1000,from,goal:to,climb:!!to.climb});
   if(!to.climb&&Math.abs(to.x-from.x)>2)f.el.classList.toggle("left",to.x<from.x);draw(f);
-  requestAnimationFrame(()=>{f.el.style.transitionDuration=dur+"s";f.el.style.left=to.x/W*100+"%";f.el.style.top=to.y/H*100+"%";f.x=to.x;f.y=to.y;moveLight(f,dur)});
+  w.raf=requestAnimationFrame(()=>{f.el.style.transitionDuration=dur+"s";f.el.style.left=to.x/W*100+"%";f.el.style.top=to.y/H*100+"%";f.x=to.x;f.y=to.y;moveLight(f,dur)});
 }
 function arrive(f){
   const w=f.walk;f.x=w.goal.x;f.y=w.goal.y;
+  // page cachée (Joffray passait sur WhatsApp), l'animation du trajet n'a jamais démarré : sans ça, au retour, le renard et son objet
+  // (balançoire, cabane…) glissaient lentement depuis leur ancienne place
+  cancelAnimationFrame(w.raf);f.el.style.transitionDuration="0s";f.el.style.left=f.x/W*100+"%";f.el.style.top=f.y/H*100+"%";moveLight(f,0);
   if(w.legs.length){leg(f);return} // étape suivante (l'échelle de la cabane)
   if(w.to==="edge"){removeFox(f);return}
-  if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");moveLight(f);f.until=Date.now()+9000+Math.random()*9000;drawGlow();log(`${FOX[f.id].name} rentre se mettre au chaud.`);return}
+  if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");moveLight(f);f.until=Date.now()+9000+Math.random()*9000;drawGlow();return}
   f.spot=w.to;f.el.style.zIndex=Math.round(w.to.z||f.y);settle(f);
-  if(f.wild&&w.to.bowl)log(`${nameOf(f.id)==='???'?'Un inconnu':FOX[f.id].name} mange à la gamelle !`);
 }
 // où aller ensuite
 function choose(f){
@@ -129,6 +131,6 @@ function wildVisit(id,food){
 }
 function rainChanged(){
   for(const f of foxes)if(!f.walk&&!f.inside&&!f.wild&&(scn.rain?!(f.spot&&f.spot.cov):Math.random()<.5))f.until=Date.now()+Math.random()*1500;
-  const sn=noelOn()&&!storyRain();if(scn.rain){startRain();log(sn?"Il neige à gros flocons. Tout le monde file sous le porche.":"Il pleut. Tout le monde file sous le porche.")}else log(sn?"La neige s'arrête.":"La pluie s'arrête.");
+  if(scn.rain)startRain();
   drawGlow();drawPills();
 }

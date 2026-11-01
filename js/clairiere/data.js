@@ -2,8 +2,14 @@
    Les renards (FOXES, FOX) et leur dessin (foxArt) viennent de js/cafe/foxes.js et js/foxart.js. */
 const KEY="clairiere-renards-v2",OLDKEY="clairiere-renards-v1",CAFEKEY="cafe-renards-v1";
 const STEP=30*60e3,MAXSIM=48*36e5; // simulation page fermée : pas de 30 min, 48 h au plus
-const W=400,H=480,O=`stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+// la scène s'allonge vers le bas pour remplir l'écran (Joffray, sur S22 : un bon centimètre vide sous les boutons) :
+// le haut garde le repère 400 × 480, EXT ajoute de l'herbe en dessous (la maison : du plancher ; les jeux : du ciel au-dessus)
+const EXT=(()=>{const sc=document.getElementById("scene"),a=document.querySelector(".actions");if(!sc||!a)return 0;
+  const room=innerHeight-sc.getBoundingClientRect().top-scrollY-a.offsetHeight-12-14-6-18;
+  return Math.max(0,Math.min(260,Math.floor(room/sc.clientWidth*400-480)))})();
+const W=400,H=480+EXT,O=`stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
 const pc=(x,y)=>`left:${x/W*100}%;top:${y/H*100}%`;
+document.getElementById("scene").style.aspectRatio=`${W}/${H}`;for(const id of ["bg","glow"])document.getElementById(id).setAttribute("viewBox",`0 0 ${W} ${H}`);
 const today=(t=Date.now())=>{const d=new Date(t);return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
 
 /* ---------- endroits de la scène ---------- */
@@ -29,6 +35,8 @@ const SPOTS=[
   {id:"g6",x:236,y:452,poses:["sit","happy","groom"]},
   {id:"g7",x:120,y:462,poses:["sit","lie","up"]}
 ];
+// l'herbe en plus (EXT) a aussi ses endroits, au-dessus de la ligne d'objectif
+{const band=EXT-80;if(band>20)[[110,.35],[300,.65],[52,.9]].slice(0,band>60?3:2).forEach(([x,k],i)=>SPOTS.push({id:"g"+(8+i),x,y:Math.round(480+band*k),poses:["sit","happy","groom","lie","sleep"]}))}
 const SPOT=Object.fromEntries(SPOTS.map(s=>[s.id,s]));
 const DOOR={x:200,y:240},EDGE={x:-40,y:330}; // EDGE : là où les sauvages entrent et repartent, côté forêt
 const ACT={sit:"se repose",happy:"joue",sleep:"dort",lie:"paresse",groom:"fait sa toilette",up:"regarde le ciel",eat:"mange"};

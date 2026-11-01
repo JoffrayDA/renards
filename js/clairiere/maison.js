@@ -38,7 +38,7 @@ const seats=()=>{const busy=hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;return [x+1
 const doorEl=document.createElement("button");doorEl.className="doorbtn";doorEl.type="button";doorEl.setAttribute("aria-label","Entrer dans la maison");
 doorEl.style.cssText=pc(200,170)+";z-index:240";
 doorEl.onpointerdown=e=>{e.stopPropagation();if(storyTap("@porch"))return;if(gameOn||!$("talk").hidden||!$("sheet").hidden)return;
-  if(!houseOpen()){log("La porte est fermée. Elle ne s'est jamais ouverte, d'aussi loin qu'on se souvienne.");return}
+  if(!houseOpen()){toast("La porte est fermée. Elle ne s'est jamais ouverte, d'aussi loin qu'on se souvienne.");return}
   enterHouse()};
 $("actors").appendChild(doorEl);
 
@@ -125,8 +125,8 @@ function houseSVG(){
   s+=`<rect x="-4" y="-4" width="408" height="22" fill="url(#hBeam)" ${hL(2.6)}/><path d="M20 8 h70 M290 9 h70" stroke="#b58058" stroke-width="1.6" stroke-linecap="round"/>`;
   s+=`<path d="M100 18 v14" stroke="#8a6a3e" stroke-width="1.6"/><g transform="translate(100 34)"><path d="M0 0 l-8 22 M0 0 l-2 26 M0 0 l5 24 M0 0 l10 18" stroke="#6f9a60" stroke-width="2.4" stroke-linecap="round"/>${[[-7,18],[-2,22],[4,20],[9,14],[-4,10],[3,8]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="2.6" ry="1.6" fill="#8fc07e"/>`).join("")}<rect x="-4" y="-2" width="8" height="5" rx="1.4" fill="#e2546e" ${hL(1.4)}/></g>`;
   // plancher en lattes
-  s+=`<path d="M0 300 H400 V480 H0Z" fill="url(#hFloor)"/>`+[322,350,382,418,458].map(y=>`<path d="M0 ${y} H400" stroke="#8a5a32" stroke-width="2.4"/><path d="M0 ${y+3} H400" stroke="#d9a06a" stroke-width="1" opacity=".5"/>`).join("")
-    +[[60,300,322],[180,322,350],[320,300,322],[90,350,382],[250,350,382],[30,382,418],[200,382,418],[350,418,458],[120,418,458],[280,458,480]].map(([x,a,b])=>`<path d="M${x} ${a} V${b}" stroke="#8a5a32" stroke-width="2"/>`).join("")
+  s+=`<path d="M0 300 H400 V${H} H0Z" fill="url(#hFloor)"/>`+[322,350,382,418,458,500,544,590,636].filter(y=>y<H).map(y=>`<path d="M0 ${y} H400" stroke="#8a5a32" stroke-width="2.4"/><path d="M0 ${y+3} H400" stroke="#d9a06a" stroke-width="1" opacity=".5"/>`).join("")
+    +[[60,300,322],[180,322,350],[320,300,322],[90,350,382],[250,350,382],[30,382,418],[200,382,418],[350,418,458],[120,418,458],[280,458,500],[60,500,544],[230,500,544],[160,544,590],[330,544,590],[90,590,636],[260,590,636]].filter(([,a])=>a<H).map(([x,a,b])=>`<path d="M${x} ${a} V${b}" stroke="#8a5a32" stroke-width="2"/>`).join("")
     +`<rect y="296" width="400" height="8" fill="#7a4f34" ${hL(2)}/>`;
   // fenêtre ronde : épais cadre en bois, rideaux noués, le dehors à l'heure réelle
   s+=`<g filter="url(#wobble)"><path d="M18 150 Q28 196 20 236 L30 236 Q40 196 30 150Z M106 150 Q96 196 104 236 L94 236 Q84 196 94 150Z" fill="#f6b8c4" stroke="#d98a9a" stroke-width="1.6"/>
@@ -138,7 +138,7 @@ function houseSVG(){
     <path d="M18 226 q8 -6 14 2 M106 226 q-8 -6 -14 2" fill="none" stroke="#c4566e" stroke-width="3" stroke-linecap="round"/>
     <rect x="20" y="226" width="84" height="8" rx="3" fill="url(#hMantel)" ${hL(2.2)}/><path d="M84 226 h12 l-2 -10 h-8Z" fill="#e0855c" ${hL(1.8)}/><circle cx="86" cy="211" r="4.4" fill="#8fc07e" ${hL(1.4)}/><circle cx="93" cy="209" r="4" fill="#9cd488" ${hL(1.4)}/></g>`;
   if(wet)s+=`<g stroke="#fff" stroke-width="1.6" opacity=".8" stroke-linecap="round">${[40,52,66,80,88].map((x,i)=>`<path d="M${x} ${162+i*7} l-3 9"/>`).join("")}</g>`;
-  if(night)s+=`<rect width="400" height="480" fill="#241a3a" opacity=".3"/>`;
+  if(night)s+=`<rect width="400" height="${H}" fill="#241a3a" opacity=".3"/>`;
   s+=`<ellipse cx="200" cy="300" rx="${night?250:200}" ry="${night?220:170}" fill="url(#hfire)" class="hglo"/>`;
   // la cheminée : un conduit de pierres jusqu'au plafond, un linteau sur consoles, un foyer en briques
   const stoneRow=(x0,x1,y,h,off)=>{let r="",x=x0-(off?12:0);while(x<x1){const w=20+((x*7+y*3)%9);const a=Math.max(x,x0),b=Math.min(x+w,x1);if(b-a>5)r+=`<rect x="${a+1}" y="${y+1}" width="${b-a-2}" height="${h-2}" rx="4" fill="url(#hStone)" stroke="${INK}" stroke-width="1.8"/><path d="M${a+4} ${y+3.6} h${Math.max(2,(b-a)*.45)}" stroke="#f0ebe6" stroke-width="1.4" stroke-linecap="round"/>`;x+=w}return r};
@@ -192,7 +192,7 @@ function houseSVG(){
   if(R.hup.mezzanine)s+=`<g filter="url(#wobble)"><rect x="0" y="136" width="370" height="8" fill="#3d2a35" opacity=".18"/><path d="M0 118 H370 V136 H0Z" fill="url(#hShelf)" ${hL(3)}/>${[20,90,160,230,300].map(x=>`<path d="M${x} 122 V132" stroke="#7a4f34" stroke-width="2"/>`).join("")}<path d="M6 122 h340" stroke="#e3ac78" stroke-width="1.4" opacity=".7"/>
     ${[40,120,200,280].map(x=>`<path d="M${x} 118 V100 M${x+40} 118 V100" stroke="#a8724c" stroke-width="4"/>`).join("")}<path d="M0 100 H370" stroke="#a8724c" stroke-width="5" stroke-linecap="round"/>
     <path d="M352 136 L372 300 M386 136 L400 300" stroke="${INK}" stroke-width="6"/><path d="M352 136 L372 300 M386 136 L400 300" stroke="#a8724c" stroke-width="3"/>${[160,190,220,250,280].map(y=>`<path d="M${352+(y-136)*.12} ${y} H${386+(y-136)*.086}" stroke="${INK}" stroke-width="5"/><path d="M${352+(y-136)*.12} ${y} H${386+(y-136)*.086}" stroke="#c08a5c" stroke-width="2.4"/>`).join("")}</g>`;
-  return s+`<rect width="400" height="480" fill="url(#hVig)" pointer-events="none"/><rect width="400" height="480" fill="url(#hGrain)" pointer-events="none"/>`;
+  return s+`<rect width="400" height="${H}" fill="url(#hVig)" pointer-events="none"/><rect width="400" height="${H}" fill="url(#hGrain)" pointer-events="none"/>`;
 }
 // les objets de la maison, redessinés : fauteuil capitonné, table à thé nappée, gramophone, couverture torsadée
 HOBJ.fauteuil.art=id=>`<ellipse cx="100" cy="150" rx="72" ry="7" fill="#3d2a35" opacity=".18"/><g filter="url(#wobble)">
@@ -229,19 +229,18 @@ function enterHouse(){
   const objs=hobjs().filter(k=>k!=="guirlandes"&&(!night||HOBJ[k].night)),inObj=objs.map((k,i)=>[k,all[i]]).filter(([,id])=>id);
   const hd=houseDecoSeats(all.slice(inObj.length),night),ids=hd.rest,pl=seats(),here=ids.slice(0,pl.length),out=ids.length-here.length; // les objets de la déco d'abord (deco.js)
   houseEl=document.createElement("div");houseEl.className="play house";
-  houseEl.innerHTML=`<svg viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${houseSVG()}<g id="hfox"></g></svg><div class="psay">${night?"Tout le monde dort près du feu.":"La maison de Roussette."}${out?` ${out} renard${out>1?"s":""} reste${out>1?"nt":""} dehors : il manque de la place.`:""}</div>
+  houseEl.innerHTML=`<svg viewBox="0 0 400 ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${houseSVG()}<g id="hfox"></g></svg>${out?`<div class="psay">${out} renard${out>1?"s":""} reste${out>1?"nt":""} dehors : il manque de la place.</div>`:""}
     <div class="hbtns"><button class="btn ghost hgrow" type="button"${storyDone("copeau")?"":" hidden"}>Aménager</button><button class="btn ghost hdeco" type="button"${Object.keys(DECO).some(k=>DECO[k].home&&(R.deco.inv[k]||R.deco.home.some(d=>d.k===k)))?"":" hidden"}>Décorer</button></div><button class="btn pclose" type="button">Sortir</button>`;
   const box=houseEl.querySelector("#hfox"),POSES=["sit","lie","groom","happy","sleep"];
   // les objets sans personne (la nuit, le thé et la musique s'arrêtent), puis ceux où un renard s'est installé : le toucher prend la photo
   for(const k of hobjs())if(k!=="guirlandes"&&!inObj.some(([o])=>o===k))grp(box,HOBJ[k].art(null),{transform:hPlace(k)});
   for(const [k,id] of inObj){const g=grp(box,HOBJ[k].art(id),{transform:hPlace(k)});g.style.cursor="pointer";
-    g.onpointerdown=e=>{e.stopPropagation();if(R.photos.some(p=>p.obj===k&&p.id===id)){const r=pet(id);toast(r?`${FOX[id].name} est ravi (+1 cœur, +1 gland).`:`${FOX[id].name} : ${HOBJ[k].in.toLowerCase()}.`);if(r)renderHud();return}
-      R.photos.push({id,obj:k,t:Date.now()});save();const fl=document.createElement("div");fl.className="snapflash";houseEl.appendChild(fl);setTimeout(()=>fl.remove(),700);
-      toast(`Clic ! ${FOX[id].name}, ${HOBJ[k].in.toLowerCase()}. La photo est dans l'album.`)}}
+    g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,obj:k});return}
+      const r=pet(id);toast(r?`${FOX[id].name} est ravi (+1 cœur, +1 gland).`:`${FOX[id].name} : ${HOBJ[k].in.toLowerCase()}.`);if(r)renderHud()}}
   // les plus hauts d'abord, pour que ceux de devant passent par-dessus
-  here.map((id,i)=>[id,pl[i]]).sort((a,b)=>a[1][1]-b[1][1]).forEach(([id,[x,y]])=>{const up=y<200,w=up?52:60;
-    const g=grp(box,foxAt(id,x,y,w,{pose:night?"sleep":POSES[(id.length+i0(id))%POSES.length]})+`<circle cx="${x}" cy="${y-w/2}" r="${w/2}" fill="transparent"/>`);
-    g.style.cursor="pointer";g.onpointerdown=e=>{e.stopPropagation();const r=pet(id);
+  here.map((id,i)=>[id,pl[i]]).sort((a,b)=>a[1][1]-b[1][1]).forEach(([id,[x,y]])=>{const up=y<200,w=up?52:60,pose=night?"sleep":POSES[(id.length+i0(id))%POSES.length];
+    const g=grp(box,foxAt(id,x,y,w,{pose})+`<circle cx="${x}" cy="${y-w/2}" r="${w/2}" fill="transparent"/>`);
+    g.style.cursor="pointer";g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,x,y:y+w*.04,pose,w});return}const r=pet(id);
       toast(r?`${FOX[id].name} ronronne près du feu (+1 cœur, +1 gland).`:`${FOX[id].name} ${night?"dort, roulé en boule":"se chauffe les pattes"}.`);if(r)renderHud()}});
   houseEl.querySelector(".pclose").onpointerdown=e=>{e.stopPropagation();leaveHouse()};
   houseEl.querySelector(".hgrow").onpointerdown=e=>{e.stopPropagation();houseSheet()};
@@ -251,7 +250,7 @@ function enterHouse(){
 const i0=id=>[...id].reduce((a,c)=>a+c.charCodeAt(0),0);
 function leaveHouse(){if(houseEl){if(decoMode)decoEnd();houseEl.remove();houseEl=null}}
 function houseSheet(){
-  openSheet(`<h2>Aménager la maison</h2><p class="sub">Copeau a des idées plein la tête. Les objets attirent un renard : touche-le pour la photo. Tu as ${R.glands} glands.</p>${Object.entries(HOUSE).map(([k,o])=>`<div class="opt"><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-house="${k}" type="button" ${R.hup[k]||R.glands<o.price?"disabled":""}>${R.hup[k]?"Fait":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`)}
+  openSheet(`<h2>Aménager la maison</h2><p class="sub">Copeau a des idées plein la tête. Les objets attirent un renard : sors l'appareil photo pour le prendre. Tu as ${R.glands} glands.</p>${Object.entries(HOUSE).map(([k,o])=>`<div class="opt"><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-house="${k}" type="button" ${R.hup[k]||R.glands<o.price?"disabled":""}>${R.hup[k]?"Fait":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`)}
 function buildHouse(k){const o=HOUSE[k];if(R.hup[k]||R.glands<o.price)return;
   R.glands-=o.price;R.hup[k]=1;save();renderHud();closeSheet();
   if(houseEl){leaveHouse();enterHouse()}

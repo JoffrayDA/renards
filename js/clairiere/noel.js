@@ -6,7 +6,7 @@
    ?noel=12 fait comme si on était le 12 décembre (32 = 1er janvier), ?noel=0 coupe Noël. */
 const QN=new URLSearchParams(location.search).get("noel");
 // jour de l'événement : 1 à 31 en décembre, 32 à 37 du 1er au 6 janvier, 0 hors saison
-function noelDay(){if(QN!=null){const n=+QN||0;return n>0&&n<=37?n:0}const d=new Date();
+function noelDay(){if(QN!=null){const n=+QN||0;return n>0&&n<=37?n:0}const d=new Date(shotAt?shotAt.t:Date.now());
   return d.getMonth()===11?d.getDate():d.getMonth()===0&&d.getDate()<=6?31+d.getDate():0}
 const noelOn=()=>noelDay()>0;
 const NOEL_ORDER=["grelot","ramure","paillette","barbeneige"],NOEL_FROM={grelot:1,ramure:8,paillette:15,barbeneige:24};
@@ -126,7 +126,7 @@ function nForest(N){const r=rng(17);let s="";
     :[[118,46,"#a9c4c8","#f2f7fa",""],[136,58,"#86ab9f","#f6fafc",""],[156,72,"#5f8f7c","#ffffff",`stroke="${INK}" stroke-width="1.8" stroke-opacity=".55"`]];
   rows.forEach(([y,h,c,sc,ln],ri)=>{for(let i=-1;i<15;i++){const x=i*30+ri*11+r()*10,hh=h*(.8+r()*.4);s+=nPine(x,y+r()*8,hh,hh*.36,c,sc,ln)}});
   return s+`<rect y="100" width="400" height="70" fill="${N?"#5a5f98":"#eef4f8"}" opacity="${N?.18:.28}"/>`}
-function nGround(){const r=rng(23);let s=`<path d="M0 160 Q60 150 120 158 Q200 148 280 158 Q340 150 400 158 L400 480 L0 480Z" fill="url(#nSnow)"/>`;
+function nGround(){const r=rng(23);let s=`<path d="M0 160 Q60 150 120 158 Q200 148 280 158 Q340 150 400 158 L400 ${H} L0 ${H}Z" fill="url(#nSnow)"/>`;
   [[40,300,70,14],[350,290,64,12],[230,470,90,16],[30,470,60,12],[380,440,40,10]].forEach(([x,y,w,h])=>s+=`<path d="M${x-w} ${y} Q${x-w*.4} ${y-h} ${x} ${y-h*.8} Q${x+w*.5} ${y-h*1.1} ${x+w} ${y} Z" fill="#fff"/><path d="M${x-w} ${y} Q${x} ${y+5} ${x+w} ${y}" fill="none" stroke="#cbd8ea" stroke-width="2.4" stroke-linecap="round"/>`);
   for(let i=0;i<9;i++){const y=470-i*24,x=226+Math.sin(i*.9)*8;[[0,0],[7,-9]].forEach(([dx,dy])=>s+=`<g fill="#c9d6e8" transform="translate(${f1(x+dx)} ${f1(y+dy)})"><ellipse rx="2.6" ry="2"/><circle cx="-2.4" cy="-3" r=".9"/><circle cx="0" cy="-3.8" r=".9"/><circle cx="2.4" cy="-3" r=".9"/></g>`)}
   [[200,272],[193,296],[206,322],[196,350],[205,392],[196,430],[204,466]].forEach(([x,y],i)=>{const w=13-i*.3;
@@ -229,7 +229,7 @@ function nBench(){return nSh(306,420,50,7)+`<rect x="266" y="404" width="6" heig
   +`<path d="M258 396 Q262 386 280 388 Q296 382 312 387 Q332 384 342 396 Q300 400 258 396Z" fill="url(#nSnowSoft)" ${L(2)}/><path d="M318 394 q6 4 4 14 l5 0 q1 -9 -3 -15Z" fill="#e2546e" ${L(1.6)}/><path d="M320 400 h6 M321 404 h6" stroke="#fff" stroke-width="1.4"/>`}
 // le décor complet : mêmes endroits que le reste de l'année (SPOTS, zones à toucher), cabane et balançoire comprises
 function noelBg(){const ph=phaseNow(),N=ph==="nuit",r=rng(11),st=sapinStage();let s=bgDefs(ph)+nDefs(N);
-  s+=`<rect width="400" height="480" fill="url(#nSnow)"/>`+nSky(N)+nForest(N)+nGround();
+  s+=`<rect width="400" height="${H}" fill="url(#nSnow)"/>`+nSky(N)+nForest(N)+nGround();
   s+=`<g filter="url(#wobble)">`;
   if(R.obj&&R.obj.balancoire)s+=`<path d="M374 182 Q340 168 298 176 Q290 180 297 186 Q338 182 374 206Z" fill="url(#cTrunk)" ${O}/><path d="M300 176 Q336 166 372 180 L372 186 Q338 172 300 180Z" fill="#fff"/>`;
   s+=nSideTree(22,false)+nSideTree(380,true);
@@ -246,7 +246,7 @@ function noelBg(){const ph=phaseNow(),N=ph==="nuit",r=rng(11),st=sapinStage();le
   if(storyDone("gaston"))s+=`<path d="M150 440 L132 384" stroke="#a9785a" stroke-width="3.4" stroke-linecap="round"/><path d="M132 384 Q118 398 116 418" fill="none" stroke="#fff" stroke-width="1.4"/><circle cx="116" cy="420" r="3.4" fill="#e0564f" stroke="${INK}" stroke-width="1.6"/>`;
   s+=nBench()+`</g>`;
   if(ph==="jour")s+=`<circle cx="330" cy="20" r="220" fill="url(#cSun)" opacity=".14"/>`;
-  return s+`<rect width="400" height="480" fill="url(#cVig)"/><rect width="400" height="480" fill="url(#cGrain)"/>`}
+  return s+`<rect width="400" height="${H}" fill="url(#cVig)"/><rect width="400" height="${H}" fill="url(#cGrain)"/>`}
 // la nuit, les lumières du sapin décoré et l'étoile brillent au-dessus du voile (drawGlow)
 function noelGlow(){const st=sapinStage();if(st!=="3")return "";let s=`<defs><radialGradient id="gStar"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#fff2a8" stop-opacity=".7"/><stop offset="1" stop-color="#ffe680" stop-opacity="0"/></radialGradient></defs>`;
   if(sapinStar())s+=nStarGlow();
@@ -255,7 +255,7 @@ function noelGlow(){const st=sapinStage();if(st!=="3")return "";let s=`<defs><ra
   return s}
 
 /* ---------- la neige qui tombe : un peu tout le temps, beaucoup quand il « pleut » ---------- */
-const snowEl=document.createElementNS("http://www.w3.org/2000/svg","svg");snowEl.setAttribute("class","layer");snowEl.id="snow";snowEl.setAttribute("viewBox","0 0 400 480");snowEl.setAttribute("preserveAspectRatio","xMidYMid slice");snowEl.setAttribute("aria-hidden","true");
+const snowEl=document.createElementNS("http://www.w3.org/2000/svg","svg");snowEl.setAttribute("class","layer");snowEl.id="snow";snowEl.setAttribute("viewBox",`0 0 400 ${H}`);snowEl.setAttribute("preserveAspectRatio","xMidYMid slice");snowEl.setAttribute("aria-hidden","true");
 let snowN=-1;
 function drawSnow(){const n=noelOn()?(scn.rain?90:28):0;if(n===snowN)return;snowN=n;const r=rng(3);let s="";
   for(let i=0;i<n;i++){const big=i%7===0;s+=`<circle class="flake" style="animation-duration:${f1(big?4+r()*2:6+r()*6)}s;animation-delay:${f1(-r()*12)}s" cx="${f1(r()*420-10)}" cy="${f1(-r()*30)}" r="${f1(big?2.8+r()*1.4:1+r()*1.4)}" fill="#fff" opacity="${big?.75:.95}"/>`}
