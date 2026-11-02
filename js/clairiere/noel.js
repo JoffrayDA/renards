@@ -359,6 +359,7 @@ const recordDone=()=>recordH()>=24;
 const BALL={x:250,y:Math.min(H-60,560)},bigOn=()=>!!R.recordBig&&Date.now()-(R.recordBigAt||0)<864e5,ballR=()=>bigOn()?74:R.recordGone?0:Math.round(12+40*Math.min(1,recordH()/24));
 let ballEl=null;
 function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn());
+  if(bigOn()&&!recordWait()&&R.heapAt){BALL.x=R.heapAt.x;BALL.y=R.heapAt.y} // la boule refaite reste là où était le tas
   if(!show){if(ballEl){ballEl.remove();ballEl=null}return}
   if(!ballEl){ballEl=document.createElement("button");ballEl.className="bigball";ballEl.type="button";ballEl.setAttribute("aria-label","La boule de Boule-de-Neige");
     ballEl.onpointerdown=e=>{e.stopPropagation();const f=sF("bouleneige");if(f)bubble(f,R.recordBig?"« Record du monde ! Trois mètres et quart ! »":`« Je bats le record du monde ! Elle fait déjà ${Math.round(r*4)} cm. »`)};$("actors").appendChild(ballEl)}
