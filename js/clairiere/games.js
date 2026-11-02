@@ -545,6 +545,98 @@ const GAMES={
     reset();
   },
 
+  /* La bataille de neige, 3 contre 3 (Noël, 02/11/2026, idée de Joffray : « vraiment beau, bien fait, agréable à jouer »).
+     On choisit son équipe parmi les renards du refuge ; chaque camp se cache derrière ses forts. Les adversaires sortent la tête
+     et lancent des boules : on les touche pour riposter, et on touche une boule qui arrive pour la faire éclater avant qu'elle
+     tombe sur un des nôtres. Les coéquipiers lancent aussi, de temps en temps. Chacun a 3 cœurs, le chef adverse 5. */
+  battle(g,A){
+    const sv=A.sv,el=sv.parentNode,FOE=g.foes||["balafre","filou","radar"],BOSS=g.boss||FOE[0],EX=[86,200,314],EY=214,MY=418;
+    let st="pick",team=[],t=0,foes=[],mine=[],balls=[],fx=[],shake=0;
+    const PS=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
+    const fort=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})"><ellipse cx="4" cy="4" rx="58" ry="9" fill="#9fb3cc" opacity=".35"/><path d="M-56 0 Q-58 -30 -38 -36 Q-26 -48 -8 -42 Q8 -52 26 -42 Q44 -42 52 -28 Q60 -14 56 0Z" fill="#fff" ${PS}/>`
+      +`<path d="M-40 -20 q10 5 22 0 M6 -28 q12 5 26 0 M-18 -8 q8 3 16 0" fill="none" stroke="#cfdbea" stroke-width="2.6" stroke-linecap="round"/>${[-30,-6,20].map(dx=>`<circle cx="${dx}" cy="-2" r="5" fill="#f4f8fc" stroke="#cfdbea" stroke-width="1.6"/>`).join("")}</g>`;
+    const tree=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})"><rect x="-4" y="-8" width="8" height="10" fill="#8a5a3a" ${PS}/><path d="M0 -70 L24 -30 H12 L30 -6 H-30 L-12 -30 H-24Z" fill="#4f8a5a" ${PS}/><path d="M-12 -32 Q0 -26 12 -32 M-22 -8 Q0 0 22 -8" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>`;
+    sv.innerHTML=`<defs><linearGradient id="bsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cb8de"/><stop offset="1" stop-color="#dbe8f5"/></linearGradient>
+        <radialGradient id="bsn" cx=".5" cy=".2" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6eef8"/></radialGradient>
+        <clipPath id="bcE"><rect x="-40" y="-400" width="480" height="${EY+392}"/></clipPath><clipPath id="bcM"><rect x="-40" y="-400" width="480" height="${MY+392}"/></clipPath></defs>
+      <rect y="-320" width="400" height="800" fill="url(#bsk)"/>
+      <path d="M-10 130 Q80 96 170 118 Q260 92 410 124 V200 H-10Z" fill="#c6d6ea"/>
+      ${[[24,150,.9],[70,140,.7],[340,146,.85],[386,152,1]].map(a=>tree(...a)).join("")}
+      <path d="M-10 150 Q100 132 200 146 Q300 130 410 150 V480 H-10Z" fill="url(#bsn)" stroke="${INK}" stroke-width="2.4"/>
+      <path d="M-10 312 Q120 296 210 308 Q300 296 410 314" fill="none" stroke="#cfdbea" stroke-width="3" stroke-dasharray="6 9" stroke-linecap="round"/>
+      ${Array.from({length:14},(_,i)=>`<g transform="translate(${18+i*28} ${300+((i*37)%30)})" fill="#cfdbea"><ellipse rx="2.4" ry="1.8"/><circle cx="-2" cy="-2.6" r=".8"/><circle cx="2" cy="-2.6" r=".8"/></g>`).join("")}
+      <g id="bhud"></g><g id="bfoe" clip-path="url(#bcE)"></g><g id="bfortE">${EX.map(x=>fort(x,EY,.82)).join("")}</g>
+      <g id="bme" clip-path="url(#bcM)"></g><g id="bfortM">${EX.map(x=>fort(x,MY,1.08)).join("")}</g>
+      <g id="bballs"></g><g id="bfx"></g><g id="bsnow" opacity=".9">${Array.from({length:26},(_,i)=>`<circle class="bfl" cx="${(i*151)%400}" cy="${(i*97)%420-60}" r="${1.2+(i%3)*.8}" fill="#fff" style="animation-duration:${6+i%5}s;animation-delay:-${i%7}s"/>`).join("")}</g>`;
+    const gHud=sv.querySelector("#bhud"),gFoe=sv.querySelector("#bfoe"),gMe=sv.querySelector("#bme"),gB=sv.querySelector("#bballs"),gFx=sv.querySelector("#bfx");
+    const hearts=(n,max,k=1)=>Array.from({length:max},(_,i)=>`<path transform="translate(${(i-(max-1)/2)*13*k} 0) scale(${k})" d="M0 5 C-7 0 -6 -6 -3 -6 Q-1 -6 0 -3 Q1 -6 3 -6 C6 -6 7 0 0 5Z" fill="${i<n?"#f48aa6":"#e6dcd6"}" stroke="${INK}" stroke-width="1.4"/>`).join("");
+    // un renard dans la bataille : son dessin (content, touché ou KO), ses cœurs, son nom
+    const drawF=f=>{const pose=f.ko?"lie":f.hurt>0?"sit":"happy",expr=f.ko?"sad":f.hurt>0?"surprise":"joy";
+      f.el.innerHTML=`<g class="bfox">${foxAt(f.id,0,0,f.w,{pose,expr:pose==="sit"?expr:undefined})}</g>`
+        +(f.ko?`<g transform="translate(0 ${-f.w*.75})">${[0,1,2].map(i=>`<path class="bko" style="animation-delay:-${i*.33}s" d="M0 -5 l1.4 3.4 3.6 .4 -2.7 2.4 .8 3.6 -3.1 -1.9 -3.1 1.9 .8 -3.6 -2.7 -2.4 3.6 -.4z" fill="#ffe680" stroke="${INK}" stroke-width="1"/>`).join("")}</g>`:"")
+        +`<g transform="translate(0 ${-f.w-14})">${hearts(f.hp,f.max,f.foe?.85:1)}</g>`
+        +(f.boss?`<g transform="translate(0 ${-f.w-30})"><rect x="-22" y="-9" width="44" height="16" rx="8" fill="#e0505a" stroke="${INK}" stroke-width="2"/><text y="3.5" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="10" fill="#fff">CHEF</text></g>`:"")};
+    const hud=()=>{const Y=-EXT+128,col=(L,x,title)=>`<g transform="translate(${x} ${Y})"><rect x="-92" y="-14" width="184" height="96" rx="18" fill="#fffaf2" stroke="${INK}" stroke-width="2.6"/><text y="6" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${title}</text>`
+        +L.map((f,i)=>`<g transform="translate(${(i-1)*58} 46)" opacity="${f.ko?.4:1}"><svg x="-24" y="-30" width="48" height="48" viewBox="8 -8 104 104">${foxArt(FOX[f.id],{portrait:1,expr:f.ko?"sad":"joy"}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg><g transform="translate(0 26)">${hearts(f.hp,f.max,.62)}</g></g>`).join("")+`</g>`;
+      gHud.innerHTML=col(mine,102,"Ton équipe")+col(foes,298,"Les sauvages")+`<g transform="translate(200 ${Y+34})"><circle r="17" fill="#f59a8b" stroke="${INK}" stroke-width="2.6"/><text y="5" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="#fff">VS</text></g>`};
+    // caché : seules les oreilles dépassent ; un des nôtres touché se baisse un instant ; K.O., il s'affale, étourdi, sur le fort
+    const place=f=>{const off=f.ko?-f.w*.08:f.foe?(f.up?0:f.w*.8):(f.duck>0?f.w*.55:0);f.dy+=(off-f.dy)*.25;f.el.setAttribute("transform",`translate(${f.x} ${(f.y+f.dy).toFixed(1)})`)};
+    const splat=(x,y,k=1)=>{const s=grp(gFx,`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${k})">${[0,50,100,160,210,270,320].map(a=>`<circle cx="${(Math.cos(a*Math.PI/180)*13).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*11).toFixed(1)}" r="${3+(a%3)}" fill="#fff" stroke="#cfdbea" stroke-width="1.2"/>`).join("")}<circle r="8" fill="#fff"/></g>`);
+      s.animate([{opacity:1,transform:"scale(.6)"},{opacity:1,transform:"scale(1.15)",offset:.3},{opacity:0,transform:"scale(1.3)"}],{duration:520,easing:"ease-out"}).onfinish=()=>s.remove()};
+    const ballSVG=k=>`<g transform="scale(${k})"><ellipse cy="14" rx="9" ry="3" fill="#9fb3cc" opacity=".4"/><circle r="10" fill="#fff" ${PS}/><path d="M-5 -4 q3 -3 7 -2" fill="none" stroke="#cfdbea" stroke-width="2.4" stroke-linecap="round"/></g>`;
+    // une boule en vol : de (x0,y0) à (x1,y1) en d secondes, en cloche ; celles des adversaires grossissent en arrivant
+    const toss=(from,to,d,foeBall,onEnd)=>{const b={x0:from.x,y0:from.y-from.w*.6,x1:to.x,y1:to.y-to.w*.5,t:0,d,foeBall,to,onEnd};b.x=b.x0;b.y=b.y0;
+      b.el=grp(gB,foeBall?`<circle r="30" fill="transparent"/>${ballSVG(1)}`:ballSVG(1));
+      if(foeBall){b.el.style.cursor="pointer";b.el.onpointerdown=e=>{e.stopPropagation();if(b.done||st!=="play")return;b.done=1;b.el.remove();splat(b.x,b.y,1.1);A.sfx("pop");
+        const blk=["Paré !","Bien vu !","Éclatée !"];if(Math.random()<.4)A.say(blk[Math.floor(Math.random()*3)])}}
+      balls.push(b);A.sfx("swap")};
+    const alive=L=>L.filter(f=>!f.ko);
+    const hit=(f,dmg=1)=>{if(f.ko)return;f.hp=Math.max(0,f.hp-dmg);f.hurt=.6;if(f.foe)f.up=false;else f.duck=.5;
+      if(!f.hp){f.ko=true;(f.foe?sv.querySelector("#bfortE"):sv.querySelector("#bfortM")).after(f.el);A.sfx(f.foe?"cheer":"lose");if(f.foe)A.cheer(f.boss?"CHEF K.O. !":"K.O. !")}else A.sfx(f.foe?"good":"bad",f.foe?3-f.hp:0);
+      drawF(f);hud();if(!f.foe){shake=.3;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}}
+    const start=()=>{st="play";t=0;balls.forEach(b=>b.el.remove());balls=[];gFoe.innerHTML="";gMe.innerHTML="";
+      foes=FOE.map((id,i)=>({id,foe:1,boss:id===BOSS,x:EX[i],y:EY-24,w:70,hp:id===BOSS?5:3,max:id===BOSS?5:3,up:false,dy:40,hurt:0,ko:false,timer:.8+i*.7,threw:0}));
+      mine=team.map((id,i)=>({id,x:EX[i],y:MY-32,w:86,hp:3,max:3,up:true,dy:0,hurt:0,ko:false,auto:3+i*1.3}));
+      for(const f of foes){f.el=grp(gFoe,"");f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();shoot(f)};drawF(f)}
+      for(const f of mine){f.el=grp(gMe,"");drawF(f)}
+      hud();
+      A.say(g.say||"Touche un sauvage quand il sort la tête, et fais éclater les boules qui arrivent !")};
+    // notre lancer : d'un de nos renards encore debout vers celui qu'on a touché
+    const shoot=f=>{if(st!=="play"||f.ko)return;const by=alive(mine);if(!by.length)return;const me=by[Math.floor(Math.random()*by.length)];
+      const ok=f.up;toss(me,f,.26,false,()=>{if(ok&&!f.ko)hit(f);else{splat(f.x,f.y-16,.8);A.sfx("tap")}});me.hurt=0};
+    A.loop(dt=>{
+      if(st==="pick")return;t+=dt;
+      if(shake>0){shake-=dt;sv.style.transform=`translate(${((Math.random()-.5)*6*shake/.3).toFixed(1)}px,${((Math.random()-.5)*6*shake/.3).toFixed(1)}px)`}else sv.style.transform="";
+      // les adversaires : ils sortent la tête, lancent parfois, se recachent ; de plus en plus vite
+      const pace=Math.min(1,t/40);
+      for(const f of foes){if(f.ko){place(f);continue}
+        if(f.hurt>0)f.hurt-=dt;f.timer-=dt;
+        if(f.timer<=0){if(f.up){f.up=false;f.timer=.7+Math.random()*1.4-pace*.4}else{f.up=true;f.threw=0;f.timer=(f.boss?1.5:1.25)-pace*.45}if(f.hurt<=0)drawF(f)}
+        if(f.up&&!f.threw&&f.timer<(f.boss?1.1:.9)-pace*.3){const tg=alive(mine);if(tg.length&&Math.random()<(f.boss?.85:.6)){f.threw=1;const n=f.boss&&f.hp<=2?2:1;
+          for(let k=0;k<n;k++){const to=tg[Math.floor(Math.random()*tg.length)];A.later(()=>{if(st==="play"&&!f.ko)toss(f,to,(f.boss?1.05:1.25)-pace*.25,true,()=>hit(to))},k*260)}}else f.threw=1}
+        place(f)}
+      // nos coéquipiers lancent aussi de temps en temps (un sur deux touche)
+      for(const f of mine){if(f.ko){place(f);continue}if(f.duck>0)f.duck-=dt;if(f.hurt>0){f.hurt-=dt;if(f.hurt<=0)drawF(f)}
+        f.auto-=dt;if(f.auto<=0){f.auto=4+Math.random()*2.5;const up=foes.filter(o=>o.up&&!o.ko);if(up.length){const o=up[Math.floor(Math.random()*up.length)],ok=Math.random()<.5;toss(f,o,.3,false,()=>{if(ok&&o.up&&!o.ko)hit(o);else splat(o.x,o.y-14,.7)})}}
+        place(f)}
+      for(const b of balls){if(b.done)continue;b.t+=dt;const s=Math.min(1,b.t/b.d);b.x=b.x0+(b.x1-b.x0)*s;b.y=b.y0+(b.y1-b.y0)*s-90*4*s*(1-s)*(b.foeBall?1:.7);
+        const k=b.foeBall?.7+s*.8:1.1-s*.45;b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)}) scale(${k.toFixed(2)})`);
+        if(s>=1){b.done=1;b.el.remove();splat(b.x,b.y,b.foeBall?1.2:.9);b.onEnd()}}
+      balls=balls.filter(b=>!b.done);
+      if(st==="play"&&!alive(foes).length){st="won";A.win(g.win||"Victoire ! Les sauvages se rendent !")}
+      else if(st==="play"&&!alive(mine).length){st="lost";A.sfx("lose");A.say("Toute ton équipe est K.O.… On recommence !");A.later(start,1800)}});
+    // le choix de l'équipe : trois renards du refuge
+    const pool=[...new Set(["petitpois",...Object.keys(R.res)])].filter(id=>FOX[id]&&!FOE.includes(id)&&!INC[id]&&id!=="roussette").slice(0,24);
+    const pk=document.createElement("div");pk.className="bpick";
+    const drawPick=()=>{pk.innerHTML=`<h3>Choisis ton équipe</h3><p>Trois renards du refuge pour affronter les sauvages.</p><div class="bgrid">${pool.map(id=>`<button type="button" class="${team.includes(id)?"on":""}" data-id="${id}">${foxArt(FOX[id],{portrait:1,expr:"joy"})}<b>${FOX[id].name}</b></button>`).join("")}</div>
+      <div class="bteam">${[0,1,2].map(i=>team[i]?`<span>${foxArt(FOX[team[i]],{portrait:1,expr:"joy"})}</span>`:`<span class="empty">?</span>`).join("")}<button type="button" class="btn go" ${team.length<3?"disabled":""}>C'est parti !</button></div>`};
+    pk.onpointerdown=e=>e.stopPropagation();
+    pk.onclick=e=>{const b=e.target.closest("button");if(!b)return;
+      if(b.classList.contains("go")){if(team.length<3)return;pk.remove();A.sfx("cheer");start();return}
+      const id=b.dataset.id;if(!id)return;if(team.includes(id))team=team.filter(x=>x!==id);else if(team.length<3)team.push(id);A.sfx("tap");drawPick()};
+    if(pool.length<=3){team=pool.slice(0,3);while(team.length<3)team.push("petitpois");start()}else{drawPick();el.appendChild(pk);A.say("Avant la bataille…")}
+  },
+
   /* La bataille de boules de neige (Boule-de-Neige, Noël, 02/11/2026) : les renards du refuge sortent la tête de derrière
      les forts de neige ; on les touche pour leur lancer une boule. Il en faut assez avant la fin du temps. Boule-de-Neige,
      lui, ne compte pas : il fait partie de la neige (le toucher fait perdre un point). */

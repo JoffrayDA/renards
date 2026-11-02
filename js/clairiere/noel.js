@@ -9,10 +9,10 @@ const QN=new URLSearchParams(location.search).get("noel");
 function noelDay(){if(QN!=null){const n=+QN||0;return n>0&&n<=37?n:0}const d=new Date(shotAt?shotAt.t:Date.now());
   return d.getMonth()===11?d.getDate():d.getMonth()===0&&d.getDate()<=6?31+d.getDate():0}
 const noelOn=()=>noelDay()>0;
-// miette : « Les frileux de la forêt » (idée de Joffray, 01/11/2026) : trois inconnus de la forêt (Miette, Pataud, Frisette) ont froid
-// et faim, viennent se réchauffer et découvrir Noël avec les autres ; ils restent jusqu'au 6 janvier, sans dire leur nom (l'enquête
-// continue), et laissent chacun une photo avec un indice
-const NOEL_ORDER=["grelot","ramure","paillette","miette","barbeneige"],NOEL_FROM={grelot:1,ramure:8,paillette:15,miette:19,barbeneige:24},NOEL_WILD=["miette","pataud","frisette"];
+// balafre : « La bataille de neige » (Joffray, 02/11/2026, à la place des frileux) : Balafre, le chef, Filou et Radar veulent la
+// clairière pour l'hiver ; bataille de neige en 3 contre 3 (jeu battle, on choisit son équipe). Balafre ne dit son nom que si on
+// gagne ; les deux autres laissent une photo-indice. Ils restent jusqu'au 6 janvier, puis repartent dans la forêt.
+const NOEL_ORDER=["grelot","ramure","paillette","balafre","barbeneige"],NOEL_FROM={grelot:1,ramure:8,paillette:15,balafre:19,barbeneige:24},NOEL_WILD=["balafre","filou","radar"];
 const isNoelStory=id=>NOEL_ORDER.includes(id);
 // le chapitre qui attend : sa date est passée et le précédent est fini
 function noelNext(){if(!noelOn())return null;return NOEL_ORDER.find((k,i)=>!storyDone(k)&&noelDay()>=NOEL_FROM[k]&&(!i||storyDone(NOEL_ORDER[i-1])))||null}
@@ -82,31 +82,36 @@ Object.assign(STORIES,{
       ["me","open","Il manque quelque chose, tout en haut…"],
       ["paillette","open","L'étoile. Seul Barbe-Neige en a une assez brillante. Il passe toujours la veille de Noël."]]}
   ]},
-  miette:{title:"Les frileux de la forêt",souv:"la tasse de chocolat chaud",cast:["pataud","frisette"],
-    end:()=>{let n=0;for(const id of NOEL_WILD){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now()};incoPhoto(id,ph);R.photos.push(ph);n++}
-      save();if(n)setTimeout(()=>toast("Les frileux t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
-    {at:"petitpois",goal:"Petit Pois a vu des yeux briller sous les sapins.",lines:[
-      ["petitpois","surprise","Là-bas, sous les sapins… Trois petites ombres qui grelottent !"],
-      ["petitpois","shy","Ce sont des renards de la forêt. Ils n'osent pas approcher."],
-      ["me","open","Allons voir, tout doucement."]]},
-    {at:"@leaves",arrive:"miette",with:["pataud","frisette"],goal:"Va voir les trois ombres près du tas de feuilles.",lines:[
-      ["miette","shy","… Pardon. On a vu de la lumière, et ça sentait bon."],
-      ["pataud","sad","Il fait si froid dans la forêt. On a faim, et nos pattes sont toutes gelées."],
-      ["frisette","shy","On peut rester un peu ? Juste le temps de se réchauffer ?"],
-      ["me","joy","Bien sûr ! Venez, on va vous préparer quelque chose de chaud."]]},
-    {at:"petitpois",game:{k:"basket",n:6,say:"Les dernières pommes tombent du grand arbre ! Rattrape-les pour la compote chaude. Pas les véreuses !",win:"De quoi faire une grosse marmite !"},goal:"Aide Petit Pois à préparer la compote chaude.",lines:[
-      ["petitpois","joy","Une compote à la cannelle et un chocolat chaud, ça réchauffe tout le monde !"]]},
-    {at:"@porch",goal:"Sers le chocolat chaud sous le porche.",lines:[
-      ["pataud","joy","C'est chaud… et tout sucré ! Je peux en reprendre ?"],
-      ["frisette","joy","Ça sent la cannelle. Ma mèche frise de bonheur."],
-      ["miette","open","Et ce grand sapin qui brille… Qu'est-ce que c'est ?"],
-      ["petitpois","joy","C'est le sapin de Noël ! Ici, on le décore tous ensemble, et on attend Barbe-Neige."]]},
-    {at:"@lampL",goal:"Montre le sapin aux trois frileux.",lines:[
-      ["miette","surprise","Des lumières de toutes les couleurs… On dirait des lucioles qui ne s'envolent pas."],
-      ["pataud","shy","Dans la forêt, l'hiver, on reste chacun dans son trou. Ici, tout le monde est ensemble."],
-      ["frisette","open","On peut rester jusqu'à ce que la neige fonde ? On ne dérangera pas."],
-      ["me","joy","Restez autant que vous voulez. C'est ça, la magie de Noël."],
-      ["miette","shy","Merci. On ne dit pas encore nos noms… mais on t'a laissé un petit quelque chose."]]}
+  balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar"],
+    end:()=>{let n=0;for(const id of ["filou","radar"]){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now(),tr:2};incoPhoto(id,ph);R.photos.push(ph);n++}
+      save();if(n)setTimeout(()=>toast("Les deux acolytes t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
+    {at:"petitpois",goal:"Petit Pois a vu trois silhouettes dans la neige.",lines:[
+      ["petitpois","surprise","Là-bas, à l'orée du bois… Trois renards. Ils n'ont pas l'air de rigoler."],
+      ["me","open","Allons voir ce qu'ils veulent."]]},
+    {at:"@leaves",arrive:"balafre",with:["filou","radar"],goal:"Va à la rencontre des trois sauvages, près du tas de feuilles.",lines:()=>[
+      ["balafre","open","Alors c'est ici, la clairière qui brille toute la nuit."],
+      ["balafre","sad","L'hiver est rude dans la forêt. Cette clairière, on la veut. Elle est à nous jusqu'au printemps."],
+      ["petitpois","surprise",known("balafre")?"Balafre ?! C'est toi ?":"Mais… qui es-tu ?"],
+      ["balafre","joy",known("balafre")?"Peut-être. Peut-être pas. Gagne, et on en reparlera.":"Mon nom ? Je te le dirai seulement si vous gagnez."],
+      ["filou","joy","Une bataille de boules de neige. Trois contre trois. Le chef, c'est lui."],
+      ["radar","joy","Et ne chuchotez pas vos plans : j'entends tout, même vos moustaches qui frémissent."],
+      ["me","joy","D'accord ! Je choisis mon équipe."]]},
+    {at:"balafre",game:{k:"battle",foes:["balafre","filou","radar"],boss:"balafre",win:"Victoire ! Les sauvages se rendent !"},goal:"Relève le défi : une bataille de neige, trois contre trois.",lines:()=>{const was=known("balafre");
+      if(!was){const s=incOf("balafre");s.found=1;R.glands+=20;save();renderHud()}
+      return [["radar","surprise","On a… perdu ? Je n'ai même pas entendu venir la dernière boule !"],
+        ["filou","joy","Bien joué. Je n'ai rien emprunté pendant la bataille, promis. Presque rien."],
+        ["balafre","joy",was?"Tu m'as reconnu, et tu m'as battu. Ça fait beaucoup pour un seul hiver.":"Une promesse est une promesse. Je m'appelle Balafre."],
+        ["balafre","shy","La clairière est à vous. Mais… on peut rester un peu ? Il fait si froid, dehors."]]}},
+    {at:"@porch",goal:"Offre un chocolat chaud aux trois sauvages, sous le porche.",lines:[
+      ["petitpois","joy","Un chocolat chaud pour les vaincus… et pour les vainqueurs aussi !"],
+      ["radar","joy","J'entends les guimauves fondre. C'est le plus beau bruit du monde."],
+      ["filou","shy","Je peux emprunter une chaussette de Noël ? Pour la rendre. Un jour."],
+      ["balafre","open","Dans la forêt, l'hiver, chacun reste dans son terrier. Ici, tout le monde est ensemble."]]},
+    {at:"@lampL",goal:"Montre le grand sapin à la bande de Balafre.",lines:[
+      ["radar","surprise","Il fait gling, ce sapin. Tout doucement, avec le vent."],
+      ["filou","joy","Toutes ces boules qui brillent… Non, je n'en emprunterai pas. Pas aujourd'hui."],
+      ["balafre","shy","On reste jusqu'à ce que la neige fonde. Pour garder la clairière… avec vous, cette fois."],
+      ["me","joy","Bienvenue au refuge. C'est ça, la magie de Noël."]]}
   ]},
   barbeneige:{title:"La veille de Noël",souv:"l'étoile du sapin",cast:["grelot","ramure","paillette"],beats:[
     {at:"ramure",goal:"Ramure entend quelque chose dans le ciel.",lines:[
@@ -325,4 +330,4 @@ function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;c
   return true}
 const noelAway=id=>FOX[id]&&(FOX[id].event==="noel"||NOEL_WILD.includes(id)&&!!INC[id])&&!noelOn();
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
-if(!noelOn()&&NOEL_WILD.some(id=>R.res[id])){for(const id of NOEL_WILD)delete R.res[id];save()}
+if(!noelOn()&&[...NOEL_WILD,"miette","pataud","frisette"].some(id=>R.res[id])){for(const id of [...NOEL_WILD,"miette","pataud","frisette"])delete R.res[id];save()}
