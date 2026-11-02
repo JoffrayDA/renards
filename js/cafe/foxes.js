@@ -62,7 +62,7 @@ FOXES.push(
   {id:"ramure",event:"noel",name:"Ramure",rar:"legend",acc:"renne",c:{b:"#b07a52",ch:"#f7ead8",e:"#5a3a24",s:"#5a3a24",t:"#f7ead8"},bio:"Le renne de Barbe-Neige. Très fort pour tirer le traîneau, très mauvais pour glisser sur la glace."},
   {id:"guimauve",event:"noel",name:"Guimauve",rar:"legend",acc:"chocolat",c:{b:"#fbe3ec",ch:"#ffffff",e:"#f0a8c0",s:"#f0a8c0",t:"#ffffff"},bio:"Toute moelleuse. Elle ne sort jamais sans son chocolat chaud."},
   {id:"paillette",event:"noel",name:"Paillette",rar:"legend",acc:"guirlande",c:{b:"#cfd6e2",ch:"#f8fafd",e:"#7f8aa6",s:"#7f8aa6",t:"#f8fafd"},bio:"Elle fait ses guirlandes avec les étoiles qui tombent. Son pelage brille comme du givre."},
-  {id:"bouleneige",event:"noel",name:"Boule-de-Neige",rar:"legend",acc:"neige",c:{b:"#f6f9fd",ch:"#ffffff",e:"#cddbea",s:"#dfe8f2",t:"#ffffff"},bio:"Un renard fait de neige, avec une carotte et une écharpe. Il ne fond jamais, promis."}
+  {id:"bouleneige",event:"noel",name:"Boule-de-Neige",rar:"legend",acc:"neige",round:2,c:{b:"#f6f9fd",ch:"#ffffff",e:"#cddbea",s:"#dfe8f2",t:"#ffffff"},bio:"Un renard fait de neige, avec une carotte et une écharpe. Il ne fond jamais, promis."}
 );
 FOXES.forEach(f=>{f.zone=f.zone||"clairiere";FOX[f.id]=f});
 const HWF=FOXES.filter(f=>f.event==="halloween");

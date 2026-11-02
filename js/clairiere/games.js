@@ -337,7 +337,7 @@ const GAMES={
         next()},2000)};
     // un échange : les deux coussins passent l'un devant, l'autre derrière, en arc
     const next=()=>{if(!q.length){st="pick";A.say(`Où est ${name} ? Touche son coussin !`);return}
-      const [a,b]=q.shift();sw={a:cs.find(c=>c.slot===a),b:cs.find(c=>c.slot===b),t:0,d:RD[r][2]};
+      const [a,b]=q.shift();sw={a:cs.find(c=>c.slot===a),b:cs.find(c=>c.slot===b),t:0,d:RD[r][2]};A.sfx("swap"); // un petit « fffuit » à chaque échange (Joffray)
       box.appendChild(sw.a.el)};
     A.loop(dt=>{if(!sw)return;const n=RD[r][0];sw.t=Math.min(1,sw.t+dt/sw.d);const t=sw.t,e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,h=Math.sin(Math.PI*e)*30;
       const xa=X(sw.a.slot,n),xb=X(sw.b.slot,n);put(sw.a.el,xa+(xb-xa)*e,Y+h);put(sw.b.el,xb+(xa-xb)*e,Y-h);
