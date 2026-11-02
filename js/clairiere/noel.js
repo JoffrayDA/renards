@@ -383,7 +383,13 @@ function rollAt(d,r){const R0=rollLane(r);d=((d%R0.L)+R0.L)%R0.L;let i=1;while(R
 function rollTrack(){const r=ballR()||40,R0=rollLane(r);
   return `<path d="${R0.P.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+(p[1]-4).toFixed(1)).join("")}Z" fill="none" stroke="#e2eaf5" stroke-width="${Math.max(10,r*.5)}" stroke-linejoin="round" opacity=".9"/>`}
 let rollF1=0,watchT=0;
-function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),L=rollLane(r),d=Date.now()/1000*ROLL.v;
+// le record fini (le 19), la boule reste garée sur sa piste, Boule-de-Neige assise à côté, toute fière, en attendant qu'on vienne voir
+function rollPark(){const r=ballR(),R0=rollLane(r),P=rollAt(R0.L/8,r);if(Math.abs(BALL.x-P.x)+Math.abs(BALL.y-P.y)>1){BALL.x=P.x;BALL.y=P.y;drawBigBall()}
+  const f=sF("bouleneige");if(!f||f.walk||f.inside||f.parked===Math.round(P.x))return;f.parked=Math.round(P.x);
+  f.el.classList.remove("rolling","walking","f1");f.rollPose=null;f.badge.classList.remove("off");
+  place(f,{id:"record",x:Math.max(24,P.x-r-22),y:P.y+4,poses:["happy"]});f.until=Date.now()+9e8;f.el.classList.remove("left")}
+function rollTick(){if(ballEl&&gardenCleared()&&recordDone()){rollPark();return}
+  if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),L=rollLane(r),d=Date.now()/1000*ROLL.v;
   const P=rollAt(d,r),Q=rollAt(d+3,r),bx=P.x,by=P.y;ballSpin+=Math.hypot(bx-BALL.x,by-BALL.y)/Math.max(8,r)*57;BALL.x=bx;BALL.y=by;drawBigBall();
   // les spectateurs suivent la boule des yeux
   if(Date.now()>watchT){watchT=Date.now()+900;watchAll();for(const w of foxes)if(w.watch&&!w.walk&&w.spot&&WATCH.includes(w.spot)){if(w.spot.back&&w.pose!=="back"){w.pose="back";draw(w)}w.el.classList.toggle("left",BALL.x<w.x)}} // un nouveau venu s'installe aussi
