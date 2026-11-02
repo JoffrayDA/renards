@@ -353,8 +353,9 @@ function noelGlow(){const st=sapinStage();if(st!=="3")return "";let s=`<defs><ra
 const QREC=new URLSearchParams(location.search).get("record");
 const recordWait=()=>noelOn()&&storyDone("paillette")&&!!R.res.bouleneige&&!(R.beat.balafre>0)&&(noelDay()>=NOEL_FROM.balafre-1||QREC!=null);
 // ?record=vite : la boule grossit en 4 minutes au lieu de 24 h (pour tester)
-const REC0=Date.now(),recordH=()=>QREC==="vite"?(Date.now()-REC0)/1e4:QREC!=null?+QREC:R.recordAt?(Date.now()-R.recordAt)/36e5:0;
-const recordDone=()=>recordH()>=24||noelDay()>=24;
+// à partir du 19 (l'arrivée de la bande), le record est fini même si les 24 h ne sont pas passées (Joffray, le 19 : boule petite, pas de Balafre)
+const REC0=Date.now(),recordH=()=>QREC==="vite"?(Date.now()-REC0)/1e4:QREC!=null?+QREC:noelDay()>=NOEL_FROM.balafre?24:R.recordAt?(Date.now()-R.recordAt)/36e5:0;
+const recordDone=()=>recordH()>=24;
 const BALL={x:250,y:Math.min(H-60,560)},bigOn=()=>!!R.recordBig&&Date.now()-(R.recordBigAt||0)<864e5,ballR=()=>bigOn()?74:R.recordGone?0:Math.round(12+40*Math.min(1,recordH()/24));
 let ballEl=null;
 function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn());
