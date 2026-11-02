@@ -131,6 +131,8 @@ function tick(){
     // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
     if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id)||envWants(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow()}}continue}
     if(now>f.until&&(isTarget(f.id)||envHold(f)||storyStay(f.id))){f.until=now+5000;continue}
+    // sous le choc après l'arrivée de la bande de Balafre : ils ne bougent plus jusqu'à la fin de la bataille (noel.js)
+    if(f.shock){if((R.beat.balafre||0)<2){f.until=now+5000;continue}f.shock=0}
     if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
   }
   const f1=Math.floor(now/200)%2===1;for(const f of foxes)if(f.walk)f.el.classList.toggle("f1",f1);

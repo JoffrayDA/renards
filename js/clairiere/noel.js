@@ -416,8 +416,10 @@ function watchAll(now){const sp=WATCH; // now : on arrive dans la clairière, ch
     f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}if(now){f.walk=null;place(f,to)}else goTo(f,to);f.until=Date.now()+9e8}}
 // la bande arrive : tout le monde sort pour défendre Boule-de-Neige
 function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","balafre","filou","radar"].includes(f.id)&&!f.inside).map(f=>f.id);
-  ids.forEach((id,i)=>{const f=sF(id);f.watch=0;f.defend=1;const k=ids.length>1?i/(ids.length-1):.5,x=Math.max(30,Math.min(370,bx-150+k*300)),y=Math.min(H-60,by+40+(i%2)*26);
-    setTimeout(()=>{actGo(id,x,y,"up");setTimeout(()=>actEmote(id,i%3?"colere":"!",1800),900+i*60)},i*90)});
+  ids.forEach((id,i)=>{const f=sF(id);f.watch=0;f.shock=1;const k=ids.length>1?i/(ids.length-1):.5,x=Math.max(30,Math.min(370,bx-150+k*300)),y=Math.min(H-60,by+40+(i%2)*26);
+    setTimeout(()=>{actGo(id,x,y,"up");setTimeout(()=>actEmote(id,i%3?"colere":"!",1800),900+i*60)},i*90);
+    // puis, la boule cassée, ils restent figés sur place, sous le choc, jusqu'à la fin de la bataille (shock, life.js)
+    setTimeout(()=>{const g=sF(id);if(g&&!g.walk){g.pose="sit";g.expr=i%2?"surprise":"sad";draw(g);actEmote(id,i%2?"!":"goutte",2000)}},5200+i*120)});
   meGo(meBeside(bx,by+20),["up"],20000)}
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
 const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null;

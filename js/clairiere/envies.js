@@ -124,7 +124,9 @@ function envBadge(id){const c=envCur();return !!c&&((c.step==="ask"&&c.id===id)|
 function setBadge(f){const B=f.badge;B.innerHTML="";if(f.wild)return;
   if(isTarget(f.id))B.innerHTML=`<i class="mark">!</i>`;
   else if(envBadge(f.id))B.innerHTML=`<i class="envie">${DOTS}</i>`;
-  else if(wantsHug(f.id))B.innerHTML=`<i class="want">${HEART}</i>`;moveBadge(f)}
+  else if(wantsHug(f.id)&&!hugLater(f.id))B.innerHTML=`<i class="want">${HEART}</i>`;moveBadge(f)}
+// pas de cœur au-dessus d'un inconnu qu'on n'a pas encore reconnu, ni de la bande de Balafre avant la fin de la bataille (Joffray)
+const hugLater=id=>!!INC[id]&&(!known(id)||(NOEL_WILD.includes(id)&&!storyDone("balafre")));
 function envGoal(){const c=envCur();if(!c)return null;const E=envDef(c),n=nameOf(c.id);
   if(c.step==="ask")return {t:"Petite envie",g:`${n} a une petite envie : touche-le.`};
   if(E.friend)return {t:"Petite envie",g:`Va chercher ${FOX[c.friend].name} pour ${n}.`};
