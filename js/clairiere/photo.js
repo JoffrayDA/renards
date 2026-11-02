@@ -21,6 +21,8 @@ function keepShot(p,host){const k=pkey(p),old=R.photos.findIndex(q=>q.id===p.id&
 // dehors : le renard tel qu'on le voit, dans son objet ou sur sa déco
 function shootFox(f){
   if(f.wild){bubble(f,"trop farouche pour une photo… Regarde l'album : la gamelle le photographie.");return}
+  // la bande de Balafre au refuge à Noël : pas de photo d'un inconnu, sinon on devinerait son nom en quelques clics (Joffray)
+  if(INC[f.id]&&!known(f.id)){bubble(f,"se cache le museau : pas de photo tant que tu ne connais pas son nom !");return}
   if(f.walk){bubble(f,"bouge trop ! Attends qu'il s'arrête.");return}
   const sp=f.spot||{},p={id:f.id,t:Date.now(),h:hourNow(),at:"out",x:Math.round(f.x),y:Math.round(f.y),pose:f.pose,f:f.el.classList.contains("left")?1:0,wet:scn.rain?1:0};
   if(sp.obj)p.obj=sp.obj;

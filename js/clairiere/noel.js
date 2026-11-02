@@ -84,13 +84,17 @@ Object.assign(STORIES,{
   ]},
   balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar","bouleneige"],
     end:()=>{let n=0;for(const id of ["filou","radar"]){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now(),tr:2};incoPhoto(id,ph);R.photos.push(ph);n++}
-      R.recordBig=1;save();drawBigBall();if(n)setTimeout(()=>toast("Filou et Radar t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
+      R.recordBig=1;R.recordBigAt=R.recordBigAt||Date.now();save();drawBigBall();if(n)setTimeout(()=>toast("Filou et Radar t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
     // la bande débarque et casse la boule du record
-    {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:3800,
-      show:()=>{actArrive("balafre",BALL.x-70,BALL.y-70);actArrive("filou",BALL.x-130,BALL.y-30);actArrive("radar",BALL.x+90,BALL.y-60);
-        setTimeout(()=>actThrow("filou",{x:BALL.x,y:BALL.y-ballR()},{hurt:false}),1500);setTimeout(()=>actThrow("radar",{x:BALL.x,y:BALL.y-ballR()*1.2},{hurt:false}),1900);
-        setTimeout(()=>actThrow("balafre",{x:BALL.x,y:BALL.y-ballR()},{hurt:false,then:breakBall}),2400);
-        setTimeout(()=>{gardenSync();actThrow("filou","bouleneige");actThrow("radar","bouleneige",{ms:700})},3000)},
+    {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:6400,
+      show:()=>{const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
+        actArrive("filou",Math.max(40,bx-140),by-60);setTimeout(()=>actArrive("radar",Math.min(360,bx+120),by-70),250);setTimeout(()=>actArrive("balafre",bx-30,by-150),500);
+        setTimeout(()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise")},900);
+        setTimeout(()=>actThrow("filou",X(),{hurt:false,then:crackBall}),1700);
+        setTimeout(()=>actThrow("radar",X(),{hurt:false,then:crackBall}),2300);
+        setTimeout(()=>{actEmote("balafre","colere");actThrow("balafre",X(),{hurt:false,arc:110,ms:760,then:breakBall})},2900);
+        [3900,4250,4600,4950].forEach((t,i)=>setTimeout(()=>actThrow(["filou","radar","balafre","filou"][i],"bouleneige",{ms:520}),t));
+        setTimeout(()=>{gardenSync();actPose("bouleneige","lie","sad",30000);actEmote("bouleneige","goutte");["filou","radar"].forEach(id=>actTrick(id,"boing"))},5600)},
       lines:()=>[
       ["bouleneige","sad","Ma boule ! Mon record du monde… Il ne manquait presque rien !",()=>actEmote("bouleneige","goutte")],
       ["balafre","open","Belle boule. Dommage pour elle.",()=>actPose("balafre","happy")],
@@ -118,7 +122,7 @@ Object.assign(STORIES,{
     // tout le monde aide Boule-de-Neige à refaire sa boule, plus grosse qu'avant
     {at:"bouleneige",goal:"Aide Boule-de-Neige à refaire sa boule, avec toute la bande.",showMs:2600,
       show:()=>{["balafre","filou","radar","petitpois"].forEach((id,i)=>actGo(id,BALL.x+[-90,-50,60,100][i],BALL.y+[-10,30,30,-10][i],"happy"));
-        setTimeout(()=>{R.recordBig=1;R.recordGone=0;save();drawBigBall();if(ballEl)ballEl.animate([{transform:"translate(-50%,-100%) scale(.1)"},{transform:"translate(-50%,-100%) scale(1.08)",offset:.8},{transform:"translate(-50%,-100%) scale(1)"}],{duration:1400,easing:"ease-out"});try{MUSIC.sfx("win")}catch(e){}},900)},
+        setTimeout(()=>{R.recordBig=1;R.recordBigAt=Date.now();R.recordGone=0;save();drawBigBall();if(ballEl)ballEl.animate([{transform:"translate(-50%,-100%) scale(.1)"},{transform:"translate(-50%,-100%) scale(1.08)",offset:.8},{transform:"translate(-50%,-100%) scale(1)"}],{duration:1400,easing:"ease-out"});try{MUSIC.sfx("win")}catch(e){}},900)},
       lines:[
       ["bouleneige","joy","Record du monde ! Trois mètres et quart ! Personne n'avait jamais fait mieux.",()=>actTrick("bouleneige","salto")],
       ["filou","joy","Ouais ouais, bien vu… Boule-de-Neige !",()=>actTrick("filou","boing")],
@@ -332,16 +336,28 @@ const QREC=new URLSearchParams(location.search).get("record");
 const recordWait=()=>noelOn()&&storyDone("paillette")&&!!R.res.bouleneige&&!(R.beat.balafre>0)&&(noelDay()>=NOEL_FROM.balafre-1||QREC!=null);
 const recordH=()=>QREC!=null?+QREC:R.recordAt?(Date.now()-R.recordAt)/36e5:0;
 const recordDone=()=>recordH()>=24||noelDay()>=24;
-const BALL={x:250,y:Math.min(H-60,560)},ballR=()=>R.recordBig?74:R.recordGone?0:Math.round(12+58*Math.min(1,recordH()/24));
+const BALL={x:250,y:Math.min(H-60,560)},bigOn=()=>!!R.recordBig&&Date.now()-(R.recordBigAt||0)<864e5,ballR=()=>bigOn()?74:R.recordGone?0:Math.round(12+58*Math.min(1,recordH()/24));
 let ballEl=null;
-function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||R.recordBig&&noelOn());
+function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn());
   if(!show){if(ballEl){ballEl.remove();ballEl=null}return}
   if(!ballEl){ballEl=document.createElement("button");ballEl.className="bigball";ballEl.type="button";ballEl.setAttribute("aria-label","La boule de Boule-de-Neige");
     ballEl.onpointerdown=e=>{e.stopPropagation();const f=sF("bouleneige");if(f)bubble(f,R.recordBig?"« Record du monde ! Trois mètres et quart ! »":`« Je bats le record du monde ! Elle fait déjà ${Math.round(r*4)} cm. »`)};$("actors").appendChild(ballEl)}
   ballEl.style.cssText=pc(BALL.x,BALL.y-4)+`;width:${(2*r+8)/W*100}%;z-index:${BALL.y-8}`;
   ballEl.innerHTML=`<svg viewBox="-${r+4} -${2*r+6} ${2*r+8} ${2*r+12}" aria-hidden="true"><ellipse cy="2" rx="${r*.95}" ry="${Math.max(4,r*.16)}" fill="#9fb3cc" opacity=".45"/><circle cy="${-r}" r="${r}" fill="#fff" stroke="${INK}" stroke-width="3"/>`
     +`<path d="M${-r*.55} ${-r*1.45} Q${-r*.2} ${-r*1.75} ${r*.2} ${-r*1.68}" fill="none" stroke="#e6eef8" stroke-width="${Math.max(3,r*.12)}" stroke-linecap="round"/>`
-    +[[-.45,-.6],[.3,-.4],[.5,-1.2],[-.2,-1.1],[.05,-.75]].map(([a,b])=>`<path d="M${a*r-4} ${b*r} q4 3 8 0" fill="none" stroke="#cfdbea" stroke-width="2" stroke-linecap="round"/>`).join("")+`</svg>`}
+    +`<g class="roll" transform="rotate(${(ballSpin%360).toFixed(1)} 0 ${-r})">${[[-.45,-.6],[.3,-.4],[.5,-1.2],[-.2,-1.1],[.05,-.75],[-.6,-1.3],[.65,-.8]].map(([a,b])=>`<path d="M${a*r-4} ${b*r} q4 3 8 0" fill="none" stroke="#cfdbea" stroke-width="2" stroke-linecap="round"/>`).join("")}</g>`
+    +[`M${-r*.1} ${-r*1.9} l${r*.08} ${r*.3} l${-r*.12} ${r*.22} l${r*.1} ${r*.28}`,`M${r*.5} ${-r*1.5} l${-r*.2} ${r*.16} l${r*.06} ${r*.24} l${-r*.22} ${r*.1}`].slice(0,ballCrack).map(d=>`<path d="${d}" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join("")+`</svg>`}
+let ballSpin=0,ballCrack=0;
+// Boule-de-Neige pousse sa boule en faisant le tour du jardin (Joffray : « des allers-retours ou des ronds ») : il marche derrière
+// elle, de dos quand elle s'éloigne, de face quand elle revient, de profil sur les côtés ; la boule tourne en roulant
+const ROLL={cx:200,cy:()=>Math.min(H-90,530),rx:118,ry:42,lap:70};
+function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),th=(Date.now()/1000%ROLL.lap)/ROLL.lap*Math.PI*2;
+  const nx=ROLL.cx+Math.cos(th)*ROLL.rx,ny=ROLL.cy()+Math.sin(th)*ROLL.ry;ballSpin+=Math.hypot(nx-BALL.x,ny-BALL.y)/Math.max(8,r)*57;BALL.x=nx;BALL.y=ny;
+  const vx=-Math.sin(th)*ROLL.rx,vy=Math.cos(th)*ROLL.ry,L=Math.hypot(vx,vy),dx=vx/L,dy=vy/L;drawBigBall();
+  if(!f||f.walk||f.inside)return;const pose=dy<-.45?"back":"walk";f.x=BALL.x-dx*(r*.75+14);f.y=BALL.y-dy*(r*.35+10)+(dy<-.45?14:0);
+  f.el.style.transitionDuration="0s";f.el.style.left=f.x/W*100+"%";f.el.style.top=f.y/H*100+"%";f.el.style.zIndex=Math.round(f.y+(dy<-.45?30:0));
+  const left=dx<0;if(f.pose!==pose||f.el.classList.contains("left")!==left){f.pose=pose;f.el.classList.toggle("left",left);draw(f)}}
+setInterval(rollTick,80);
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
 const gardenCleared=()=>recordWait()&&!R.recordGone;
 function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("cleared",on);
@@ -359,8 +375,12 @@ function actArrive(id,x,y){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};s
   if(f.inside){f.inside=false;f.el.classList.remove("inside")}
   setTimeout(()=>{goTo(f,{id:"act-"+id,x,y,poses:["sit"]});f.until=Date.now()+30000},40)}
 // la boule éclate en morceaux
-function breakBall(){if(!ballEl)return;const r=ballR();R.recordGone=1;save();try{MUSIC.sfx("splash")}catch(e){}
-  for(let i=0;i<7;i++){const a=i/7*6.28;actThrow({x:BALL.x,y:BALL.y-r},{x:BALL.x+Math.cos(a)*(r+40),y:BALL.y-r*.4+Math.sin(a)*24},{arc:40,ms:520,hurt:false})}
+function crackBall(){if(!ballEl)return;ballCrack++;drawBigBall();ballEl.animate([{transform:"translate(-50%,-100%) rotate(0)"},{transform:"translate(-52%,-100%) rotate(-3deg)"},{transform:"translate(-48%,-100%) rotate(3deg)"},{transform:"translate(-50%,-100%) rotate(0)"}],{duration:300});try{MUSIC.sfx("knock")}catch(e){}}
+function breakBall(){if(!ballEl)return;const r=ballR();R.recordGone=1;save();try{MUSIC.sfx("splash");MUSIC.sfx("lose")}catch(e){}
+  for(let i=0;i<9;i++){const a=-Math.PI*(.1+.8*i/8),d=r*(1.1+Math.random()*.9),k=.35+Math.random()*.35,c=document.createElement("div");c.className="chunk";
+    c.style.cssText=pc(BALL.x,BALL.y-r)+`;width:${(r*k*2)/W*100}%`;c.innerHTML=`<svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M-10 2 Q-11 -8 -2 -10 Q8 -11 10 -2 Q11 8 2 9 Q-8 10 -10 2Z" fill="#fff" stroke="${INK}" stroke-width="2"/></svg>`;$("scene").appendChild(c);
+    const u=$("scene").clientWidth/W,mx=Math.cos(a)*d*u,my=Math.sin(a)*d*.7*u,ly=(r*.9+Math.random()*24)*u;
+    c.animate([{transform:"translate(-50%,-50%) rotate(0)"},{transform:`translate(calc(-50% + ${(mx*.7).toFixed(0)}px),calc(-50% + ${my.toFixed(0)}px)) rotate(${(Math.random()*400-200).toFixed(0)}deg)`,offset:.45},{transform:`translate(calc(-50% + ${mx.toFixed(0)}px),calc(-50% + ${ly.toFixed(0)}px)) rotate(${(Math.random()*500-250).toFixed(0)}deg)`,opacity:1,offset:.8},{transform:`translate(calc(-50% + ${mx.toFixed(0)}px),calc(-50% + ${ly.toFixed(0)}px))`,opacity:0}],{duration:1600,easing:"ease-out",fill:"forwards"}).onfinish=()=>c.remove()}
   ballEl.remove();ballEl=null}
 
 /* ---------- la neige qui tombe : un peu tout le temps, beaucoup quand il « pleut » ---------- */
