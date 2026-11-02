@@ -144,6 +144,7 @@ function syncFoxes(){
 }
 // un sauvage vient manger pendant qu'on regarde
 function wildVisit(id,food,near){
+  if(typeof gardenCleared==="function"&&gardenCleared())return; // pas pendant le record de Boule-de-Neige (gamelle rangée)
   const f=makeFox(id,null,{wild:true});f.food=food;drawBowl();
   // un inconnu du lot 3 va droit à son objet (le carton, la tente, le hamac)
   const sp=near&&(OBJS[near]?OBJS[near].spot:SPOTS.find(s=>s.deco===near));if(sp&&SPOT[sp.id]&&!taken(sp)){setTimeout(()=>goTo(f,sp),60);return}

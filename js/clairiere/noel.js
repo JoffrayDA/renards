@@ -90,7 +90,7 @@ Object.assign(STORIES,{
     {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:6400,
       show:()=>{const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
         actArrive("filou",Math.max(40,bx-140),by-60);setTimeout(()=>actArrive("radar",Math.min(360,bx+120),by-70),250);setTimeout(()=>actArrive("balafre",bx-30,by-150),500);
-        setTimeout(()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise")},900);
+        setTimeout(()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");defendAll(bx,by)},900);
         setTimeout(()=>actThrow("filou",X(),{hurt:false,then:crackBall}),1700);
         setTimeout(()=>actThrow("radar",X(),{hurt:false,then:crackBall}),2300);
         setTimeout(()=>{actEmote("balafre","colere");actThrow("balafre",X(),{hurt:false,arc:110,ms:760,then:breakBall})},2900);
@@ -367,25 +367,37 @@ function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn(
     +`<g class="roll" transform="rotate(${(ballSpin%360).toFixed(1)} 0 ${-r})">${[[-.45,-.6],[.3,-.4],[.5,-1.2],[-.2,-1.1],[.05,-.75],[-.6,-1.3],[.65,-.8]].map(([a,b])=>`<path d="M${a*r-4} ${b*r} q4 3 8 0" fill="none" stroke="#cfdbea" stroke-width="2" stroke-linecap="round"/>`).join("")}</g>`
     +[`M${-r*.1} ${-r*1.9} l${r*.08} ${r*.3} l${-r*.12} ${r*.22} l${r*.1} ${r*.28}`,`M${r*.5} ${-r*1.5} l${-r*.2} ${r*.16} l${r*.06} ${r*.24} l${-r*.22} ${r*.1}`].slice(0,ballCrack).map(d=>`<path d="${d}" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join("")+`</svg>`}
 let ballSpin=0,ballCrack=0;
-// Boule-de-Neige fait rouler sa boule en rond en bas de la clairière (03/11/2026, Joffray : « en rond » ; la ronde d'avant passait
-// sur les objets et sur la mare, et on la voyait marcher sur la boule). La piste est un anneau aplati, loin de la mare ; elle est
-// toujours derrière la boule, dans le sens où elle avance : de dos quand elle s'éloigne, de profil sur les côtés, et quand la boule
-// revient vers nous elle pousse depuis l'arrière, décalée vers l'intérieur de la piste pour qu'on la voie dépasser.
-const ROLL={v:.2,ry:24,y:()=>Math.max(470,H-96)};
-function rollLane(r){const ry=ROLL.ry,cy=ROLL.y()-ry;let cx=200,rx=Math.min(118,200-r-34);
-  if(cy-ry-2*r<462){cx=Math.min(250,165+r+rx);rx=Math.max(30,Math.min(rx,cx-165-r,396-r-cx))} // la boule ne passe jamais sur la mare
-  return {cx,cy,rx,ry}}
-function rollTrack(){const r=ballR()||40,L=rollLane(r);return `<ellipse cx="${L.cx}" cy="${L.cy-4}" rx="${L.rx}" ry="${L.ry}" fill="none" stroke="#e2eaf5" stroke-width="${Math.max(10,r*.5)}" opacity=".9"/>`}
-let rollF1=0;
-function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),L=rollLane(r),th=(Date.now()/1000*ROLL.v)%(Math.PI*2);
-  const bx=L.cx+Math.cos(th)*L.rx,by=L.cy+Math.sin(th)*L.ry;ballSpin+=Math.hypot(bx-BALL.x,by-BALL.y)/Math.max(8,r)*57;BALL.x=bx;BALL.y=by;drawBigBall();
+// Boule-de-Neige fait rouler sa boule en grand rond devant la maison (03/11/2026, Joffray : « un peu gros rond, devant la maison ;
+// tout le monde regarde et personne ne sort, c'est un record du monde »). La boule ne passe jamais sur la mare (rollLane). Boule-de-Neige est toujours derrière la boule, dans le sens où elle avance : de dos
+// quand elle s'éloigne, de profil sur les côtés, décalée vers l'intérieur quand la boule revient vers nous.
+const ROLL={v:22,top:395};
+// le chemin : une suite de points lissée (Chaikin), parcourue à vitesse constante. Une boule dont le bord gauche passe à gauche de
+// la mare (x - r < 165) doit être plus bas que la mare (y - 2r > 455) : le rond passe sous la mare s'il y a la place, sinon il reste
+// à droite. Recalculé quand la boule grossit.
+let rollPath=null,rollKey="";
+function rollLane(r){const k=Math.round(r/3)+"|"+H;if(k===rollKey)return rollPath;rollKey=k;
+  const B=H-100,xr=396-r,xw=165+r,yw=455+2*r,T=ROLL.top;
+  let P=B>=yw+15?[[xw+10,T],[xr-15,T+15],[xr,T+85],[xr-5,B-60],[xr-40,B],[200,B],[r+10,B-5],[r+5,yw+12],[xw-60,yw+4],[xw+4,yw-25],[xw+6,T+75]]
+    :[[xw+10,T],[xr,T+35],[xr,B-20],[xw+40,B],[xw+2,B-60],[xw+2,T+75]];
+  for(let it=0;it<3;it++){const Q=[];P.forEach((a,i)=>{const b=P[(i+1)%P.length];Q.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75])});P=Q}
+  const len=[0];for(let i=1;i<=P.length;i++){const a=P[i-1],b=P[i%P.length];len.push(len[i-1]+Math.hypot(b[0]-a[0],b[1]-a[1]))}
+  return rollPath={P,len,L:len[len.length-1],cx:(xw+xr)/2}}
+function rollAt(d,r){const R0=rollLane(r);d=((d%R0.L)+R0.L)%R0.L;let i=1;while(R0.len[i]<d)i++;
+  const a=R0.P[i-1],b=R0.P[i%R0.P.length],t=(d-R0.len[i-1])/((R0.len[i]-R0.len[i-1])||1);return {x:a[0]+(b[0]-a[0])*t,y:a[1]+(b[1]-a[1])*t}}
+function rollTrack(){const r=ballR()||40,R0=rollLane(r);
+  return `<path d="${R0.P.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+(p[1]-4).toFixed(1)).join("")}Z" fill="none" stroke="#e2eaf5" stroke-width="${Math.max(10,r*.5)}" stroke-linejoin="round" opacity=".9"/>`}
+let rollF1=0,watchT=0;
+function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),L=rollLane(r),d=Date.now()/1000*ROLL.v;
+  const P=rollAt(d,r),Q=rollAt(d+3,r),bx=P.x,by=P.y;ballSpin+=Math.hypot(bx-BALL.x,by-BALL.y)/Math.max(8,r)*57;BALL.x=bx;BALL.y=by;drawBigBall();
+  // les spectateurs suivent la boule des yeux
+  if(Date.now()>watchT){watchT=Date.now()+900;watchAll();for(const w of foxes)if(w.watch&&!w.walk)w.el.classList.toggle("left",BALL.x<w.x)} // un nouveau venu s'installe aussi
   if(!f||f.walk||f.inside)return;
-  // sens de la marche, et l'extérieur de la piste
-  let dx=-Math.sin(th)*L.rx,dy=Math.cos(th)*L.ry;const n=Math.hypot(dx,dy);dx/=n;dy/=n;const ox=Math.cos(th);
+  // sens de la marche, et l'extérieur du rond
+  let dx=Q.x-P.x,dy=(Q.y-P.y)*1.6;const n=Math.hypot(dx,dy)||1;dx/=n;dy/=n;const ox=Math.sign(bx-L.cx);
   const toward=dy>.55,away=dy<-.45; // vers nous : elle passe derrière la boule, décalée vers l'intérieur
   const fx=Math.max(24,Math.min(376,bx-dx*(r+13)-(toward?ox*(r*.95+16)*(1-Math.abs(dx)):0))),fy=by-dy*(r*.32+8)+(away?4:0);
   f.x=fx;f.y=fy;moveBadge(f,0);f.badge.classList.toggle("off",toward&&Math.abs(fx-bx)<r*.8); // son signe ne flotte pas sur la boule
- f.el.style.transitionDuration="0s";f.el.style.left=fx/W*100+"%";f.el.style.top=fy/H*100+"%";
+  f.el.style.transitionDuration="0s";f.el.style.left=fx/W*100+"%";f.el.style.top=fy/H*100+"%";
   f.el.style.zIndex=Math.round(toward?by-20:by+4);
   const pose=away?"back":"walk",left=dx<0;
   if(f.rollPose!==pose||f.el.classList.contains("left")!==left){f.rollPose=pose;const art=FOX.bouleneige;f.el.classList.add("rolling","walking");f.el.classList.toggle("left",left);
@@ -393,13 +405,26 @@ function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF
       :`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,{pose:"walk",frame:0})}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`}
   const k=Math.floor(Date.now()/340)%2;if(k!==rollF1){rollF1=k;f.el.classList.toggle("f1",!!k)}}
 setInterval(rollTick,80);
+// les places des spectateurs : le porche, les lanternes, et une rangée devant la maison, hors du rond
+const WATCH=[[118,302],[40,336],[84,342],[290,262],[372,282]].map(([x,y],i)=>({id:"w"+i,x,y,poses:["sit","up","happy"]}));
+// le record : tout le monde s'installe pour regarder et ne bouge plus (on ne dérange pas un record du monde)
+function watchAll(){const sp=[...["p1","p2","p3","p4","lampL","lampR"].map(k=>SPOT[k]).filter(Boolean),...WATCH];
+  for(const f of foxes){if(f.wild||f.id==="bouleneige"||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
+    f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}goTo(f,to);f.until=Date.now()+9e8}}
+// la bande arrive : tout le monde sort pour défendre Boule-de-Neige
+function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","balafre","filou","radar"].includes(f.id)&&!f.inside).map(f=>f.id);
+  ids.forEach((id,i)=>{const f=sF(id);f.watch=0;f.defend=1;const k=ids.length>1?i/(ids.length-1):.5,x=Math.max(30,Math.min(370,bx-150+k*300)),y=Math.min(H-60,by+40+(i%2)*26);
+    setTimeout(()=>{actGo(id,x,y,"up");setTimeout(()=>actEmote(id,i%3?"colere":"!",1800),900+i*60)},i*90)});
+  meGo(meBeside(bx,by+20),["up"],20000)}
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
 const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null;
 function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("cleared",on);
-  if(on){const Y=ROLL.y()-2*ROLL.ry-150,away=sp=>sp.obj||sp.deco||sp.bowl||["stump","leaves","bench1","bench2"].includes(sp.id)||(sp.y>Y&&sp.id!=="pond");
-    for(let i=SPOTS.length-1;i>=0;i--)if(away(SPOTS[i])){if(!SPOTS[i].obj&&!SPOTS[i].deco)gardenHid.push(SPOTS[i]);delete SPOT[SPOTS[i].id];SPOTS.splice(i,1)}
-    for(const f of foxes)if(f.id!=="bouleneige"&&f.spot&&!SPOTS.includes(f.spot)){const fs=SPOTS.filter(x=>!taken(x)&&!x.lamp);place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.p1)}}
-  else{for(const sp of gardenHid.splice(0)){SPOTS.push(sp);SPOT[sp.id]=sp}addObjSpots();decoSpots();drawDeco();drawObjs()}
+  if(on){const keep=["p1","p2","p3","p4","lampL","lampR"],away=sp=>!keep.includes(sp.id);
+    for(let i=SPOTS.length-1;i>=0;i--)if(away(SPOTS[i])){if(SPOTS[i].obj||SPOTS[i].deco)delete SPOT[SPOTS[i].id];else gardenHid.push(SPOTS[i]);SPOTS.splice(i,1)}
+    SPOTS.push(...WATCH);watchAll()}
+  else{for(let i=SPOTS.length-1;i>=0;i--)if(WATCH.includes(SPOTS[i]))SPOTS.splice(i,1);
+    for(const sp of gardenHid.splice(0))SPOTS.push(sp);addObjSpots();decoSpots();drawDeco();drawObjs();
+    for(const f of foxes)if(f.watch){f.watch=0;f.until=0}}
   if(gardenWas!==null&&gardenWas!==on)drawBg();gardenWas=on;
   // Boule-de-Neige pousse sa boule, de dos
   const f=sF("bouleneige");if(on&&f){if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;place(f,{id:"record",x:BALL.x,y:BALL.y+10,z:BALL.y+20,poses:["back"]});f.until=Date.now()+9e8;f.el.classList.add("pushing");f.badge.classList.add("off")}
