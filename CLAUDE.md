@@ -135,6 +135,7 @@ Refondue le 24/10/2026 (fiche : `docs/clairiere-v2.md`). Le Café, c'est la tens
 
 ## Vérifier avant de livrer
 
+0. `python tools/check-comments.py` : aucun commentaire « // » ne doit avaler le code qui le suit sur la même ligne (erreur faite trois fois le 01-02/11/2026).
 1. Ouvrir la page dans Chromium (Playwright est pratique) en largeur bureau (760 px) et téléphone (390 px), et vérifier qu'il n'y a aucune erreur dans la console.
 2. Pour le Café, relancer `python tools/balance-bot.py` après tout changement d'équilibrage.
 3. Incrémenter `CACHE` dans `sw.js`, puis faire le commit et le push.
