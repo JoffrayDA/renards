@@ -599,29 +599,49 @@ const GAMES={
   /* Le grand portrait (fin de l'histoire de Gribouille) : le tableau de tout le refuge ; Petit Pois y ajoute Gribouille
      dans le coin, de travers. On touche pour continuer. */
   portrait(g,A){
-    const sv=A.sv,ids=Object.keys(R.res).filter(i=>i!=="gribouille"),n=Math.max(1,ids.length);
-    const cols=Math.ceil(Math.sqrt(n*1.8)),rows=Math.ceil(n/cols),cw=292/cols,ch=170/rows,sz=Math.min(cw*1.15,ch*1.25,96);
-    let st="look";
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
-      <path d="M110 340 L70 470 M290 340 L330 470 M200 340 V470" stroke="#a9785a" stroke-width="10" stroke-linecap="round"/>
-      <defs><clipPath id="pc"><rect x="46" y="66" width="308" height="268" rx="4"/></clipPath><clipPath id="gr"><rect id="grr" x="250" y="250" width="0" height="110"/></clipPath></defs>
-      <rect x="34" y="54" width="332" height="292" rx="10" fill="#c08a5c" stroke="${INK}" stroke-width="3.4"/>
-      <g clip-path="url(#pc)"><rect x="46" y="66" width="308" height="268" fill="#cfe6f5"/><circle cx="310" cy="106" r="22" fill="#fff3b8"/>
-        ${[[60,120],[150,96],[230,128]].map(([x,y])=>`<path d="M${x} ${y} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff"/>`).join("")}
-        <path d="M46 200 Q150 180 250 196 Q320 186 354 196 V334 H46Z" fill="#b5d68f"/>
-        ${Array.from({length:14},(_,i)=>`<path d="M${50+i*22} ${206+(i%3)*4} q8 -6 16 0" stroke="#8dbd86" stroke-width="3" fill="none" stroke-linecap="round"/>`).join("")}
-        ${ids.map((fid,i)=>{const r=Math.floor(i/cols),c=i%cols,inRow=Math.min(cols,n-r*cols);return foxAt(fid,200+(c-(inRow-1)/2)*cw,170+ch*(r+1)+6,sz,{pose:"sit"})}).join("")}
-        <g clip-path="url(#gr)"><g transform="translate(312 330) rotate(-14)">${foxAt("gribouille",0,0,70,{pose:"happy"})}</g></g></g>
+    // refait le 02/11/2026 : une vraie photo de famille, en gradins (les plus petits au fond), devant la maison, sur toute la
+    // hauteur ; Petit Pois au premier rang, au milieu ; Gribouille peint dans le coin, de travers
+    const sv=A.sv,all=Object.keys(R.res).filter(i=>i!=="gribouille"&&FOX[i]&&!FOX[i].event&&!INC[i]),T=Math.min(-EXT+96,40),B=404,X0=30,X1=370,HH=B-T,GY=T+HH*.5,F=Math.min(1.25,Math.max(1,HH/380));
+    const ids=["petitpois",...all.filter(i=>i!=="petitpois")].filter(i=>R.res[i]);
+    // les rangées, du premier au dernier : taille du renard et place disponible
+    const sizes=[74,62,52,44,38,33].map(v=>Math.round(v*F)),rows=[];let k=0;
+    for(const sz of sizes){if(k>=ids.length)break;const cap=Math.floor((X1-X0-10)/(sz*.78));rows.push({sz,cap});k+=cap}
+    // on répartit selon la place de chaque rangée : pas de dernier rang avec un seul renard
+    {const tot=rows.reduce((a,r)=>a+r.cap,0);let left=ids.length,at=0;rows.forEach((r,i)=>{const n=i===rows.length-1?left:Math.min(r.cap,Math.round(ids.length*r.cap/tot));r.ids=ids.slice(at,at+n);at+=n;left-=n})}
+    // les rangées s'étalent sur toute la prairie
+    const gap=Math.max(...rows.map(r=>r.sz*.5),(B-6-(GY+40))/Math.max(1,rows.length-1));let y=B-6;rows.forEach(r=>{r.y=y;y-=Math.min(gap,r.sz*.62)});
+    const POS=["lie","sit","happy","sit","happy","up"];
+    const drawRow=(r,ri)=>r.ids.map((fid,i)=>{const n=r.ids.length,step=Math.min(r.sz*.86,(X1-X0-r.sz)/Math.max(1,n-1)),x=200+(i-(n-1)/2)*step;
+      // Petit Pois au milieu du premier rang : on réordonne pour qu'il soit au centre
+      return foxAt(fid,x,r.y+(i%2?2:0),r.sz,{pose:ri===0?(fid==="petitpois"?"happy":"lie"):POS[(i+ri)%POS.length]})}).join("");
+    const front=rows[0];if(front){const pp=front.ids.indexOf("petitpois");if(pp>=0){front.ids.splice(pp,1);front.ids.splice(Math.floor(front.ids.length/2),0,"petitpois")}}
+    const house=`<g transform="translate(200 ${(GY-34).toFixed(0)}) scale(${(.62*F).toFixed(2)})" opacity=".9"><path d="M-70 60 V0 L0 -44 L70 0 V60Z" fill="#e8b47c" stroke="${INK}" stroke-width="3"/><path d="M-84 6 L0 -56 L84 6" fill="none" stroke="#c8604f" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="-12" y="22" width="24" height="38" rx="10" fill="#8a5a3a" stroke="${INK}" stroke-width="2.4"/><rect x="-52" y="16" width="22" height="20" rx="4" fill="#cfe8f6" stroke="${INK}" stroke-width="2.4"/><rect x="30" y="16" width="22" height="20" rx="4" fill="#cfe8f6" stroke="${INK}" stroke-width="2.4"/></g>`;
+    const bunting=`<path d="M${X0} ${T+24} Q200 ${T+52} ${X1} ${T+24}" fill="none" stroke="${INK}" stroke-width="1.6"/>`+Array.from({length:11},(_,i)=>{const t=(i+.5)/11,x=X0+(X1-X0)*t,yy=T+24+28*4*t*(1-t);return `<path d="M${(x-7).toFixed(1)} ${yy.toFixed(1)} L${(x+7).toFixed(1)} ${yy.toFixed(1)} L${x.toFixed(1)} ${(yy+13).toFixed(1)}Z" fill="${["#f6a5b4","#f2c45a","#9ec3ef","#a9d68f","#c9a8ec"][i%5]}" stroke="${INK}" stroke-width="1.4"/>`}).join("");
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#f0c99a"/>${Array.from({length:14},(_,i)=>`<path d="M0 ${-EXT+40+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
+      <path d="M90 ${B+12} L60 470 M310 ${B+12} L340 470 M200 ${B+12} V470" stroke="#a9785a" stroke-width="10" stroke-linecap="round"/>
+      <defs><clipPath id="pc"><rect x="${X0}" y="${T}" width="${X1-X0}" height="${B+10-T}" rx="4"/></clipPath><clipPath id="gr"><rect id="grr" x="270" y="${B-110}" width="0" height="130"/></clipPath>
+        <linearGradient id="psk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe0f2"/><stop offset="1" stop-color="#eaf6f0"/></linearGradient></defs>
+      <rect x="${X0-12}" y="${T-12}" width="${X1-X0+24}" height="${B+34-T}" rx="10" fill="#c08a5c" stroke="${INK}" stroke-width="3.4"/><rect x="${X0-6}" y="${T-6}" width="${X1-X0+12}" height="${B+22-T}" rx="6" fill="none" stroke="#e6b884" stroke-width="2.4"/>
+      <g clip-path="url(#pc)"><rect x="${X0}" y="${T}" width="${X1-X0}" height="${B+10-T}" fill="url(#psk)"/><circle cx="${X1-40}" cy="${T+40}" r="20" fill="#fff3b8"/>
+        ${[[X0+40,T+46],[X0+150,T+30]].map(([x,yy])=>`<path d="M${x} ${yy} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff"/>`).join("")}
+        ${[[X0+10,GY-28,40],[X0+60,GY-38,34],[X1-14,GY-28,42],[X1-64,GY-40,32]].map(([x,yy,r])=>`<circle cx="${x}" cy="${yy}" r="${r}" fill="#8dbd86" stroke="${INK}" stroke-width="2.4"/>`).join("")}
+        ${house}${bunting}
+        <path d="M${X0} ${GY} Q140 ${GY-18} 200 ${GY-6} Q290 ${GY-20} ${X1} ${GY-2} V${B+10} H${X0}Z" fill="#b5d68f"/>
+        ${Array.from({length:16},(_,i)=>`<path d="M${X0+6+i*22} ${GY+8+(i%3)*5} q8 -6 16 0" stroke="#8dbd86" stroke-width="3" fill="none" stroke-linecap="round"/>`).join("")}
+        ${rows.map((r,ri)=>({r,ri})).reverse().map(({r,ri})=>drawRow(r,ri)).join("")}
+        <g clip-path="url(#gr)"><g transform="translate(330 ${B-4}) rotate(-12)">${foxAt("gribouille",0,0,78,{pose:"happy"})}</g></g></g>
       <g id="brush" opacity="0"><path d="M0 0 q-10 -30 -40 -44" stroke="#f2a35c" stroke-width="10" stroke-linecap="round" fill="none"/><circle r="8" fill="#6aa6c9" stroke="${INK}" stroke-width="2.4"/></g>
-      ${foxAt("petitpois",64,470,96,{pose:"happy"})}`;
-    const grr=sv.querySelector("#grr"),br=sv.querySelector("#brush");
-    A.say(g.say||"Le grand portrait du refuge…");
-    let t=0;A.later(()=>{st="paint";A.say("Petit Pois ajoute Gribouille dans le coin…");br.setAttribute("opacity",1)},1600);
-    A.loop(dt=>{if(st!=="paint")return;t+=dt;const k=Math.min(1,t/2.2);grr.setAttribute("width",(110*k).toFixed(1));
-      br.setAttribute("transform",`translate(${(262+96*k).toFixed(1)} ${(300+Math.sin(t*14)*16).toFixed(1)})`);
-      if(k>=1){st="done";br.setAttribute("opacity",0);A.say("Voilà : tout le refuge. Touche pour continuer.")}});
+      ${foxAt("petitpois",52,476,84,{pose:"happy"})}`;
+    const grr=sv.querySelector("#grr"),br=sv.querySelector("#brush");let st="look",t=0;
+    A.say(g.say||"Le grand portrait du refuge… tout le monde est là.");
+    A.later(()=>{st="paint";A.sfx("swap");A.say("Petit Pois ajoute Gribouille dans le coin…");br.setAttribute("opacity",1)},1800);
+    A.loop(dt=>{if(st!=="paint")return;t+=dt;const k=Math.min(1,t/2.2);grr.setAttribute("width",(120*k).toFixed(1));
+      br.setAttribute("transform",`translate(${(280+90*k).toFixed(1)} ${(B-60+Math.sin(t*14)*18).toFixed(1)})`);
+      if(k>=1){st="done";br.setAttribute("opacity",0);A.sfx("cheer");A.say("Voilà : tout le refuge. Touche pour continuer.")}});
     A.tap=()=>{if(st==="done")A.win(g.win||"Le grand portrait est fini !")};
   },
+
 
   /* La danse des flaques : le renard saute dans des flaques, il faut refaire la même suite. Chaque flaque a sa note (do, mi, sol, do). */
   simon(g,A){
