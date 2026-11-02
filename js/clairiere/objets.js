@@ -64,7 +64,7 @@ const OBJS={
   <g transform="translate(-20 62)"><path d="M0 0 V22" stroke="#a9785a" stroke-width="3"/><rect x="-9" y="-10" width="18" height="12" rx="2" fill="#fffaf2" stroke="${INK}" stroke-width="2"/><path d="M-5 -4 h4 M1 -4 h4" stroke="#f08a3c" stroke-width="2.4" stroke-linecap="round"/></g></svg>`}},
   // le carton : évidemment, l'objet préféré de tout le monde ; on voit la tête et les pattes posées sur le bord
   carton:{name:"Carton",price:20,pose:"sit",in:"Dans le carton",spot:{id:"box",x:120,y:extY(.75),poses:["sit"],obj:"carton"},thumb:"-4 24 128 80",
-    desc:"Un simple carton. Rien de spécial. Les renards ne sont pas d'accord.",
+    desc:"Un simple carton. Rien de spécial. Les renards ne sont pas d'accord. On dit qu'une inconnue de la forêt ne résiste à aucun carton…",
     svg:id=>`<svg viewBox="0 -16 120 116" aria-hidden="true"><ellipse cx="60" cy="101" rx="50" ry="5" fill="#3d2a35" opacity=".14"/>
   <g ${O} filter="url(#wobble)"><path d="M14 58 L24 44 H96 L106 58Z" fill="#8a5f3a"/><path d="M24 44 L12 30 L22 26 L34 44Z M96 44 L108 30 L98 26 L86 44Z" fill="#e3b77e"/></g>
   ${id?`<g transform="translate(0 -6)">${foxIn(id,"sit")}</g>`:""}

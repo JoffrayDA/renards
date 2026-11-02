@@ -70,7 +70,7 @@ const DECO={
     art:L=>`${dSh(44)}<g ${L}${dWob}><path d="M-44 -12 Q-46 -38 0 -40 Q46 -38 44 -12 Q44 1 0 1 Q-44 1 -44 -12Z" fill="#f6b8c4"/></g>
       ${[-26,-8,10,28].map(x=>`<path d="M${x} -38 Q${x+2} -18 ${x} 0" fill="none" stroke="#fffaf2" stroke-width="5" opacity=".75"/>`).join("")}<ellipse cx="0" cy="-30" rx="30" ry="6" fill="#fff" opacity=".3"/><circle cx="0" cy="-26" r="3.6" fill="#e08a9c" ${L}/>`},
   hamac:{name:"Hamac",p:1200,w:96,h:74,fav:"somnus",seat:{dx:0,dy:-21,poses:["sleep","lie"]},
-    desc:"Une toile tendue entre deux piquets. On s'y balance doucement jusqu'à s'endormir.",
+    desc:"Une toile tendue entre deux piquets. On s'y balance doucement jusqu'à s'endormir. Un grand dormeur de la forêt en rêve, paraît-il.",
     art:L=>`${dSh(40,-3)}<g ${L}${dWob}><path d="M-46 -2 L-42 -70 M46 -2 L42 -70" fill="none" stroke-width="${(1.35*100/96*2.6).toFixed(2)}"/><path d="M-46 -2 L-42 -70 M46 -2 L42 -70" fill="none" stroke="#a9785a" stroke-width="2.4"/>
       <path d="M-42 -64 L-34 -46 M-42 -64 L-30 -46 M42 -64 L34 -46 M42 -64 L30 -46" fill="none" stroke-width="1"/><path d="M-36 -46 Q0 -34 36 -46 Q0 -12 -36 -46Z" fill="#7fa8d8"/></g>`,
     front:L=>`<g ${L}${dWob}><path d="M-38 -45 Q0 -2 38 -45 Q0 -22 -38 -45Z" fill="#9ec3ef"/></g>${[-22,-8,8,22].map(x=>`<path d="M${x} ${-34+Math.abs(x)/3} q1 8 0 ${14-Math.abs(x)/2.4}" stroke="#fffaf2" stroke-width="3" opacity=".8" fill="none"/>`).join("")}`},
@@ -97,7 +97,7 @@ const DECO={
     front:L=>`<g ${L}${dWob}><path d="M-41 -44 L-30 -20 H30 L41 -44 Q0 -36 -41 -44Z" fill="#7fb0c8"/><circle cx="34" cy="-14" r="12" fill="#5b4250"/><circle cx="34" cy="-14" r="5" fill="#c9c2bc"/></g><path d="M-32 -36 H32" stroke="#a8cfe0" stroke-width="2.4"/>`},
   // on dort dedans (Joffray : « les renards peuvent aller dans la tente ? ») : le devant de la tente passe devant le renard, sa tête dépasse par l'entrée
   tente:{name:"Petite tente",p:1500,w:110,h:80,fav:"charbon",seat:{dx:0,dy:-3,poses:["sleep","lie","sit"]},
-    desc:"Une tente à rayures jaunes, l'entrée grande ouverte. On y dort comme en camping.",
+    desc:"Une tente à rayures jaunes, l'entrée grande ouverte. On y dort comme en camping. Un explorateur de passage cherche un camp de base…",
     art:L=>`${dSh(46,-2)}<g ${L}${dWob}><path d="M-46 -2 L0 -74 L46 -2Z" fill="#f6d27a"/><path d="M-22 -2 L0 -52 L22 -2Z" fill="#6a5060"/></g><path d="M-18 -4 L0 -46 L18 -4Z" fill="#7d6272" opacity=".6"/><ellipse cx="0" cy="-5" rx="18" ry="3" fill="#fbe7b0" opacity=".5"/>`,
     front:L=>`<g ${L}${dWob}><path fill-rule="evenodd" d="M-46 -2 L0 -74 L46 -2Z M-22 -2 L0 -52 L22 -2Z" fill="#f6d27a"/><path d="M-22 -2 L0 -52 L-32 -6Z M22 -2 L0 -52 L32 -6Z" fill="#fbe7b0"/></g>
       <path d="M-34 -21 L-15 -48 M34 -21 L15 -48 M-42 -10 L-31 -26 M42 -10 L31 -26 M-12 -62 L-6 -66 M12 -62 L6 -66" stroke="#f2b25a" stroke-width="3.4" opacity=".8" stroke-linecap="round"/><path d="M0 -74 V-82" stroke="${INK}" stroke-width="2.4"/><path d="M0 -82 l10 3 l-10 3Z" fill="#f48aa6" ${L}/>

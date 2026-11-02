@@ -125,8 +125,10 @@ function syncFoxes(){
   for(const id of want)if(!foxes.some(f=>f.id===id)){const fs=free();makeFox(id,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}
 }
 // un sauvage vient manger pendant qu'on regarde
-function wildVisit(id,food){
+function wildVisit(id,food,near){
   const f=makeFox(id,null,{wild:true});f.food=food;drawBowl();
+  // un inconnu du lot 3 va droit à son objet (le carton, la tente, le hamac)
+  const sp=near&&(OBJS[near]?OBJS[near].spot:SPOTS.find(s=>s.deco===near));if(sp&&SPOT[sp.id]&&!taken(sp)){setTimeout(()=>goTo(f,sp),60);return}
   if(taken(SPOT.bowl)){const o=foxes.find(x=>x.spot===SPOT.bowl&&!x.wild);if(o)o.until=0}
   setTimeout(()=>goTo(f,SPOT.bowl),60);
 }

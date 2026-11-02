@@ -71,6 +71,8 @@ function simulate(live){
         R.photos.push(ph);R.bowl=null;
         R.news.push({k:"wild",id,t,first,clue:ph.clue,live:!!live});seen.push(id)}
     }
+    if(R.wildN<2&&typeof nearVisit==="function"){const f=nearVisit(t);
+      if(f){const ph={id:f.id,bowl:null,near:f.near,t};incoPhoto(f.id,ph);R.wildN++;R.photos.push(ph);R.news.push({k:"wild",id:f.id,t,clue:ph.clue,live:!!live});seen.push(f.id)}}
   }
   R.last=t;save();return seen;
 }

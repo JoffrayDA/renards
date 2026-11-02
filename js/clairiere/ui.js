@@ -137,7 +137,7 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
   const h=new Date(p.t).getHours(),ph=h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit",wet=rainAt(p.t),night=ph==="nuit";
   // une photo sur deux le prend en train de manger (Joffray : « un peu des deux »), sinon repu à côté de la gamelle vide
   const poses=night?["sleep","sleep","lie","sit"]:["sit","groom","happy","lie","up"],cl=p.clue!=null&&INC[p.id]&&INC[p.id].clues[p.clue];
-  const pose=r()<.5?"eat":poses[Math.floor(r()*poses.length)],pz=cl?cl.pose:pose; // la photo d'un inconnu montre son indice
+  const pose=!p.near&&r()<.5?"eat":poses[Math.floor(r()*poses.length)],pz=cl?cl.pose:pose; // la photo d'un inconnu montre son indice
   const flip=r()<.5,eat=pz==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
   // le renard mange au-dessus de la gamelle, ou se tient à côté de la gamelle vide
   const fx=eat?60-42*sc/.7:flip?120-120*sc-r()*10:r()*10, // jamais en miroir : la cicatrice de Balafre reste du même côté
@@ -145,7 +145,10 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
   let fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose:pz}))}</g>`;
   // ce que l'indice montre (la chaussette que Filou a « empruntée »)
   if(cl&&cl.prop==="chaussette")fox+=`<g transform="translate(${(fx+78*sc).toFixed(1)} ${(fy+86*sc).toFixed(1)}) rotate(-18)" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"><path d="M0 -10 h7 v9 q0 3 3 3 h6 v6 h-11 q-5 0 -5 -5Z" fill="#f48aa6"/><path d="M0 -6 h7 M0 -2 h7" stroke="#fff" stroke-width="1.6"/><path d="M-.6 -10 h8.2" stroke-width="2"/></g>`;
-  const bowl=eat?`<g transform="translate(36 63) scale(1.2)">${inner(bowlSVG(p.bowl))}</g>`:`<g transform="translate(${flip?2:84} 72) scale(.85)">${inner(bowlSVG(null))}</g>`;
+  let bowl=p.near?(OBJS[p.near]?`<svg x="${flip?-6:58}" y="34" width="70" height="68" viewBox="${OBJS[p.near].thumb}" overflow="visible">${inner(OBJS[p.near].svg())}</svg>`:DECO[p.near]?`<svg x="${flip?-10:50}" y="${100-DECO[p.near].h*.8}" width="80" height="${(DECO[p.near].h*.8).toFixed(0)}" viewBox="-50 -${DECO[p.near].h} 100 ${DECO[p.near].h}" overflow="visible">${inner(dSvg(p.near,"all"))}</svg>`:"")
+    :eat?`<g transform="translate(36 63) scale(1.2)">${inner(bowlSVG(p.bowl))}</g>`:`<g transform="translate(${flip?2:84} 72) scale(.85)">${inner(bowlSVG(null))}</g>`;
+  // un inconnu du lot 3 dans son objet (Cachou dans le carton) : l'objet le dessine, comme dans la clairière
+  if(p.near&&OBJS[p.near]&&pz===OBJS[p.near].pose){fox="";bowl=`<svg x="16" y="14" width="88" height="86" viewBox="0 -16 120 116" overflow="visible">${inner(OBJS[p.near].svg(p.id))}</svg>`}
   const [tc,ta]=PH_TINT[ph],ex=[];
   if(ph==="jour"&&!wet&&r()<.6)ex.push(`<path transform="translate(${80+r()*24} ${10+r()*14})" d="M0 0 q-6 -7 -8 0 q2 5 8 0 q6 -7 8 0 q-2 5 -8 0Z" fill="#f6a5b4" stroke="${INK}" stroke-width="1.2"/>`);
   if(night)for(let i=0;i<6;i++)ex.push(`<circle cx="${(r()*120).toFixed(0)}" cy="${(r()*24).toFixed(0)}" r="${(.8+r()).toFixed(1)}" fill="#fff6c8"/>`);
