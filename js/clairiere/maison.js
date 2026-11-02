@@ -105,9 +105,9 @@ function flameD(w,h,n,seed,i){const t=i/10*Math.PI*2,cx=200,base=292,f=v=>v.toFi
   for(let j=1;j<n;j++){const [x0,y0]=tips[j-1],[x1,y1]=tips[j];d+=` Q${f((x0+x1)/2)} ${f(Math.max(y0,y1)+h*.32)} ${f(x1)} ${f(y1)}`}
   const [xl,yl]=tips[n-1];return d+` Q${f(xl+w/n*.6)} ${f(base-(base-yl)*.45)} ${f(cx+w/2)} ${base} Q${cx} ${base+6} ${f(cx-w/2)} ${base}Z`}
 function houseSVG(){
-  const night=dark(),wet=scn.rain,sky=night?["#1f2540","#3a4062"]:wet?["#a3b1bf","#d2dae0"]:["#9fcbe8","#e8f5fb"],has=id=>R.hup.etagere&&R.souv[id];
+  const xm=typeof noelOn==="function"&&noelOn(),night=dark(),wet=scn.rain,sky=night?["#1f2540","#3a4062"]:wet?["#a3b1bf","#d2dae0"]:["#9fcbe8","#e8f5fb"],has=id=>R.hup.etagere&&R.souv[id];
   let s=`<defs>${hG("hsky",sky[0],sky[1])}${hG("hWall","#ecc08e","#d9a46e")}${hG("hFloor","#c48a54","#a8703f")}${hG("hBeam","#9a6a48","#7a4f34")}${hG("hPanel","#c98f5c","#b27a4a")}
-    ${hG("hStone","#dcd3cc","#b2a69e")}${hG("hBrick","#7a3a30","#4a2420")}${hG("hMantel","#b58058","#7f5236")}${hG("hShelf","#c08a5c","#9a6a44")}${hG("hFrame","#a8724c","#7a4a31",1,1)}${hG("hHill",night?"#3c4a7a":"#a9d08e",night?"#2e3a66":"#88bb74")}
+    ${hG("hStone","#dcd3cc","#b2a69e")}${hG("hBrick","#7a3a30","#4a2420")}${hG("hMantel","#b58058","#7f5236")}${hG("hShelf","#c08a5c","#9a6a44")}${hG("hFrame","#a8724c","#7a4a31",1,1)}${(xm?hG("hHill",night?"#8a96c0":"#f4f8fc",night?"#6a78a6":"#cfdbea"):hG("hHill",night?"#3c4a7a":"#a9d08e",night?"#2e3a66":"#88bb74"))}
     ${hG("hLog","#8a5a3a","#5e3a26")}<linearGradient id="hRib" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff9ab0"/><stop offset=".5" stop-color="#ffe07a"/><stop offset="1" stop-color="#8fd0ff"/></linearGradient>
     <radialGradient id="hfire" cx=".5" cy=".6" r=".6"><stop offset="0" stop-color="#ffcf6a" stop-opacity="${night?.6:.42}"/><stop offset=".55" stop-color="#ffb24a" stop-opacity="${night?.22:.14}"/><stop offset="1" stop-color="#ff9a3a" stop-opacity="0"/></radialGradient>
     <radialGradient id="hVig" cx=".5" cy=".55" r=".75"><stop offset=".55" stop-color="#2a1a20" stop-opacity="0"/><stop offset="1" stop-color="#2a1a20" stop-opacity="${night?.5:.28}"/></radialGradient>
@@ -137,7 +137,9 @@ function houseSVG(){
     <path d="M38 168 L52 152" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="${night?.15:.5}"/>
     <path d="M18 226 q8 -6 14 2 M106 226 q-8 -6 -14 2" fill="none" stroke="#c4566e" stroke-width="3" stroke-linecap="round"/>
     <rect x="20" y="226" width="84" height="8" rx="3" fill="url(#hMantel)" ${hL(2.2)}/><path d="M84 226 h12 l-2 -10 h-8Z" fill="#e0855c" ${hL(1.8)}/><circle cx="86" cy="211" r="4.4" fill="#8fc07e" ${hL(1.4)}/><circle cx="93" cy="209" r="4" fill="#9cd488" ${hL(1.4)}/></g>`;
-  if(wet)s+=`<g stroke="#fff" stroke-width="1.6" opacity=".8" stroke-linecap="round">${[40,52,66,80,88].map((x,i)=>`<path d="M${x} ${162+i*7} l-3 9"/>`).join("")}</g>`;
+  // Noël : il neige derrière la vitre, un petit bourrelet de neige sur le rebord
+  if(xm)s+=`<g fill="#fff">${[[42,166,1.6],[58,158,1.2],[76,170,1.8],[88,160,1.2],[50,180,1.4],[70,186,1.1],[84,182,1.6],[40,196,1.2]].map(([x,y,r],i)=>`<circle cx="${x}" cy="${y}" r="${r}"><animate attributeName="cy" values="${y-10};${y+16}" dur="${2.6+i%3*.7}s" begin="-${i*.4}s" repeatCount="indefinite"/></circle>`).join("")}</g><path d="M22 227 q8 -6 16 -2 q10 -6 20 -1 q10 -6 22 0 q8 -4 16 1 L104 228 H20Z" fill="#fff" stroke="${INK}" stroke-width="1.6"/>`;
+  else if(wet)s+=`<g stroke="#fff" stroke-width="1.6" opacity=".8" stroke-linecap="round">${[40,52,66,80,88].map((x,i)=>`<path d="M${x} ${162+i*7} l-3 9"/>`).join("")}</g>`;
   if(night)s+=`<rect width="400" height="${H}" fill="#241a3a" opacity=".3"/>`;
   s+=`<ellipse cx="200" cy="300" rx="${night?250:200}" ry="${night?220:170}" fill="url(#hfire)" class="hglo"/>`;
   // la cheminée : un conduit de pierres jusqu'au plafond, un linteau sur consoles, un foyer en briques
@@ -169,6 +171,19 @@ function houseSVG(){
   if(!has("luciole"))s+=`<rect x="128" y="168" width="8" height="16" rx="2" fill="#fff5e8" ${hL(1.8)}/><path d="M132 168 q-3 -5 0 -8 q3 3 0 8Z" fill="#ffd36a"/><circle cx="132" cy="162" r="7" fill="#ffe08a" opacity=".35"/>`;
   if(!has("flocon"))s+=`<rect x="264" y="172" width="8" height="12" rx="2" fill="#fff5e8" ${hL(1.8)}/><path d="M268 172 q-3 -5 0 -8 q3 3 0 8Z" fill="#ffd36a"/><circle cx="268" cy="166" r="7" fill="#ffe08a" opacity=".35"/>`;
   if(!has("moka"))s+=`<circle cx="200" cy="172" r="11" fill="#f2c45a" ${hL(2.2)}/><circle cx="200" cy="172" r="7.6" fill="#fffaf2" ${hL(1.4)}/><path d="M200 172 v-5 M200 172 l3.4 2" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>`;
+  // Noël : couronne de houx sur la cheminée, guirlande de sapin et lumières sur le linteau, chaussettes suspendues
+  if(xm){s+=`<g filter="url(#wobble)"><circle cx="200" cy="96" r="24" fill="none" stroke="#3f6a4f" stroke-width="11"/><circle cx="200" cy="96" r="24" fill="none" stroke="#5f9468" stroke-width="6" stroke-dasharray="3 5"/>`
+      +[[-14,-16],[16,-14],[20,10],[-18,12],[0,22]].map(([dx,dy])=>`<circle cx="${200+dx}" cy="${96+dy}" r="3.2" fill="#e0505a" stroke="${INK}" stroke-width="1.2"/>`).join("")
+      +`<path d="M200 118 l-10 8 v-12Z M200 118 l10 8 v-12Z" fill="#e0505a" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="200" cy="118" r="3.6" fill="#c7454f" stroke="${INK}" stroke-width="1.6"/>`
+      +`<path d="M114 186 Q160 200 200 188 Q240 200 286 186" fill="none" stroke="#3f6a4f" stroke-width="8" stroke-linecap="round"/><path d="M114 186 Q160 200 200 188 Q240 200 286 186" fill="none" stroke="#5f9468" stroke-width="3.4" stroke-dasharray="2 5" stroke-linecap="round"/></g>`
+      +[[124,190],[148,196],[172,194],[228,194],[252,196],[276,190]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="3.2" fill="${["#ffe08a","#ffb0c0","#bfe6ff"][i%3]}" stroke="${INK}" stroke-width="1.2"/><circle cx="${x}" cy="${y}" r="7" fill="${["#ffe08a","#ffb0c0","#bfe6ff"][i%3]}" opacity="${night?.45:.2}"/>`).join("");
+    // les chaussettes, une par couleur, suspendues sous le linteau
+    s+=`<g filter="url(#wobble)">`+[[136,"#e0505a"],[164,"#5f9468"],[236,"#9ec3ef"],[264,"#f2c45a"]].map(([x,c],i)=>`<path d="M${x} 199 v${10+i%2*3}" stroke="${INK}" stroke-width="1.6"/><g transform="translate(${x} ${212+i%2*3})"><path d="M-7 0 H7 V14 H13 Q18 14 18 19 Q18 24 13 24 H-2 Q-7 24 -7 19Z" fill="${c}" ${hL(2)}/><rect x="-8.4" y="-4" width="16.8" height="6" rx="2.4" fill="#fffaf2" ${hL(1.8)}/></g>`).join("")+`</g>`;
+    // un petit sapin décoré et ses cadeaux, dans le coin du plancher en plus (EXT)
+    if(EXT>=110){const tx=58,ty=H-86; // au-dessus des boutons Aménager et Sortirs+=`<g filter="url(#wobble)"><ellipse cx="${tx+10}" cy="${ty+4}" rx="56" ry="9" fill="#3d2a35" opacity=".16"/><rect x="${tx-6}" y="${ty-14}" width="12" height="16" fill="#8a5a3a" ${hL(2.2)}/><path d="M${tx} ${ty-120} L${tx+30} ${ty-76} H${tx+16} L${tx+40} ${ty-14} H${tx-40} L${tx-16} ${ty-76} H${tx-30}Z" fill="#4f8a5a" ${hL(2.6)}/>`
+      +[[-14,-30,"#e0505a"],[16,-40,"#f2c45a"],[-4,-62,"#9ec3ef"],[22,-22,"#f6a5b4"],[6,-92,"#e0505a"],[-22,-50,"#c9a8ec"]].map(([dx,dy,c])=>`<circle cx="${tx+dx}" cy="${ty+dy}" r="4.4" fill="${c}" ${hL(1.4)}/>`).join("")
+      +`<path d="M${tx} ${ty-134} l3.6 7.4 8 1 -5.8 5.6 1.4 8 -7.2 -3.8 -7.2 3.8 1.4 -8 -5.8 -5.6 8 -1z" fill="#ffe680" ${hL(1.8)}/>`
+      +[[tx+40,ty,28,22,"#e0505a","#f2c45a"],[tx+68,ty,20,16,"#9ec3ef","#fffaf2"],[tx-36,ty,22,18,"#a9d68f","#e0505a"]].map(([x,y,w,h,c,b])=>`<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="2" fill="${c}" ${hL(2)}/><path d="M${x} ${y-h} V${y} M${x-w/2} ${y-h*.55} H${x+w/2}" stroke="${b}" stroke-width="3"/><path d="M${x} ${y-h} q-6 -6 -8 -1 q2 2 8 1 q6 -6 8 -1 q-2 2 -8 1Z" fill="${b}" ${hL(1.4)}/>`).join("")+`</g>`}}
   // tapis à motifs, avec ses franges
   s+=`<ellipse cx="204" cy="418" rx="174" ry="52" fill="#3d2a35" opacity=".16"/>`;
   s+=`<g stroke="#f3dcc0" stroke-width="2.4" stroke-linecap="round">${Array.from({length:9},(_,i)=>{const a=(-.5+i/8)*1.1;return `<path d="M${(200-168*Math.cos(a)).toFixed(1)} ${(408+50*Math.sin(a)).toFixed(1)} l${(-10*Math.cos(a)).toFixed(1)} ${(4*Math.sin(a)).toFixed(1)} M${(200+168*Math.cos(a)).toFixed(1)} ${(408+50*Math.sin(a)).toFixed(1)} l${(10*Math.cos(a)).toFixed(1)} ${(4*Math.sin(a)).toFixed(1)}"/>`}).join("")}</g>`;
