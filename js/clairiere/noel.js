@@ -433,6 +433,8 @@ function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("clea
   const f=sF("bouleneige");if(on&&f){if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;place(f,{id:"record",x:BALL.x,y:BALL.y+10,z:BALL.y+20,poses:["back"]});f.until=Date.now()+9e8;f.el.classList.add("pushing");f.badge.classList.add("off")}
   else if(f&&f.el.classList.contains("pushing")){f.el.classList.remove("pushing","rolling","walking","f1");f.rollPose=null;f.badge.classList.remove("off");f.until=0;draw(f)} // il peut repartir
   drawBigBall()}
+// la boule cassée par la bande, mais le dialogue pas fini (le jeu fermé entre-temps) : elle revient, et la scène se rejoue
+if(R.recordGone&&!(R.beat.balafre>0)){R.recordGone=0;save()}
 if(recordWait()&&!R.recordAt){R.recordAt=Date.now();save()}
 // les trois sauvages arrivent en courant d'un côté de la clairière, jusqu'à un point
 function actArrive(id,x,y){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};save()}let f=sF(id);
