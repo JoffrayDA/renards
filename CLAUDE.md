@@ -104,6 +104,7 @@ Refondue le 24/10/2026 (fiche : `docs/clairiere-v2.md`). Le Café, c'est la tens
 - La pêche suit la météo : sous la pluie, de jour comme de nuit, ciel couvert, gouttes et ronds dans l'eau (`wet` dans `GAMES.fish`).
 - Amitié : un câlin par renard et par jour (toucher le renard), niveaux 1 à 5 (`LV_T`). Elle ne bloque plus les histoires.
 - Carnet du refuge : le grand portrait réunit tout le monde (29 renards, sans Roussette) ; les invités d'Halloween y sont en bonus.
+- **C'est toi** (`js/moi.js`, partagé, et `moiSheet` dans ui.js, carte en haut du carnet ; 02/11/2026, Joffray : « tout pour se pimper ») : la fiche de Roussette (nom, renards réunis, histoires finies, photos, poissons, glands, jours au refuge) et son look : 10 pelages (`ME_FUR`), 6 motifs (`ME_MARK`, « chaussettes » = pattes blanches), 12 accessoires (`ME_ACC`, dont le guerrier viking), en pièces du Café ou en clochettes pour les plus beaux, plus sa tenue d'hiver. `foxArt` applique `meLook` partout où Roussette est dessinée (carte du Café, dialogues, logo ; `plain` pour s'en passer). Dans la bourse : `b.me = {own, c, m, a}`. L'accessoire reste synchronisé avec la boutique Style du Café (les deux écrivent `b.me.a` et `S.style.acc`).
 - Pas encore fait (voir la fiche) : les histoires des 25 autres renards, Roussette contrôlable (envie de Joffray : histoires = quêtes à faire), la page « c'est toi » du carnet, d'autres objets du refuge, le réglage des glands par simulation.
 
 ## Leçons tirées des retours de Joffray

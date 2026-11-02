@@ -62,7 +62,8 @@ $("sheet").addEventListener("click",e=>{
   if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<nx.c||(nx.from&&S.day<nx.from))return;S.coins-=nx.c;S.own[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
   if(b.dataset.sbuy||b.dataset.style){const [k,id]=(b.dataset.sbuy||b.dataset.style).split(":"),it=STYLE[k].items.find(x=>x.id===id),key=`st-${k}-${id}`;
     if(b.dataset.sbuy){if(it.cb){if(S.candy<it.cb)return;S.candy-=it.cb}else{if(S.coins<it.c)return;S.coins-=it.c}S.own[key]=1;toast(`${it.name} : acheté !`)}
-    S.style=S.style||{};S.style[k]=id;save();renderDecor();renderHud();if(MAPL&&!$("map").hidden)renderMap();shop.y=$("sheet-in").scrollTop;shop();return}
+    S.style=S.style||{};S.style[k]=id;save();if(k==="acc"){const m=meB();m.a=id;if(id)m.own["a:"+id]=1;mePut(m)} // la page « C'est toi » suit (js/moi.js)
+    renderDecor();renderHud();if(MAPL&&!$("map").hidden)renderMap();shop.y=$("sheet-in").scrollTop;shop();return}
   if(b.dataset.play){closeSheet();newDay(+b.dataset.play);return}
   if(b.dataset.day){daySheet(+b.dataset.day);return}
   if(b.dataset.act)onAct(b.dataset.act);

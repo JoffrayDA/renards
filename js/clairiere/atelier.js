@@ -31,7 +31,7 @@ function nBuy(k){const o=NSHOP.find(x=>x.k===k);if(!o||!xmasDay()||sucresN()<o.p
   if(k==="pel"){addPel(1);toast("Une pelote de plus pour Mamie Brindille.");shopSheet("noel");return}
   R.deco.inv[k]=(R.deco.inv[k]||0)+1;save();decoStart(k);toast(`${DECO[k].name} : fais-le glisser où tu veux, puis touche Terminé.`)}
 $("sheet").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-  const back=()=>{const h=$("sheet-in").querySelector("[data-fox-sheet]");if(h)foxSheet(h.dataset.foxSheet);else shopSheet("noel")};
+  const back=()=>{const h=$("sheet-in").querySelector("[data-fox-sheet]");if(h)(h.dataset.foxSheet==="roussette"?moiSheet():foxSheet(h.dataset.foxSheet));else shopSheet("noel")};
   if(b.dataset.knit){const [id,k]=b.dataset.knit.split("|");if(!xmasDay())return;
     if(tenKnit(id,k)){toast(`Mamie Brindille a tricoté ${k==="h"?"le bonnet":"l'écharpe"} de ${id==="roussette"?ME():nameOf(id)} !`);syncWear();back()}}
   else if(b.dataset.wear){const [id,k]=b.dataset.wear.split("|");tenSet(id,k,!tenOn(id,k));syncWear();back()}

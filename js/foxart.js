@@ -20,6 +20,7 @@ const LOOK={
 const NEW_FOXES=[];
 function foxArt(f,o={}){
   if(LOOK[f.id])f={...f,...LOOK[f.id]};
+  if(f.id==="roussette"&&!o.plain&&typeof meLook==="function")f={...f,...meLook(f)}; // le look choisi par le joueur (js/moi.js)
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
   const c=sil?{b:"#3a2c34",ch:"#3a2c34",e:"#3a2c34",s:"#3a2c34",t:"#3a2c34"}:f.c;
   const st=sil?"#2a1f26":INK,e=f.ears||1,sc=f.scale||1,dark="#2e2028";
