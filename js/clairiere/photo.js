@@ -73,7 +73,8 @@ function shotSVG(p){const s=shotOf(p);if(!s)return p.deco&&DECO[p.deco]?decoPhot
 /* ---------- l'album, rangé par renard ---------- */
 const pcap=p=>`${p.clue!=null&&INC[p.id]?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.bowl!==undefined&&!p.obj&&!p.deco?"À la gamelle, le ":p.obj?`${(HOBJ[p.obj]||OBJS[p.obj]||OBJS.panier).in}, le `:DECO[dkey(p)]?`${DECO[dkey(p)].name}, le `:p.pose?`${ACT[p.pose]?ACT[p.pose][0].toUpperCase()+ACT[p.pose].slice(1):"Pose"}, le `:""}${fmtDate(p.t)}`;
 function photos(){bgCache.clear();
-  const by={};for(const p of R.photos){if(INC[p.id]&&!incOf(p.id).found)continue;(by[p.id]=by[p.id]||[]).push(p)}
+  // les visites à la gamelle d'un inconnu sont dans l'enquête ; ses photos à l'appareil (la bande de Balafre au refuge) vont ici, sous « ??? »
+  const by={};for(const p of R.photos){if(INC[p.id]&&!incOf(p.id).found&&p.bowl!==undefined)continue;(by[p.id]=by[p.id]||[]).push(p)}
   const ids=Object.keys(by).sort((a,b)=>Math.max(...by[b].map(p=>p.t))-Math.max(...by[a].map(p=>p.t)));
   const n=R.photos.length;
   openSheet(`<h2>Album photos</h2><p class="sub">${n?`${n} photo${n>1?"s":""}. Touche l'appareil photo dans la scène, puis un renard.`:"Aucune photo pour l'instant. Touche l'appareil photo dans la scène, puis un renard. La gamelle prend aussi des photos de ses visiteurs."}</p>${incoCards()}${ids.length?`<h3 class="sec">Par renard</h3><div class="grid">${ids.map(id=>`<button class="card" data-pfold="${id}" type="button"><div class="pic ${RAR[FOX[id].rar].cls}">${foxArt(FOX[id],{expr:"joy",portrait:1})}</div><h3>${nameOf(id)}</h3><p>${by[id].length} photo${by[id].length>1?"s":""}</p></button>`).join("")}</div>`:""}`);

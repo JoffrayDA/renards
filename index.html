@@ -181,6 +181,7 @@ M("boite");
 // l'icône de l'app sur le téléphone, elle, ne peut pas changer
 try{const m=bourse().me;if(m&&(m.c&&m.c!=="roux"||m.m||m.a)){const art=foxArt(FOX.roussette,{pose:"happy"});
   document.querySelectorAll(".sp img,.top img").forEach(im=>{const d=document.createElement("div");d.className="melogo"+(im.closest(".sp")?" big":"");d.innerHTML=art;im.replaceWith(d)})}}catch(e){}
+try{pushSync({})}catch(e){} // la case du jour du calendrier pour la notification (push.js)
 const enter=()=>{document.getElementById("splash").classList.add("out");try{MUSIC.unlock()}catch(e){}};
 // démarrage : le logo et le bouton tout de suite (Joffray) ; toucher n'importe où entre et lance la musique
 document.getElementById("splash").addEventListener("click",enter);

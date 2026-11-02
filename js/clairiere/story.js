@@ -517,7 +517,9 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
     if(storyDone(c.id)&&c.id!=="petitpois")setTimeout(pushInvite,2500); // proposer les notifications, une fois
     save();renderStory();renderHud();syncRain();
   });
-  if(b.game)playGame({...b.game,target:at},go);else go();
+  // une petite scène jouée avant les répliques (scenes.js) : les renards bougent, lancent, réagissent
+  const run=()=>{if(b.game)playGame({...b.game,target:at},go);else go()};
+  if(b.show){try{b.show()}catch(e){}setTimeout(run,b.showMs||1500)}else run();
   return true;
 }
 

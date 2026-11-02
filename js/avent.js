@@ -68,7 +68,8 @@ function avOpen(d,gel){const T=avToday();if(!T)return;const b=bourse(),av=avOf(b
   av.o[d]=Date.now();if(st==="gel")av.g++;
   const gifts=AV[d].slice();for(const g of gifts)avGive(b,g);
   if(!av.star&&Object.keys(av.o).length>=24){av.star=1;const g={noel:"etoile"};avGive(b,g);gifts.push(g)}
-  putBourse(b);deliverGifts();return gifts}
+  putBourse(b);deliverGifts();try{pushSync({})}catch(e){} // la notification passe à la case suivante (push.js)
+  return gifts}
 
 /* ---------- l'écran ---------- */
 const snowSVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M12 2V22M3.4 7L20.6 17M3.4 17L20.6 7"/><path d="M9 3.6L12 6L15 3.6M9 20.4L12 18L15 20.4M3 10.6L6.4 9L5.6 5.4M21 13.4L17.6 15L18.4 18.6M3 13.4L6.4 15L5.6 18.6M21 10.6L17.6 9L18.4 5.4"/></g></svg>`;

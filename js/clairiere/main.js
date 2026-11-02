@@ -28,7 +28,7 @@ drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
 if(new URLSearchParams(location.search).get("voir")==="maison")setTimeout(()=>{closeSheet();enterHouse()},900);
 const QJEU=new URLSearchParams(location.search).get("jeu");
 if(QJEU&&GAMES[QJEU]){const again=()=>playGame({k:QJEU,who:"petitpois",target:"petitpois",item:"wool",thing:"page",n:6},()=>setTimeout(again,1200));setTimeout(again,600)}
-syncFoxes();drawObjs();fillObjs();
+syncFoxes();drawObjs();fillObjs();gardenSync(); // le record de Boule-de-Neige (noel.js)
 chainTick(false);if(checkArrival())syncFoxes(); // arrivé à l'ouverture : il est là tout de suite
 renderHud();
 $("b-bowl").innerHTML=acornSVG()+"Gamelle";
@@ -47,7 +47,7 @@ setInterval(()=>{
   chainTick(true);checkArrival();if(R.news.some(x=>x.k==="arr")&&$("talk").hidden&&$("sheet").hidden)showNews();else renderStory();
   if(phaseNow()!==scn.phase)drawBg();
   const r=rainNow();if(r!==scn.rain){scn.rain=r;rainChanged()}else if(rainTill&&!storyRain()){rainTill=0;drawGlow()} // fin de la scène sous la pluie : plus personne aux fenêtres
-  syncFoxes();
+  syncFoxes();drawBigBall();
   envieTick();wildNudge();
   renderHud();pushSync(pushPlan());
 },30000);

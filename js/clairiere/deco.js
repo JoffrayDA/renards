@@ -256,6 +256,7 @@ function shopSheet(tab){if(tab)shopTab=tab;
 const decoEls={};let hdHost=null,hdEls={};
 const dk=d=>DECO[d.k].w/100;
 function decoSpots(){for(let i=SPOTS.length-1;i>=0;i--)if(SPOTS[i].deco){delete SPOT[SPOTS[i].id];SPOTS.splice(i,1)}
+  if(typeof gardenCleared==="function"&&gardenCleared())return; // le jardin vidé pour le record de Boule-de-Neige
   if(!(decoMode&&dWhere==="out"))for(const d of R.deco.out){const o=DECO[d.k];if(!o.seat)continue;const s=o.seat,sp={id:"dc"+d.u,x:d.x+(d.f?-s.dx:s.dx),y:d.y+s.dy,z:d.y+1,poses:s.poses,deco:d.k,fav:o.fav};
     SPOTS.push(sp);SPOT[sp.id]=sp;PLACE[sp.id]=s.dy<-4?`sur ${dThe(d.k)}`:`près ${dOf(d.k)}`} // pendant qu'on décore dehors, personne ne s'installe sur les objets
   // un renard dont l'endroit a disparu (objet rangé ou déplacé) va ailleurs

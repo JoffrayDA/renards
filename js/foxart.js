@@ -208,6 +208,12 @@ function foxArt(f,o={}){
     // regarde en l'air (la pluie, une luciole) : visage remonté, oreilles en arrière
     Y=50;N=70;
     body=tailBack(-4)+ears(-2,-10)+bun(T,88,36)+faceOf(Y,"up")+paws(89);
+  }else if(pose==="back"){
+    // de dos : la brioche, l'arrière des oreilles, la queue devant, pas de visage (Boule-de-Neige qui pousse sa boule, 02/11/2026)
+    const earB=left=>{const X=x=>left?x:120-x;return `<path d="M${X(33)} 44 Q${X(30)} 24 ${X(38)} 16 Q${X(50)} 23 ${X(55)} 36Z" fill="${c.b}"/><path d="M${X(38)} 16.6 Q${X(34.5)} 19 ${X(33.6)} 23 Q${X(38)} 21 ${X(42)} 19.5Z" fill="${c.e}" stroke="none"/>`};
+    body=earB(true)+earB(false)+bun(T,88,36)+`<path d="M58 ${T+14} q2 6 0 12" fill="none" stroke-width="1.6" opacity=".4"/>`+paws(89)
+      +tailG(`<path d="M60 86 C50 74 56 60 70 62 C66 70 66 78 72 84Z" fill="${c.b}"/><path d="M70 62 C76 63 78 68 74 72 C70 70 68 67 67 64Z" fill="${c.t}"/>`);
+    o.noface=1;
   }else if(pose==="walk"){
     // trottine en rebondissant : deux images, une patte levée à tour de rôle, la brioche penche un peu
     const k=o.frame?1:-1;T=36;
@@ -220,7 +226,7 @@ function foxArt(f,o={}){
   // la tenue d'hiver (js/tenues.js) : le bonnet remplace ce qu'il porte sur la tête, l'écharpe ce qu'il porte au cou
   const wr=!sil&&!o.nowear&&typeof wearOf==="function"?wearOf(f.id):null;
   const hideAcc=wr&&(wr.h&&["feuille","gland","bob","bonnet","bonnetnuit","beret","etoile"].includes(f.acc)||wr.s&&["echarpe","noeud","collier"].includes(f.acc));
-  body+=markOf(Y)+(f.muzzle&&!sil?`<ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="${f.muzzle}" opacity=".55" stroke="none"/>`:"")+(hideAcc?"":acc(T,Y,N,W))
+  if(o.noface){/* de dos : ni motif, ni accessoire de visage */}else body+=markOf(Y)+(f.muzzle&&!sil?`<ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="${f.muzzle}" opacity=".55" stroke="none"/>`:"")+(hideAcc?"":acc(T,Y,N,W))
     +(wr&&wr.s?tenScarf(f.id,N,W):"")+(wr&&wr.h?tenHat(f.id,T,geo.hw):"")
     +(f.bauble&&!sil?`<circle cx="60" cy="${(geo.top-11).toFixed(1)}" r="4.4" fill="none" stroke="#c9952f" stroke-width="2.6"/><rect x="52" y="${(geo.top-7).toFixed(1)}" width="16" height="9" rx="2.4" fill="#f2c45a"/><path d="M55 ${(geo.top-6).toFixed(1)} v7 M60 ${(geo.top-6).toFixed(1)} v7 M65 ${(geo.top-6).toFixed(1)} v7" stroke="#c9952f" stroke-width="1.4"/>`:"");
   const fxG=fx?`<g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${fx}</g>`:"";

@@ -21,14 +21,20 @@ async function pushToken(){const P=pget();
   pset(P);return P}
 const docUrl=uid=>`https://firestore.googleapis.com/v1/projects/${PUSH.project}/databases/(default)/documents/push/${uid}`;
 // écrit la fiche (seulement si quelque chose a changé) : l'abonnement, les heures prévues (0 = rien), le décalage horaire
+// la case du jour du calendrier de l'Avent (02/11/2026) : 9 h le matin du prochain jour dont la case n'est pas ouverte (1er au 24 décembre)
+function avPush(){try{const b=typeof bourse==="function"?bourse():{},d=new Date(),y=d.getFullYear(),o=(b.av&&b.av.y===y&&b.av.o)||{};
+  if(d.getMonth()===10)return new Date(y,11,1,9).getTime();if(d.getMonth()!==11)return 0;
+  for(let k=d.getDate();k<=24;k++)if(!o[k])return new Date(y,11,k,9).getTime();return 0}catch(e){return 0}}
 async function pushWrite(when){
+  // l'accueil n'écrit que la case du calendrier : on garde les heures de la Clairière déjà connues
+  {const Q=pget();when={...(Q.w||{}),...when};Q.w={fox:when.fox,inco:when.inco,arr:when.arr};pset(Q)}
   const reg=await navigator.serviceWorker.ready;
   let sub=await reg.pushManager.getSubscription();
   // abonné avec une ancienne clé (changée le 29/10/2026) : on se réabonne avec la nouvelle
   const key=b64u(PUSH.vapid),old=sub&&sub.options.applicationServerKey&&new Uint8Array(sub.options.applicationServerKey);
   if(sub&&old&&old.join()!==key.join()){await sub.unsubscribe();sub=null}
   if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
-  const f={sub:JSON.stringify(sub),fox:when.fox||0,inco:when.inco||0,arr:when.arr||0,tz:new Date().getTimezoneOffset()},sig=JSON.stringify(f);
+  const f={sub:JSON.stringify(sub),fox:when.fox||0,inco:when.inco||0,arr:when.arr||0,av:avPush(),tz:new Date().getTimezoneOffset()},sig=JSON.stringify(f);
   if(pget().sig===sig)return;
   const P=await pushToken(),fields=Object.fromEntries(Object.entries(f).map(([k,v])=>[k,typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:v}]));
   const r=await fetch(docUrl(P.uid)+"?"+Object.keys(f).map(k=>"updateMask.fieldPaths="+k).join("&"),{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+P.it},body:JSON.stringify({fields})});

@@ -7,7 +7,7 @@ const HEART=`<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20 C4 14 1
 const TRICKS={roll:{ms:1000,fx:"dust",notes:[67,71,74]},salto:{ms:1100,fx:"stars",notes:[72,76,79,84]},toupie:{ms:1100,fx:"swirl",notes:[76,74,72,74,76]},
   boing:{ms:1100,fx:"rings",notes:[60,67,72]},zoom:{ms:1200,fx:"dust",notes:[79,77,79,77,84]}};
 function hugFx(f,o={}){const can=!f.walk&&!f.inside&&!objOf(f.spot),ks=Object.keys(TRICKS);
-  const k=can&&(o.big||Math.random()<(o.p??.5))?(o.big?"salto":ks[Math.floor(Math.random()*ks.length)]):"rub",T=TRICKS[k];
+  const k=o.trick&&TRICKS[o.trick]?o.trick:can&&(o.big||Math.random()<(o.p??.5))?(o.big?"salto":ks[Math.floor(Math.random()*ks.length)]):"rub",T=TRICKS[k];
   f.badge.querySelector(".want")?.remove();f.el.classList.remove("hug");f.el.dataset.trick=k;void f.el.offsetWidth;f.el.classList.add("hug");
   clearTimeout(f.hugT);f.hugT=setTimeout(()=>f.el.classList.remove("hug"),T?T.ms+100:1700);
   if(o.hearts!==false)for(let i=0;i<5;i++){const h=document.createElement("i");h.className="lovep";h.innerHTML=HEART;
@@ -84,8 +84,10 @@ let talkQ=[],talkDone=null;
 function talk(lines,done){talkQ=lines.slice();talkDone=done||null;nextLine()}
 function nextLine(){const el=$("talk");
   if(!talkQ.length){el.hidden=true;const d=talkDone;talkDone=null;if(d)d();return}
-  const [id,expr,txt]=talkQ.shift(),f=id==="me"?{...FOX.roussette,name:ME()}:{...FOX[id],name:nameOf(id)}; // un inconnu ne dit pas son nom
-  el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false}
+  const [id,expr,txt,act]=talkQ.shift(),f=id==="me"?{...FOX.roussette,name:ME()}:{...FOX[id],name:nameOf(id)}; // un inconnu ne dit pas son nom
+  el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false;
+  if(typeof act==="function")try{act()}catch(e){} // les renards jouent la scène pendant la réplique (scenes.js)
+}
 $("talk").onclick=nextLine;
 const INTRO=[
   ["petitpois","joy",`${ME()} ! Te voilà ! J'ai gardé la maison toute la journée.`],

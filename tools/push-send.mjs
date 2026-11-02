@@ -27,6 +27,7 @@ const MSG = {
   fox: { t: "Quelqu'un t'attend", b: "Un renard vient d'arriver à la Clairière. Il a une histoire à te raconter." },
   inco: { t: "Quelqu'un est passé à la gamelle", b: "Il a laissé une photo. Viens voir qui c'est !" },
   arr: { t: "Un nouveau renard au refuge", b: "Un client du Café vient s'installer à la Clairière." },
+  av: { t: "Une case t'attend !", b: "Le calendrier de l'Avent a une surprise pour toi aujourd'hui." },
   test: { t: "Coucou de la Clairière", b: "Les notifications marchent. Petit Pois te fait signe !" }
 };
 
@@ -50,10 +51,10 @@ do {
     const d = Object.fromEntries(Object.entries(doc.fields || {}).map(([k, v]) => [k, val(v)]));
     const hour = new Date(now - (d.tz || 0) * 6e4).getUTCHours();
     if (!d.sub || !TEST && (hour < 9 || hour >= 21 || now - (d.last || 0) < 20 * 36e5)) continue;
-    const k = TEST ? "test" : ["fox", "inco", "arr"].find(k => d[k] && d[k] <= now && d[k] > (d["s_" + k] || 0));
+    const k = TEST ? "test" : ["av", "fox", "inco", "arr"].find(k => d[k] && d[k] <= now && d[k] > (d["s_" + k] || 0));
     if (!k) continue;
     if (DRY) { console.log("enverrait", k, "à", doc.name.split("/").pop()); continue; }
-    try { await webpush.sendNotification(JSON.parse(d.sub), JSON.stringify({ ...MSG[k], k, u: "clairiere.html" }), { TTL: 6 * 3600 }); }
+    try { await webpush.sendNotification(JSON.parse(d.sub), JSON.stringify({ ...MSG[k], k, u: k === "av" ? "./" : "clairiere.html" }), { TTL: 6 * 3600 }); }
     catch (e) {
       // abonnement périmé (app désinstallée, notifications coupées) : on oublie la fiche
       if (e.statusCode === 404 || e.statusCode === 410) await fetch(`https://firestore.googleapis.com/v1/${doc.name}`, { method: "DELETE", headers: H });

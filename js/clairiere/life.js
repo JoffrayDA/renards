@@ -4,14 +4,16 @@ const foxes=[];
 
 // qui est dans la clairière : tout le monde s'il y a de la place, sinon un groupe qui change toutes les 4 heures
 // (avec des croquettes dans la gamelle, ceux qui étaient là restent)
+// toujours là : ceux de l'histoire en cours, et Boule-de-Neige pendant son record (noel.js)
+const mustHere=()=>[...storyFoxes(),...(typeof gardenCleared==="function"&&gardenCleared()&&R.res.bouleneige?["bouleneige"]:[])];
 function presentIds(){
   const ids=Object.keys(R.res).filter(id=>!noelAway(id)); if(ids.length<=MAXHERE)return ids; // les invités de Noël repartent après le 6 janvier
   const block=R.bowl&&R.bowl.type==="croquettes"&&R.here?R.here.block:Math.floor(Date.now()/(4*36e5));
   // ceux de l'histoire en cours et les nouveaux venus du jour sont toujours là, même arrivés en cours de route (Joffray devait recharger)
   const fresh=ids.filter(id=>Date.now()-R.res[id].at<864e5||(R.env&&R.env.cur&&R.env.cur.id===id)); // et celui qui a une petite envie
-  if(R.here&&R.here.block===block)return [...new Set([...storyFoxes(),...fresh,...R.here.ids.filter(isRes),...ids])].slice(0,MAXHERE);
+  if(R.here&&R.here.block===block)return [...new Set([...mustHere(),...fresh,...R.here.ids.filter(isRes),...ids])].slice(0,MAXHERE);
   const r=rng(block%2147483646+1),pool=ids.slice();for(let i=pool.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  const pick=[...new Set([...storyFoxes(),...fresh,...pool])].slice(0,MAXHERE);
+  const pick=[...new Set([...mustHere(),...fresh,...pool])].slice(0,MAXHERE);
   R.here={block,ids:pick};save();return pick;
 }
 

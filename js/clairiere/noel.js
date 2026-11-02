@@ -15,7 +15,7 @@ const noelOn=()=>noelDay()>0;
 const NOEL_ORDER=["grelot","ramure","paillette","balafre","barbeneige"],NOEL_FROM={grelot:1,ramure:8,paillette:15,balafre:19,barbeneige:24},NOEL_WILD=["balafre","filou","radar"];
 const isNoelStory=id=>NOEL_ORDER.includes(id);
 // le chapitre qui attend : sa date est passée et le précédent est fini
-function noelNext(){if(!noelOn())return null;return NOEL_ORDER.find((k,i)=>!storyDone(k)&&noelDay()>=NOEL_FROM[k]&&(!i||storyDone(NOEL_ORDER[i-1])))||null}
+function noelNext(){if(!noelOn())return null;return NOEL_ORDER.find((k,i)=>!storyDone(k)&&noelDay()>=NOEL_FROM[k]&&(!i||storyDone(NOEL_ORDER[i-1]))&&(k!=="balafre"||R.beat.balafre>0||recordDone()))||null} // la bande attend que la boule de Boule-de-Neige ait roulé 24 h
 // dans le journal, pendant l'événement (ou une fois commencé)
 const noelRows=()=>noelOn()||NOEL_ORDER.some(k=>R.beat[k]>0)?NOEL_ORDER:[];
 // le sapin : null (pas planté), "0" pousse, "1" grand, "2" immense, "3" décoré ; star : l'étoile posée et les cadeaux au pied
@@ -82,35 +82,48 @@ Object.assign(STORIES,{
       ["me","open","Il manque quelque chose, tout en haut…"],
       ["paillette","open","L'étoile. Seul Barbe-Neige en a une assez brillante. Il passe toujours la veille de Noël."]]}
   ]},
-  balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar"],
+  balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar","bouleneige"],
     end:()=>{let n=0;for(const id of ["filou","radar"]){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now(),tr:2};incoPhoto(id,ph);R.photos.push(ph);n++}
-      save();if(n)setTimeout(()=>toast("Les deux acolytes t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
-    {at:"petitpois",goal:"Petit Pois a vu trois silhouettes dans la neige.",lines:[
-      ["petitpois","surprise","Là-bas, à l'orée du bois… Trois renards. Ils n'ont pas l'air de rigoler."],
-      ["me","open","Allons voir ce qu'ils veulent."]]},
-    {at:"@leaves",arrive:"balafre",with:["filou","radar"],goal:"Va à la rencontre des trois sauvages, près du tas de feuilles.",lines:()=>[
-      ["balafre","open","Alors c'est ici, la clairière qui brille toute la nuit."],
-      ["balafre","sad","L'hiver est rude dans la forêt. Cette clairière, on la veut. Elle est à nous jusqu'au printemps."],
-      ["petitpois","surprise",known("balafre")?"Balafre ?! C'est toi ?":"Mais… qui es-tu ?"],
-      ["balafre","joy",known("balafre")?"Peut-être. Peut-être pas. Gagne, et on en reparlera.":"Mon nom ? Je te le dirai seulement si vous gagnez."],
-      ["filou","joy","Une bataille de boules de neige. Trois contre trois. Le chef, c'est lui."],
-      ["radar","joy","Et ne chuchotez pas vos plans : j'entends tout, même vos moustaches qui frémissent."],
-      ["me","joy","D'accord ! Je choisis mon équipe."]]},
+      R.recordBig=1;save();drawBigBall();if(n)setTimeout(()=>toast("Filou et Radar t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
+    // la bande débarque et casse la boule du record
+    {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:3800,
+      show:()=>{actArrive("balafre",BALL.x-70,BALL.y-70);actArrive("filou",BALL.x-130,BALL.y-30);actArrive("radar",BALL.x+90,BALL.y-60);
+        setTimeout(()=>actThrow("filou",{x:BALL.x,y:BALL.y-ballR()},{hurt:false}),1500);setTimeout(()=>actThrow("radar",{x:BALL.x,y:BALL.y-ballR()*1.2},{hurt:false}),1900);
+        setTimeout(()=>actThrow("balafre",{x:BALL.x,y:BALL.y-ballR()},{hurt:false,then:breakBall}),2400);
+        setTimeout(()=>{gardenSync();actThrow("filou","bouleneige");actThrow("radar","bouleneige",{ms:700})},3000)},
+      lines:()=>[
+      ["bouleneige","sad","Ma boule ! Mon record du monde… Il ne manquait presque rien !",()=>actEmote("bouleneige","goutte")],
+      ["balafre","open","Belle boule. Dommage pour elle.",()=>actPose("balafre","happy")],
+      ["filou","joy","Ouais ouais, bien vu chef !",()=>actTrick("filou","boing")],
+      ["radar","joy","Aha ! Trop fort, le chef ! Trop, trop fort !",()=>actEmote("radar","note")],
+      ["balafre","open","Cette clairière est à nous jusqu'au printemps. Et chaque jour, vous paierez un tribut : vos couvertures, vos glands, et tout le chocolat chaud.",()=>actEmote("balafre","colere")],
+      ["petitpois","surprise",known("balafre")?"Balafre ?! C'est toi ?":"Mais… qui es-tu ?",()=>actEmote("petitpois","?")],
+      ["balafre","joy",known("balafre")?"Peut-être. Gagne, et on en reparlera.":"Mon nom ? Je te le dirai seulement si vous gagnez."],
+      ["filou","joy","Une bataille de boules de neige. Trois contre trois.",()=>actThrow("filou",{x:200,y:300},{hurt:false})],
+      ["radar","open","Le chef est imbattable. C'est lui qui l'a dit.",()=>actEmote("radar","!")],
+      ["me","joy","Pari tenu ! Je choisis mon équipe.",()=>actTrick("petitpois","salto")]]},
     {at:"balafre",game:{k:"battle",foes:["balafre","filou","radar"],boss:"balafre",win:"Victoire ! Les sauvages se rendent !"},goal:"Relève le défi : une bataille de neige, trois contre trois.",lines:()=>{const was=known("balafre");
-      if(!was){const s=incOf("balafre");s.found=1;R.glands+=20;save();renderHud()}
-      return [["radar","surprise","On a… perdu ? Je n'ai même pas entendu venir la dernière boule !"],
-        ["filou","joy","Bien joué. Je n'ai rien emprunté pendant la bataille, promis. Presque rien."],
-        ["balafre","joy",was?"Tu m'as reconnu, et tu m'as battu. Ça fait beaucoup pour un seul hiver.":"Une promesse est une promesse. Je m'appelle Balafre."],
-        ["balafre","shy","La clairière est à vous. Mais… on peut rester un peu ? Il fait si froid, dehors."]]}},
-    {at:"@porch",goal:"Offre un chocolat chaud aux trois sauvages, sous le porche.",lines:[
-      ["petitpois","joy","Un chocolat chaud pour les vaincus… et pour les vainqueurs aussi !"],
-      ["radar","joy","J'entends les guimauves fondre. C'est le plus beau bruit du monde."],
-      ["filou","shy","Je peux emprunter une chaussette de Noël ? Pour la rendre. Un jour."],
-      ["balafre","open","Dans la forêt, l'hiver, chacun reste dans son terrier. Ici, tout le monde est ensemble."]]},
-    {at:"@lampL",goal:"Montre le grand sapin à la bande de Balafre.",lines:[
-      ["radar","surprise","Il fait gling, ce sapin. Tout doucement, avec le vent."],
-      ["filou","joy","Toutes ces boules qui brillent… Non, je n'en emprunterai pas. Pas aujourd'hui."],
-      ["balafre","shy","On reste jusqu'à ce que la neige fonde. Pour garder la clairière… avec vous, cette fois."],
+      if(!was){const s=incOf("balafre");s.found=1;save()}
+      return [["radar","surprise","On a… perdu ? Je n'ai même pas entendu venir la dernière boule !",()=>actEmote("radar","goutte")],
+        ["filou","shy","Ouais ouais… bien joué… euh, chef ? On dit quoi, maintenant ?",()=>actEmote("filou","?")],
+        ["balafre",was?"joy":"open",was?"Tu m'as reconnu, et tu m'as battu. Ça fait beaucoup pour un seul hiver.":"Une promesse est une promesse. Je m'appelle Balafre."],
+        ["balafre","sad","Et puis… on ne la voulait pas vraiment, la clairière. On avait juste froid. Très froid.",()=>["balafre","filou","radar"].forEach(id=>actEmote(id,"froid"))],
+        ["radar","sad","Mes oreilles sont deux glaçons. Je n'entends plus que mes dents claquer."],
+        ["balafre","shy","Le perdant paie le tribut. Voilà le nôtre : tout ce qu'on avait gardé pour l'hiver.",()=>{R.glands+=30;const b=bourse();b.sucres=(b.sucres||0)+5;putBourse(b);save();renderHud();toast("Le tribut des vaincus : +30 glands, +5 sucres d'orge")}]]}},
+    {at:"@porch",goal:"Offre un chocolat chaud à la bande, sous le porche.",lines:[
+      ["petitpois","joy","Un chocolat chaud pour les vaincus… et pour les vainqueurs aussi !",()=>actGo("petitpois",200,236,"happy")],
+      ["radar","joy","J'entends les guimauves fondre. C'est le plus beau bruit du monde.",()=>actEmote("radar","coeur")],
+      ["filou","shy","Je peux emprunter une chaussette de Noël ? Pour la rendre. Un jour.",()=>actEmote("filou","note")],
+      ["balafre","open","Dans la forêt, l'hiver, chacun reste dans son terrier. Ici, tout le monde est ensemble.",()=>actEmote("balafre","coeur")]]},
+    // tout le monde aide Boule-de-Neige à refaire sa boule, plus grosse qu'avant
+    {at:"bouleneige",goal:"Aide Boule-de-Neige à refaire sa boule, avec toute la bande.",showMs:2600,
+      show:()=>{["balafre","filou","radar","petitpois"].forEach((id,i)=>actGo(id,BALL.x+[-90,-50,60,100][i],BALL.y+[-10,30,30,-10][i],"happy"));
+        setTimeout(()=>{R.recordBig=1;R.recordGone=0;save();drawBigBall();if(ballEl)ballEl.animate([{transform:"translate(-50%,-100%) scale(.1)"},{transform:"translate(-50%,-100%) scale(1.08)",offset:.8},{transform:"translate(-50%,-100%) scale(1)"}],{duration:1400,easing:"ease-out"});try{MUSIC.sfx("win")}catch(e){}},900)},
+      lines:[
+      ["bouleneige","joy","Record du monde ! Trois mètres et quart ! Personne n'avait jamais fait mieux.",()=>actTrick("bouleneige","salto")],
+      ["filou","joy","Ouais ouais, bien vu… Boule-de-Neige !",()=>actTrick("filou","boing")],
+      ["radar","joy","Aha ! Trop fort, la boule !",()=>actTrick("radar","toupie")],
+      ["balafre","shy","On reste jusqu'à ce que la neige fonde. Pour garder la clairière… avec vous, cette fois.",()=>actEmote("balafre","coeur")],
       ["me","joy","Bienvenue au refuge. C'est ça, la magie de Noël."]]}
   ]},
   barbeneige:{title:"La veille de Noël",souv:"l'étoile du sapin",cast:["grelot","ramure","paillette"],beats:[
@@ -311,6 +324,45 @@ function noelGlow(){const st=sapinStage();if(st!=="3")return "";let s=`<defs><ra
       s+=`<circle class="tw" style="animation-delay:${f1(-r()*2)}s" cx="${f1(x)}" cy="${f1(y)}" r="5.5" fill="${["#ffe08a","#ffb0c0","#bfe6ff"][i%3]}" opacity=".55"/><circle cx="${f1(x)}" cy="${f1(y)}" r="1.6" fill="#fffbe8"/>`}}
   return s}
 
+/* ---------- le record du monde de Boule-de-Neige (Joffray, 02/11/2026) ----------
+   La veille de l'arrivée de la bande de Balafre, Boule-de-Neige vide le jardin et roule la plus grosse boule de neige du monde :
+   on le voit de dos, qui pousse ; la boule grossit d'heure en heure pendant 24 h (R.recordAt). Ensuite, à la prochaine visite, la
+   bande arrive et la casse : l'histoire « La bataille de neige » commence. ?record=12 fait comme si la boule roulait depuis 12 h. */
+const QREC=new URLSearchParams(location.search).get("record");
+const recordWait=()=>noelOn()&&storyDone("paillette")&&!!R.res.bouleneige&&!(R.beat.balafre>0)&&(noelDay()>=NOEL_FROM.balafre-1||QREC!=null);
+const recordH=()=>QREC!=null?+QREC:R.recordAt?(Date.now()-R.recordAt)/36e5:0;
+const recordDone=()=>recordH()>=24||noelDay()>=24;
+const BALL={x:250,y:Math.min(H-60,560)},ballR=()=>R.recordBig?74:R.recordGone?0:Math.round(12+58*Math.min(1,recordH()/24));
+let ballEl=null;
+function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||R.recordBig&&noelOn());
+  if(!show){if(ballEl){ballEl.remove();ballEl=null}return}
+  if(!ballEl){ballEl=document.createElement("button");ballEl.className="bigball";ballEl.type="button";ballEl.setAttribute("aria-label","La boule de Boule-de-Neige");
+    ballEl.onpointerdown=e=>{e.stopPropagation();const f=sF("bouleneige");if(f)bubble(f,R.recordBig?"« Record du monde ! Trois mètres et quart ! »":`« Je bats le record du monde ! Elle fait déjà ${Math.round(r*4)} cm. »`)};$("actors").appendChild(ballEl)}
+  ballEl.style.cssText=pc(BALL.x,BALL.y-4)+`;width:${(2*r+8)/W*100}%;z-index:${BALL.y-8}`;
+  ballEl.innerHTML=`<svg viewBox="-${r+4} -${2*r+6} ${2*r+8} ${2*r+12}" aria-hidden="true"><ellipse cy="2" rx="${r*.95}" ry="${Math.max(4,r*.16)}" fill="#9fb3cc" opacity=".45"/><circle cy="${-r}" r="${r}" fill="#fff" stroke="${INK}" stroke-width="3"/>`
+    +`<path d="M${-r*.55} ${-r*1.45} Q${-r*.2} ${-r*1.75} ${r*.2} ${-r*1.68}" fill="none" stroke="#e6eef8" stroke-width="${Math.max(3,r*.12)}" stroke-linecap="round"/>`
+    +[[-.45,-.6],[.3,-.4],[.5,-1.2],[-.2,-1.1],[.05,-.75]].map(([a,b])=>`<path d="M${a*r-4} ${b*r} q4 3 8 0" fill="none" stroke="#cfdbea" stroke-width="2" stroke-linecap="round"/>`).join("")+`</svg>`}
+// le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
+const gardenCleared=()=>recordWait()&&!R.recordGone;
+function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("cleared",on);
+  if(on){for(let i=SPOTS.length-1;i>=0;i--)if(SPOTS[i].obj||SPOTS[i].deco){delete SPOT[SPOTS[i].id];SPOTS.splice(i,1)}
+    for(const f of foxes)if(f.spot&&(f.spot.obj||f.spot.deco))place(f,SPOT.g3)}
+  else{addObjSpots();decoSpots();drawDeco();drawObjs()}
+  // Boule-de-Neige pousse sa boule, de dos
+  const f=sF("bouleneige");if(on&&f){if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;place(f,{id:"record",x:BALL.x,y:BALL.y+10,z:BALL.y+20,poses:["back"]});f.until=Date.now()+9e8;f.el.classList.add("pushing");f.badge.classList.add("off")}
+  else if(f&&f.el.classList.contains("pushing")){f.el.classList.remove("pushing");f.badge.classList.remove("off");f.until=0} // il peut repartir
+  drawBigBall()}
+if(recordWait()&&!R.recordAt){R.recordAt=Date.now();save()}
+// les trois sauvages arrivent en courant d'un côté de la clairière, jusqu'à un point
+function actArrive(id,x,y){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};save()}let f=sF(id);
+  if(!f){f=makeFox(id,null);f.x=x<200?-30:430;f.y=y;f.el.style.cssText+=";"+pc(f.x,f.y)}
+  if(f.inside){f.inside=false;f.el.classList.remove("inside")}
+  setTimeout(()=>{goTo(f,{id:"act-"+id,x,y,poses:["sit"]});f.until=Date.now()+30000},40)}
+// la boule éclate en morceaux
+function breakBall(){if(!ballEl)return;const r=ballR();R.recordGone=1;save();try{MUSIC.sfx("splash")}catch(e){}
+  for(let i=0;i<7;i++){const a=i/7*6.28;actThrow({x:BALL.x,y:BALL.y-r},{x:BALL.x+Math.cos(a)*(r+40),y:BALL.y-r*.4+Math.sin(a)*24},{arc:40,ms:520,hurt:false})}
+  ballEl.remove();ballEl=null}
+
 /* ---------- la neige qui tombe : un peu tout le temps, beaucoup quand il « pleut » ---------- */
 const snowEl=document.createElementNS("http://www.w3.org/2000/svg","svg");snowEl.setAttribute("class","layer");snowEl.id="snow";snowEl.setAttribute("viewBox",`0 0 400 ${H}`);snowEl.setAttribute("preserveAspectRatio","xMidYMid slice");snowEl.setAttribute("aria-hidden","true");
 let snowN=-1;
@@ -323,7 +375,8 @@ if(noelOn())$("scene").insertBefore(snowEl,$("phase"));
 // Boule-de-Neige (son rôle, 02/11/2026) : il vient au refuge dès que Noël commence (après la graine de Grelot) et propose
 // chaque jour une bataille de boules de neige ; +3 sucres d'orge la première victoire du jour
 if(noelOn()&&storyDone("grelot")&&!R.res.bouleneige){R.res.bouleneige={at:Date.now(),h:0,pet:""};save()}
-function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;const done=R.snowDay===today();
+function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;
+  if(gardenCleared()){bubble(f,`pousse sa boule : « Record du monde ! Encore ${Math.max(1,Math.ceil(24-recordH()))} h et elle sera géante ! »`);return true}const done=R.snowDay===today();
   talk(done?[["bouleneige","joy","Encore une bataille ? Pour le plaisir, alors ! (Les sucres d'orge, c'est une fois par jour.)"]]
     :[["bouleneige","joy",`${ME()} ! Une bataille de boules de neige ? Touche ceux qui sortent la tête… mais pas moi, je suis fait de neige !`],["me","joy","C'est parti !"]],
     ()=>playGame({k:"snowball",n:10},()=>{if(R.snowDay!==today()){R.snowDay=today();const b=bourse();b.sucres=(b.sucres||0)+3;putBourse(b);save();toast("Bataille gagnée ! +3 sucres d'orge")}else toast("Bien joué !")}));
