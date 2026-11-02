@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Balafre, les versions</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:15px system-ui,sans-serif}
+h1{font-size:19px;margin:0 0 4px}p{margin:0 0 14px;opacity:.8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:10px;text-align:center}
+.card.now{border-color:#5b4250}
+.row{display:flex;gap:4px;justify-content:center;background:#e8eef6;border-radius:10px;padding:6px 2px}
+.row div{width:33%}.row svg{display:block;width:100%}
+b{display:block;margin-top:8px}small{opacity:.7}
+</style>
+</head>
+<body>
+<h1>Balafre, les versions</h1>
+<p>Assis, portrait, en colère. La version en ligne est encadrée.</p>
+<div class="grid" id="out"></div>
+<svg width="0" height="0" style="position:absolute"><filter id="wobble"><feTurbulence baseFrequency=".03" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter></svg>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/tenues.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const base={id:"balafre-test",name:"Balafre",mark:"balafre"},black={b:"#2b2730",ch:"#57505d",e:"#15121a",s:"#15121a",t:"#4b4552"};
+const V=[
+  ["Avant (gris)","",{c:{b:"#a8957f",ch:"#f3ece2",e:"#5e4c3e",s:"#5e4c3e",t:"#efe6da"}}],
+  ["Noir, contours bruns","",{c:black,eye:"#f2c94a"}],
+  ["Noir, contours clairs","en ligne",{c:black,eye:"#f2c94a",line:"#ece6f0"},1],
+  ["Contours clairs, œil ambre","plus doux",{c:black,eye:"#c98a3a",line:"#ece6f0"}],
+  ["Contours clairs, œil marron","encore plus doux",{c:black,eye:"#8a5a3a",line:"#ece6f0"}],
+  ["Gris anthracite","moins noir",{c:{b:"#4a4550",ch:"#6e6876",e:"#25212a",s:"#25212a",t:"#5e5866"},eye:"#f2c94a",line:"#ece6f0"}]];
+document.getElementById("out").innerHTML=V.map(([n,s,o,now])=>{const f={...base,...o};
+  return `<div class="card${now?" now":""}"><div class="row"><div>${foxArt(f,{pose:"sit"})}</div><div>${foxArt(f,{portrait:1,expr:"open"})}</div><div>${foxArt(f,{portrait:1,expr:"surprise"})}</div></div><b>${n}</b><small>${s}</small></div>`}).join("");
+</script>
+</body>
+</html>
