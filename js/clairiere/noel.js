@@ -356,7 +356,7 @@ const recordWait=()=>noelOn()&&storyDone("paillette")&&!!R.res.bouleneige&&!(R.b
 // à partir du 19 (l'arrivée de la bande), le record est fini même si les 24 h ne sont pas passées (Joffray, le 19 : boule petite, pas de Balafre)
 const REC0=Date.now(),recordH=()=>QREC==="vite"?(Date.now()-REC0)/1e4:QREC!=null?+QREC:noelDay()>=NOEL_FROM.balafre?24:R.recordAt?(Date.now()-R.recordAt)/36e5:0;
 const recordDone=()=>recordH()>=24;
-const BALL={x:250,y:Math.min(H-60,560)},bigOn=()=>!!R.recordBig&&Date.now()-(R.recordBigAt||0)<864e5,ballR=()=>bigOn()?74:R.recordGone?0:Math.round(12+40*Math.min(1,recordH()/24));
+const BALL={x:250,y:Math.min(H-60,560)},bigOn=()=>!!R.recordBig&&Date.now()-(R.recordBigAt||0)<72e5,ballR=()=>bigOn()?74:R.recordGone?0:Math.round(12+40*Math.min(1,recordH()/24));
 let ballEl=null;
 function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn());
   if(bigOn()&&!recordWait()&&R.heapAt){BALL.x=R.heapAt.x;BALL.y=R.heapAt.y} // la boule refaite reste là où était le tas
