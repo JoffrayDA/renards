@@ -31,7 +31,7 @@ function meLine(id,expr){if(meF.walk||gameOn)return;
 function meChoose(){const free=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco&&!s.via);
   if(scn.rain){const c=free.filter(s=>s.cov);if(meF.spot&&meF.spot.cov)return null;if(c.length)return c[Math.floor(Math.random()*c.length)];
     return Math.hypot(meF.x-DOOR.x,meF.y-252)<10?null:{id:"me",x:DOOR.x,y:252,poses:["sit","up"]}} // porche plein : devant la porte
-  const near=foxes.filter(f=>!f.wild&&!f.walk&&!f.inside&&f.spot&&!f.spot.via);
+  const near=foxes.filter(f=>!f.wild&&!f.walk&&!f.inside&&f.spot&&!f.spot.via&&f.spot.id!=="record"); // pas sur la piste de la boule (noel.js)
   if(!scn.rain&&near.length&&Math.random()<.4){const f=near[Math.floor(Math.random()*near.length)],p=meBeside(f.x,f.y);meF.face=p.face;return {id:"me",...p,poses:["sit","groom","happy","lie"]}}
   meF.face=null;return free[Math.floor(Math.random()*free.length)]||null}
 function meTick(){const now=Date.now();

@@ -361,46 +361,49 @@ function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn(
   if(!show){if(ballEl){ballEl.remove();ballEl=null}return}
   if(!ballEl){ballEl=document.createElement("button");ballEl.className="bigball";ballEl.type="button";ballEl.setAttribute("aria-label","La boule de Boule-de-Neige");
     ballEl.onpointerdown=e=>{e.stopPropagation();const f=sF("bouleneige");if(f)bubble(f,R.recordBig?"« Record du monde ! Trois mètres et quart ! »":`« Je bats le record du monde ! Elle fait déjà ${Math.round(r*4)} cm. »`)};$("actors").appendChild(ballEl)}
-  ballEl.style.cssText=pc(BALL.x,BALL.y-4)+`;width:${(2*r+8)/W*100}%;z-index:${BALL.y-8}`;
+  ballEl.style.cssText=pc(BALL.x,BALL.y-4)+`;width:${(2*r+8)/W*100}%;z-index:${Math.round(BALL.y-8)}`; // un z-index à virgule est ignoré : Boule-de-Neige passait toujours devant
   ballEl.innerHTML=`<svg viewBox="-${r+4} -${2*r+6} ${2*r+8} ${2*r+12}" aria-hidden="true"><ellipse cy="2" rx="${r*.95}" ry="${Math.max(4,r*.16)}" fill="#9fb3cc" opacity=".45"/><circle cy="${-r}" r="${r}" fill="#fff" stroke="${INK}" stroke-width="3"/>`
     +`<path d="M${-r*.55} ${-r*1.45} Q${-r*.2} ${-r*1.75} ${r*.2} ${-r*1.68}" fill="none" stroke="#e6eef8" stroke-width="${Math.max(3,r*.12)}" stroke-linecap="round"/>`
     +`<g class="roll" transform="rotate(${(ballSpin%360).toFixed(1)} 0 ${-r})">${[[-.45,-.6],[.3,-.4],[.5,-1.2],[-.2,-1.1],[.05,-.75],[-.6,-1.3],[.65,-.8]].map(([a,b])=>`<path d="M${a*r-4} ${b*r} q4 3 8 0" fill="none" stroke="#cfdbea" stroke-width="2" stroke-linecap="round"/>`).join("")}</g>`
     +[`M${-r*.1} ${-r*1.9} l${r*.08} ${r*.3} l${-r*.12} ${r*.22} l${r*.1} ${r*.28}`,`M${r*.5} ${-r*1.5} l${-r*.2} ${r*.16} l${r*.06} ${r*.24} l${-r*.22} ${r*.1}`].slice(0,ballCrack).map(d=>`<path d="${d}" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join("")+`</svg>`}
 let ballSpin=0,ballCrack=0;
-// Boule-de-Neige pousse sa boule en allers-retours en bas de la clairière (03/11/2026, Joffray : « on doit vraiment avoir
-// l'impression qu'elle pousse la boule », la ronde d'avant passait sur les objets et on la voyait marcher dessus) : de profil,
-// les pattes contre la boule ; au bout, elle fait le tour de la boule par devant et repart dans l'autre sens. Jamais sur la mare.
-const ROLL={y:()=>Math.max(500,H-110),v:14,turn:3}; // au-dessus de la ligne d'objectif
-function rollLane(r){const Y=ROLL.y(),left=Y-2*r>468?4:160;let a=left+r+48,b=396-r-48;if(b<a+40)a=b-40;return {Y,a,b}}
-function rollTrack(){const L=rollLane(ballR()||40);return `<path d="M${L.a-20} ${L.Y-4} H${L.b+20}" stroke="#e2eaf5" stroke-width="${Math.max(10,ballR()*.5)}" stroke-linecap="round" opacity=".9"/>`}
+// Boule-de-Neige fait rouler sa boule en rond en bas de la clairière (03/11/2026, Joffray : « en rond » ; la ronde d'avant passait
+// sur les objets et sur la mare, et on la voyait marcher sur la boule). La piste est un anneau aplati, loin de la mare ; elle est
+// toujours derrière la boule, dans le sens où elle avance : de dos quand elle s'éloigne, de profil sur les côtés, et quand la boule
+// revient vers nous elle pousse depuis l'arrière, décalée vers l'intérieur de la piste pour qu'on la voie dépasser.
+const ROLL={v:.2,ry:24,y:()=>Math.max(470,H-96)};
+function rollLane(r){const ry=ROLL.ry,cy=ROLL.y()-ry;let cx=200,rx=Math.min(118,200-r-34);
+  if(cy-ry-2*r<462){cx=Math.min(250,165+r+rx);rx=Math.max(30,Math.min(rx,cx-165-r,396-r-cx))} // la boule ne passe jamais sur la mare
+  return {cx,cy,rx,ry}}
+function rollTrack(){const r=ballR()||40,L=rollLane(r);return `<ellipse cx="${L.cx}" cy="${L.cy-4}" rx="${L.rx}" ry="${L.ry}" fill="none" stroke="#e2eaf5" stroke-width="${Math.max(10,r*.5)}" opacity=".9"/>`}
 let rollF1=0;
-function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),L=rollLane(r),Tp=(L.b-L.a)/ROLL.v,Tt=ROLL.turn,C=2*(Tp+Tt);
-  let t=(Date.now()/1000)%C,bx,fx,fy,face,front=false;
-  // 0 : pousse vers la droite ; 1 : fait le tour par devant ; 2 : pousse vers la gauche ; 3 : refait le tour
-  if(t<Tp){bx=L.a+ROLL.v*t;face=1}
-  else if((t-=Tp)<Tt){bx=L.b;const u=t/Tt,an=Math.PI*(1-u);fx=bx+Math.cos(an)*(r+22);fy=L.Y+Math.sin(an)*(r*.4+18);face=1;front=true}
-  else if((t-=Tt)<Tp){bx=L.b-ROLL.v*t;face=-1}
-  else{t-=Tp;bx=L.a;const u=t/Tt,an=Math.PI*u;fx=bx+Math.cos(an)*(r+22);fy=L.Y+Math.sin(an)*(r*.4+18);face=-1;front=true}
-  ballSpin+=(bx-BALL.x)/Math.max(8,r)*57;BALL.x=bx;BALL.y=L.Y;drawBigBall();
+function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),L=rollLane(r),th=(Date.now()/1000*ROLL.v)%(Math.PI*2);
+  const bx=L.cx+Math.cos(th)*L.rx,by=L.cy+Math.sin(th)*L.ry;ballSpin+=Math.hypot(bx-BALL.x,by-BALL.y)/Math.max(8,r)*57;BALL.x=bx;BALL.y=by;drawBigBall();
   if(!f||f.walk||f.inside)return;
-  if(!front){fx=bx-face*(r+13);fy=L.Y+2}
-  f.x=fx;f.y=fy;moveBadge(f,0);f.el.style.transitionDuration="0s";f.el.style.left=fx/W*100+"%";f.el.style.top=fy/H*100+"%";f.el.style.zIndex=Math.round(Math.max(fy,L.Y)+1);
-  // elle marche (deux images, comme un trajet) : en poussant, et en faisant le tour
-  const left=face<0;if(!f.el.classList.contains("rolling")||f.el.classList.contains("left")!==left){const art=FOX.bouleneige;f.el.classList.add("rolling","walking");f.el.classList.toggle("left",left);
-    f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,{pose:"walk",frame:0})}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`}
-  const k=Math.floor(Date.now()/(front?200:340))%2;if(k!==rollF1){rollF1=k;f.el.classList.toggle("f1",!!k)}}
+  // sens de la marche, et l'extérieur de la piste
+  let dx=-Math.sin(th)*L.rx,dy=Math.cos(th)*L.ry;const n=Math.hypot(dx,dy);dx/=n;dy/=n;const ox=Math.cos(th);
+  const toward=dy>.55,away=dy<-.45; // vers nous : elle passe derrière la boule, décalée vers l'intérieur
+  const fx=Math.max(24,Math.min(376,bx-dx*(r+13)-(toward?ox*(r*.95+16)*(1-Math.abs(dx)):0))),fy=by-dy*(r*.32+8)+(away?4:0);
+  f.x=fx;f.y=fy;moveBadge(f,0);f.badge.classList.toggle("off",toward&&Math.abs(fx-bx)<r*.8); // son signe ne flotte pas sur la boule
+ f.el.style.transitionDuration="0s";f.el.style.left=fx/W*100+"%";f.el.style.top=fy/H*100+"%";
+  f.el.style.zIndex=Math.round(toward?by-20:by+4);
+  const pose=away?"back":"walk",left=dx<0;
+  if(f.rollPose!==pose||f.el.classList.contains("left")!==left){f.rollPose=pose;const art=FOX.bouleneige;f.el.classList.add("rolling","walking");f.el.classList.toggle("left",left);
+    f.el.innerHTML=pose==="back"?`<div class="flip"><div class="bob">${foxArt(art,{pose:"back"})}</div></div>`
+      :`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,{pose:"walk",frame:0})}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`}
+  const k=Math.floor(Date.now()/340)%2;if(k!==rollF1){rollF1=k;f.el.classList.toggle("f1",!!k)}}
 setInterval(rollTick,80);
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
 const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null;
 function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("cleared",on);
-  if(on){const Y=ROLL.y()-150,away=sp=>sp.obj||sp.deco||sp.bowl||["stump","leaves","bench1","bench2"].includes(sp.id)||(sp.y>Y&&sp.id!=="pond");
+  if(on){const Y=ROLL.y()-2*ROLL.ry-150,away=sp=>sp.obj||sp.deco||sp.bowl||["stump","leaves","bench1","bench2"].includes(sp.id)||(sp.y>Y&&sp.id!=="pond");
     for(let i=SPOTS.length-1;i>=0;i--)if(away(SPOTS[i])){if(!SPOTS[i].obj&&!SPOTS[i].deco)gardenHid.push(SPOTS[i]);delete SPOT[SPOTS[i].id];SPOTS.splice(i,1)}
     for(const f of foxes)if(f.id!=="bouleneige"&&f.spot&&!SPOTS.includes(f.spot)){const fs=SPOTS.filter(x=>!taken(x)&&!x.lamp);place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.p1)}}
   else{for(const sp of gardenHid.splice(0)){SPOTS.push(sp);SPOT[sp.id]=sp}addObjSpots();decoSpots();drawDeco();drawObjs()}
   if(gardenWas!==null&&gardenWas!==on)drawBg();gardenWas=on;
   // Boule-de-Neige pousse sa boule, de dos
   const f=sF("bouleneige");if(on&&f){if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;place(f,{id:"record",x:BALL.x,y:BALL.y+10,z:BALL.y+20,poses:["back"]});f.until=Date.now()+9e8;f.el.classList.add("pushing");f.badge.classList.add("off")}
-  else if(f&&f.el.classList.contains("pushing")){f.el.classList.remove("pushing","rolling","walking","f1");f.badge.classList.remove("off");f.until=0;draw(f)} // il peut repartir
+  else if(f&&f.el.classList.contains("pushing")){f.el.classList.remove("pushing","rolling","walking","f1");f.rollPose=null;f.badge.classList.remove("off");f.until=0;draw(f)} // il peut repartir
   drawBigBall()}
 if(recordWait()&&!R.recordAt){R.recordAt=Date.now();save()}
 // les trois sauvages arrivent en courant d'un côté de la clairière, jusqu'à un point
