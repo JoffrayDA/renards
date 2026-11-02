@@ -190,17 +190,17 @@ function carnet(){
 let meTab="c",meBack="carnet"; // touchée dans la scène, la fiche se ferme au lieu de revenir au carnet
 // un accessoire acheté dans la boutique Style du Café compte aussi
 const meHas=(k,id)=>meOwn(k,id)||(k==="a"&&!!((load(CAFEKEY)||{}).own||{})["st-acc-"+id]);
-function moiSheet(tab,back){if(tab)meTab=tab;if(back!==undefined)meBack=back;const m=meB(),L={c:ME_FUR,m:ME_MARK,a:ME_ACC}[meTab],cur=meTab==="a"?(m.a??""):m[meTab];
+function moiSheet(tab,back){if(tab)meTab=tab;if(back!==undefined)meBack=back;const m=meB(),L={c:ME_FUR,m:ME_MARK,a:ME_ACC,y:ME_EYE,q:ME_TAIL}[meTab],cur=meTab==="a"?(m.a??""):(m[meTab]||"");
   const done=Object.keys(R.souv).filter(id=>STORIES[id]).length,met=ROSTER.filter(id=>R.res[id]||R.met[id]).length,days=Math.max(1,Math.round((Date.now()-((R.res.petitpois||{}).at||Date.now()))/864e5));
-  const prev=it=>foxArt({...FOX.roussette,...meLook(FOX.roussette),...(meTab==="c"?{c:it.c}:meTab==="m"?(it.id==="chaussettes"?{mark:"",c:{...meLook(FOX.roussette).c,s:"#fffaf3"}}:{mark:it.id}):{acc:it.id||undefined})},{pose:"happy",plain:1});
+  const prev=it=>foxArt({...FOX.roussette,...meLook(FOX.roussette),...(meTab==="c"?{c:it.c}:meTab==="m"?(it.id==="chaussettes"?{mark:"",c:{...meLook(FOX.roussette).c,s:"#fffaf3"}}:{mark:it.id}):meTab==="y"?{eye:it.e}:meTab==="q"?{tail:it.id||undefined}:{acc:it.id||undefined})},{pose:"sit",plain:1});
   const card=it=>{const own=meHas(meTab,it.id),on=cur===it.id,can=it.b?bellsN()>=it.b:cafeCoins()>=(it.p||0);
     return `<button class="card mecell${on?" on":""}" data-me="${meTab}|${it.id}" type="button" ${!own&&!can?"disabled":""}><div class="pic">${prev(it)}</div><h3>${it.name}</h3><p>${on?"Porté":own?"À toi":it.b?`${bellSVG} ${it.b}`:`${coinIcon()} ${it.p}`}</p></button>`};
   openSheet(`<div class="foxhead"><div class="pic">${foxArt(FOX.roussette,{expr:"joy",portrait:1})}</div><div><h2>${ME()}</h2><span class="chip">C'est toi</span><div class="lvl">La gardienne du refuge, et la patronne du Kitsune Café.</div></div></div>
     <div class="mestats"><div><b>${met} / ${ROSTER.length}</b>renards réunis</div><div><b>${done}</b>histoires finies</div><div><b>${R.photos.length}</b>photos</div><div><b>${R.fish||0}</b>poissons</div><div><b>${R.glands}</b>glands</div><div><b>${days}</b>jour${days>1?"s":""} au refuge</div></div>
     <h3 class="sec">Ton look</h3><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span></div>
-    <div class="tabs">${[["c","Pelage"],["m","Motif"],["a","Accessoire"]].map(([k,n])=>`<button class="tab${meTab===k?" on":""}" data-metab="${k}" type="button">${n}</button>`).join("")}</div>
+    <div class="tabs">${[["c","Pelage"],["y","Yeux"],["m","Motif"],["q","Queue"],["a","Accessoire"]].map(([k,n])=>`<button class="tab${meTab===k?" on":""}" data-metab="${k}" type="button">${n}</button>`).join("")}</div>
     <div class="grid">${L.map(card).join("")}</div>${tenueHTML?tenueHTML("roussette"):""}`,meBack)}
-function meBuy(v){const [k,id]=v.split("|"),L={c:ME_FUR,m:ME_MARK,a:ME_ACC}[k],it=L.find(x=>x.id===id),m=meB();if(!it)return;
+function meBuy(v){const [k,id]=v.split("|"),L={c:ME_FUR,m:ME_MARK,a:ME_ACC,y:ME_EYE,q:ME_TAIL}[k],it=L.find(x=>x.id===id),m=meB();if(!it)return;
   if(!meHas(k,id)){if(it.b){if(bellsN()<it.b)return;addBells(-it.b)}else if(it.p&&!spendCoins(it.p))return;m.own[k+":"+id]=1;toast(`${it.name} : acheté !`)}
   m[k]=id;mePut(m);
   // l'accessoire est aussi celui de la carte du Café

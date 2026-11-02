@@ -2,7 +2,7 @@
    pour se pimper ») : pelage, motif et accessoire, achetés en pièces du Café (ou en clochettes pour les plus beaux), choisis sur la
    page « C'est toi » du carnet de la Clairière. Partout où Roussette est dessinée (carte du Café, dialogues, logo), foxArt applique
    son look (meLook). L'accessoire reste aussi celui de la boutique Style du Café : choisir l'un change l'autre.
-   Dans la bourse : b.me = {own:{"c:blond":1, "m:taches":1, "a:viking":1}, c, m, a}. */
+   Dans la bourse : b.me = {own:{"c:blond":1, "m:taches":1, "a:viking":1}, c, m, a, y (yeux), q (queue)}. */
 const ME_FUR=[
   {id:"roux",name:"Roux classique",p:0,c:{b:"#f39a5c",ch:"#fff3e6",e:"#7a4a3a",s:"#8a5544",t:"#fff3e6"}},
   {id:"blond",name:"Blond paille",p:600,c:{b:"#f0c46a",ch:"#fffaf0",e:"#a9744a",s:"#a9744a",t:"#fffaf0"}},
@@ -18,11 +18,18 @@ const ME_MARK=[{id:"",name:"Sans motif",p:0},{id:"taches",name:"Taches de rousse
   {id:"chaussettes",name:"Chaussettes",p:500},{id:"pepites",name:"Pépites",p:500},{id:"neige",name:"Flocon sur la tête",p:700}];
 const ME_ACC=[{id:"",name:"Rien",p:0},{id:"noeud",name:"Petit nœud",p:400},{id:"fleur",name:"Fleur",p:400},{id:"feuille",name:"Feuille",p:300},
   {id:"echarpe",name:"Écharpe",p:700},{id:"bonnet",name:"Bonnet",p:1000},{id:"lunettes",name:"Lunettes rondes",p:1300},{id:"bob",name:"Bob d'été",p:900},
-  {id:"beret",name:"Béret de peintre",p:1100},{id:"etoile",name:"Étoile filante",p:2000},{id:"flocon",name:"Flocon de neige",p:500},{id:"vikingc",name:"Guerrier viking",b:30}];
-const meB=()=>Object.assign({own:{},c:"roux",m:"",a:null},bourse().me||{});
+  {id:"beret",name:"Béret de peintre",p:1100},{id:"etoile",name:"Étoile filante",p:2000},{id:"flocon",name:"Flocon de neige",p:500},{id:"vikingc",name:"Guerrier viking",b:30},
+  {id:"casquette",name:"Casquette",p:800},{id:"fleurs",name:"Couronne de fleurs",p:1200},{id:"ruban",name:"Gros ruban",p:900},{id:"gland",name:"Chapeau gland",p:600},
+  {id:"sorciere",name:"Chapeau de sorcière",p:1500},{id:"lutin",name:"Bonnet de lutin",p:1400},{id:"hautforme",name:"Haut-de-forme",b:20},{id:"couronneor",name:"Couronne d'or",b:40}];
+// les yeux et la queue (03/11/2026, Joffray : « la couleur, le style »)
+const ME_EYE=[{id:"",name:"Noirs",p:0},{id:"noisette",name:"Noisette",p:300,e:"#7a4a2a"},{id:"vert",name:"Vert forêt",p:500,e:"#3f7a4a"},{id:"bleu",name:"Bleu lac",p:500,e:"#3a6aa8"},
+  {id:"violet",name:"Violet",p:700,e:"#6a4a9a"},{id:"ambre",name:"Ambre",p:700,e:"#b8741a"},{id:"rose",name:"Rose bonbon",b:10,e:"#c8487a"},{id:"or",name:"Or",b:20,e:"#c8a020"}];
+const ME_TAIL=[{id:"",name:"Classique",p:0},{id:"long",name:"Grande queue",p:800},{id:"pompon",name:"Pompon",p:800}];
+const meB=()=>Object.assign({own:{},c:"roux",m:"",a:null,y:"",q:""},bourse().me||{});
 function mePut(m){const b=bourse();b.me=m;putBourse(b)}
 const meOwn=(k,id)=>!id||(k==="c"&&id==="roux")||!!meB().own[k+":"+id];
 // le look de Roussette, appliqué par foxArt
 // (« chaussettes » n'est pas un dessin : ce sont les pattes blanches)
 function meLook(f){const m=meB(),fur=ME_FUR.find(x=>x.id===m.c),c=fur?fur.c:f.c;
-  return {c:m.m==="chaussettes"?{...c,s:"#fffaf3"}:c,mark:m.m&&m.m!=="chaussettes"?m.m:f.mark,acc:m.a!=null?(m.a||undefined):f.acc}}
+  return {c:m.m==="chaussettes"?{...c,s:"#fffaf3"}:c,mark:m.m&&m.m!=="chaussettes"?m.m:f.mark,acc:m.a!=null?(m.a||undefined):f.acc,
+    ...(m.y?{eye:(ME_EYE.find(x=>x.id===m.y)||{}).e}:{}),...(m.q?{tail:m.q}:{})}}

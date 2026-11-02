@@ -141,296 +141,296 @@ const STORIES={
   ]},
   cannelle:{title:"Le lit de feuilles",souv:"la feuille d'érable dorée",beats:[
     {at:"cannelle",sleep:1,goal:"Cannelle s'est endormie dans l'herbe. Réveille-la doucement.",lines:[
-      ["cannelle","shy","Mmh… Je dormais. Je dors souvent."],
-      ["cannelle","sad","Mais ici, l'herbe pique. Il me faudrait un vrai lit de feuilles…"]]},
+      ["cannelle","shy","Mmh… Je dormais. Je dors souvent.",()=>actPose("cannelle","sit","shy")],
+      ["cannelle","sad","Mais ici, l'herbe pique. Il me faudrait un vrai lit de feuilles…",()=>{actEmote("cannelle","goutte");setTimeout(()=>actGo("me",296,372),900)}]]},
     {at:"@leaves",game:{k:"rake",win:"Un tas tout moelleux !"},goal:"Fais un grand tas de feuilles pour Cannelle.",lines:[
-      ["me","joy","Le plus beau tas de feuilles de la forêt."]]},
+      ["me","joy","Le plus beau tas de feuilles de la forêt.",()=>actTrick("me","roll")]]},
     {at:"cannelle",after:[["cannelle","leaves"]],goal:"Montre le tas de feuilles à Cannelle.",lines:[
-      ["cannelle","joy","Oh… Il sent l'automne. Je pourrais y dormir pour toujours."],
-      ["cannelle","shy","Tiens, la feuille dorée du dessus. Bonne nuit !"]]}
+      ["cannelle","joy","Oh… Il sent l'automne. Je pourrais y dormir pour toujours.",()=>{actPose("cannelle","happy","joy");actEmote("cannelle","coeur")}],
+      ["cannelle","shy","Tiens, la feuille dorée du dessus. Bonne nuit !",()=>{actGive("cannelle","me","feuilledor");setTimeout(()=>actPose("cannelle","sleep"),1500)}]]}
   ]},
   charbon:{title:"Gris dans le gris",souv:"le morceau de charbon à dessiner",beats:[
     {at:"@lampL",hide:1,goal:"Le brouillard est tombé. Prends une lanterne.",game:{k:"lantern",who:"charbon",win:"Trouvé ! Un petit renard tout gris…"},after:[["charbon","lampL"]],lines:[
-      ["charbon","shy","Je… je me suis perdu. Gris dans le gris, personne ne me voit jamais."],
-      ["me","joy","Moi, je t'ai vu. Viens près des lanternes."]]},
+      ["charbon","shy","Je… je me suis perdu. Gris dans le gris, personne ne me voit jamais.",()=>actEmote("charbon","goutte")],
+      ["me","joy","Moi, je t'ai vu. Viens près des lanternes.",()=>actEmote("me","coeur")]]},
     {at:"charbon",goal:"Va voir Charbon près des lanternes.",lines:[
-      ["charbon","joy","Près de la lumière, je suis presque argenté."],
-      ["charbon","open","Tiens, un morceau de charbon. Ça dessine très bien… Garde-le pour un peintre, un jour."]]}
+      ["charbon","joy","Près de la lumière, je suis presque argenté.",()=>actTrick("charbon","toupie")],
+      ["charbon","open","Tiens, un morceau de charbon. Ça dessine très bien… Garde-le pour un peintre, un jour.",()=>actGive("charbon","me","charbon")]]}
   ]},
   brume:{title:"Le parapluie-feuille",souv:"la goutte de rosée qui ne sèche jamais",beats:[
     {at:"brume",goal:"Brume vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["brume","open",`Bonjour ${ME()}. Je ne sors jamais sans mon parapluie-feuille.`],
-      ["brume","sad","Mais Petit Pois est parti chercher des champignons… et un nuage le suit ! Prends mon parapluie, vite."]]},
+      ["brume","open",`Bonjour ${ME()}. Je ne sors jamais sans mon parapluie-feuille.`,()=>actTrick("brume","boing")],
+      ["brume","sad","Mais Petit Pois est parti chercher des champignons… et un nuage le suit ! Prends mon parapluie, vite.",()=>{actEmote("brume","!");actGive("brume","me","leaf",{happy:false})}]]},
     {at:"petitpois",game:{k:"umbrella",who:"petitpois",win:"Pas une goutte !"},goal:"Abrite Petit Pois avec le parapluie-feuille.",lines:[
-      ["petitpois","joy","Je suis tout sec ! Et j'ai trouvé trois champignons."]]},
+      ["petitpois","joy","Je suis tout sec ! Et j'ai trouvé trois champignons.",()=>actTrick("petitpois","salto")]]},
     {at:"brume",goal:"Rends son parapluie à Brume.",lines:[
-      ["brume","joy","Tu tiens un parapluie mieux que moi."],
-      ["brume","shy","Tiens, une goutte de rosée que je garde depuis longtemps. Elle ne sèche jamais."]]}
+      ["brume","joy","Tu tiens un parapluie mieux que moi.",()=>actGive("me","brume","leaf")],
+      ["brume","shy","Tiens, une goutte de rosée que je garde depuis longtemps. Elle ne sèche jamais.",()=>actGive("brume","me","goutte")]]}
   ]},
   moka:{title:"Toujours en retard",souv:"la montre qui retarde",beats:[
     {at:"moka",goal:"Moka vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["moka","surprise",`Oh ! ${ME()} ! Je suis en retard… Pour quoi, déjà ?`],
-      ["moka","joy","Je sais ! Une course jusqu'à la mare. Cette fois, c'est moi qui gagne."]]},
+      ["moka","surprise",`Oh ! ${ME()} ! Je suis en retard… Pour quoi, déjà ?`,()=>{actTrick("moka","zoom");setTimeout(()=>actEmote("moka","?"),1200)}],
+      ["moka","joy","Je sais ! Une course jusqu'à la mare. Cette fois, c'est moi qui gagne.",()=>{actEmote("moka","!");setTimeout(()=>actGo("me",140,430),800)}]]},
     {at:"@pond",game:{k:"order",who:"moka",n:10,time:10,win:"Gagné ! Moka arrive… en retard."},goal:"Fais la course avec Moka jusqu'à la mare.",lines:[
-      ["moka","joy","Battu ! Comme d'habitude. Au moins, je suis à l'heure pour perdre."],
-      ["moka","shy","Tiens, ma montre. Elle retarde de dix minutes… C'est peut-être pour ça."]]}
+      ["moka","joy","Battu ! Comme d'habitude. Au moins, je suis à l'heure pour perdre.",()=>{actPose("moka","lie","joy");actTrick("me","salto")}],
+      ["moka","shy","Tiens, ma montre. Elle retarde de dix minutes… C'est peut-être pour ça.",()=>actGive("moka","me","montre")]]}
   ]},
   // un feuilleton d'amour sur trois histoires (demande de Joffray) : Pain d'épice cherche quelqu'un et n'y arrive pas,
   // Libellule passe entre les deux (pour oublier un peu), puis Brioche arrive, qui cherche aussi : tu les réunis
   painepice:{title:"Quelqu'un pour moi",souv:"le biscuit en forme de cœur",beats:[
     {at:"painepice",goal:"Pain d'épice vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["painepice","open",`${ME()}, tu sens ? Cannelle, miel, four chaud. C'est moi : je sens le goûter.`],
-      ["painepice","sad","Tout le monde ici a quelqu'un. Moi, je fais des gâteaux… et je les mange tout seul."],
-      ["painepice","shy","J'aimerais trouver quelqu'un. Quelqu'un rien que pour moi. Tu m'aides ?"]]},
+      ["painepice","open",`${ME()}, tu sens ? Cannelle, miel, four chaud. C'est moi : je sens le goûter.`,()=>actEmote("painepice","note")],
+      ["painepice","sad","Tout le monde ici a quelqu'un. Moi, je fais des gâteaux… et je les mange tout seul.",()=>{actPose("painepice","sit","sad");actEmote("painepice","goutte")}],
+      ["painepice","shy","J'aimerais trouver quelqu'un. Quelqu'un rien que pour moi. Tu m'aides ?",()=>actEmote("painepice","coeur")]]},
     {at:"*",goal:"Demande à un renard s'il connaît quelqu'un pour Pain d'épice.",lines:id=>[
-      ["me","open",`${nameOf(id)}, tu connais quelqu'un pour Pain d'épice ?`],
-      [id,"surprise","Quelqu'un ? Ici, on se connaît tous depuis toujours…"],
-      [id,"open","Essaie la forêt. Un signal, le soir, ça se voit de très loin."]]},
+      ["me","open",`${nameOf(id)}, tu connais quelqu'un pour Pain d'épice ?`,()=>actEmote(id,"?")],
+      [id,"surprise","Quelqu'un ? Ici, on se connaît tous depuis toujours…",()=>actEmote("me","goutte")],
+      [id,"open","Essaie la forêt. Un signal, le soir, ça se voit de très loin.",()=>actEmote("me","!")]]},
     {at:"@lampL",lamps:1,game:{k:"firefly",say:"Attrape la luciole dorée : elle portera le signal jusqu'au fond de la forêt !",win:"Le signal est parti !"},goal:"Envoie un signal à la forêt depuis les lanternes.",lines:[
-      ["painepice","joy","Toutes les lanternes allumées… Si quelqu'un est là-bas, il les verra."],
-      ["me","joy","Et maintenant, on attend."]]},
+      ["painepice","joy","Toutes les lanternes allumées… Si quelqu'un est là-bas, il les verra.",()=>actTrick("painepice","boing")],
+      ["me","joy","Et maintenant, on attend.",()=>actEmote("me","?")]]},
     {at:"painepice",goal:"Va voir si quelqu'un a répondu au signal.",lines:[
-      ["painepice","sad","Personne. Pas un bruit dans la forêt."],
-      ["painepice","open","Tant pis. Je garde un biscuit au chaud, en forme de cœur. On ne sait jamais."],
-      ["painepice","shy","Tiens, prends le premier. Tu as essayé, c'est déjà beaucoup."]]}
+      ["painepice","sad","Personne. Pas un bruit dans la forêt.",()=>{actPose("painepice","lie","sad");actEmote("painepice","goutte")}],
+      ["painepice","open","Tant pis. Je garde un biscuit au chaud, en forme de cœur. On ne sait jamais.",()=>{actPose("painepice","sit","open");actEmote("painepice","coeur")}],
+      ["painepice","shy","Tiens, prends le premier. Tu as essayé, c'est déjà beaucoup.",()=>actGive("painepice","me","coeur")]]}
   ]},
   libellule:{title:"Le ciel dans la mare",souv:"le galet lisse comme l'eau calme",beats:[
     {at:"libellule",after:[["libellule","pond"]],goal:"Libellule vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["libellule","open","Bonjour… Chut. Regarde la mare : quand l'eau est calme, on voit le ciel dedans."],
-      ["libellule","sad","Mais il y a toujours une mouche, ou Plouf, pour faire des ronds. Je n'ai jamais vu la lune dedans."]]},
+      ["libellule","open","Bonjour… Chut. Regarde la mare : quand l'eau est calme, on voit le ciel dedans.",()=>actEmote("libellule","note")],
+      ["libellule","sad","Mais il y a toujours une mouche, ou Plouf, pour faire des ronds. Je n'ai jamais vu la lune dedans.",()=>actEmote("libellule","goutte")]]},
     {at:"libellule",game:{k:"still",label:"L'eau se calme…",say:"Chasse les mouches avant qu'elles touchent l'eau !",win:"Plus un rond… Regarde !"},goal:"Aide Libellule à garder la mare bien calme.",lines:[
-      ["libellule","surprise","La lune… dans la mare. Toute ronde."],
-      ["libellule","joy","Je te donne mon galet le plus lisse. Il est calme comme l'eau ce soir."]]}
+      ["libellule","surprise","La lune… dans la mare. Toute ronde.",()=>{actPose("libellule","up","surprise");actEmote("libellule","!")}],
+      ["libellule","joy","Je te donne mon galet le plus lisse. Il est calme comme l'eau ce soir.",()=>actGive("libellule","me","pebble")]]}
   ]},
   brioche:{title:"Moitié-moitié",souv:"la recette du goûter à deux",cast:["painepice"],beats:[
     {at:"brioche",goal:"Brioche vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["brioche","joy",`Bonjour ${ME()} ! Un soir, j'ai vu des lanternes au loin. J'ai marché, marché…`],
-      ["brioche","shy","Et puis il y avait cette odeur. Cannelle, miel, four chaud. Je l'ai suivie jusqu'ici."],
-      ["brioche","sad","Tu sais, j'aimerais trouver quelqu'un. Quelqu'un avec qui partager le goûter."],
-      ["me","surprise","Cannelle, miel, four chaud… Attends-moi là !"]]},
+      ["brioche","joy",`Bonjour ${ME()} ! Un soir, j'ai vu des lanternes au loin. J'ai marché, marché…`,()=>actTrick("brioche","boing")],
+      ["brioche","shy","Et puis il y avait cette odeur. Cannelle, miel, four chaud. Je l'ai suivie jusqu'ici.",()=>actEmote("brioche","note")],
+      ["brioche","sad","Tu sais, j'aimerais trouver quelqu'un. Quelqu'un avec qui partager le goûter.",()=>actEmote("brioche","coeur")],
+      ["me","surprise","Cannelle, miel, four chaud… Attends-moi là !",()=>{actEmote("me","!");setTimeout(()=>actNear("me","painepice"),700)}]]},
     {at:"painepice",goal:"Cannelle, miel, four chaud : tu connais quelqu'un qui sent comme ça.",lines:[
-      ["painepice","surprise","Une renarde ? Qui a vu les lanternes ? Qui a suivi… mon odeur ?"],
-      ["painepice","sad","Je ne peux pas y aller comme ça. Je sens le four !"],
-      ["me","joy","C'est justement ça qu'elle a suivi."],
-      ["painepice","shy","Alors il me faut un gâteau. Un vrai. Tu m'aides à ramasser des pommes ?"]]},
+      ["painepice","surprise","Une renarde ? Qui a vu les lanternes ? Qui a suivi… mon odeur ?",()=>{actTrick("painepice","salto");actEmote("painepice","!")}],
+      ["painepice","sad","Je ne peux pas y aller comme ça. Je sens le four !",()=>actEmote("painepice","goutte")],
+      ["me","joy","C'est justement ça qu'elle a suivi.",()=>actEmote("me","coeur")],
+      ["painepice","shy","Alors il me faut un gâteau. Un vrai. Tu m'aides à ramasser des pommes ?",()=>setTimeout(()=>actGo("me",330,300),700)]]},
     {at:"@tree",game:{k:"basket",n:8,win:"Assez pour un gâteau à deux étages !"},after:[["painepice","bench1"]],goal:"Ramasse des pommes pour le gâteau de Pain d'épice.",lines:[
-      ["painepice","joy","Un étage pour elle, un étage pour moi. Et le biscuit en cœur, dessus."],
-      ["painepice","shy","Tu peux lui dire de venir sur le banc ? Moi, mes pattes tremblent."]]},
+      ["painepice","joy","Un étage pour elle, un étage pour moi. Et le biscuit en cœur, dessus.",()=>actGive("me","painepice","pomme")],
+      ["painepice","shy","Tu peux lui dire de venir sur le banc ? Moi, mes pattes tremblent.",()=>actEmote("painepice","goutte")]]},
     {at:"brioche",stay:["painepice"],after:[["brioche","bench2"]],goal:"Dis à Brioche que quelqu'un l'attend sur le banc.",lines:[
-      ["me","joy","Quelqu'un t'attend sur le banc. Avec un gâteau."],
-      ["brioche","surprise","Un gâteau ? Pour moi ?"]]},
+      ["me","joy","Quelqu'un t'attend sur le banc. Avec un gâteau.",()=>actEmote("me","coeur")],
+      ["brioche","surprise","Un gâteau ? Pour moi ?",()=>actTrick("brioche","boing")]]},
     {at:"@bench",rain:1,stay:["painepice","brioche"],goal:"Va voir Pain d'épice et Brioche sur le banc.",lines:[
-      ["painepice","sad","Il pleut… Le gâteau va être tout mouillé."],
-      ["brioche","joy","Tant pis. On reste là."],
-      ["painepice","shy","J'ai… gardé un biscuit au chaud. Depuis longtemps. Pour quelqu'un."],
-      ["brioche","surprise","Cannelle, miel… C'est toi, l'odeur que j'ai suivie !"],
-      ["painepice","joy","Et c'est moi qui ai allumé les lanternes. Enfin, avec un peu d'aide."],
-      ["brioche","shy","On partage ? Moitié-moitié."],
-      ["painepice","joy","Moitié-moitié. Et le goûter de demain aussi."],
-      ["brioche","joy",`Tiens, ${ME()}, la recette. Pour deux. C'est grâce à toi.`]]}
+      ["painepice","sad","Il pleut… Le gâteau va être tout mouillé.",()=>actEmote("painepice","goutte")],
+      ["brioche","joy","Tant pis. On reste là.",()=>actEmote("brioche","coeur")],
+      ["painepice","shy","J'ai… gardé un biscuit au chaud. Depuis longtemps. Pour quelqu'un.",()=>actGive("painepice","brioche","coeur")],
+      ["brioche","surprise","Cannelle, miel… C'est toi, l'odeur que j'ai suivie !",()=>actEmote("brioche","!")],
+      ["painepice","joy","Et c'est moi qui ai allumé les lanternes. Enfin, avec un peu d'aide.",()=>actEmote("painepice","note")],
+      ["brioche","shy","On partage ? Moitié-moitié.",()=>{actEmote("brioche","coeur");actEmote("painepice","coeur")}],
+      ["painepice","joy","Moitié-moitié. Et le goûter de demain aussi.",()=>actTrick("painepice","toupie")],
+      ["brioche","joy",`Tiens, ${ME()}, la recette. Pour deux. C'est grâce à toi.`,()=>actGive("brioche","me","page")]]}
   ]},
   // la maison (demande de Joffray) : Copeau répare la porte coincée, Sésame l'ouvre ; ensuite on y entre (maison.js) et Copeau l'agrandit
   copeau:{title:"La porte coincée",souv:"le clou porte-bonheur",beats:[
     {at:"copeau",goal:"Copeau vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["copeau","joy",`Bonjour ${ME()} ! Copeau, bricoleur. Je répare tout ce qui grince, tout ce qui coince, tout ce qui penche.`],
-      ["copeau","surprise","Et cette porte… Elle est coincée depuis combien de temps ?"],
-      ["me","shy","Depuis toujours. On vit dehors, sous le porche."],
-      ["copeau","open","Dehors ? Avec une maison juste là ? Viens, on s'en occupe."]]},
+      ["copeau","joy",`Bonjour ${ME()} ! Copeau, bricoleur. Je répare tout ce qui grince, tout ce qui coince, tout ce qui penche.`,()=>actTrick("copeau","boing")],
+      ["copeau","surprise","Et cette porte… Elle est coincée depuis combien de temps ?",()=>actEmote("copeau","?")],
+      ["me","shy","Depuis toujours. On vit dehors, sous le porche.",()=>actEmote("me","goutte")],
+      ["copeau","open","Dehors ? Avec une maison juste là ? Viens, on s'en occupe.",()=>{actGo("copeau",186,258);setTimeout(()=>actGo("me",226,262),400)}]]},
     {at:"@porch",game:{k:"nails",n:5,time:12,say:"Les gonds sont tout rouillés. Plante les clous neufs : trois coups chacun !",win:"Tac, tac, tac ! Des gonds tout neufs."},goal:"Aide Copeau à réparer la porte de la maison.",lines:[
-      ["copeau","joy","Elle ne grince plus du tout. Écoute ce silence !"],
-      ["copeau","surprise","…Mais elle ne s'ouvre toujours pas. Il y a une serrure. Et pas de clé."],
-      ["petitpois","sad","Personne n'a jamais eu la clé…"]]},
+      ["copeau","joy","Elle ne grince plus du tout. Écoute ce silence !",()=>actTrick("copeau","salto")],
+      ["copeau","surprise","…Mais elle ne s'ouvre toujours pas. Il y a une serrure. Et pas de clé.",()=>actEmote("copeau","?")],
+      ["petitpois","sad","Personne n'a jamais eu la clé…",()=>actEmote("petitpois","goutte")]]},
     {at:"copeau",goal:"Copeau réfléchit devant la porte.",lines:[
-      ["copeau","open","Une serrure comme ça, je n'en ai vu qu'une fois. Chez un renard bleu comme la nuit, qui habitait ici il y a longtemps."],
-      ["copeau","shy","Il perdait toutes ses clés. Toutes. Il passe encore dans la forêt, le soir, à chercher par terre."],
-      ["copeau","joy","En attendant, garde ce clou. Le premier que j'ai planté ici. Ça porte bonheur."]]}
+      ["copeau","open","Une serrure comme ça, je n'en ai vu qu'une fois. Chez un renard bleu comme la nuit, qui habitait ici il y a longtemps.",()=>actEmote("copeau","!")],
+      ["copeau","shy","Il perdait toutes ses clés. Toutes. Il passe encore dans la forêt, le soir, à chercher par terre.",()=>actPose("copeau","sit","shy")],
+      ["copeau","joy","En attendant, garde ce clou. Le premier que j'ai planté ici. Ça porte bonheur.",()=>actGive("copeau","me","clou")]]}
   ]},
   // Sésame perd tout le temps ses clés (idée de Joffray) : celle de la maison aussi, il y a longtemps
   sesame:{title:"La clé perdue",souv:"la clé de la maison",cast:["copeau"],beats:[
     {at:"sesame",goal:"Un renard bleu nuit fouille l'herbe. Va lui dire bonjour.",lines:[
-      ["sesame","surprise",`Oh ! Bonsoir, ${ME()}. Tu n'aurais pas vu une clé ? Dorée, avec un ruban rouge ?`],
-      ["me","open","…Celle que tu as autour du cou ?"],
-      ["sesame","shy","Ah. Oui. Non ! Celle-là, c'est la clé de ma boîte aux lettres. Que j'ai perdue."],
-      ["sesame","sad","Je perds toutes mes clés. Celle de cette maison, je l'ai perdue il y a très longtemps, quand j'habitais ici. Depuis, la porte est fermée."]]},
+      ["sesame","surprise",`Oh ! Bonsoir, ${ME()}. Tu n'aurais pas vu une clé ? Dorée, avec un ruban rouge ?`,()=>actEmote("sesame","?")],
+      ["me","open","…Celle que tu as autour du cou ?",()=>actEmote("me","!")],
+      ["sesame","shy","Ah. Oui. Non ! Celle-là, c'est la clé de ma boîte aux lettres. Que j'ai perdue.",()=>actEmote("sesame","goutte")],
+      ["sesame","sad","Je perds toutes mes clés. Celle de cette maison, je l'ai perdue il y a très longtemps, quand j'habitais ici. Depuis, la porte est fermée.",()=>actPose("sesame","sit","sad")]]},
     {at:"@leaves",game:{k:"search",item:"key",say:"Sésame perd souvent ses clés dans les feuilles. Fouille !",win:"Une clé !"},goal:"Cherche la clé de Sésame dans le tas de feuilles.",lines:[
-      ["sesame","joy","Une clé ! … Ah non. C'est celle de mon ancien cabanon. Je la cherchais depuis trois hivers."],
-      ["sesame","open","La clé de la maison brillait plus. Beaucoup plus."],
-      ["copeau","surprise","Ce qui brille… La pie du grand arbre ramasse tout ce qui brille !"]]},
+      ["sesame","joy","Une clé ! … Ah non. C'est celle de mon ancien cabanon. Je la cherchais depuis trois hivers.",()=>{actTrick("sesame","boing");setTimeout(()=>actEmote("sesame","goutte"),1100)}],
+      ["sesame","open","La clé de la maison brillait plus. Beaucoup plus.",()=>actEmote("sesame","?")],
+      ["copeau","surprise","Ce qui brille… La pie du grand arbre ramasse tout ce qui brille !",()=>{actEmote("copeau","!");setTimeout(()=>actGo("me",330,300),800)}]]},
     {at:"@tree",game:{k:"shake",item:"key",catch:1,say:"Secoue le grand arbre ! Rattrape la clé avant qu'elle tombe !",win:"Rattrapée au vol !"},goal:"Fais tomber le trésor de la pie, dans le grand arbre.",lines:[
-      ["sesame","surprise","C'est elle ! La clé de la maison ! Avec mes initiales gravées dessus !"],
-      ["copeau","joy","Les gonds sont neufs, la serrure est huilée. À toi l'honneur."]]},
+      ["sesame","surprise","C'est elle ! La clé de la maison ! Avec mes initiales gravées dessus !",()=>actTrick("sesame","salto")],
+      ["copeau","joy","Les gonds sont neufs, la serrure est huilée. À toi l'honneur.",()=>actGive("me","sesame","key",{happy:false})]]},
     {at:"@porch",goal:"Ouvre la porte avec Sésame.",lines:[
-      ["sesame","shy","Elle tourne… Clic."],
-      ["sesame","joy","Une cheminée, un tapis, et de la place pour tout le monde. Bienvenue chez toi."],
-      ["copeau","open","Un peu petit, quand même. Je vais pouvoir agrandir tout ça…"],
-      ["sesame","open",`Tiens, ${ME()}, garde la clé. Moi, je la perdrais avant ce soir. Touche la porte pour entrer.`]]}
+      ["sesame","shy","Elle tourne… Clic.",()=>actEmote("sesame","!")],
+      ["sesame","joy","Une cheminée, un tapis, et de la place pour tout le monde. Bienvenue chez toi.",()=>actTrick("sesame","toupie")],
+      ["copeau","open","Un peu petit, quand même. Je vais pouvoir agrandir tout ça…",()=>actEmote("copeau","note")],
+      ["sesame","open",`Tiens, ${ME()}, garde la clé. Moi, je la perdrais avant ce soir. Touche la porte pour entrer.`,()=>actGive("sesame","me","key")]]}
   ]},
   // lot du 27/10/2026 : les six derniers clients du Café sans histoire
   marquis:{title:"Rien que du moelleux",souv:"le nœud de soie",beats:[
     {at:"marquis",goal:"Marquis vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["marquis","open",`Bonsoir, ${ME()}. Marquis, enchanté. Je resterai debout, merci.`],
-      ["marquis","sad","La souche ? Trop dure. Le banc ? Trop froid. L'herbe ? Elle pique."],
-      ["marquis","shy","Je ne m'assois que sur du moelleux. C'est une question de dignité."]]},
+      ["marquis","open",`Bonsoir, ${ME()}. Marquis, enchanté. Je resterai debout, merci.`,()=>actPose("marquis","up","open")],
+      ["marquis","sad","La souche ? Trop dure. Le banc ? Trop froid. L'herbe ? Elle pique.",()=>actEmote("marquis","colere")],
+      ["marquis","shy","Je ne m'assois que sur du moelleux. C'est une question de dignité.",()=>actEmote("me","goutte")]]},
     {at:"brindille",goal:"Demande à Mamie Brindille si elle peut coudre un coussin.",lines:[
-      ["brindille","joy","Un coussin pour ce petit monsieur ? Bien sûr, mon chou."],
-      ["brindille","sad","Mais ma pelote de laine a encore roulé sous les feuilles…"]]},
+      ["brindille","joy","Un coussin pour ce petit monsieur ? Bien sûr, mon chou.",()=>actEmote("brindille","coeur")],
+      ["brindille","sad","Mais ma pelote de laine a encore roulé sous les feuilles…",()=>{actEmote("brindille","goutte");setTimeout(()=>actGo("me",296,372),800)}]]},
     {at:"@leaves",game:{k:"search",item:"wool",say:"La pelote de Mamie Brindille est sous un des tas : il frémit quand elle bouge. 3 essais !",win:"La pelote !"},after:[["marquis","bench1"]],goal:"Retrouve la pelote de Mamie Brindille dans les feuilles.",lines:[
-      ["brindille","joy","Trois points, deux nœuds… Voilà un coussin bien dodu. Va, porte-le-lui."]]},
+      ["brindille","joy","Trois points, deux nœuds… Voilà un coussin bien dodu. Va, porte-le-lui.",()=>actGive("brindille","me","coussin",{happy:false})]]},
     {at:"marquis",goal:"Apporte le coussin à Marquis, sur le banc.",lines:[
-      ["marquis","surprise","Pour moi ? Brodé ?"],
-      ["marquis","joy","…Oh. Que c'est moelleux. Je ne me relèverai plus jamais."],
-      ["marquis","shy","Tiens, mon nœud de soie. Un marquis paie toujours ses dettes."]]}
+      ["marquis","surprise","Pour moi ? Brodé ?",()=>{actGive("me","marquis","coussin",{happy:false});actEmote("marquis","!")}],
+      ["marquis","joy","…Oh. Que c'est moelleux. Je ne me relèverai plus jamais.",()=>{actPose("marquis","lie","joy");actEmote("marquis","coeur")}],
+      ["marquis","shy","Tiens, mon nœud de soie. Un marquis paie toujours ses dettes.",()=>actGive("marquis","me","noeud")]]}
   ]},
   zaza:{title:"Chut",souv:"le grelot qui ne sonne pas",beats:[
     {at:"zaza",goal:"Zaza vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["zaza","surprise",`${ME()} ! Tu entends ? Non ? Moi, j'entends tout.`],
-      ["zaza","sad","Une mouche qui bâille. Une feuille qui tombe. Somnus qui ronfle au fond de la forêt. Je ne dors jamais."],
-      ["zaza","shy","Juste une fois, je voudrais un vrai silence."]]},
+      ["zaza","surprise",`${ME()} ! Tu entends ? Non ? Moi, j'entends tout.`,()=>actEmote("zaza","!")],
+      ["zaza","sad","Une mouche qui bâille. Une feuille qui tombe. Somnus qui ronfle au fond de la forêt. Je ne dors jamais.",()=>actEmote("zaza","goutte")],
+      ["zaza","shy","Juste une fois, je voudrais un vrai silence.",()=>actPose("zaza","lie","shy")]]},
     {at:"zaza",game:{k:"still",label:"Zaza s'endort…",say:"Zaza ferme les yeux. Chasse les mouches avant qu'elles bourdonnent à ses oreilles !",win:"Plus un bruit…"},goal:"Fais le silence autour de Zaza.",lines:[
-      ["zaza","shy","Mmh… J'ai dormi. Vraiment dormi. J'ai rêvé de mon désert."],
-      ["zaza","joy","Tiens, mon grelot. Je l'ai bouché exprès : il ne sonne pas. Comme ça, tu penseras au silence."]]}
+      ["zaza","shy","Mmh… J'ai dormi. Vraiment dormi. J'ai rêvé de mon désert.",()=>{actPose("zaza","happy","joy");actEmote("zaza","note")}],
+      ["zaza","joy","Tiens, mon grelot. Je l'ai bouché exprès : il ne sonne pas. Comme ça, tu penseras au silence.",()=>actGive("zaza","me","bell")]]}
   ]},
   flocon:{title:"Une lumière à soi",souv:"le bocal-veilleuse",beats:[
     {at:"flocon",goal:"Flocon vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["flocon","shy",`Bonsoir ${ME()}… Pardon, je suis un peu perdu. J'ai suivi une lumière toute la nuit.`],
-      ["flocon","sad","Chez moi, dans la neige, il fait noir six mois. Alors dès que quelque chose brille, je le suis. Les lanternes, la lune, la queue de Luciole…"],
-      ["luciole","surprise","C'est toi qui me suis partout depuis ce matin ?"]]},
+      ["flocon","shy",`Bonsoir ${ME()}… Pardon, je suis un peu perdu. J'ai suivi une lumière toute la nuit.`,()=>actEmote("flocon","?")],
+      ["flocon","sad","Chez moi, dans la neige, il fait noir six mois. Alors dès que quelque chose brille, je le suis. Les lanternes, la lune, la queue de Luciole…",()=>actEmote("flocon","froid")],
+      ["luciole","surprise","C'est toi qui me suis partout depuis ce matin ?",()=>{actEmote("luciole","!");actNear("flocon","luciole")}]]},
     {at:"luciole",goal:"Demande conseil à Luciole.",lines:[
-      ["luciole","joy","Il lui faut une lumière rien qu'à lui. Une qu'il garde près de son lit."],
-      ["luciole","open","Les lucioles dorées sont les plus douces. Il y en a toujours une près des lanternes."]]},
+      ["luciole","joy","Il lui faut une lumière rien qu'à lui. Une qu'il garde près de son lit.",()=>actEmote("luciole","coeur")],
+      ["luciole","open","Les lucioles dorées sont les plus douces. Il y en a toujours une près des lanternes.",()=>setTimeout(()=>actGo("me",96,290),700)]]},
     {at:"@lampL",game:{k:"firefly",say:"Une seule luciole brille en or. Attrape-la pour Flocon !",win:"Dans le bocal !"},goal:"Attrape une luciole dorée pour Flocon, près des lanternes.",lines:[
-      ["flocon","surprise","Pour moi ? Une lumière qui reste ?"],
-      ["flocon","joy","Je n'aurai plus besoin de suivre personne. Je pourrai enfin m'endormir."],
-      ["flocon","shy","Garde ce bocal vide, celui d'avant. Il a tenu toutes mes nuits d'hiver."]]}
+      ["flocon","surprise","Pour moi ? Une lumière qui reste ?",()=>{actGive("me","flocon","jar",{happy:false});actEmote("flocon","!")}],
+      ["flocon","joy","Je n'aurai plus besoin de suivre personne. Je pourrai enfin m'endormir.",()=>actTrick("flocon","salto")],
+      ["flocon","shy","Garde ce bocal vide, celui d'avant. Il a tenu toutes mes nuits d'hiver.",()=>actGive("flocon","me","jar")]]}
   ]},
   noisette:{title:"Le gland d'or",souv:"le carnet du professeur",beats:[
     {at:"noisette",goal:"Le Professeur Noisette vient d'arriver. Va lui dire bonjour.",lines:[
-      ["noisette","open",`Ah, ${ME()} ! Professeur Noisette. J'étudie les glands depuis quarante saisons.`],
-      ["noisette","surprise","Et mes calculs sont formels : au sommet de ce grand arbre pousse le seul gland d'or de la forêt."],
-      ["noisette","shy","Seulement… je n'ai jamais grimpé. Le vertige. Et mes lunettes glissent."]]},
+      ["noisette","open",`Ah, ${ME()} ! Professeur Noisette. J'étudie les glands depuis quarante saisons.`,()=>actEmote("noisette","note")],
+      ["noisette","surprise","Et mes calculs sont formels : au sommet de ce grand arbre pousse le seul gland d'or de la forêt.",()=>{actEmote("noisette","!");setTimeout(()=>actEmote("me","?"),900)}],
+      ["noisette","shy","Seulement… je n'ai jamais grimpé. Le vertige. Et mes lunettes glissent.",()=>actEmote("noisette","goutte")]]},
     {at:"@tree",game:{k:"shake",item:"acorn",catch:1,say:"Secoue le grand arbre ! Le gland d'or va tomber : attrape-le au vol !",win:"Le gland d'or !"},goal:"Fais tomber le gland d'or du grand arbre.",lines:[
-      ["noisette","surprise","Il existe ! Quarante saisons… J'avais raison !"]]},
+      ["noisette","surprise","Il existe ! Quarante saisons… J'avais raison !",()=>actTrick("noisette","salto")]]},
     {at:"noisette",goal:"Rends le gland d'or au Professeur Noisette.",lines:[
-      ["noisette","joy","Je vais l'étudier… Non. Je vais le planter. Dans quarante saisons, il y aura un arbre d'or ici."],
-      ["noisette","shy","Prends mon carnet. Tout ce que je sais des glands est dedans. Il te servira plus qu'à moi."]]}
+      ["noisette","joy","Je vais l'étudier… Non. Je vais le planter. Dans quarante saisons, il y aura un arbre d'or ici.",()=>actGive("me","noisette","acorn")],
+      ["noisette","shy","Prends mon carnet. Tout ce que je sais des glands est dedans. Il te servira plus qu'à moi.",()=>actGive("noisette","me","carnet")]]}
   ]},
   givre:{title:"Disparu",souv:"la boule de neige qui ne fond pas",beats:[
     {at:"givre",goal:"Givre vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["givre","joy",`Coucou ${ME()} ! Chez moi, je me roule dans la neige jusqu'à disparaître. Personne ne me trouve jamais !`],
-      ["givre","sad","Mais ici, pas de neige. Tout le monde me voit. C'est nul."],
-      ["givre","open","Oh ! Les coussins de Pantoufle sont tout blancs… Tu me cherches ?"]]},
+      ["givre","joy",`Coucou ${ME()} ! Chez moi, je me roule dans la neige jusqu'à disparaître. Personne ne me trouve jamais !`,()=>actTrick("givre","roll")],
+      ["givre","sad","Mais ici, pas de neige. Tout le monde me voit. C'est nul.",()=>{actPose("givre","sit","sad");actEmote("givre","goutte")}],
+      ["givre","open","Oh ! Les coussins de Pantoufle sont tout blancs… Tu me cherches ?",()=>actTrick("givre","zoom")]]},
     {at:"givre",game:{k:"cushion",who:"givre",say:"Givre se cache sous un coussin. Suis-le des yeux !"},goal:"Joue à cache-cache avec Givre.",lines:[
-      ["givre","surprise","Tu m'as trouvé ? Même sous les coussins ?"],
-      ["givre","joy","Personne ne m'avait jamais trouvé ! C'est encore mieux que disparaître."],
-      ["givre","shy","Tiens, une boule de neige de chez moi. Elle ne fond jamais, je ne sais pas pourquoi."]]}
+      ["givre","surprise","Tu m'as trouvé ? Même sous les coussins ?",()=>actEmote("givre","!")],
+      ["givre","joy","Personne ne m'avait jamais trouvé ! C'est encore mieux que disparaître.",()=>actTrick("givre","salto")],
+      ["givre","shy","Tiens, une boule de neige de chez moi. Elle ne fond jamais, je ne sais pas pourquoi.",()=>actGive("givre","me","neige")]]}
   ]},
   // Comète ne vient pas de ce monde (idée de Joffray) : une étoile filante tombée dans la mare, qui a perdu sa traînée
   comete:{title:"Pas d'ici",souv:"l'éclat d'étoile toujours tiède",cast:["noisette"],beats:[
     {at:"comete",goal:"Une lumière est tombée près de la mare cette nuit. Va voir.",lines:[
-      ["comete","surprise","Où… où suis-je ? Ce n'est pas mon ciel. Il n'y a qu'une lune, ici ?"],
-      ["me","open",`Tu es au refuge. Moi, c'est ${ME()}. Tu viens d'où ?`],
-      ["comete","sad","De là-haut. Très loin derrière la lune. Je passais trop près, et j'ai glissé de ma route."],
-      ["comete","shy","Je brillais tellement, avant. Il me reste à peine une étincelle."]]},
+      ["comete","surprise","Où… où suis-je ? Ce n'est pas mon ciel. Il n'y a qu'une lune, ici ?",()=>actEmote("comete","?")],
+      ["me","open",`Tu es au refuge. Moi, c'est ${ME()}. Tu viens d'où ?`,()=>actEmote("me","coeur")],
+      ["comete","sad","De là-haut. Très loin derrière la lune. Je passais trop près, et j'ai glissé de ma route.",()=>actPose("comete","sit","sad")],
+      ["comete","shy","Je brillais tellement, avant. Il me reste à peine une étincelle.",()=>actEmote("comete","goutte")]]},
     {at:"noisette",goal:"Le Professeur Noisette a peut-être une explication.",lines:[
-      ["noisette","surprise","Fascinant… Une étoile filante. Vivante ! Toutes mes lectures disaient que c'était impossible."],
-      ["noisette","open","Pour remonter, il lui faut sa traînée. En tombant, elle s'est éparpillée en éclats dans toute la clairière."]]},
+      ["noisette","surprise","Fascinant… Une étoile filante. Vivante ! Toutes mes lectures disaient que c'était impossible.",()=>{actTrick("noisette","boing");actEmote("noisette","!")}],
+      ["noisette","open","Pour remonter, il lui faut sa traînée. En tombant, elle s'est éparpillée en éclats dans toute la clairière.",()=>setTimeout(()=>actGo("me",140,430),700)]]},
     {at:"@pond",game:{k:"catch",n:6,say:"Les éclats de la traînée flottent au-dessus de la mare. Attrape-les tous !",win:"Tous les éclats !"},goal:"Ramasse les éclats de la traînée de Comète, près de la mare.",lines:[
-      ["comete","joy","Ma traînée… Je la sens. Je pourrais rentrer cette nuit."]]},
+      ["comete","joy","Ma traînée… Je la sens. Je pourrais rentrer cette nuit.",()=>actTrick("comete","salto")]]},
     {at:"comete",goal:"Rends ses éclats à Comète.",lines:[
-      ["comete","sad","Là-haut, il fait froid et tout est silencieux. Ici, il y a des lanternes, une mare qui garde la lune… et toi."],
-      ["comete","open","Alors je reste. Une nuit par lune, je remonterai dire bonjour à mon ciel. C'est la seule nuit où on me voit là-haut."],
-      ["comete","joy",`Tiens, ${ME()}. Un éclat que je n'ai pas rendu. Il restera tiède, comme une étoile dans ta poche.`]]}
+      ["comete","sad","Là-haut, il fait froid et tout est silencieux. Ici, il y a des lanternes, une mare qui garde la lune… et toi.",()=>actEmote("comete","coeur")],
+      ["comete","open","Alors je reste. Une nuit par lune, je remonterai dire bonjour à mon ciel. C'est la seule nuit où on me voit là-haut.",()=>actTrick("comete","toupie")],
+      ["comete","joy",`Tiens, ${ME()}. Un éclat que je n'ai pas rendu. Il restera tiède, comme une étoile dans ta poche.`,()=>actGive("comete","me","eclat")]]}
   ]},
   // les six sauvages de la gamelle (27/10/2026) : leur histoire vient après leur première visite, puis ils s'installent.
   // Une sur deux avec un jeu (Joffray : « pas obligé de faire des jeux pour tous »)
   somnus:{title:"La vingt-quatrième heure",souv:"le bonnet de nuit de rechange",beats:[
     {at:"somnus",sleep:1,goal:"Somnus est revenu de la forêt. Il dort, évidemment. Réveille-le doucement.",lines:[
-      ["somnus","shy",`Mmh… ${ME()} ? C'est l'heure ? Ma seule heure réveillée de la journée ?`],
-      ["somnus","open","D'habitude, je la passe à bâiller. Mais aujourd'hui, je voudrais voir quelque chose de beau."]]},
+      ["somnus","shy",`Mmh… ${ME()} ? C'est l'heure ? Ma seule heure réveillée de la journée ?`,()=>actPose("somnus","sit","shy")],
+      ["somnus","open","D'habitude, je la passe à bâiller. Mais aujourd'hui, je voudrais voir quelque chose de beau.",()=>setTimeout(()=>actGo("me",140,430),700)]]},
     {at:"@pond",goal:"Montre la mare à Somnus.",lines:[
-      ["somnus","surprise","De l'eau qui brille… Je l'avais toujours vue en rêve. En vrai, c'est mieux."],
-      ["somnus","open","Encore un endroit. Vite, mon heure file."]]},
+      ["somnus","surprise","De l'eau qui brille… Je l'avais toujours vue en rêve. En vrai, c'est mieux.",()=>{actEmote("somnus","!");actNear("somnus","me","up")}],
+      ["somnus","open","Encore un endroit. Vite, mon heure file.",()=>{actGo("me",262,424);setTimeout(()=>actGo("somnus",226,430),300)}]]},
     {at:"@bench",goal:"Emmène Somnus jusqu'au banc.",lines:[
-      ["somnus","joy","Le banc. La mare. Les lanternes. Et quelqu'un à côté."],
-      ["somnus","shy","C'était… la plus belle heure de toutes. Je crois que je vais rester ici pour les prochaines."],
-      ["somnus","shy","Tiens, mon bonnet de rechange. Pour les jours où toi aussi tu… zzz…"]]}
+      ["somnus","joy","Le banc. La mare. Les lanternes. Et quelqu'un à côté.",()=>actEmote("somnus","coeur")],
+      ["somnus","shy","C'était… la plus belle heure de toutes. Je crois que je vais rester ici pour les prochaines.",()=>actPose("somnus","lie","shy")],
+      ["somnus","shy","Tiens, mon bonnet de rechange. Pour les jours où toi aussi tu… zzz…",()=>{actGive("somnus","me","bonnet");setTimeout(()=>actPose("somnus","sleep"),1500)}]]}
   ]},
   reglisse:{title:"Le secret sous la souche",souv:"le plan des tunnels",beats:[
     {at:"reglisse",goal:"Réglisse est revenu de la forêt. Va lui dire bonjour.",lines:[
-      ["reglisse","open",`Bonsoir, ${ME()}. Je connais tous les tunnels de la forêt. Et tous les secrets de tes renards.`],
-      ["reglisse","shy","Ils me les racontent. Je ne répète jamais. Enfin… presque jamais."]]},
+      ["reglisse","open",`Bonsoir, ${ME()}. Je connais tous les tunnels de la forêt. Et tous les secrets de tes renards.`,()=>actEmote("reglisse","note")],
+      ["reglisse","shy","Ils me les racontent. Je ne répète jamais. Enfin… presque jamais.",()=>actEmote("me","?")]]},
     {at:"*",goal:"Demande à un renard s'il a déjà confié un secret à Réglisse.",lines:id=>[
-      ["me","open",`${nameOf(id)}, tu as déjà raconté un secret à Réglisse ?`],
-      [id,"shy","…Peut-être. Mais il ne l'a jamais répété. C'est pour ça qu'on lui dit tout."],
-      [id,"surprise","Par contre, lui, il en a un. Il gratte toujours sous la souche."]]},
+      ["me","open",`${nameOf(id)}, tu as déjà raconté un secret à Réglisse ?`,()=>actEmote(id,"?")],
+      [id,"shy","…Peut-être. Mais il ne l'a jamais répété. C'est pour ça qu'on lui dit tout.",()=>actEmote(id,"goutte")],
+      [id,"surprise","Par contre, lui, il en a un. Il gratte toujours sous la souche.",()=>{actEmote(id,"!");setTimeout(()=>actGo("me",112,322),700)}]]},
     {at:"@stump",goal:"Va voir ce que Réglisse cache sous la souche.",lines:[
-      ["reglisse","surprise","Tu m'as trouvé. Bon. Mon secret, c'est un tunnel."],
-      ["reglisse","joy","Il va de la souche jusque sous la maison. Quand il pleut, je passe par là pour être au chaud sans me mouiller."],
-      ["reglisse","shy","Je te donne le plan. Personne d'autre ne l'a jamais vu. Garde le secret."]]}
+      ["reglisse","surprise","Tu m'as trouvé. Bon. Mon secret, c'est un tunnel.",()=>actEmote("reglisse","goutte")],
+      ["reglisse","joy","Il va de la souche jusque sous la maison. Quand il pleut, je passe par là pour être au chaud sans me mouiller.",()=>actTrick("reglisse","roll")],
+      ["reglisse","shy","Je te donne le plan. Personne d'autre ne l'a jamais vu. Garde le secret.",()=>actGive("reglisse","me","page")]]}
   ]},
   aurore:{title:"Chaque nuit une autre",souv:"le ruban qui change de couleur",beats:[
     {at:"aurore",goal:"Aurore est revenue de la forêt. Va lui dire bonjour.",lines:[
-      ["aurore","sad",`${ME()}… Personne ne me reconnaît jamais. La nuit, mon pelage change : rose, puis vert, puis violet.`],
-      ["aurore","shy","Le lendemain, tout le monde croit que je suis une autre. Alors je reste seule."]]},
+      ["aurore","sad",`${ME()}… Personne ne me reconnaît jamais. La nuit, mon pelage change : rose, puis vert, puis violet.`,()=>actPose("aurore","sit","sad")],
+      ["aurore","shy","Le lendemain, tout le monde croit que je suis une autre. Alors je reste seule.",()=>actEmote("aurore","goutte")]]},
     {at:"*",goal:"Demande à un renard s'il reconnaîtrait Aurore.",lines:id=>[
-      ["me","open",`${nameOf(id)}, si Aurore change de couleur, tu la reconnais ?`],
-      [id,"open","À sa voix, bien sûr. Et à sa façon de pencher la tête quand elle écoute."],
-      [id,"joy","La couleur, c'est juste une surprise en plus."]]},
+      ["me","open",`${nameOf(id)}, si Aurore change de couleur, tu la reconnais ?`,()=>actEmote(id,"?")],
+      [id,"open","À sa voix, bien sûr. Et à sa façon de pencher la tête quand elle écoute.",()=>actEmote(id,"note")],
+      [id,"joy","La couleur, c'est juste une surprise en plus.",()=>actTrick(id,"boing")]]},
     {at:"aurore",goal:"Dis à Aurore ce que les autres ont répondu.",lines:[
-      ["aurore","surprise","À ma voix ? À ma façon de pencher la tête ?"],
-      ["aurore","joy","Alors je peux changer de couleur autant que je veux. Je resterai moi."],
-      ["aurore","shy","Prends ce ruban. Il change de couleur avec moi, chaque nuit. Comme ça, on sera deux."]]}
+      ["aurore","surprise","À ma voix ? À ma façon de pencher la tête ?",()=>actEmote("aurore","!")],
+      ["aurore","joy","Alors je peux changer de couleur autant que je veux. Je resterai moi.",()=>actTrick("aurore","toupie")],
+      ["aurore","shy","Prends ce ruban. Il change de couleur avec moi, chaque nuit. Comme ça, on sera deux.",()=>actGive("aurore","me","ruban")]]}
   ]},
   maree:{title:"Contre le courant",souv:"le galet aux quatre ricochets",beats:[
     {at:"maree",goal:"Marée est revenue de la rivière. Va lui dire bonjour.",lines:[
-      ["maree","open",`Bonjour ${ME()}. J'arrive avec le courant, je repars avec lui. Toujours.`],
-      ["maree","sad","Mais ici, je voudrais rester. Seulement, la rivière m'appelle chaque soir."],
-      ["maree","shy","On dit qu'un galet qui rebondit quatre fois sur l'eau répond à la rivière à ta place."]]},
+      ["maree","open",`Bonjour ${ME()}. J'arrive avec le courant, je repars avec lui. Toujours.`,()=>actEmote("maree","note")],
+      ["maree","sad","Mais ici, je voudrais rester. Seulement, la rivière m'appelle chaque soir.",()=>actPose("maree","sit","sad")],
+      ["maree","shy","On dit qu'un galet qui rebondit quatre fois sur l'eau répond à la rivière à ta place.",()=>setTimeout(()=>actGo("me",140,430),700)]]},
     {at:"@pond",game:{k:"ricochet",need:4},goal:"Fais faire quatre ricochets pour Marée, sur la mare.",lines:[
-      ["maree","surprise","Quatre ! La rivière a entendu."],
-      ["maree","joy","Ce soir, elle partira sans moi. Je reste au refuge."],
-      ["maree","shy","Garde le galet. Il a dit oui pour moi."]]}
+      ["maree","surprise","Quatre ! La rivière a entendu.",()=>actTrick("maree","salto")],
+      ["maree","joy","Ce soir, elle partira sans moi. Je reste au refuge.",()=>actEmote("maree","coeur")],
+      ["maree","shy","Garde le galet. Il a dit oui pour moi.",()=>actGive("maree","me","pebble")]]}
   ]},
   perle:{title:"La perle perdue",souv:"une perle de son collier",beats:[
     {at:"perle",goal:"Perle est revenue de la rivière. Va lui dire bonjour.",lines:[
-      ["perle","joy",`${ME()} ! Je venais te remercier pour la gamelle. Tu as vu mon collier ? Chaque perle vient d'un coquillage.`],
-      ["perle","sad","Oh non… Il en manque une. Elle a dû rouler sous les feuilles."]]},
+      ["perle","joy",`${ME()} ! Je venais te remercier pour la gamelle. Tu as vu mon collier ? Chaque perle vient d'un coquillage.`,()=>actTrick("perle","boing")],
+      ["perle","sad","Oh non… Il en manque une. Elle a dû rouler sous les feuilles.",()=>{actEmote("perle","goutte");setTimeout(()=>actGo("me",296,372),800)}]]},
     {at:"@leaves",game:{k:"search",item:"pearl",say:"La perle a roulé sous un des tas. Il frémit quand elle bouge. 3 essais !",win:"La perle !"},goal:"Retrouve la perle de Perle dans les feuilles.",lines:[
-      ["perle","joy","Elle brille encore plus après un tour dans les feuilles."],
-      ["perle","shy","Garde-la. Mon collier sera plus court, mais j'aurai une raison de revenir. Et puis… je crois que je vais rester."]]}
+      ["perle","joy","Elle brille encore plus après un tour dans les feuilles.",()=>actGive("me","perle","pearl")],
+      ["perle","shy","Garde-la. Mon collier sera plus court, mais j'aurai une raison de revenir. Et puis… je crois que je vais rester.",()=>actGive("perle","me","pearl")]]}
   ]},
   yeti:{title:"Personne n'y croit",souv:"un poil tout doux du Yéti",beats:[
     {at:"petitpois",hide:1,goal:"Petit Pois a vu quelque chose dans le brouillard.",lines:[
-      ["petitpois","surprise",`${ME()} ! Il y avait une ombre énorme près de la gamelle. Énorme ! Avec un bonnet !`],
-      ["petitpois","shy","Personne ne me croit. Tu viens voir avec moi ?"]]},
+      ["petitpois","surprise",`${ME()} ! Il y avait une ombre énorme près de la gamelle. Énorme ! Avec un bonnet !`,()=>{actTrick("petitpois","boing");actEmote("petitpois","!")}],
+      ["petitpois","shy","Personne ne me croit. Tu viens voir avec moi ?",()=>actEmote("petitpois","goutte")]]},
     {at:"@lampL",hide:1,game:{k:"lantern",who:"yeti",win:"Trouvé ! Il est… énorme. Et tout doux."},after:[["yeti","lampL"]],goal:"Prends une lanterne et cherche l'ombre dans le brouillard.",lines:[
-      ["yeti","shy","Bonsoir. Pardon. Je suis très discret, d'habitude."],
-      ["yeti","sad","Quand on est aussi gros, tout le monde a peur. Alors je me cache, et plus personne ne croit que j'existe."],
-      ["petitpois","joy","Moi, j'y crois ! Je l'ai dit le premier !"]]},
+      ["yeti","shy","Bonsoir. Pardon. Je suis très discret, d'habitude.",()=>actEmote("yeti","goutte")],
+      ["yeti","sad","Quand on est aussi gros, tout le monde a peur. Alors je me cache, et plus personne ne croit que j'existe.",()=>actPose("yeti","sit","sad")],
+      ["petitpois","joy","Moi, j'y crois ! Je l'ai dit le premier !",()=>actTrick("petitpois","salto")]]},
     {at:"yeti",goal:"Va voir le Yéti près des lanternes.",lines:[
-      ["yeti","joy","Si je reste, vous me ferez une place près du feu ? Je prends beaucoup de place, mais je tiens chaud."],
-      ["yeti","shy",`Tiens, ${ME()}. Un poil de ma fourrure. La preuve que j'existe.`]]}
+      ["yeti","joy","Si je reste, vous me ferez une place près du feu ? Je prends beaucoup de place, mais je tiens chaud.",()=>actEmote("yeti","coeur")],
+      ["yeti","shy",`Tiens, ${ME()}. Un poil de ma fourrure. La preuve que j'existe.`,()=>actGive("yeti","me","poil")]]}
   ]},
   gribouille:{title:"Le grand portrait",souv:"le grand portrait du refuge",beats:[
     {at:"gribouille",goal:"Gribouille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["gribouille","joy",`Bonjour ${ME()} ! Je peins avec ma queue : tu vois le bout bleu ?`],
-      ["gribouille","shy","Je voudrais peindre tout le monde, mais ils me fuient dès que je sors mes couleurs. Tu m'aides ?"]]},
+      ["gribouille","joy",`Bonjour ${ME()} ! Je peins avec ma queue : tu vois le bout bleu ?`,()=>actTrick("gribouille","toupie")],
+      ["gribouille","shy","Je voudrais peindre tout le monde, mais ils me fuient dès que je sors mes couleurs. Tu m'aides ?",()=>actEmote("gribouille","goutte")]]},
     {at:"*",leave:1,goal:"Demande à un renard de poser pour Gribouille.",lines:id=>[
-      [id,"joy","Poser ? Avec plaisir !"],
-      [id,"surprise","…Oh, un papillon ! Je reviens !"],
-      ["me","sad",`Et hop, plus de ${nameOf(id)}. Essayons avec quelqu'un d'autre.`]]},
+      [id,"joy","Poser ? Avec plaisir !",()=>actPose(id,"happy","joy")],
+      [id,"surprise","…Oh, un papillon ! Je reviens !",()=>actTrick(id,"zoom")],
+      ["me","sad",`Et hop, plus de ${nameOf(id)}. Essayons avec quelqu'un d'autre.`,()=>actEmote("me","goutte")]]},
     {at:"*",game:{k:"still",say:"Chasse les mouches, sinon il éternue !",win:"Ne bouge plus… Voilà !"},goal:"Essaie avec un autre renard.",lines:id=>[
-      ["gribouille","joy",`Un portrait de ${nameOf(id)} ! Mon premier !`],
-      ["gribouille","sad","Mais un renard tout seul sur un tableau, ça fait un peu triste…"],
-      ["me","open","Et si on vous peignait tous ensemble ?"],
-      ["gribouille","surprise","Le grand portrait ! Appelle tout le monde devant la maison !"]]},
+      ["gribouille","joy",`Un portrait de ${nameOf(id)} ! Mon premier !`,()=>actTrick("gribouille","salto")],
+      ["gribouille","sad","Mais un renard tout seul sur un tableau, ça fait un peu triste…",()=>actEmote("gribouille","goutte")],
+      ["me","open","Et si on vous peignait tous ensemble ?",()=>actEmote("me","!")],
+      ["gribouille","surprise","Le grand portrait ! Appelle tout le monde devant la maison !",()=>actTrick("gribouille","boing")]]},
     {at:"@porch",gather:1,game:{k:"still",all:1,say:"Tout le monde pose ! Chasse les mouches !",win:"Ne bougez plus… Voilà !"},goal:"Appelle tout le monde devant la maison.",lines:[
-      ["petitpois","surprise","Mais… Gribouille, tu n'es pas dessus, toi !"],
-      ["gribouille","shy","Le peintre, on ne le voit jamais. C'est normal."],
-      ["petitpois","open","Prête-moi ta queue, Gribouille. J'ai une idée."]]},
+      ["petitpois","surprise","Mais… Gribouille, tu n'es pas dessus, toi !",()=>actEmote("petitpois","!")],
+      ["gribouille","shy","Le peintre, on ne le voit jamais. C'est normal.",()=>actEmote("gribouille","goutte")],
+      ["petitpois","open","Prête-moi ta queue, Gribouille. J'ai une idée.",()=>actEmote("petitpois","note")]]},
     {at:"gribouille",game:{k:"portrait"},goal:"Va voir le tableau de Gribouille.",lines:[
-      ["petitpois","joy","Là, dans le coin. Un peu de travers… Voilà : toi."],
-      ["gribouille","joy","Tout de travers… C'est le plus beau morceau du tableau. Tiens, il est pour toi."]]}
+      ["petitpois","joy","Là, dans le coin. Un peu de travers… Voilà : toi.",()=>actEmote("gribouille","!")],
+      ["gribouille","joy","Tout de travers… C'est le plus beau morceau du tableau. Tiens, il est pour toi.",()=>actGive("gribouille","me","tableau")]]}
   ]}
 };
 
