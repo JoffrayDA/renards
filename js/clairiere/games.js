@@ -576,7 +576,7 @@ const GAMES={
         +(f.ko?`<g transform="translate(0 ${-f.w*.75})">${[0,1,2].map(i=>`<path class="bko" style="animation-delay:-${i*.33}s" d="M0 -5 l1.4 3.4 3.6 .4 -2.7 2.4 .8 3.6 -3.1 -1.9 -3.1 1.9 .8 -3.6 -2.7 -2.4 3.6 -.4z" fill="#ffe680" stroke="${INK}" stroke-width="1"/>`).join("")}</g>`:"")
         +`<g transform="translate(0 ${-f.w-14})">${hearts(f.hp,f.max,f.foe?.85:1)}</g>`
         +(f.boss?`<g transform="translate(0 ${-f.w-30})"><rect x="-22" y="-9" width="44" height="16" rx="8" fill="#e0505a" stroke="${INK}" stroke-width="2"/><text y="3.5" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="10" fill="#fff">CHEF</text></g>`:"")};
-    const hud=()=>{const Y=-EXT+128,col=(L,x,title)=>`<g transform="translate(${x} ${Y})"><rect x="-92" y="-14" width="184" height="96" rx="18" fill="#fffaf2" stroke="${INK}" stroke-width="2.6"/><text y="6" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${title}</text>`
+    const hud=()=>{if(EXT<170){gHud.innerHTML="";return}const Y=-EXT+128,col=(L,x,title)=>`<g transform="translate(${x} ${Y})"><rect x="-92" y="-14" width="184" height="96" rx="18" fill="#fffaf2" stroke="${INK}" stroke-width="2.6"/><text y="6" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${title}</text>`
         +L.map((f,i)=>`<g transform="translate(${(i-1)*58} 46)" opacity="${f.ko?.4:1}"><svg x="-24" y="-30" width="48" height="48" viewBox="8 -8 104 104">${foxArt(FOX[f.id],{portrait:1,expr:f.ko?"sad":"joy"}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg><g transform="translate(0 26)">${hearts(f.hp,f.max,.62)}</g></g>`).join("")+`</g>`;
       gHud.innerHTML=col(mine,102,"Ton équipe")+col(foes,298,"Les sauvages")+`<g transform="translate(200 ${Y+34})"><circle r="17" fill="#f59a8b" stroke="${INK}" stroke-width="2.6"/><text y="5" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="#fff">VS</text></g>`};
     // caché : seules les oreilles dépassent ; un des nôtres touché se baisse un instant ; K.O., il s'affale, étourdi, sur le fort
@@ -594,7 +594,7 @@ const GAMES={
     const hit=(f,dmg=1)=>{if(f.ko)return;f.hp=Math.max(0,f.hp-dmg);f.hurt=.6;if(f.foe)f.up=false;else f.duck=.5;
       if(!f.hp){f.ko=true;(f.foe?sv.querySelector("#bfortE"):sv.querySelector("#bfortM")).after(f.el);A.sfx(f.foe?"cheer":"lose");if(f.foe)A.cheer(f.boss?"CHEF K.O. !":"K.O. !")}else A.sfx(f.foe?"good":"bad",f.foe?3-f.hp:0);
       drawF(f);hud();if(!f.foe){shake=.3;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}}
-    const start=()=>{st="play";t=0;balls.forEach(b=>b.el.remove());balls=[];gFoe.innerHTML="";gMe.innerHTML="";
+    const start=()=>{st="play";t=0;balls.forEach(b=>b.el.remove());balls=[];[...foes,...mine].forEach(f=>f.el&&f.el.remove());gFoe.innerHTML="";gMe.innerHTML="";
       foes=FOE.map((id,i)=>({id,foe:1,boss:id===BOSS,x:EX[i],y:EY-24,w:70,hp:id===BOSS?5:3,max:id===BOSS?5:3,up:false,dy:40,hurt:0,ko:false,timer:.8+i*.7,threw:0}));
       mine=team.map((id,i)=>({id,x:EX[i],y:MY-32,w:86,hp:3,max:3,up:true,dy:0,hurt:0,ko:false,auto:3+i*1.3}));
       for(const f of foes){f.el=grp(gFoe,"");f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();shoot(f)};drawF(f)}
@@ -626,9 +626,11 @@ const GAMES={
       if(st==="play"&&!alive(foes).length){st="won";A.win(g.win||"Victoire ! Les sauvages se rendent !")}
       else if(st==="play"&&!alive(mine).length){st="lost";A.sfx("lose");A.say("Toute ton équipe est K.O.… On recommence !");A.later(start,1800)}});
     // le choix de l'équipe : trois renards du refuge
-    const pool=[...new Set(["petitpois",...Object.keys(R.res)])].filter(id=>FOX[id]&&!FOE.includes(id)&&!INC[id]&&id!=="roussette").slice(0,24);
+    const pool=[...new Set(["petitpois",...Object.keys(R.res)])].filter(id=>FOX[id]&&!FOE.includes(id)&&!INC[id]&&id!=="roussette");
+    // les autres renards, pas encore arrivés au refuge, en silhouette : on voit qu'il y en aura d'autres
+    const later=ROSTER.filter(id=>!pool.includes(id)&&!FOE.includes(id)).slice(0,Math.max(0,16-pool.length));
     const pk=document.createElement("div");pk.className="bpick";
-    const drawPick=()=>{pk.innerHTML=`<h3>Choisis ton équipe</h3><p>Trois renards du refuge pour affronter les sauvages.</p><div class="bgrid">${pool.map(id=>`<button type="button" class="${team.includes(id)?"on":""}" data-id="${id}">${foxArt(FOX[id],{portrait:1,expr:"joy"})}<b>${FOX[id].name}</b></button>`).join("")}</div>
+    const drawPick=()=>{pk.innerHTML=`<h3>Choisis ton équipe</h3><p>Trois renards du refuge pour affronter les sauvages.</p><div class="bgrid">${pool.map(id=>`<button type="button" class="${team.includes(id)?"on":""}" data-id="${id}">${foxArt(FOX[id],{portrait:1,expr:"joy"})}<b>${FOX[id].name}</b></button>`).join("")}${later.map(id=>`<button type="button" class="lock" disabled>${foxArt(FOX[id],{portrait:1,sil:1})}<b>???</b></button>`).join("")}</div><p class="bnote">Seuls les renards déjà au refuge peuvent jouer.</p>
       <div class="bteam">${[0,1,2].map(i=>team[i]?`<span>${foxArt(FOX[team[i]],{portrait:1,expr:"joy"})}</span>`:`<span class="empty">?</span>`).join("")}<button type="button" class="btn go" ${team.length<3?"disabled":""}>C'est parti !</button></div>`};
     pk.onpointerdown=e=>e.stopPropagation();
     pk.onclick=e=>{const b=e.target.closest("button");if(!b)return;

@@ -405,3 +405,4 @@ h1 .la{font-style:normal}
 .bteam{display:flex;align-items:center;gap:6px;position:sticky;bottom:0;background:#fffaf2;border:2.5px solid var(--ink);border-radius:18px;padding:6px;box-shadow:0 3px 0 var(--ink)}
 .bteam span{width:48px;height:48px;border-radius:12px;background:#e6f0f8;display:grid;place-items:center;font-weight:900;color:var(--ink-soft)}.bteam span svg{width:100%;display:block}
 .bteam .go{margin-left:auto}
+.bgrid button.lock{opacity:.45;cursor:default}.bnote{font-size:12px!important}
