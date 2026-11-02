@@ -112,8 +112,18 @@ function choose(f){
   const pool=free.filter(s=>(!s.lamp||f.id==="luciole")&&!s.obj);
   return pool[Math.floor(Math.random()*pool.length)]||null;
 }
+// le renard attendu par l'histoire vient attendre au milieu de la clairière, bien en vue, même sous la pluie (Joffray, 03/11/2026 :
+// « va voir Pain d'épice », et il n'était nulle part : rentré dans la maison, caché dans un objet ou pas encore dans la scène)
+function waitSpot(f){const ok=SPOTS.filter(s=>(!taken(s)||s===f.spot)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco&&!s.via);
+  const cov=scn.rain?ok.filter(s=>s.cov):[],L=cov.length?cov:ok;return L.sort((a,b)=>Math.hypot(a.x-200,a.y-330)-Math.hypot(b.x-200,b.y-330))[0]||SPOT.g3}
+function storyWait(){const c=cur();if(!c||!c.b||gameOn)return;const id=c.b.at;if(!FOX[id]||!isRes(id)||isHidden(id))return;
+  let f=foxes.find(x=>x.id===id&&!x.wild);
+  if(!f){f=makeFox(id,null);goTo(f,waitSpot(f));return}
+  if(f.walk)return;
+  if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,waitSpot(f));drawGlow();return}
+  if(!f.spot||f.spot.obj||f.spot.deco||f.spot.via||f.spot.lamp)goTo(f,waitSpot(f))}
 function tick(){
-  const now=Date.now();
+  const now=Date.now();storyWait();
   for(const f of foxes.slice()){
     if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
     // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
