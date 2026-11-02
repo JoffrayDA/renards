@@ -20,7 +20,8 @@ function noelNext(){if(!noelOn())return null;return NOEL_ORDER.find((k,i)=>!stor
 const noelRows=()=>noelOn()||NOEL_ORDER.some(k=>R.beat[k]>0)?NOEL_ORDER:[];
 // le sapin : null (pas planté), "0" pousse, "1" grand, "2" immense, "3" décoré ; star : l'étoile posée et les cadeaux au pied
 function sapinStage(){if(!noelOn()||!storyDone("grelot"))return null;const d=noelDay();
-  if(storyDone("paillette"))return "3";if(d>=15&&storyDone("ramure"))return "2";if(d>=8)return "1";return "0"}
+  // décoré dès les boules rattrapées (Joffray : Paillette parle du sapin décoré juste après le jeu)
+  if(storyDone("paillette")||(R.beat.paillette||0)>=3)return "3";if(d>=15&&storyDone("ramure"))return "2";if(d>=8)return "1";return "0"}
 // l'étoile se pose à la fin de l'histoire de Barbe-Neige, ou plus tôt si on a ouvert les 24 cases du calendrier (Étoile dorée)
 const goldStar=()=>!!(bourse().noel||{}).etoile;
 const sapinStar=()=>storyDone("barbeneige")||(goldStar()&&sapinStage()==="3");
