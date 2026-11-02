@@ -101,9 +101,9 @@ const INCO=[
       {rain:1,pose:"groom",txt:"Sous la pluie, sa mèche frise deux fois plus. Elle essaie de l'aplatir."},
       {when:"jour",pose:"lie",txt:"Elle fait la sieste au soleil, la mèche au vent."},
       {pose:"happy",txt:"Le miel la rend toute joyeuse. Sa mèche rebondit."}]},
-  // lot 3 (02/11/2026, idée de Joffray) : ils ne viennent pas à la gamelle mais à un objet posé dans la clairière
-  // (near : un objet du refuge, OBJS, ou de la déco, DECO). Pas d'objet, pas de visite.
-  {id:"cachou",name:"Cachou",near:"carton",scale:.9,c:{b:"#f3e2c4",ch:"#fffaf0",e:"#2e2028",s:"#5a4a40",t:"#2e2028"},
+  // lot 3 (02/11/2026, idée de Joffray) : attirés surtout par un objet posé dans la clairière (near : un objet du refuge,
+  // OBJS, ou de la déco, DECO), ils viennent aussi, plus rarement, à leur gamelle (Joffray : « laisse-leur la chance »)
+  {id:"cachou",name:"Cachou",near:"carton",bowl:"croquettes",scale:.9,c:{b:"#f3e2c4",ch:"#fffaf0",e:"#2e2028",s:"#5a4a40",t:"#2e2028"},
     opts:["Cachou","Réglisse","Caramel"],bio:"Elle n'entre jamais par la porte : toujours par un carton. Le bout de ses oreilles et de sa queue est tout noir.",
     hello:"Cachou. Ton carton est le meilleur de toute la forêt. Je peux le garder ?",pp:"Elle a dormi dans tous les cartons de la forêt. Le tien a gagné.",
     clues:[{pose:"sit",txt:"Quelqu'un s'est glissé dans le carton. On ne voit que deux oreilles."},
@@ -111,7 +111,7 @@ const INCO=[
       {when:"nuit",pose:"up",txt:"La nuit, ses yeux brillent au fond du carton."},
       {pose:"groom",txt:"Le bout de ses oreilles aussi est noir, comme trempé dans l'encre."},
       {pose:"happy",txt:"Elle saute dedans, ressort, re-saute dedans. Encore et encore."}]},
-  {id:"boussole",name:"Boussole",near:"tente",acc:"boussole",c:{b:"#c98a5a",ch:"#fff3e4",e:"#5a3424",s:"#5a3424",t:"#fff3e4"},
+  {id:"boussole",name:"Boussole",near:"tente",bowl:"baies",acc:"boussole",c:{b:"#c98a5a",ch:"#fff3e4",e:"#5a3424",s:"#5a3424",t:"#fff3e4"},
     opts:["Boussole","Sentier","Galet"],bio:"Un explorateur qui a fait le tour de la forêt trois fois. Il porte une vraie boussole au cou, qui indique toujours… la tente.",
     hello:"Boussole, explorateur. Ta tente est le meilleur camp de base de la région.",pp:"Il connaît tous les sentiers. Il dit qu'il cherche le Grand Nord, mais il revient toujours ici.",
     clues:[{pose:"sit",txt:"Quelqu'un campe devant la tente. Il regarde au loin."},
@@ -119,7 +119,7 @@ const INCO=[
       {when:"aube",pose:"groom",txt:"À l'aube, il plie bagage… puis il déplie bagage."},
       {rain:1,pose:"lie",txt:"Sous la pluie, il reste à l'abri sous la toile et note des choses dans sa tête."},
       {pose:"happy",txt:"Il fait une petite danse quand l'aiguille de sa boussole tourne."}]},
-  {id:"roupillon",name:"Roupillon",near:"hamac",mark:"cernes",c:{b:"#b9a8c8",ch:"#f8f4fb",e:"#5e4c6e",s:"#5e4c6e",t:"#f8f4fb"},
+  {id:"roupillon",name:"Roupillon",near:"hamac",bowl:"miel",mark:"cernes",c:{b:"#b9a8c8",ch:"#f8f4fb",e:"#5e4c6e",s:"#5e4c6e",t:"#f8f4fb"},
     opts:["Roupillon","Sieste","Bâille"],bio:"Il ne vient que pour le hamac. Il a toujours sommeil, même au réveil : on voit ses cernes de loin.",
     hello:"Roupillon… zzz… Oh, pardon. Merci pour le hamac. Je reviendrai. Demain. Après la sieste.",pp:"C'est le plus grand dormeur de la forêt. Même Somnus est jaloux.",
     clues:[{pose:"sleep",txt:"Quelqu'un dort dans le hamac. Il ronfle tout doucement."},
@@ -142,12 +142,12 @@ function clueFits(c,t){const ph=phaseAt(t);return (!c.when||c.when===ph||(c.when
 // qui peut venir manger à cette gamelle, à cet instant ; un renard jamais vu, ou qui a un indice à donner, compte double
 function visitPool(type,t){const pool=[];
   for(const id in WILD)if(WILD[id]===type&&!isRes(id))pool.push(...(R.met[id]?[id]:[id,id]));
-  for(const f of INCO){if(f.near||(f.bowl!==type&&f.bowl!=="tout")||isRes(f.id))continue; // un frileux de Noël loge au refuge
+  for(const f of INCO){if((f.bowl!==type&&f.bowl!=="tout")||isRes(f.id))continue; // un frileux de Noël loge au refuge
     const s=R.inco[f.id]||{n:0};
     const w=f.bowl==="tout"?1:2; // celui qui mange de tout ne doit pas prendre toutes les visites
     if(s.n<5){if(clueFits(f.clues[s.n],t))pool.push(...Array(w).fill(f.id))}else if(w>1)pool.push(f.id)}
   // ses 5 photos prises, celui qui mange de tout ne passe plus que si personne d'autre ne vient
-  if(!pool.length)pool.push(...INCO.filter(f=>!f.near&&f.bowl==="tout"&&(R.inco[f.id]||{n:0}).n>=5).map(f=>f.id));
+  if(!pool.length)pool.push(...INCO.filter(f=>f.bowl==="tout"&&(R.inco[f.id]||{n:0}).n>=5).map(f=>f.id));
   return pool}
 // la photo d'un inconnu garde l'indice du moment
 // les inconnus du lot 3 : l'objet qui les attire est-il posé ? (un objet du refuge ou de la déco)
@@ -172,7 +172,7 @@ function incoSheet(id){const f=INC[id],s=incOf(id),ps=R.photos.filter(p=>p.id===
   else act=`<p><b>À ton avis, il s'appelle…</b></p><div class="guess">${f.opts.slice().sort().map(n=>`<button class="btn" data-guess="${id}|${n}" type="button">${n}</button>`).join("")}</div>`
     +(s.n>=5?`<button class="btn ghost" data-ask="${id}" type="button">Demander à Petit Pois</button>`:"");
   const nx=s.n<5&&f.clues[s.n],w=nx&&whenTxt(nx);
-  const tip=s.n<5?`<p class="sub">Prochaine photo : ${f.near?`près ${nearName(f.near)}`:f.bowl==="tout"?"n'importe quelle gamelle":`une gamelle de ${BOWLS[f.bowl].name.toLowerCase()}`}${w?`, et seulement ${w}`:""}.</p>`:"";
+  const tip=s.n<5?`<p class="sub">Prochaine photo : ${f.near?`près ${nearName(f.near)}, ou une gamelle de ${BOWLS[f.bowl].name.toLowerCase()}`:f.bowl==="tout"?"n'importe quelle gamelle":`une gamelle de ${BOWLS[f.bowl].name.toLowerCase()}`}${w?`, et seulement ${w}`:""}.</p>`:"";
   openSheet(`<div class="foxhead"><div class="pic rare">${foxArt(FOX[id],{expr:"joy",portrait:1,sil:!s.found})}</div><div><h2>${s.found?f.name:"Un inconnu"}</h2><span class="chip rare">Sauvage</span></div></div>${act}${tip}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>Indice ${p.clue+1}</b>${f.clues[p.clue].txt}</figcaption></figure>`).join("")}</div>`,"photos")}
 function guessInco(id,name){const f=INC[id],s=incOf(id);if(!canGuess(id))return;
   if(name!==f.name){s.lock=s.n;save();toast(`Il ne réagit pas à « ${name} ». Ce n'est pas ça.`);incoSheet(id);return}

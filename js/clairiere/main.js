@@ -24,6 +24,8 @@ if(GIFT&&OBJS[GIFT]&&!R.obj[GIFT]){R.obj[GIFT]=1;save();addObjSpots();setTimeout
 if(GIFT)history.replaceState(null,"",location.pathname);
 drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
 // un petit jeu à rejouer quand on veut (Joffray ne pouvait plus revoir celui de Brume) : clairiere.html?jeu=umbrella
+// voir l'intérieur de la maison même fermée (pour tester, Joffray n'y a pas encore accès) : clairiere.html?voir=maison
+if(new URLSearchParams(location.search).get("voir")==="maison")setTimeout(()=>{closeSheet();enterHouse()},900);
 const QJEU=new URLSearchParams(location.search).get("jeu");
 if(QJEU&&GAMES[QJEU]){const again=()=>playGame({k:QJEU,who:"petitpois",target:"petitpois",item:"wool",thing:"page",n:6},()=>setTimeout(again,1200));setTimeout(again,600)}
 syncFoxes();drawObjs();fillObjs();

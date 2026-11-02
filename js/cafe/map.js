@@ -132,6 +132,8 @@ function mapSVG(L){
   const cy=Y(70);
   s+=shadow(200,cy+16,56)+`<rect x="160" y="${cy-28}" width="80" height="44" rx="6" fill="#fff5e8" ${BO}/><path d="M150 ${cy-26} L200 ${cy-62} L250 ${cy-26}Z" fill="#f59a8b" ${BO}/><rect x="190" y="${cy-8}" width="20" height="24" rx="4" fill="#c8946a" ${BO}/><rect x="166" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><rect x="216" y="${cy-18}" width="18" height="14" rx="3" fill="#cfe3f0" ${BO}/><path d="M160 ${cy-30} h80" stroke="${HW?"#f2a35c":"#f6a5b4"}" stroke-width="8" stroke-dasharray="10 10"/>`;
   if(HW)s+=jack(146,cy+16,.7)+jack(256,cy+18,.55);
+  // la couronne de houx du calendrier de l'Avent, sur la porte, pendant Noël
+  if(xmasDay()&&(bourse().noel||{}).houx)s+=`<circle cx="200" cy="${cy-1}" r="7.4" fill="none" stroke="#3f6a4f" stroke-width="5"/><circle cx="200" cy="${cy-1}" r="7.4" fill="none" stroke="#5f9468" stroke-width="2.4" stroke-dasharray="2 3"/>${[[-5,-5],[5,-4],[0,6]].map(([dx,dy])=>`<circle cx="${200+dx}" cy="${cy-1+dy}" r="1.8" fill="#e0505a"/>`).join("")}<path d="M200 ${cy+6} l-4 4 v-6Z M200 ${cy+6} l4 4 v-6Z" fill="#e0505a" stroke="${INK}" stroke-width="1"/>`;
   gates.forEach(g=>s+=gateSVG(g.x,Y(g.u),gateOpen(CHAP[g.i]),CHAP[g.i]));
   const e=way[way.length-1],ey=Y(e.u);
   s+=`<rect x="${e.x-4}" y="${ey-30}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${e.x-48} ${ey-56} H${e.x+40} L${e.x+52} ${ey-44} L${e.x+40} ${ey-32} H${e.x-48}Z" fill="#fffaf2" ${BO}/><text x="${e.x}" y="${ey-39}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">À suivre…</text>`;

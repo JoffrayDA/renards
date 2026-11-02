@@ -270,7 +270,7 @@ function roomSVG(night){
     for(let i=1;i<9;i++){const t=i/9,x=GX0+(GX1-GX0)*t,y=GY0+11+80*t*(1-t);s+=`<path d="M${x} ${y} q-5 -6 -12 -4 q3 3 2 6 q4 -2 5 2 q2 -2 5 -4 q3 2 5 4 q1 -4 5 -2 q-1 -3 2 -6 q-7 -2 -12 4Z" fill="${i%2?"#5f4f72":"#f2a35c"}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`}
   }
   // Nuit de Noël : guirlande de sapin à nœuds rouges et boules, petit sapin décoré près de la porte
-  if(XNV()){
+  if(XNV()||(xmasDay()&&!HW)){
     s+=`<path d="M${GX0} ${GY0+4} Q300 ${GY0+44} ${GX1} ${GY0+4}" fill="none" stroke="#3f6a4f" stroke-width="7" stroke-linecap="round"/><path d="M${GX0} ${GY0+4} Q300 ${GY0+44} ${GX1} ${GY0+4}" fill="none" stroke="#5f9468" stroke-width="3.4" stroke-dasharray="2 5" stroke-linecap="round"/>`;
     for(let i=1;i<9;i++){const t=i/9,x=GX0+(GX1-GX0)*t,y=GY0+6+80*t*(1-t);s+=i%2?`<path d="M${x} ${y} l-7 -5 v10Z M${x} ${y} l7 -5 v10Z" fill="#e0505a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="${x}" cy="${y}" r="2.6" fill="#c7454f" stroke="${INK}" stroke-width="1.4"/>`
       :`<path d="M${x} ${y} v6" stroke="${INK}" stroke-width="1.4"/><circle cx="${x}" cy="${y+11}" r="5.4" fill="${["#f2c45a","#9ec3ef","#f6a5b4","#c9a8ec"][i%4]}" stroke="${INK}" stroke-width="1.8"/><circle cx="${x-1.6}" cy="${y+9.4}" r="1.4" fill="#fff" opacity=".8"/>`}

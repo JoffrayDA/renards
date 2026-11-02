@@ -21,7 +21,9 @@ const noelRows=()=>noelOn()||NOEL_ORDER.some(k=>R.beat[k]>0)?NOEL_ORDER:[];
 // le sapin : null (pas planté), "0" pousse, "1" grand, "2" immense, "3" décoré ; star : l'étoile posée et les cadeaux au pied
 function sapinStage(){if(!noelOn()||!storyDone("grelot"))return null;const d=noelDay();
   if(storyDone("paillette"))return "3";if(d>=15&&storyDone("ramure"))return "2";if(d>=8)return "1";return "0"}
-const sapinStar=()=>storyDone("barbeneige");
+// l'étoile se pose à la fin de l'histoire de Barbe-Neige, ou plus tôt si on a ouvert les 24 cases du calendrier (Étoile dorée)
+const goldStar=()=>!!(bourse().noel||{}).etoile;
+const sapinStar=()=>storyDone("barbeneige")||(goldStar()&&sapinStage()==="3");
 // les lanternes de gauche laissent la place au sapin dès qu'il a grandi (scene.js)
 function noelLampsL(){const s=sapinStage();return s&&s!=="0"?[[90,206]]:null}
 // pas d'objet de déco sur le sapin (deco.js)
