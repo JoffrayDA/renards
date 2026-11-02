@@ -70,6 +70,7 @@ function tapFox(f){
   if(shooting){shootFox(f);return} // l'appareil photo est sorti (photo.js)
   if(!f.wild&&storyTap(f.id))return;
   if(f.wild){const tr=wildTrust(f.id);bubble(f,f.rest?"se prélasse : il se sent chez lui !":tr===0?"se méfie… il recule d'un pas.":tr===1?(known(f.id)?"mange en te surveillant du coin de l'œil.":"un inconnu… il mange en te surveillant."):"n'a plus peur de toi !");return}
+  if(snowballTap(f))return; // Boule-de-Neige propose sa bataille (noel.js)
   if(envieTap(f))return; // une petite envie (envies.js)
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);

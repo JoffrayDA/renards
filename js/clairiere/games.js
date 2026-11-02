@@ -545,6 +545,39 @@ const GAMES={
     reset();
   },
 
+  /* La bataille de boules de neige (Boule-de-Neige, Noël, 02/11/2026) : les renards du refuge sortent la tête de derrière
+     les forts de neige ; on les touche pour leur lancer une boule. Il en faut assez avant la fin du temps. Boule-de-Neige,
+     lui, ne compte pas : il fait partie de la neige (le toucher fait perdre un point). */
+  snowball(g,A){
+    const sv=A.sv,N=g.n||10,T=g.time||22,F=[[70,250],[200,226],[330,250],[120,360],[280,360]],who=foxes.filter(f=>!f.wild).map(f=>f.id).slice(0,8);
+    let st,t,hits,next,pop=[];
+    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bcd2ea"/><rect y="-320" width="400" height="460" fill="#d6e4f2"/>
+      ${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${(i*71)%300-120}" r="${1+i%3}" fill="#fff" opacity=".85"/>`).join("")}
+      <path d="M0 150 Q100 130 200 146 Q300 128 400 150 V480 H0Z" fill="#f4f8fc" stroke="${INK}" stroke-width="2.4"/>
+      <g id="pops"></g><g id="forts">${F.map(([x,y])=>`<g transform="translate(${x} ${y})"><path d="M-54 0 Q-56 -30 -36 -34 Q-20 -46 0 -40 Q20 -46 36 -34 Q56 -30 54 0Z" fill="#fff" stroke="${INK}" stroke-width="3"/><path d="M-40 -18 q10 4 22 0 M8 -24 q12 4 24 0" fill="none" stroke="#cfdbea" stroke-width="2.4" stroke-linecap="round"/></g>`).join("")}</g>
+      <g id="balls"></g><rect x="40" y="440" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="442" width="0" height="8" rx="4" fill="#9ec3ef"/>`;
+    const pops=sv.querySelector("#pops"),balls=sv.querySelector("#balls"),bar=sv.querySelector("#bar");
+    const say=()=>A.say(`${hits} sur ${N} !`);
+    const reset=()=>{st="play";t=0;hits=0;next=.6;pop.forEach(p=>p.el.remove());pop=[];A.say(g.say||`Bataille de boules de neige ! Touche les renards qui sortent la tête : ${N} boules dans le mille !`)};
+    const throwAt=(x,y,ok)=>{const b=grp(balls,`<circle r="9" fill="#fff" stroke="${INK}" stroke-width="2.4"/>`);
+      b.animate([{transform:"translate(200px,500px) scale(1.4)"},{transform:`translate(${x}px,${y}px) scale(.8)`}],{duration:220,easing:"ease-out"}).onfinish=()=>{b.remove();
+        const s=grp(balls,`<g transform="translate(${x} ${y-10})">${[0,60,120,180,240,300].map(a=>`<circle cx="${(Math.cos(a*Math.PI/180)*12).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*12).toFixed(1)}" r="4" fill="#fff" stroke="${INK}" stroke-width="1.4"/>`).join("")}<circle r="7" fill="#fff"/></g>`);
+        s.animate([{opacity:1},{opacity:0}],{duration:500}).onfinish=()=>s.remove();A.sfx(ok?"good":"bad",ok?hits:0)}};
+    A.loop(dt=>{if(st!=="play")return;t+=dt;bar.setAttribute("width",(316*Math.min(1,t/T)).toFixed(1));
+      if((next-=dt)<=0&&pop.length<2){next=Math.max(.35,.9-t*.02);const free=F.map((p,i)=>i).filter(i=>!pop.some(p=>p.i===i));if(free.length){
+        const i=free[Math.floor(Math.random()*free.length)],[x,y]=F[i],bn=Math.random()<.18,id=bn?"bouleneige":who[Math.floor(Math.random()*who.length)]||"petitpois";
+        const p={i,x,y,bn,life:Math.max(.7,1.3-t*.025),el:grp(pops,`<g transform="translate(${x} ${y-18})">${foxAt(id,0,0,84,{pose:"happy"})}<circle cy="-40" r="40" fill="transparent"/></g>`)};
+        p.el.style.cursor="pointer";p.el.animate([{transform:"translateY(40px)"},{transform:"translateY(0)"}],{duration:160,easing:"ease-out"});
+        p.el.onpointerdown=e=>{e.stopPropagation();if(st!=="play"||p.hit)return;p.hit=1;
+          if(p.bn){hits=Math.max(0,hits-1);throwAt(x,y-50,false);A.say(`Pas Boule-de-Neige, il est fait de neige ! ${hits} sur ${N}.`)}
+          else{hits++;throwAt(x,y-50,true);if(hits>=N){st="won";A.win(g.win||"Bataille gagnée !");return}if(hits===Math.ceil(N/2))A.cheer("EN PLEIN DANS LE MILLE !");say()}
+          A.later(()=>{p.el.remove();pop=pop.filter(q=>q!==p)},240)};
+        pop.push(p)}}
+      for(const p of pop.slice()){p.life-=dt;if(p.life<=0&&!p.hit){p.el.remove();pop=pop.filter(q=>q!==p)}}
+      if(t>=T){st="lost";A.sfx("lose");A.say(`${hits} sur ${N} seulement… On recommence !`);A.later(reset,1500)}});
+    reset();
+  },
+
   /* Les clous (Copeau) : la porte de la maison et ses gonds rouillés ; chaque clou neuf s'enfonce en trois coups de marteau,
      avant la fin du temps. Le marteau tape là où on touche. */
   nails(g,A){

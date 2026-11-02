@@ -315,6 +315,14 @@ function drawSnow(){const n=noelOn()?(scn.rain?90:28):0;if(n===snowN)return;snow
 if(noelOn())$("scene").insertBefore(snowEl,$("phase"));
 
 // les invités de Noël repartent dans le Nord après le 6 janvier (ils reviendront l'hiver suivant)
+// Boule-de-Neige (son rôle, 02/11/2026) : il vient au refuge dès que Noël commence (après la graine de Grelot) et propose
+// chaque jour une bataille de boules de neige ; +3 sucres d'orge la première victoire du jour
+if(noelOn()&&storyDone("grelot")&&!R.res.bouleneige){R.res.bouleneige={at:Date.now(),h:0,pet:""};save()}
+function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;const done=R.snowDay===today();
+  talk(done?[["bouleneige","joy","Encore une bataille ? Pour le plaisir, alors ! (Les sucres d'orge, c'est une fois par jour.)"]]
+    :[["bouleneige","joy",`${ME()} ! Une bataille de boules de neige ? Touche ceux qui sortent la tête… mais pas moi, je suis fait de neige !`],["me","joy","C'est parti !"]],
+    ()=>playGame({k:"snowball",n:10},()=>{if(R.snowDay!==today()){R.snowDay=today();const b=bourse();b.sucres=(b.sucres||0)+3;putBourse(b);save();toast("Bataille gagnée ! +3 sucres d'orge")}else toast("Bien joué !")}));
+  return true}
 const noelAway=id=>FOX[id]&&(FOX[id].event==="noel"||NOEL_WILD.includes(id)&&!!INC[id])&&!noelOn();
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
 if(!noelOn()&&NOEL_WILD.some(id=>R.res[id])){for(const id of NOEL_WILD)delete R.res[id];save()}
