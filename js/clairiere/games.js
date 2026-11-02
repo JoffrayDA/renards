@@ -639,6 +639,167 @@ const GAMES={
     if(pool.length<=3){team=pool.slice(0,3);while(team.length<3)team.push("petitpois");start()}else{drawPick();el.appendChild(pk);A.say("Avant la bataille…")}
   },
 
+  /* La course de luge (Noël, 03/11/2026, Joffray : « Balafre a le seum, il veut sa revanche ») : Petit Pois contre Radar, en
+     descente, vus de dos. On guide la luge du doigt ; les portes de fanions et les plaques de glace font accélérer, un sapin ou un
+     rocher fait tourner la luge et ralentir. Arriver en bas avant Radar. */
+  luge(g,A){
+    const sv=A.sv,me=g.who||"petitpois",rival=g.rival||"radar",D=g.dist||6000,PY=390,TOP=-EXT-50;
+    let st,px,tx,v,boost,spin,p,rp,rx=300,objs=[],next,spray=[],t;
+    const PS=`stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"`;
+    // une luge en bois, le renard assis dessus, de dos, son écharpe qui flotte au vent
+    const sled=(id,col)=>`<g><ellipse cy="12" rx="36" ry="8" fill="#9fb3cc" opacity=".45"/><path d="M-32 8 H30 Q40 8 40 -2" fill="none" stroke="#b07a4e" stroke-width="4.5" stroke-linecap="round"/><path d="M-32 8 H30 Q40 8 40 -2" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round" opacity=".5"/>`
+      +`<rect x="-30" y="-6" width="60" height="12" rx="5" fill="${col}" ${PS}/><path d="M-22 0 H22" stroke="#fff" stroke-width="2" opacity=".5"/>`
+      +`<g class="lscarf"><path d="M-6 -36 q-18 4 -30 14 q10 2 26 -6Z" fill="${col}" ${PS}/></g>${foxAt(id,0,-2,64,{pose:"back"})}</g>`;
+    const tree=k=>`<g transform="scale(${k})"><ellipse cy="4" rx="24" ry="6" fill="#9fb3cc" opacity=".4"/><rect x="-4" y="-10" width="8" height="12" fill="#8a5a3a" stroke="${INK}" stroke-width="2"/><path d="M0 -64 L21 -31 H11 L27 -8 H-27 L-11 -31 H-21Z" fill="#4f8a5a" ${PS}/><path d="M-11 -33 Q0 -27 11 -33 M-19 -10 Q0 -3 19 -10 M-4 -54 Q0 -51 4 -54" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></g>`;
+    const rock=`<g><ellipse cy="6" rx="22" ry="6" fill="#9fb3cc" opacity=".4"/><path d="M-19 5 Q-21 -12 -4 -17 Q15 -19 19 -2 Q21 7 6 8 Q-8 9 -19 5Z" fill="#cfc6c0" ${PS}/><path d="M-14 -6 Q-6 -20 10 -15 Q2 -13 -14 -6Z" fill="#fff"/></g>`;
+    const flags=gap=>`<g><path d="M${-gap/2} -2 Q0 6 ${gap/2} -2" fill="none" stroke="#f2c45a" stroke-width="2" stroke-dasharray="3 4" opacity=".8"/>${[-1,1].map(s=>`<g transform="translate(${s*gap/2} 0)"><ellipse cy="3" rx="6" ry="2" fill="#9fb3cc" opacity=".5"/><path d="M0 3 V-36" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M0 -36 l${-s*18} 7 l${s*18} 7Z" fill="${s<0?"#e0505a":"#5aa0dc"}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/></g>`).join("")}</g>`;
+    const ice=`<ellipse rx="40" ry="13" fill="#cfeaf8" stroke="#9fd0ec" stroke-width="2"/><path d="M-22 -2 l12 -4 M4 4 l16 -5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="-4" r="2" fill="#fff"/>`;
+    // la ligne d'arrivée : deux poteaux et une banderole à damier
+    const fin=`<g><path d="M30 0 H370" stroke="${INK}" stroke-width="2"/>${Array.from({length:17},(_,i)=>`<rect x="${30+i*20}" y="-6" width="20" height="12" fill="${i%2?"#fff":INK}"/>`).join("")}${[30,370].map(x=>`<path d="M${x} 4 V-70" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`).join("")}<path d="M30 -70 Q200 -50 370 -70 V-48 Q200 -28 30 -48Z" fill="#e0505a" ${PS}/><text x="200" y="-48" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="15" fill="#fff">ARRIVÉE</text></g>`;
+    sv.innerHTML=`<defs><linearGradient id="lsn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe9f6"/><stop offset=".6" stop-color="#f6f9fd"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#lsn)"/><path d="M0 -320 H56 Q40 80 56 480 H0Z M400 -320 H344 Q360 80 344 480 H400Z" fill="#e6eef8"/>
+      <g id="ltr"></g><g id="lfin"></g><g id="lob"></g><g id="lsp"></g><g id="lrv"></g><g id="lme"></g><g id="lwind"></g>
+      <g opacity=".9">${Array.from({length:22},(_,i)=>`<circle class="bfl" cx="${(i*151)%400}" cy="${(i*97)%420-60}" r="${1.2+(i%3)*.8}" fill="#fff" style="animation-duration:${5+i%4}s;animation-delay:-${i%7}s"/>`).join("")}</g><g id="lui"></g>`;
+    const $$=q=>sv.querySelector(q),gTr=$$("#ltr"),gFin=$$("#lfin"),gOb=$$("#lob"),gSp=$$("#lsp"),gWind=$$("#lwind"),gUi=$$("#lui");
+    const mEl=grp($$("#lme"),sled(me,"#e0505a")),rEl=grp($$("#lrv"),sled(rival,"#5aa0dc")),fEl=grp(gFin,fin);
+    // les bords de la piste : des sapins et des traces qui défilent
+    const side=Array.from({length:12},(_,i)=>({x:i%2?16+(i%3)*6:384-(i%3)*6,y:TOP+i*62,el:grp(gTr,tree(.75+(i%3)*.15))}));
+    const tracks=Array.from({length:9},(_,i)=>({y:TOP+i*70,el:grp(gTr,`<path d="M130 0 q12 35 0 70 M270 0 q-12 35 0 70" fill="none" stroke="#dbe6f2" stroke-width="3" stroke-linecap="round"/>`)}));
+    const wind=Array.from({length:8},(_,i)=>({x:70+i*37,y:TOP+i*90,el:grp(gWind,`<path d="M0 0 v34" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`)}));
+    drag(A,pt=>{if(st==="play")tx=Math.max(64,Math.min(336,pt.x))});
+    const port=(id,x,y,s)=>`<svg x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}" viewBox="8 -8 104 104">${foxArt(FOX[id],{portrait:1,expr:"joy"}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>`;
+    // en haut : la piste en petit, les deux têtes qui avancent vers le drapeau
+    const hud=()=>{const Y=-EXT+150,X=f=>(64+262*Math.min(1,f/D)).toFixed(1);
+      gUi.innerHTML=`<rect x="44" y="${Y-22}" width="312" height="44" rx="22" fill="#fffaf2" stroke="${INK}" stroke-width="2.4"/><path d="M64 ${Y} H330" stroke="#cfdbea" stroke-width="6" stroke-linecap="round"/>`
+        +`<g transform="translate(336 ${Y})"><path d="M0 10 V-14" stroke="${INK}" stroke-width="2.4"/><path d="M0 -14 h14 v9 h-14Z" fill="${INK}"/><rect x="0" y="-14" width="7" height="4.5" fill="#fff"/><rect x="7" y="-9.5" width="7" height="4.5" fill="#fff"/></g>`
+        +port(rival,X(rp),Y,30)+port(me,X(p),Y,34)};
+    const reset=()=>{st="count";t=0;px=tx=200;v=180;boost=0;spin=0;p=0;rp=0;objs.forEach(o=>o.el.remove());objs=[];next=.9;hud();place(0);
+      A.say(g.say||`Glisse le doigt pour guider ${FOX[me].name}. Passe entre les fanions, évite les sapins et les rochers !`);
+      A.later(()=>{A.cheer("3");A.sfx("tap")},700);A.later(()=>{A.cheer("2");A.sfx("tap")},1500);A.later(()=>{A.cheer("1");A.sfx("tap")},2300);
+      A.later(()=>{A.cheer("PARTEZ !");A.sfx("whoosh");st="play"},3100)};
+    const place=dt=>{mEl.setAttribute("transform",`translate(${px.toFixed(1)} ${PY}) rotate(${spin>0?(spin*720%360).toFixed(0):((tx-px)*.22).toFixed(1)})`);
+      // Radar : plus haut sur l'écran s'il est devant, plus bas s'il est derrière ; il zigzague du côté où l'on n'est pas
+      const ry=Math.max(TOP+90,Math.min(468,PY-(rp-p)*.4));rx+=((px<200?290:110)+Math.sin(rp/300)*36-rx)*Math.min(1,dt*1.5);rEl.setAttribute("transform",`translate(${rx.toFixed(1)} ${ry.toFixed(1)}) rotate(${(Math.cos(rp/300)*8).toFixed(1)})`);
+      const fy=PY-(D-p);fEl.setAttribute("transform",`translate(0 ${fy.toFixed(1)})`);fEl.style.display=fy>TOP-80?"":"none"};
+    A.loop(dt=>{if(st!=="play"&&st!=="end")return;t+=dt;
+      if(st==="play"){
+        // la vitesse monte vite, les boosts s'ajoutent ; un choc fait tourner la luge et perdre beaucoup
+        if(spin>0){spin-=dt;v=Math.max(140,v-220*dt)}else v=Math.min(330,v+42*dt);
+        boost=Math.max(0,boost-55*dt);
+        // Radar : régulier, il accélère dans la dernière ligne droite
+        rp+=(270+Math.sin(t*1.3)*16+(rp>D*.72?22:0))*dt;
+        px+=(tx-px)*Math.min(1,dt*(spin>0?2:8))}
+      const sp=st==="play"?v+boost:Math.max(0,(v+boost)*(1-t*.02));p+=sp*dt;
+      place(dt);
+      for(const s of side){s.y+=sp*dt;if(s.y>520)s.y-=744;s.el.setAttribute("transform",`translate(${s.x} ${s.y.toFixed(1)})`)}
+      for(const l of tracks){l.y+=sp*dt;if(l.y>520)l.y-=630;l.el.setAttribute("transform",`translate(0 ${l.y.toFixed(1)})`)}
+      // des traits de vent quand ça va très vite
+      gWind.setAttribute("opacity",Math.min(.9,Math.max(0,(sp-280)/80)).toFixed(2));
+      for(const w of wind){w.y+=sp*1.6*dt;if(w.y>520)w.y-=720;w.el.setAttribute("transform",`translate(${w.x} ${w.y.toFixed(1)})`)}
+      // de la poudreuse derrière la luge quand on tourne ou qu'on accélère
+      if((Math.abs(tx-px)>12||boost>30)&&Math.random()<.7){const e=grp(gSp,`<circle r="${(2+Math.random()*3.5).toFixed(1)}" fill="#fff" stroke="#dbe6f2" stroke-width="1"/>`);spray.push({x:px+(Math.random()-.5)*44,y:PY+10,vx:(px-tx)*1.2+(Math.random()-.5)*40,vy:60+Math.random()*40,t:.55,el:e})}
+      for(const s of spray){s.t-=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.el.setAttribute("transform",`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`);s.el.setAttribute("opacity",Math.max(0,s.t*2).toFixed(2));if(s.t<=0){s.el.remove();s.done=1}}
+      spray=spray.filter(s=>!s.done);
+      // les obstacles et les bonus arrivent d'en haut, de plus en plus serrés
+      if(st==="play"&&(next-=dt)<=0&&D-p>PY-TOP+120){next=(.95-p/D*.4)*(260/sp);const r=Math.random(),X=()=>76+Math.random()*248;
+        const o=r<.36?{k:"tree",x:X(),rad:20}:r<.58?{k:"rock",x:X(),rad:18}:r<.84?{k:"gate",x:120+Math.random()*160,gap:100}:{k:"ice",x:X(),rad:38};
+        // jamais deux obstacles l'un sur l'autre
+        if(!objs.some(q=>q.y<TOP+90&&Math.abs(q.x-o.x)<60)){o.y=TOP;o.el=grp(gOb,o.k==="tree"?tree(1):o.k==="rock"?rock:o.k==="gate"?flags(o.gap):ice);objs.push(o)}}
+      for(const o of objs){const y0=o.y;o.y+=sp*dt;o.el.setAttribute("transform",`translate(${o.x.toFixed(1)} ${o.y.toFixed(1)})`);
+        if(st==="play"&&!o.hit&&y0<PY-4&&o.y>=PY-4){
+          if(o.k==="gate"){o.hit=1;if(Math.abs(px-o.x)<o.gap/2-6){boost+=95;A.sfx("good",3);A.cheer(["SUPER !","VITE !","ZOOM !"][Math.floor(Math.random()*3)])}}
+          else if(o.k==="ice"){if(Math.abs(px-o.x)<o.rad+6){o.hit=1;boost+=60;A.sfx("plic")}}
+          else if(Math.abs(px-o.x)<o.rad+20&&spin<=0){o.hit=1;spin=.75;A.sfx("bad");try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}A.say(o.k==="tree"?"Aïe, un sapin ! La luge tourne…":"Bing, un rocher !");
+            o.el.animate([{opacity:1},{opacity:.3},{opacity:1}],{duration:400})}}
+        if(o.y>540){o.el.remove();o.done=1}}
+      objs=objs.filter(o=>!o.done);hud();
+      if(st==="play"&&rp>=D&&p<D){st="lost";A.sfx("lose");A.say(`${FOX[rival].name} passe la ligne le premier… On recommence !`);A.later(reset,2000)}
+      else if(st==="play"&&p>=D){st="end";t=0;A.win(g.win||`${FOX[me].name} gagne la course !`)}});
+    reset();
+  },
+
+  /* Le curling sur la mare gelée (Noël, 03/11/2026) : contre Filou, trois pierres chacun, en alternance. On tire la pierre vers
+     soi pour viser et doser (plus on tire, plus elle part fort), on lâche, puis on frotte la glace devant elle pour qu'elle aille
+     plus loin. À la fin, la pierre la plus proche du centre gagne la manche ; on lance la dernière. */
+  curling(g,A){
+    const sv=A.sv,rival=g.rival||"filou",me=g.who||"petitpois",N=g.n||3,LX=200,LY=404,TY=Math.max(-EXT+260,96),RW=[64,44,22],RS=14,FR=58,TOP=TY-RW[0]-60;
+    let st,stones=[],turn,aim=null,brush=0,last=null,mark=[],thrown={me:0,foe:0};
+    const PS=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"`;
+    const stone=col=>`<g><ellipse cy="5" rx="${RS+2}" ry="5" fill="#7d9bbb" opacity=".35"/><circle r="${RS}" fill="#d8dde3" ${PS}/><circle r="${RS-4}" fill="${col}" stroke="${INK}" stroke-width="1.8"/><path d="M-5 -2 h7 q4 0 4 4" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M-5 -2 h7 q4 0 4 4" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></g>`;
+    sv.innerHTML=`<defs><linearGradient id="csk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cb8de"/><stop offset="1" stop-color="#dbe8f5"/></linearGradient>
+        <linearGradient id="cic" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e4f4fc"/><stop offset=".5" stop-color="#cdebf8"/><stop offset="1" stop-color="#e8f6fd"/></linearGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#csk)"/><path d="M-10 ${TOP-30} Q100 ${TOP-60} 200 ${TOP-44} Q300 ${TOP-62} 410 ${TOP-30} V480 H-10Z" fill="#fff" stroke="${INK}" stroke-width="2.4"/>
+      ${[[22,TOP-26,.9],[64,TOP-40,.7],[338,TOP-42,.75],[382,TOP-24,.95]].map(([x,y,k])=>`<g transform="translate(${x} ${y}) scale(${k})"><rect x="-4" y="-8" width="8" height="10" fill="#8a5a3a" ${PS}/><path d="M0 -70 L24 -30 H12 L30 -6 H-30 L-12 -30 H-24Z" fill="#4f8a5a" ${PS}/><path d="M-12 -32 Q0 -26 12 -32 M-22 -8 Q0 0 22 -8" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>`).join("")}
+      <path d="M78 ${TOP} Q200 ${TOP-16} 322 ${TOP} Q344 220 330 480 H70 Q56 220 78 ${TOP}Z" fill="url(#cic)" stroke="#8fc3e2" stroke-width="3"/>
+      <path d="M110 ${TOP+30} l40 20 M250 ${TOP+120} l50 -10 M120 300 l30 30 M270 360 l40 14" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".8"/>
+      <g transform="translate(${LX} ${TY})">${RW.map((r,i)=>`<circle r="${r}" fill="${["#9fd0ec","#fffaf2","#f48aa6"][i]}" stroke="${INK}" stroke-width="2" opacity=".85"/>`).join("")}<circle r="5" fill="#fffaf2" stroke="${INK}" stroke-width="1.6"/></g>
+      <path d="M86 ${LY-30} H314" stroke="#e0505a" stroke-width="2.4" stroke-dasharray="6 6" opacity=".6"/>
+      <g id="cwatch"></g><g id="cmark"></g><g id="caim"></g><g id="cst"></g><g id="cfox"></g><g id="cui"></g>`;
+    const $$=q=>sv.querySelector(q),gSt=$$("#cst"),gAim=$$("#caim"),gFox=$$("#cfox"),gUi=$$("#cui"),gMark=$$("#cmark");
+    // les spectateurs sur la berge : Balafre et Radar d'un côté, les amis du refuge de l'autre
+    $$("#cwatch").innerHTML=(g.watch||["balafre","radar"]).map((id,i)=>foxAt(id,28+i*30,TOP+40+i*50,56,{pose:"sit"})).join("")+(g.fans||[]).map((id,i)=>foxAt(id,372-i*30,TOP+40+i*50,56,{pose:"happy"})).join("");
+    const dist=s=>Math.hypot(s.x-LX,s.y-TY);
+    const left=who=>N-thrown[who];
+    const port=(id,x,y,s)=>`<svg x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}" viewBox="8 -8 104 104">${foxArt(FOX[id],{portrait:1,expr:"joy"}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>`;
+    const hud=()=>{const Y=-EXT+150,row=(id,col,x)=>port(id,x,Y,34)+Array.from({length:N},(_,i)=>`<g transform="translate(${x+(x<200?30:-30)+(x<200?1:-1)*i*24} ${Y}) scale(.62)" opacity="${i<left(id===me?"me":"foe")?1:.25}">${stone(col)}</g>`).join("");
+      gUi.innerHTML=`<rect x="20" y="${Y-22}" width="360" height="44" rx="22" fill="#fffaf2" stroke="${INK}" stroke-width="2.4"/>`+row(me,"#e0505a",44)+row(rival,"#5aa0dc",356)
+        +`<text x="200" y="${Y+5}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">${turn==="me"?"À toi !":turn==="foe"?FOX[rival].name:""}</text>`};
+    // le lanceur, de dos, accroupi derrière sa pierre
+    const thrower=who=>{gFox.innerHTML=foxAt(who==="me"?me:rival,LX,LY+44,70,{pose:"back"})};
+    const add=who=>{thrown[who]++;const s={who,x:LX,y:LY,vx:0,vy:0,el:grp(gSt,stone(who==="me"?"#e0505a":"#5aa0dc"))};stones.push(s);drawSt();return s};
+    const drawSt=()=>{for(const s of stones)s.el.setAttribute("transform",`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`)};
+    const moving=()=>stones.some(s=>s.vx||s.vy);
+    const launch=(s,ang,pow)=>{s.vx=Math.sin(ang)*pow;s.vy=-Math.cos(ang)*pow;s.cur=s;st="slide";gAim.innerHTML="";A.sfx("whoosh")};
+    // la vitesse pour aller à une distance d : v² = 2·frottement·d
+    const need=d=>Math.sqrt(2*FR*d);
+    const reset=()=>{stones.forEach(s=>s.el.remove());stones=[];thrown={me:0,foe:0};gMark.innerHTML="";mark=[];turn="foe";A.say(g.say||`Trois pierres chacun. La plus proche du centre gagne la manche ! ${FOX[rival].name} commence.`);hud();A.later(next,1400)};
+    const next=()=>{if(!left("me")&&!left("foe"))return score();turn=left("foe")>=left("me")?"foe":"me";hud();thrower(turn);
+      const s=add(turn);
+      if(turn==="me"){st="aim";A.say(!left("me")?"Dernière pierre ! Pose le doigt, tire vers le bas, lâche… et frotte !":"À toi : pose le doigt sur la glace, tire vers le bas pour viser, puis lâche.")}
+      else{st="wait";A.say(`${FOX[rival].name} se concentre…`);
+        // Filou vise le centre, ou dégomme ta pierre si elle est la mieux placée
+        A.later(()=>{const mine=stones.filter(o=>o.who==="me"&&o!==s&&dist(o)<RW[0]+10).sort((a,b)=>dist(a)-dist(b))[0],best=stones.filter(o=>o!==s).sort((a,b)=>dist(a)-dist(b))[0];
+          const tgt=mine&&best===mine&&Math.random()<.6?{x:mine.x,y:mine.y,hit:1}:{x:LX+(Math.random()-.5)*20,y:TY+(Math.random()-.5)*20};
+          const d=Math.hypot(tgt.x-LX,tgt.y-LY),ang=Math.atan2(tgt.x-LX,LY-tgt.y)+(Math.random()-.5)*(g.err??.07);
+          launch(s,ang,need(d)*(tgt.hit?1.18:1)*(1+(Math.random()-.5)*(g.errP??.2)))},1100)}};
+    const score=()=>{st="score";const L=stones.filter(s=>dist(s)<RW[0]+RS).sort((a,b)=>dist(a)-dist(b));
+      gMark.innerHTML=L.slice(0,3).map((s,i)=>`<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="${RS+6}" fill="none" stroke="${i?"#fff":"#f2c45a"}" stroke-width="${i?2:4}" stroke-dasharray="${i?"4 4":""}"/>`).join("");
+      if(!L.length){A.say("Aucune pierre dans la cible… On rejoue la manche !");A.sfx("tap");A.later(reset,2200);return}
+      const w=L[0].who,n=L.findIndex(s=>s.who!==w),pts=n<0?L.length:n;
+      if(w==="me"){A.sfx("good",3);A.cheer("+"+pts);A.later(()=>A.win(g.win||`Ta pierre est la plus proche du centre : ${pts>1?pts+" points":"1 point"} !`),900)}
+      else{A.sfx("lose");A.say(`La pierre de ${FOX[rival].name} est la plus proche… On rejoue la manche !`);A.later(reset,2400)}};
+    // viser : on tire vers soi (sous la pierre), la flèche montre la direction et la force
+    const P=e=>svPt(sv,e);sv.style.touchAction="none";
+    sv.addEventListener("pointerdown",e=>{const pt=P(e);try{sv.setPointerCapture(e.pointerId)}catch(_){}if(st==="aim")aim={x:pt.x,y:pt.y,dx:0,dy:0};else if(st==="slide"&&turn==="me")last=pt});
+    sv.addEventListener("pointermove",e=>{const pt=P(e);
+      if(st==="aim"&&aim){aim.dx=pt.x-aim.x;aim.dy=pt.y-aim.y;const L=Math.min(150,Math.max(0,aim.dy)),ang=Math.max(-.32,Math.min(.32,Math.atan2(-aim.dx,Math.max(20,aim.dy))));
+        const s=stones[stones.length-1];s.y=LY+L*.12;drawSt();const len=40+L*1.3,col=L<40?"#9fb3cc":L<95?"#f2c45a":"#e0505a";
+        gAim.innerHTML=`<path d="M${LX} ${LY} L${(LX+Math.sin(ang)*len).toFixed(1)} ${(LY-Math.cos(ang)*len).toFixed(1)}" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10"/><g transform="translate(${(LX+Math.sin(ang)*len).toFixed(1)} ${(LY-Math.cos(ang)*len).toFixed(1)}) rotate(${(ang*57.3).toFixed(1)})"><path d="M-9 6 L0 -8 L9 6Z" fill="${col}" stroke="${INK}" stroke-width="2"/></g>`;aim.L=L;aim.ang=ang}
+      else if(st==="slide"&&turn==="me"&&last&&e.buttons){const d=Math.hypot(pt.x-last.x,pt.y-last.y);last=pt;const c=stones.find(s=>s.cur);
+        // frotter devant la pierre qui glisse : la glace fond un peu, elle va plus loin
+        if(c&&d>3&&pt.y<c.y+30&&pt.y>c.y-150&&Math.abs(pt.x-c.x)<70){brush=.18;if(Math.random()<.35){const m=grp(gMark,`<path d="M-10 0 q10 -6 20 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,{transform:`translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`});mark.push({el:m,t:.8})}
+          if(Math.random()<.12)A.sfx("rustle")}}});
+    sv.addEventListener("pointerup",()=>{last=null;if(st==="aim"&&aim){const L=aim.L||0,ang=aim.ang||0;aim=null;
+      if(L<14){gAim.innerHTML="";const s=stones[stones.length-1];s.y=LY;drawSt();A.say("Pose le doigt sur la glace et tire vers le bas, puis lâche !");return}
+      launch(stones[stones.length-1],ang,120+L*.9);A.say("Frotte la glace devant la pierre pour qu'elle glisse plus loin !")}});
+    A.loop(dt=>{for(const m of mark){m.t-=dt;m.el.setAttribute("opacity",Math.max(0,m.t).toFixed(2));if(m.t<=0){m.el.remove();m.done=1}}mark=mark.filter(m=>!m.done);
+      if(st!=="slide")return;brush=Math.max(0,brush-dt);
+      for(const s of stones){if(!s.vx&&!s.vy)continue;const sp=Math.hypot(s.vx,s.vy),f=(s.cur&&brush>0?FR*.45:FR)*dt;
+        if(sp<=f){s.vx=s.vy=0}else{s.vx*=1-f/sp;s.vy*=1-f/sp}s.x+=s.vx*dt;s.y+=s.vy*dt;
+        // les bords de la mare : la pierre rebondit mollement ; trop loin derrière la cible, elle sort
+        if(s.x<84+RS||s.x>316-RS){s.x=Math.max(84+RS,Math.min(316-RS,s.x));s.vx*=-.4;A.sfx("knock")}
+        if(s.y<TOP+RS){s.out=1}}
+      // les chocs entre pierres (même poids : elles échangent leur vitesse le long du choc)
+      for(let i=0;i<stones.length;i++)for(let j=i+1;j<stones.length;j++){const a=stones[i],b=stones[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);
+        if(d>0&&d<RS*2){const nx=dx/d,ny=dy/d,o=(RS*2-d)/2;a.x-=nx*o;a.y-=ny*o;b.x+=nx*o;b.y+=ny*o;const rv=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;
+          if(rv>0){const k=rv*.92;a.vx-=k*nx;a.vy-=k*ny;b.vx+=k*nx;b.vy+=k*ny;A.sfx("knock")}}}
+      for(const s of stones.filter(s=>s.out)){s.el.animate([{opacity:1},{opacity:0}],{duration:400}).onfinish=()=>s.el.remove();s.vx=s.vy=0;s.dead=1}
+      stones=stones.filter(s=>!s.dead);drawSt();
+      if(!moving()){stones.forEach(s=>s.cur=0);st="wait";hud();A.later(next,700)}});
+    sv.__st=()=>({st,turn,thrown,aim,stones:stones.map(s=>[s.who,Math.round(s.x),Math.round(s.y),Math.round(Math.hypot(s.vx,s.vy))])}); // pour les tests
+    reset();
+  },
+
   /* La bataille de boules de neige (Boule-de-Neige, Noël, 02/11/2026) : les renards du refuge sortent la tête de derrière
      les forts de neige ; on les touche pour leur lancer une boule. Il en faut assez avant la fin du temps. Boule-de-Neige,
      lui, ne compte pas : il fait partie de la neige (le toucher fait perdre un point). */

@@ -10,7 +10,8 @@ function noelDay(){if(QN!=null){const n=+QN||0;return n>0&&n<=37?n:0}const d=new
   return d.getMonth()===11?d.getDate():d.getMonth()===0&&d.getDate()<=6?31+d.getDate():0}
 const noelOn=()=>noelDay()>0;
 // balafre : « La bataille de neige » (Joffray, 02/11/2026, à la place des frileux) : Balafre, le chef, Filou et Radar veulent la
-// clairière pour l'hiver ; bataille de neige en 3 contre 3 (jeu battle, on choisit son équipe). Balafre ne dit son nom que si on
+// clairière pour l'hiver ; bataille de neige en 3 contre 3 (jeu battle, on choisit son équipe), puis course de luge (luge) et curling (curling) :
+// à chaque défaite, Balafre parle de chance et réclame un autre défi. Balafre ne dit son nom que si on
 // gagne ; les deux autres laissent une photo-indice. Ils restent jusqu'au 6 janvier, puis repartent dans la forêt.
 const NOEL_ORDER=["grelot","ramure","paillette","balafre","barbeneige"],NOEL_FROM={grelot:1,ramure:8,paillette:15,balafre:19,barbeneige:24},NOEL_WILD=["balafre","filou","radar"];
 const isNoelStory=id=>NOEL_ORDER.includes(id);
@@ -106,11 +107,27 @@ Object.assign(STORIES,{
       ["filou","joy","Une bataille de boules de neige. Trois contre trois.",()=>actThrow("filou",{x:200,y:300},{hurt:false})],
       ["radar","open","Le chef est imbattable. C'est lui qui l'a dit.",()=>actEmote("radar","!")],
       ["me","joy","Pari tenu ! Je choisis mon équipe.",()=>actTrick("petitpois","salto")]]},
-    {at:"balafre",game:{k:"battle",foes:["balafre","filou","radar"],boss:"balafre",win:"Victoire ! Les sauvages se rendent !"},goal:"Relève le défi : une bataille de neige, trois contre trois.",lines:()=>{const was=known("balafre");
+    // trois défis : après chaque défaite, Balafre parle de chance et en réclame un autre (Joffray, 03/11/2026 : pas de « tournoi »)
+    {at:"balafre",game:{k:"battle",foes:["balafre","filou","radar"],boss:"balafre",win:"Victoire ! Les sauvages se rendent !"},goal:"Relève le défi : une bataille de neige, trois contre trois.",lines:[
+      ["radar","surprise","On a… perdu ? Je n'ai même pas entendu venir la dernière boule !",()=>actEmote("radar","goutte")],
+      ["balafre","open","Ouais. Vous avez eu de la chance. Le vent soufflait de votre côté.",()=>actEmote("balafre","colere")],
+      ["filou","joy","Ouais ouais, le vent ! Bien vu chef !",()=>actTrick("filou","boing")],
+      ["balafre","open","Une course de luge, du haut de la colline jusqu'au grand arbre. Radar contre votre plus rapide.",()=>actPose("balafre","happy")],
+      ["radar","joy","Je suis le plus rapide de la forêt. J'entends les virages avant de les voir.",()=>actTrick("radar","toupie")],
+      ["petitpois","joy","Le plus rapide d'ici… c'est moi ! J'ai même un bonnet aérodynamique.",()=>{actTrick("petitpois","salto");actEmote("petitpois","note")}]]},
+    {at:"@tree",with:["petitpois"],game:{k:"luge",who:"petitpois",rival:"radar",win:"Petit Pois passe la ligne le premier !"},goal:"La course de luge : guide Petit Pois jusqu'en bas de la piste, avant Radar.",lines:[
+      ["radar","sad","Mes oreilles… elles faisaient voile. J'ai freiné à chaque virage.",()=>actEmote("radar","goutte")],
+      ["petitpois","joy","Wouhou ! Je vole ! Je suis un flocon !",()=>actTrick("petitpois","salto")],
+      ["balafre","open","Encore de la chance. La piste était plus glissante de votre côté. Tout le monde l'a vu.",()=>actEmote("balafre","colere")],
+      ["filou","joy","Ouais ouais, glissante ! Chef, laisse-moi faire. Personne ne me bat sur la glace.",()=>actGo("filou",TG.pond.x+50,TG.pond.y-30,"happy")],
+      ["filou","open","Du curling sur la mare gelée. Trois pierres chacun. La plus proche du centre gagne.",()=>actEmote("filou","!")],
+      ["me","joy","Allez, une dernière !",()=>actEmote("petitpois","coeur")]]},
+    {at:"@pond",game:{k:"curling",rival:"filou",who:"petitpois",watch:["balafre","radar"],win:"Ta pierre est au cœur de la cible !"},goal:"Le curling sur la mare gelée : bats Filou, trois pierres chacun.",lines:()=>{const was=known("balafre");
       if(!was){const s=incOf("balafre");s.found=1;save()}
-      return [["radar","surprise","On a… perdu ? Je n'ai même pas entendu venir la dernière boule !",()=>actEmote("radar","goutte")],
-        ["filou","shy","Ouais ouais… bien joué… euh, chef ? On dit quoi, maintenant ?",()=>actEmote("filou","?")],
-        ["balafre",was?"joy":"open",was?"Tu m'as reconnu, et tu m'as battu. Ça fait beaucoup pour un seul hiver.":"Une promesse est une promesse. Je m'appelle Balafre."],
+      return [["filou","surprise","Pile au centre ?! Même moi, je n'aurais pas pu l'emprunter de là.",()=>actEmote("filou","goutte")],
+        ["radar","shy","Chef… trois fois de la chance, ça commence à ressembler à autre chose.",()=>actEmote("radar","?")],
+        ["balafre","shy","… Ouais. Bon. Vous êtes forts. Voilà, c'est dit.",()=>actPose("balafre","sit","shy")],
+        ["balafre",was?"joy":"open",was?"Tu m'as reconnu, et tu m'as battu trois fois. Ça fait beaucoup pour un seul hiver.":"Une promesse est une promesse. Je m'appelle Balafre.",()=>actEmote("balafre","!")],
         ["balafre","sad","Et puis… on ne la voulait pas vraiment, la clairière. On avait juste froid. Très froid.",()=>["balafre","filou","radar"].forEach(id=>actEmote(id,"froid"))],
         ["radar","sad","Mes oreilles sont deux glaçons. Je n'entends plus que mes dents claquer."],
         ["balafre","shy","Le perdant paie le tribut. Voilà le nôtre : tout ce qu'on avait gardé pour l'hiver.",()=>{R.glands+=30;const b=bourse();b.sucres=(b.sucres||0)+5;putBourse(b);save();renderHud();toast("Le tribut des vaincus : +30 glands, +5 sucres d'orge")}]]}},
