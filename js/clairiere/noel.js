@@ -418,6 +418,6 @@ function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;
     :[["bouleneige","joy",`${ME()} ! Une bataille de boules de neige ? Touche ceux qui sortent la tête… mais pas moi, je suis fait de neige !`],["me","joy","C'est parti !"]],
     ()=>playGame({k:"snowball",n:10},()=>{if(R.snowDay!==today()){R.snowDay=today();const b=bourse();b.sucres=(b.sucres||0)+3;putBourse(b);save();toast("Bataille gagnée ! +3 sucres d'orge")}else toast("Bien joué !")}));
   return true}
-const noelAway=id=>FOX[id]&&(FOX[id].event==="noel"||NOEL_WILD.includes(id)&&!!INC[id])&&!noelOn();
+const noelAway=id=>FOX[id]&&(FOX[id].event==="noel"||NOEL_WILD.includes(id)&&!!INC[id]&&!(STORIES[id]&&storyDone(id)))&&!noelOn(); // Filou et Radar restent une fois leur histoire finie (incos.js)
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
 if(!noelOn()&&[...NOEL_WILD,"miette","pataud","frisette"].some(id=>R.res[id])){for(const id of [...NOEL_WILD,"miette","pataud","frisette"])delete R.res[id];save()}

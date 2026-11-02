@@ -181,7 +181,7 @@ function incoSheet(id){const f=INC[id],s=incOf(id),ps=R.photos.filter(p=>p.id===
 function guessInco(id,name){const f=INC[id],s=incOf(id);if(!canGuess(id))return;
   if(name!==f.name){s.lock=s.n;save();toast(`Il ne réagit pas à « ${name} ». Ce n'est pas ça.`);incoSheet(id);return}
   s.found=1;R.glands+=20;save();renderHud();closeSheet();
-  talk([[id,"joy",f.hello],["petitpois","joy",`${f.name} ! Bien vu, ${ME()}.`]],()=>toast(`${f.name} retrouvé ! +20 glands`))}
+  talk([[id,"joy",f.hello],["petitpois","joy",`${f.name} ! Bien vu, ${ME()}.`]],()=>{toast(`${f.name} retrouvé ! +20 glands`);renderStory()})}
 function askInco(id){const f=INC[id],s=incOf(id);if(s.found||s.n<5)return;
   s.found=1;R.glands+=5;save();renderHud();closeSheet();
-  talk([["petitpois","surprise",`Montre… Mais c'est ${f.name} ! ${f.pp}`],[id,"joy",f.hello]],()=>toast(`${f.name} retrouvé ! +5 glands`))}
+  talk([["petitpois","surprise",`Montre… Mais c'est ${f.name} ! ${f.pp}`],[id,"joy",f.hello]],()=>{toast(`${f.name} retrouvé ! +5 glands`);renderStory()})}
