@@ -27,7 +27,7 @@ function makeFox(id,spot,o={}){
 }
 function removeFox(f){f.el.remove();f.badge.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
 function draw(f){
-  const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0};
+  const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0,expr:f.walk?undefined:f.expr};
   const ob=!f.walk&&objOf(f.spot);f.el.style.width=ob&&ob.k?13.5*ob.k+"%":""; // les grands objets (potager, tunnel)
   if(f.walk&&f.walk.climb)f.el.innerHTML=`<div class="flip"><div class="bob">${foxArt(art,{pose:"up"})}</div></div>`; // il grimpe à l'échelle
   else if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
@@ -52,10 +52,13 @@ function settle(f){
   if(scn.rain&&sp.cov)poses=poses.concat(["up","up","sleep"]);
   if(FOX[f.id].sleepy&&sp.poses.includes("sleep"))poses=poses.concat(["sleep","sleep","sleep"]);
   f.pose=sp.lamp&&f.id==="luciole"?"up":poses[Math.floor(Math.random()*poses.length)];
-  if(sp.bowl)f.pose="eat";
+  if(sp.bowl)f.pose="eat";f.expr=undefined;
+  // un sauvage selon sa confiance : la 1re fois, assis, aux aguets (oreilles en arrière) ; ensuite il mange, puis s'installe
+  if(f.wild){const tr=wildTrust(f.id);if(f.rest){f.pose=["lie","groom","happy","sleep"][Math.floor(Math.random()*4)]}
+    else if(sp.bowl&&tr===0){f.pose="sit";f.expr=Math.random()<.5?"surprise":"shy"}}
   if(sp.lamp&&f.id==="luciole"&&dark()&&!scn.lamps[sp.lamp]){scn.lamps[sp.lamp]=true;drawGlow()}
   f.walk=null;f.until=Date.now()+(f.pose==="sleep"?16000:7000)+Math.random()*12000;
-  if(f.wild)f.until=Date.now()+14000;
+  if(f.wild)f.until=Date.now()+(f.rest?18000:[9000,14000,16000][wildTrust(f.id)]);
   if(objOf(sp)){f.pose=objOf(sp).pose;f.until=Date.now()+30000+Math.random()*30000} // un long moment dans un objet du refuge
   draw(f);
 }
@@ -86,7 +89,8 @@ function arrive(f){
 }
 // où aller ensuite
 function choose(f){
-  if(f.wild){f.food=null;drawBowl();return "edge"} // un sauvage repart dans la forêt après son repas, la gamelle est vide
+  // un sauvage repart dans la forêt après son repas, la gamelle est vide ; s'il se sent chez lui, il traîne un peu dans l'herbe d'abord
+  if(f.wild){f.food=null;drawBowl();if(!f.rest&&wildTrust(f.id)>=2){const g=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco&&!s.cov);if(g.length){f.rest=1;return g[Math.floor(Math.random()*g.length)]}}return "edge"}
   const free=SPOTS.filter(s=>!taken(s)&&s!==f.spot&&!s.bowl);
   if(scn.rain){
     const cov=free.filter(s=>s.cov);
@@ -111,7 +115,7 @@ function tick(){
   for(const f of foxes.slice()){
     if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
     // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
-    if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id)||envWants(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow();log(`${nameOf(f.id)} ressort de la maison.`)}}continue}
+    if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id)||envWants(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow()}}continue}
     if(now>f.until&&(isTarget(f.id)||envHold(f)||storyStay(f.id))){f.until=now+5000;continue}
     if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
   }

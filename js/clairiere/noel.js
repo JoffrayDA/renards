@@ -160,7 +160,7 @@ function nForest(N){const r=rng(17);let s="";
 function nGround(){const r=rng(23);let s=`<path d="M0 160 Q60 150 120 158 Q200 148 280 158 Q340 150 400 158 L400 ${H} L0 ${H}Z" fill="url(#nSnow)"/>`;
   [[40,300,70,14],[350,290,64,12],[230,470,90,16],[30,470,60,12],[380,440,40,10]].forEach(([x,y,w,h])=>s+=`<path d="M${x-w} ${y} Q${x-w*.4} ${y-h} ${x} ${y-h*.8} Q${x+w*.5} ${y-h*1.1} ${x+w} ${y} Z" fill="#fff"/><path d="M${x-w} ${y} Q${x} ${y+5} ${x+w} ${y}" fill="none" stroke="#cbd8ea" stroke-width="2.4" stroke-linecap="round"/>`);
   for(let i=0;i<9;i++){const y=470-i*24,x=226+Math.sin(i*.9)*8;[[0,0],[7,-9]].forEach(([dx,dy])=>s+=`<g fill="#c9d6e8" transform="translate(${f1(x+dx)} ${f1(y+dy)})"><ellipse rx="2.6" ry="2"/><circle cx="-2.4" cy="-3" r=".9"/><circle cx="0" cy="-3.8" r=".9"/><circle cx="2.4" cy="-3" r=".9"/></g>`)}
-  s+=nExt();
+  s+=nExt()+nRamTracks();
   [[200,272],[193,296],[206,322],[196,350],[205,392],[196,430],[204,466],[195,504],[205,544],[196,586],[204,626]].filter(([,y])=>y<H-6).forEach(([x,y],i)=>{const w=13-i*.3;
     s+=nSh(x+3,y+3,w+4,7,.7)+`<ellipse cx="${x}" cy="${y}" rx="${w}" ry="6" fill="#d9d2c8" ${L(2.2)}/><ellipse cx="${x-2}" cy="${y-1.6}" rx="${f1(w*.62)}" ry="2.6" fill="#ece6dd"/><path d="M${f1(x-w*.8)} ${y-2} Q${x-2} ${y-7} ${f1(x+w*.5)} ${y-3.4} Q${x} ${y-1.6} ${f1(x-w*.8)} ${y-2}Z" fill="#fff"/>`});
   for(let i=0;i<26+Math.round(EXT/12);i++){const x=r()*400,y=175+r()*(H-185),k=.6+r()*.8;s+=`<path class="${i%2?"tw":""}" style="animation-delay:${f1(-r()*2)}s" d="M${f1(x)} ${f1(y-3*k)} L${f1(x+.8*k)} ${f1(y-.8*k)} L${f1(x+3*k)} ${f1(y)} L${f1(x+.8*k)} ${f1(y+.8*k)} L${f1(x)} ${f1(y+3*k)} L${f1(x-.8*k)} ${f1(y+.8*k)} L${f1(x-3*k)} ${f1(y)} L${f1(x-.8*k)} ${f1(y-.8*k)}Z" fill="#fff"/>`}
@@ -175,6 +175,11 @@ function nExt(){if(EXT<8)return "";const band=Math.max(EXT-80,40),Y=k=>Math.roun
   s+=fir(30,Y(.62),1.6)+fir(56,Y(.68),1.1)+fir(374,Y(.3),1.4)+fir(150,Y(1)+44,1.2);
   // un buisson de houx sous la neige
   const hx=340,hy=Y(.62);s+=nSh(hx,hy+2,18,4,.6)+[[-10,0],[0,-6],[10,0]].map(([dx,dy])=>`<path transform="translate(${hx+dx} ${hy+dy})" d="M-9 0 q2 -6 0 -9 q5 2 9 0 q4 2 9 0 q-2 3 0 9 q-9 3 -18 0Z" fill="#4f8a5a" ${L(1.6)}/>`).join("")+`<path d="M${hx-18} ${hy-4} Q${hx} ${hy-16} ${hx+18} ${hy-4}" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`+[[-3,-8],[2,-10],[6,-7]].map(([dx,dy])=>`<circle cx="${hx+dx}" cy="${hy+dy}" r="2.4" fill="#e0505a" stroke="${INK}" stroke-width="1.2"/>`).join("");
+  return s}
+function nRamTracks(){if(noelDay()<NOEL_FROM.ramure||!storyDone("grelot")||(R.beat.ramure||0)>=2)return "";let s="";
+  // de grandes empreintes de sabot fendu, deux par deux, qui descendent de la forêt vers la mare gelée
+  for(let i=0;i<13;i++){const t=i/12,x=352-212*t+Math.sin(t*5)*16,y=196+(404-196)*t,a=Math.atan2(404-196,-212)*180/Math.PI-90,side=i%2?-1:1;
+    s+=`<g transform="translate(${f1(x+side*7)} ${f1(y)}) rotate(${f1(a)}) scale(${f1(1.15+t*.55)})" fill="#7d93b4" opacity=".9"><path d="M-1 -6 Q-6 -5 -5 2 Q-4 6 -1 5Z"/><path d="M1 -6 Q6 -5 5 2 Q4 6 1 5Z"/></g>`}
   return s}
 function nSideTree(x,flip){const X=v=>flip?2*x-v:v;let s=nSh(x+10,252,40,8);
   s+=`<path d="M${X(x-12)} 254 Q${X(x-20)} 258 ${X(x-26)} 256 Q${X(x-14)} 248 ${X(x-9)} 230 Q${X(x-6)} 190 ${X(x-10)} 150 L${X(x+10)} 150 Q${X(x+6)} 190 ${X(x+10)} 232 Q${X(x+16)} 248 ${X(x+26)} 256 Q${X(x+18)} 258 ${X(x+12)} 254Z" fill="url(#cTrunk)" ${L(2.8)}/>`;
@@ -226,7 +231,10 @@ function nSnowBand(cx,yb,w,n,r){let d=`M${f1(cx-w+2)} ${f1(yb-2)}`;
   for(let i=1;i<=n;i++){const x=cx-w+2+(2*w-4)*i/n,xm=x-(w-2)/n;d+=` Q${f1(xm)} ${f1(yb-9)} ${f1(x)} ${f1(yb-2+(i%2?1.5:0))}`}
   for(let i=n;i>0;i--){const x=cx-w+2+(2*w-4)*(i-1)/n,xm=x+(w-2)/n;d+=` Q${f1(xm)} ${f1(yb-15-r()*5)} ${f1(x)} ${f1(yb-10-r()*3)}`}
   return d+"Z"}
-const sapinT=st=>st==="0"?{n:3,h0:24,dy:11,w0:17,dw:4.5,bough:3}:st==="1"?{n:4,h0:52,dy:28,w0:38,dw:8,bough:6}:{n:6,h0:92,dy:52,w0:68,dw:10.4,bough:8};
+// le sapin pousse un peu chaque jour (Joffray : « il passe de rien à 3 m d'un coup ») : g va de 0 (la pousse du 1er) à 1 (le 15,
+// une fois Ramure retrouvé) ; les étapes de l'histoire (sapinStage) ne changent pas
+function sapinGrow(st){if(st==="2"||st==="3")return 1;const d=noelDay();return st==="0"?Math.min(.32,(d-1)/7*.32):Math.min(.86,.38+(d-8)/7*.48)}
+const sapinT=st=>{const g=sapinGrow(st);return {n:Math.round(3+3*g),h0:24+68*g,dy:11+41*g,w0:17+51*g,dw:4.5+5.9*g,bough:3+5*g}};
 function nSapin(st,star){const r=rng(31),T=sapinT(st);let s="";
   const tiers=[];for(let k=0;k<T.n;k++){const yb=SB-k*T.dy,h=T.h0-k*(T.h0*.04),w=T.w0-k*T.dw;tiers.push([yb,yb-h,w])}
   s+=nSh(SX+14,SB+6,T.w0+18,T.w0*.22+4);

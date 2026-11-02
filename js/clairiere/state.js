@@ -66,13 +66,13 @@ function simulate(live){
     if(B&&B.p&&R.wildN<2&&visitRoll(t)<(metAny()?B.p:.3)){
       // sauvages de cette gamelle et inconnus dont le prochain indice va avec le moment (sauvages.js)
       const pool=visitPool(R.bowl.type,t);
-      if(pool.length){const id=pool[Math.floor(Math.random()*pool.length)],ph={id,bowl:R.bowl.type,t};
+      if(pool.length){const id=pool[Math.floor(Math.random()*pool.length)],ph={id,bowl:R.bowl.type,t,tr:Math.min(2,wildVisits(id))};
         const first=!INC[id]&&!R.met[id];if(INC[id])incoPhoto(id,ph);else R.met[id]=1;R.wildN++;
         R.photos.push(ph);R.bowl=null;
         R.news.push({k:"wild",id,t,first,clue:ph.clue,live:!!live});seen.push(id)}
     }
     if(R.wildN<2&&typeof nearVisit==="function"){const f=nearVisit(t);
-      if(f){const ph={id:f.id,bowl:null,near:f.near,t};incoPhoto(f.id,ph);R.wildN++;R.photos.push(ph);R.news.push({k:"wild",id:f.id,t,clue:ph.clue,live:!!live});seen.push(f.id)}}
+      if(f){const ph={id:f.id,bowl:null,near:f.near,t,tr:Math.min(2,wildVisits(f.id))};incoPhoto(f.id,ph);R.wildN++;R.photos.push(ph);R.news.push({k:"wild",id:f.id,t,clue:ph.clue,live:!!live});seen.push(f.id)}}
   }
   R.last=t;save();return seen;
 }

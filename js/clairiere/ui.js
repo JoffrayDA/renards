@@ -69,7 +69,7 @@ function bubble(f,txt){const b=document.querySelector(".bubble")||document.creat
 function tapFox(f){
   if(shooting){shootFox(f);return} // l'appareil photo est sorti (photo.js)
   if(!f.wild&&storyTap(f.id))return;
-  if(f.wild){bubble(f,known(f.id)?"un renard sauvage, il mange !":"un inconnu… Qui est-ce ?");return}
+  if(f.wild){const tr=wildTrust(f.id);bubble(f,f.rest?"se prélasse : il se sent chez lui !":tr===0?"se méfie… il recule d'un pas.":tr===1?(known(f.id)?"mange en te surveillant du coin de l'œil.":"un inconnu… il mange en te surveillant."):"n'a plus peur de toi !");return}
   if(envieTap(f))return; // une petite envie (envies.js)
   const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
@@ -136,13 +136,16 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
   const r=rng((x>>>0)%2147483646+1);
   const h=new Date(p.t).getHours(),ph=h>=6&&h<8?"aube":h>=8&&h<18?"jour":h>=18&&h<21?"crepu":"nuit",wet=rainAt(p.t),night=ph==="nuit";
   // une photo sur deux le prend en train de manger (Joffray : « un peu des deux »), sinon repu à côté de la gamelle vide
-  const poses=night?["sleep","sleep","lie","sit"]:["sit","groom","happy","lie","up"],cl=p.clue!=null&&INC[p.id]&&INC[p.id].clues[p.clue];
-  const pose=!p.near&&r()<.5?"eat":poses[Math.floor(r()*poses.length)],pz=cl?cl.pose:pose; // la photo d'un inconnu montre son indice
-  const flip=r()<.5,eat=pz==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
+  const T=p.tr??1,poses=night?["sleep","sleep","lie","sit"]:T===0?["sit","sit","up"]:T===1?["sit","groom","up","eat"]:["happy","groom","lie","sleep","happy"],cl=p.clue!=null&&INC[p.id]&&INC[p.id].clues[p.clue];
+  const pose=!p.near&&T>0&&r()<(T===1?.5:.3)?"eat":poses[Math.floor(r()*poses.length)],pz=cl?cl.pose:pose; // la photo d'un inconnu montre son indice
+  const tr=p.tr??-1,flip=r()<.5,eat=pz==="eat",sc=.62+r()*.14,inner=s=>s.replace(/^<svg[^>]*>|<\/svg>$/g,"");
   // le renard mange au-dessus de la gamelle, ou se tient à côté de la gamelle vide
   const fx=eat?60-42*sc/.7:flip?120-120*sc-r()*10:r()*10, // jamais en miroir : la cicatrice de Balafre reste du même côté
    fy=eat?10+(.7-sc)*60:14+(.7-sc)*80;
-  let fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose:pz}))}</g>`;
+  let fox=`<g transform="translate(${fx.toFixed(1)} ${fy.toFixed(1)}) scale(${sc.toFixed(3)})">${inner(foxArt(f,{pose:pz,expr:tr===0&&pz==="sit"?"surprise":undefined}))}</g>`;
+  // sa confiance se voit : une goutte de stress la 1re fois, des petits cœurs quand il se sent chez lui
+  if(tr===0)fox+=`<path transform="translate(${(fx+92*sc).toFixed(1)} ${(fy+30*sc).toFixed(1)})" d="M0 -7 Q5 0 4 3 a4 4 0 0 1 -8 0 Q-5 0 0 -7Z" fill="#bfe3f6" stroke="${INK}" stroke-width="1.4"/>`;
+  if(tr===2)fox+=[[82,8,1],[96,18,.7]].map(([x,y,k])=>`<path transform="translate(${(fx+x*sc).toFixed(1)} ${(fy+y*sc).toFixed(1)}) scale(${k})" d="M0 6 C-8 0 -7 -6 -3.5 -6 Q-1 -6 0 -3 Q1 -6 3.5 -6 C7 -6 8 0 0 6Z" fill="#f48aa6" stroke="${INK}" stroke-width="1.4"/>`).join("");
   // ce que l'indice montre (la chaussette que Filou a « empruntée »)
   if(cl&&cl.prop==="chaussette")fox+=`<g transform="translate(${(fx+78*sc).toFixed(1)} ${(fy+86*sc).toFixed(1)}) rotate(-18)" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"><path d="M0 -10 h7 v9 q0 3 3 3 h6 v6 h-11 q-5 0 -5 -5Z" fill="#f48aa6"/><path d="M0 -6 h7 M0 -2 h7" stroke="#fff" stroke-width="1.6"/><path d="M-.6 -10 h8.2" stroke-width="2"/></g>`;
   let bowl=p.near?(OBJS[p.near]?`<svg x="${flip?-6:58}" y="34" width="70" height="68" viewBox="${OBJS[p.near].thumb}" overflow="visible">${inner(OBJS[p.near].svg())}</svg>`:DECO[p.near]?`<svg x="${flip?-10:50}" y="${100-DECO[p.near].h*.8}" width="80" height="${(DECO[p.near].h*.8).toFixed(0)}" viewBox="-50 -${DECO[p.near].h} 100 ${DECO[p.near].h}" overflow="visible">${inner(dSvg(p.near,"all"))}</svg>`:"")

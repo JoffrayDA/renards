@@ -156,6 +156,10 @@ const nearName=k=>OBJS[k]?`du ${OBJS[k].name.toLowerCase()}`:`${dOf(k)}`;
 // une visite à un objet : une chance par demi-heure tant que l'objet est posé (deux visites par jour au plus, comme à la gamelle)
 function nearVisit(t){const pool=INCO.filter(f=>f.near&&nearOn(f.near)&&!isRes(f.id)&&((R.inco[f.id]||{n:0}).n<5?clueFits(f.clues[(R.inco[f.id]||{n:0}).n],t):Math.random()<.3));
   if(!pool.length||Math.random()>=.05)return null;return pool[Math.floor(Math.random()*pool.length)]}
+// la confiance d'un sauvage grandit visite après visite (02/11/2026, Joffray : « au début ils se méfient, et ça évolue ») :
+// 0 = il se méfie (1re visite), 1 = il s'apprivoise (2e et 3e), 2 = il se sent chez lui (à partir de la 4e)
+const wildVisits=id=>INC[id]?(R.inco[id]||{n:0}).n:R.photos.filter(p=>p.id===id&&p.bowl!==undefined).length;
+const wildTrust=id=>{const n=wildVisits(id);return n<=1?0:n<=3?1:2};
 function incoPhoto(id,ph){const s=incOf(id);if(s.n<5)ph.clue=s.n;s.n++}
 const whenTxt=c=>[c.when==="nuit"?"la nuit":c.when==="aube"?"à l'aube":c.when==="jour"?"en plein jour":"",c.rain?"sous la pluie":""].filter(Boolean).join(", ");
 const canGuess=id=>{const s=R.inco[id];return !!s&&!s.found&&s.n>=3&&(s.lock!==s.n||s.n>=5)};
