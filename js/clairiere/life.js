@@ -133,6 +133,9 @@ function tick(){
     if(now>f.until&&(isTarget(f.id)||envHold(f)||storyStay(f.id))){f.until=now+5000;continue}
     // sous le choc après l'arrivée de la bande de Balafre : ils ne bougent plus jusqu'à la fin de la bataille (noel.js)
     if(f.shock){if((R.beat.balafre||0)<2){f.until=now+5000;continue}f.shock=0}
+    // et même si le jeu a été fermé entre l'arrivée de la bande et la bataille : tout le refuge reste sous le choc
+    if(R.beat.balafre===1&&noelOn()&&!f.wild&&!["balafre","filou","radar","bouleneige"].includes(f.id)&&!storyDone("balafre")){
+      if(!f.walk&&f.expr!=="surprise"&&f.expr!=="sad"){f.pose="sit";f.expr=f.id.length%2?"surprise":"sad";draw(f)}f.until=now+5000;continue}
     if(now>f.until){const sp=choose(f);if(sp)goTo(f,sp);else f.until=now+5000}
   }
   const f1=Math.floor(now/200)%2===1;for(const f of foxes)if(f.walk)f.el.classList.toggle("f1",f1);
