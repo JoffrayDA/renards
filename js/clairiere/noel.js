@@ -355,7 +355,7 @@ const recordWait=()=>noelOn()&&storyDone("paillette")&&!!R.res.bouleneige&&!(R.b
 // ?record=vite : la boule grossit en 4 minutes au lieu de 24 h (pour tester)
 const REC0=Date.now(),recordH=()=>QREC==="vite"?(Date.now()-REC0)/1e4:QREC!=null?+QREC:R.recordAt?(Date.now()-R.recordAt)/36e5:0;
 const recordDone=()=>recordH()>=24||noelDay()>=24;
-const BALL={x:250,y:Math.min(H-60,560)},bigOn=()=>!!R.recordBig&&Date.now()-(R.recordBigAt||0)<864e5,ballR=()=>bigOn()?74:R.recordGone?0:Math.round(12+58*Math.min(1,recordH()/24));
+const BALL={x:250,y:Math.min(H-60,560)},bigOn=()=>!!R.recordBig&&Date.now()-(R.recordBigAt||0)<864e5,ballR=()=>bigOn()?74:R.recordGone?0:Math.round(12+40*Math.min(1,recordH()/24));
 let ballEl=null;
 function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn());
   if(!show){if(ballEl){ballEl.remove();ballEl=null}return}
@@ -367,21 +367,16 @@ function drawBigBall(){const r=ballR(),show=r>0&&(recordWait()||bigOn()&&noelOn(
     +`<g class="roll" transform="rotate(${(ballSpin%360).toFixed(1)} 0 ${-r})">${[[-.45,-.6],[.3,-.4],[.5,-1.2],[-.2,-1.1],[.05,-.75],[-.6,-1.3],[.65,-.8]].map(([a,b])=>`<path d="M${a*r-4} ${b*r} q4 3 8 0" fill="none" stroke="#cfdbea" stroke-width="2" stroke-linecap="round"/>`).join("")}</g>`
     +[`M${-r*.1} ${-r*1.9} l${r*.08} ${r*.3} l${-r*.12} ${r*.22} l${r*.1} ${r*.28}`,`M${r*.5} ${-r*1.5} l${-r*.2} ${r*.16} l${r*.06} ${r*.24} l${-r*.22} ${r*.1}`].slice(0,ballCrack).map(d=>`<path d="${d}" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join("")+`</svg>`}
 let ballSpin=0,ballCrack=0;
-// Boule-de-Neige fait rouler sa boule en grand rond devant la maison (03/11/2026, Joffray : « un peu gros rond, devant la maison ;
-// tout le monde regarde et personne ne sort, c'est un record du monde »). La boule ne passe jamais sur la mare (rollLane). Boule-de-Neige est toujours derrière la boule, dans le sens où elle avance : de dos
-// quand elle s'éloigne, de profil sur les côtés, décalée vers l'intérieur quand la boule revient vers nous.
-const ROLL={v:22,top:395};
-// le chemin : une suite de points lissée (Chaikin), parcourue à vitesse constante. Une boule dont le bord gauche passe à gauche de
-// la mare (x - r < 165) doit être plus bas que la mare (y - 2r > 455) : le rond passe sous la mare s'il y a la place, sinon il reste
-// à droite. Recalculé quand la boule grossit.
+// Boule-de-Neige fait rouler sa boule en grand rond aplati juste devant le perron, au-dessus de la mare (03/11/2026, Joffray l'a
+// dessiné sur une capture : « tout le monde regarde et personne ne sort, c'est un record du monde »). Boule-de-Neige est toujours
+// derrière la boule, dans le sens où elle avance : de dos quand elle s'éloigne, de profil sur les côtés, décalée vers l'intérieur
+// quand la boule revient vers nous. Le chemin : une suite de points parcourue à vitesse constante.
+const ROLL={v:20};
 let rollPath=null,rollKey="";
-function rollLane(r){const k=Math.round(r/3)+"|"+H;if(k===rollKey)return rollPath;rollKey=k;
-  const B=H-100,xr=396-r,xw=165+r,yw=455+2*r,T=ROLL.top;
-  let P=B>=yw+15?[[xw+10,T],[xr-15,T+15],[xr,T+85],[xr-5,B-60],[xr-40,B],[200,B],[r+10,B-5],[r+5,yw+12],[xw-60,yw+4],[xw+4,yw-25],[xw+6,T+75]]
-    :[[xw+10,T],[xr,T+35],[xr,B-20],[xw+40,B],[xw+2,B-60],[xw+2,T+75]];
-  for(let it=0;it<3;it++){const Q=[];P.forEach((a,i)=>{const b=P[(i+1)%P.length];Q.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75])});P=Q}
+function rollLane(r){const k=String(Math.round(r/3));if(k===rollKey)return rollPath;rollKey=k;
+  const cx=205,cy=328,rx=Math.min(150,192-r),ry=40,P=[];for(let i=0;i<96;i++){const a=i/96*Math.PI*2;P.push([cx+Math.cos(a)*rx,cy+Math.sin(a)*ry])}
   const len=[0];for(let i=1;i<=P.length;i++){const a=P[i-1],b=P[i%P.length];len.push(len[i-1]+Math.hypot(b[0]-a[0],b[1]-a[1]))}
-  return rollPath={P,len,L:len[len.length-1],cx:(xw+xr)/2}}
+  return rollPath={P,len,L:len[len.length-1],cx}}
 function rollAt(d,r){const R0=rollLane(r);d=((d%R0.L)+R0.L)%R0.L;let i=1;while(R0.len[i]<d)i++;
   const a=R0.P[i-1],b=R0.P[i%R0.P.length],t=(d-R0.len[i-1])/((R0.len[i]-R0.len[i-1])||1);return {x:a[0]+(b[0]-a[0])*t,y:a[1]+(b[1]-a[1])*t}}
 function rollTrack(){const r=ballR()||40,R0=rollLane(r);
@@ -390,7 +385,7 @@ let rollF1=0,watchT=0;
 function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF("bouleneige"),r=ballR(),L=rollLane(r),d=Date.now()/1000*ROLL.v;
   const P=rollAt(d,r),Q=rollAt(d+3,r),bx=P.x,by=P.y;ballSpin+=Math.hypot(bx-BALL.x,by-BALL.y)/Math.max(8,r)*57;BALL.x=bx;BALL.y=by;drawBigBall();
   // les spectateurs suivent la boule des yeux
-  if(Date.now()>watchT){watchT=Date.now()+900;watchAll();for(const w of foxes)if(w.watch&&!w.walk)w.el.classList.toggle("left",BALL.x<w.x)} // un nouveau venu s'installe aussi
+  if(Date.now()>watchT){watchT=Date.now()+900;watchAll();for(const w of foxes)if(w.watch&&!w.walk&&w.spot&&WATCH.includes(w.spot)){if(w.spot.back&&w.pose!=="back"){w.pose="back";draw(w)}w.el.classList.toggle("left",BALL.x<w.x)}} // un nouveau venu s'installe aussi
   if(!f||f.walk||f.inside)return;
   // sens de la marche, et l'extérieur du rond
   let dx=Q.x-P.x,dy=(Q.y-P.y)*1.6;const n=Math.hypot(dx,dy)||1;dx/=n;dy/=n;const ox=Math.sign(bx-L.cx);
@@ -406,11 +401,12 @@ function rollTick(){if(!ballEl||!gardenCleared()||recordDone())return;const f=sF
   const k=Math.floor(Date.now()/340)%2;if(k!==rollF1){rollF1=k;f.el.classList.toggle("f1",!!k)}}
 setInterval(rollTick,80);
 // les places des spectateurs : le porche, les lanternes, et une rangée devant la maison, hors du rond
-const WATCH=[[118,302],[40,336],[84,342],[290,262],[372,282]].map(([x,y],i)=>({id:"w"+i,x,y,poses:["sit","up","happy"]}));
+const WATCH=[...[[136,238],[164,236],[238,236],[266,238]].map(([x,y])=>({x,y,poses:["sit","up","happy"]})),
+  ...[[230,418],[282,424],[334,416],[372,446],[206,466],[258,470],[312,468],[360,492]].map(([x,y])=>({x,y,poses:["back"],back:1}))].map((s,i)=>({id:"w"+i,...s}));
 // le record : tout le monde s'installe pour regarder et ne bouge plus (on ne dérange pas un record du monde)
-function watchAll(){const sp=[...["p1","p2","p3","p4","lampL","lampR"].map(k=>SPOT[k]).filter(Boolean),...WATCH];
+function watchAll(now){const sp=WATCH; // now : on arrive dans la clairière, chacun est déjà à sa place (personne ne traverse le chemin)
   for(const f of foxes){if(f.wild||f.id==="bouleneige"||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
-    f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}goTo(f,to);f.until=Date.now()+9e8}}
+    f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}if(now){f.walk=null;place(f,to)}else goTo(f,to);f.until=Date.now()+9e8}}
 // la bande arrive : tout le monde sort pour défendre Boule-de-Neige
 function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","balafre","filou","radar"].includes(f.id)&&!f.inside).map(f=>f.id);
   ids.forEach((id,i)=>{const f=sF(id);f.watch=0;f.defend=1;const k=ids.length>1?i/(ids.length-1):.5,x=Math.max(30,Math.min(370,bx-150+k*300)),y=Math.min(H-60,by+40+(i%2)*26);
@@ -419,9 +415,9 @@ function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","bal
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
 const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null;
 function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("cleared",on);
-  if(on){const keep=["p1","p2","p3","p4","lampL","lampR"],away=sp=>!keep.includes(sp.id);
+  if(on){const away=()=>true;
     for(let i=SPOTS.length-1;i>=0;i--)if(away(SPOTS[i])){if(SPOTS[i].obj||SPOTS[i].deco)delete SPOT[SPOTS[i].id];else gardenHid.push(SPOTS[i]);SPOTS.splice(i,1)}
-    SPOTS.push(...WATCH);watchAll()}
+    SPOTS.push(...WATCH);watchAll(1)}
   else{for(let i=SPOTS.length-1;i>=0;i--)if(WATCH.includes(SPOTS[i]))SPOTS.splice(i,1);
     for(const sp of gardenHid.splice(0))SPOTS.push(sp);addObjSpots();decoSpots();drawDeco();drawObjs();
     for(const f of foxes)if(f.watch){f.watch=0;f.until=0}}

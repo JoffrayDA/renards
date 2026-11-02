@@ -28,7 +28,9 @@ function meLine(id,expr){if(meF.walk||gameOn)return;
     meF.el.classList.remove("mesay");void meF.el.offsetWidth;meF.el.classList.add("mesay");return}
   const f=foxes.find(x=>x.id===id&&!x.wild);if(f){meF.face=f.x;meFace()}}
 // où aller quand il ne se passe rien : souvent près d'un renard, sinon un endroit libre (à l'abri sous la pluie)
-function meChoose(){const free=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco&&!s.via);
+function meChoose(){// le record de Boule-de-Neige (noel.js) : elle s'assoit avec les spectateurs, de dos sous le rond, et ne bouge plus
+  if(typeof gardenCleared==="function"&&gardenCleared()){meF.face=null;if(meF.spot&&WATCH.includes(meF.spot)){meF.until=Date.now()+6e4;return null}return WATCH.find(s=>s.back&&!taken(s))||null}
+  const free=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco&&!s.via);
   if(scn.rain){const c=free.filter(s=>s.cov);if(meF.spot&&meF.spot.cov)return null;if(c.length)return c[Math.floor(Math.random()*c.length)];
     return Math.hypot(meF.x-DOOR.x,meF.y-252)<10?null:{id:"me",x:DOOR.x,y:252,poses:["sit","up"]}} // porche plein : devant la porte
   const near=foxes.filter(f=>!f.wild&&!f.walk&&!f.inside&&f.spot&&!f.spot.via&&f.spot.id!=="record"); // pas sur la piste de la boule (noel.js)
