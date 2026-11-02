@@ -68,6 +68,7 @@ function bubble(f,txt){const b=document.querySelector(".bubble")||document.creat
   const sw=$("scene").clientWidth,hw=b.offsetWidth/2+6;b.style.left=Math.max(hw,Math.min(sw-hw,f.x/W*sw))+"px";clearTimeout(bubT);bubT=setTimeout(()=>b.remove(),2600)}
 function tapFox(f){
   if(shooting){shootFox(f);return} // l'appareil photo est sorti (photo.js)
+  setTimeout(()=>meJoin(f)); // Roussette vient le voir (roussette.js), après le câlin qui fixe son attente
   if(!f.wild&&storyTap(f.id))return;
   if(f.wild){const tr=wildTrust(f.id);bubble(f,f.rest?"se prélasse : il se sent chez lui !":tr===0?"se méfie… il recule d'un pas.":tr===1?(known(f.id)?"mange en te surveillant du coin de l'œil.":"un inconnu… il mange en te surveillant."):"n'a plus peur de toi !");return}
   if(snowballTap(f))return; // Boule-de-Neige propose sa bataille (noel.js)
@@ -86,6 +87,7 @@ function nextLine(){const el=$("talk");
   if(!talkQ.length){el.hidden=true;const d=talkDone;talkDone=null;if(d)d();return}
   const [id,expr,txt,act]=talkQ.shift(),f=id==="me"?{...FOX.roussette,name:ME()}:{...FOX[id],name:nameOf(id)}; // un inconnu ne dit pas son nom
   el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false;
+  try{meLine(id,expr)}catch(e){} // Roussette se tourne vers celui qui parle (roussette.js)
   if(typeof act==="function")try{act()}catch(e){} // les renards jouent la scène pendant la réplique (scenes.js)
 }
 $("talk").onclick=nextLine;
@@ -202,7 +204,7 @@ function meBuy(v){const [k,id]=v.split("|"),L={c:ME_FUR,m:ME_MARK,a:ME_ACC}[k],i
   m[k]=id;mePut(m);
   // l'accessoire est aussi celui de la carte du Café
   if(k==="a"){const C=load(CAFEKEY);if(C){C.style=C.style||{};C.style.acc=id;try{localStorage.setItem(CAFEKEY,JSON.stringify(C))}catch(e){}}}
-  $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});const y=$("sheet-in").scrollTop;moiSheet();$("sheet-in").scrollTop=y}
+  $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});if(!meF.walk)draw(meF);const y=$("sheet-in").scrollTop;moiSheet();$("sheet-in").scrollTop=y}
 function foxSheet(id){
   const f=FOX[id],r=R.res[id],M=metIds(),s=status(id,M),show=s.ok||s.seen;
   openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}${r||id==="roussette"?tenueHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`,"carnet");

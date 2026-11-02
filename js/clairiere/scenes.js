@@ -2,7 +2,7 @@
    du dialogue »). Une réplique peut porter une action (4e élément d'une ligne de talk, une fonction), un moment d'histoire une
    petite scène avant le dialogue (show, puis showMs avant les répliques). Les actions : marcher (actGo), prendre une pose
    (actPose), faire une figure (actTrick), réagir (actEmote), lancer une boule de neige (actThrow). */
-const sF=id=>foxes.find(f=>f.id===id&&!f.wild);
+const sF=id=>id==="me"?meF:foxes.find(f=>f.id===id&&!f.wild); // "me" : Roussette (roussette.js)
 function actPose(id,pose,expr,ms=14000){const f=sF(id);if(!f||f.walk||f.inside)return;f.pose=pose;f.expr=expr;f.until=Date.now()+ms;draw(f)}
 function actGo(id,x,y,pose="sit"){const f=sF(id);if(!f)return;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}
   goTo(f,{id:"act-"+id,x,y,poses:[pose]});f.until=Date.now()+20000}

@@ -501,7 +501,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
   if(b.lamps){scn.lamps={L:true,R:true};drawGlow()}
   if(b.gather)gather();
   if(b.at==="*")(R.who[c.id]=R.who[c.id]||{})[c.n]=at;
-  hotEl.hidden=true;
+  hotEl.hidden=true;meStory(at); // Roussette y va (roussette.js)
   syncFoxes();
   const go=()=>talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
     R.beat[c.id]=c.n+1;if(isNoelStory(c.id))drawBg(); // le sapin change en cours d'histoire (décoré après les boules de Paillette)

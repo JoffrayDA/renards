@@ -64,7 +64,8 @@ function settle(f){
   if(objOf(sp)){f.pose=objOf(sp).pose;f.until=Date.now()+30000+Math.random()*30000} // un long moment dans un objet du refuge
   draw(f);
 }
-const taken=sp=>foxes.some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
+// Roussette (roussette.js) occupe aussi son endroit
+const taken=sp=>[...foxes,...(typeof meF==="object"?[meF]:[])].some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
 // un trajet se fait par étapes : pour la cabane (via), on passe par le pied de l'échelle et on grimpe (climb)
 function goTo(f,sp){
   const legs=[];

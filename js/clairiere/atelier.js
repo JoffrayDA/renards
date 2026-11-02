@@ -37,4 +37,4 @@ $("sheet").addEventListener("click",e=>{const b=e.target.closest("button");if(!b
   else if(b.dataset.wear){const [id,k]=b.dataset.wear.split("|");tenSet(id,k,!tenOn(id,k));syncWear();back()}
   else if(b.dataset.nbuy)nBuy(b.dataset.nbuy)});
 // redessine les renards de la scène avec leur nouvelle tenue
-function syncWear(){for(const f of foxes)if(!f.wild)draw(f)}
+function syncWear(){for(const f of foxes)if(!f.wild)draw(f);if(!meF.walk)draw(meF)}
