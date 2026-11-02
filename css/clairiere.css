@@ -414,7 +414,7 @@ h1 .la{font-style:normal}
 @keyframes ssplat{0%{transform:translate(-50%,-50%) scale(.5)}30%{transform:translate(-50%,-50%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.3)}}
 .fox.ouch .flip>svg{animation:ouch .45s ease-out}@keyframes ouch{20%{transform:translateX(-6%) rotate(-8deg)}45%{transform:translateX(5%) rotate(6deg)}70%{transform:translateX(-2%)}}
 .bigball{position:absolute;transform:translate(-50%,-100%);border:0;padding:0;background:none;cursor:pointer}.bigball svg{display:block;width:100%;overflow:visible}
-.scene.cleared .deco,.scene.cleared .obj{display:none}
+.scene.cleared .deco,.scene.cleared .obj,.scene.cleared .bowl,.scene.cleared .drop{display:none}
 .fox.pushing .flip>svg{animation:push 1.1s ease-in-out infinite}@keyframes push{50%{transform:translateY(-6%) scaleY(.94)}}
 .chunk{position:absolute;transform:translate(-50%,-50%);z-index:904;pointer-events:none}.chunk svg{display:block;width:100%}
 .mefox.mesay:not(.walking) .flip>svg{animation:mesay .5s ease-out;transform-origin:50% 95%}@keyframes mesay{30%{transform:translateY(-8%) scaleY(1.05)}60%{transform:translateY(0) scaleY(.95)}}

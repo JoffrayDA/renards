@@ -17,13 +17,14 @@ button.main{background:#5b4250;color:#fff;border-color:#5b4250}button.main span{
 </head>
 <body>
 <h1>Tout tester</h1>
-<p>Chaque lien ouvre le jeu comme si on était un autre jour ou à une autre heure. Les tests de Noël font vraiment avancer les histoires : mets ta partie de côté avant, et remets-la après.</p>
+<p>Les histoires de Noël se suivent : fais le 1er, puis le 8, le 15, le 18 et le 19, dans l'ordre (ou utilise le bouton ci-dessous). Chaque lien ouvre le jeu comme si on était un autre jour ou à une autre heure. Les tests de Noël font vraiment avancer les histoires : mets ta partie de côté avant, et remets-la après.</p>
 
 <div class="box">Ta partie : <span id="st"></span></div>
 <button class="main" id="b-save">Mettre ma partie de côté<span>une copie, sur ce téléphone</span></button>
 <button id="b-new">Repartir d'une partie neuve<span>pour tout tester depuis le début</span></button>
 <button id="b-back">Remettre ma vraie partie<span>quand tu as fini</span></button>
 
+<button id="b-noel">Sauter au 18 décembre<span>Grelot, Ramure et Paillette déjà faits</span></button>
 <div id="out"></div>
 <script>
 // les sauvegardes du jeu (les mêmes que la sauvegarde en ligne, js/cloud.js)
@@ -37,11 +38,17 @@ document.getElementById("b-new").onclick=()=>{if(!get(BK)){alert("Mets d'abord t
 document.getElementById("b-back").onclick=()=>{const b=get(BK);if(!b){alert("Aucune copie de côté.");return}
   if(!confirm("Remettre ta vraie partie ? Ce que tu as fait pendant les tests sera effacé."))return;
   const {d}=JSON.parse(b);for(const k of SAVED)set(k,d[k]);set(BK,null);status();alert("Ta vraie partie est revenue.")};
+// les trois premiers chapitres de Noël comme déjà joués, pour tester directement le record et la bande de Balafre
+document.getElementById("b-noel").onclick=()=>{if(!get(BK)){alert("Mets d'abord ta partie de côté.");return}
+  const R=JSON.parse(get("clairiere-renards-v2")||"null");if(!R||!R.intro){alert("Ouvre d'abord la Clairière une fois.");return}
+  const t=Date.now()-9e7;R.beat=R.beat||{};R.souv=R.souv||{};
+  for(const k of ["grelot","ramure","paillette"]){R.beat[k]=4;R.res[k]=R.res[k]||{at:t,h:0,pet:""}}
+  R.res.bouleneige=R.res.bouleneige||{at:t,h:0,pet:""};set("clairiere-renards-v2",JSON.stringify(R));alert("C'est fait. Ouvre le 18 décembre, puis le 19.")};
 status();
 const C="../clairiere.html?",F="../cafe.html?",I="../index.html?";
 const S=[
   ["Noël à la Clairière",[[C+"noel=1","1er décembre","Grelot plante la graine, la neige tombe"],[C+"noel=8","8 décembre","Ramure, le renne perdu"],[C+"noel=15","15 décembre","Paillette et les boules"],
-    [C+"noel=18&record=12","18 décembre","le record de Boule-de-Neige (boule depuis 12 h)"],[C+"noel=19&record=25","19 décembre","la bande de Balafre, la bataille, la luge, le curling"],
+    [C+"noel=18&record=vite","18 décembre","le record de Boule-de-Neige : la boule grossit en 4 minutes"],[C+"noel=19&record=25","19 décembre","la bande de Balafre, la bataille, la luge, le curling"],
     [C+"noel=24","24 décembre","Barbe-Neige et l'étoile"],[C+"noel=24&heure=22","24 décembre, la nuit","le sapin illuminé"],[C+"noel=32","1er janvier","les invités sont encore là"],[C+"noel=0","après le 6 janvier","les invités sont repartis"]]],
   ["Noël au Café",[[F+"noel=1","Nuits de Noël, 1er décembre","l'animation d'ouverture"],[F+"noel=24","Nuits de Noël, 24 décembre","le Café décoré, les 24 nuits"]]],
   ["Calendrier de l'Avent",[[I+"avent=1","1er décembre","la carte rouge sur l'accueil"],[I+"avent=12","12 décembre","au milieu du mois"],[I+"avent=24","24 décembre","la case double et l'Étoile dorée"]]],
