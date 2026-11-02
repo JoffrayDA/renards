@@ -490,6 +490,13 @@ function bringIn(id,to){if(!isRes(id)){R.res[id]={at:Date.now(),h:0,pet:""};save
   let f=foxes.find(x=>x.id===id&&!x.wild);if(!f)f=makeFox(id,null);
   if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}
   if(!f.walk)setTimeout(()=>goTo(f,to),60)}
+// celui qu'on attend à un endroit (arrive) accourt depuis le bord le plus proche ; renvoie le temps qu'il met, pour que le
+// dialogue ne commence qu'une fois qu'il est là (Joffray : on parlait avec Ramure à la mare, et il n'était pas encore arrivé)
+function comeIn(id,to){if(!isRes(id)){R.res[id]={at:Date.now(),h:0,pet:""};save()}
+  let f=foxes.find(x=>x.id===id&&!x.wild);if(f&&!f.inside&&Math.hypot(f.x-to.x,f.y-to.y)<40)return 0;
+  if(!f)f=makeFox(id,null);if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}
+  else if(!f.spot&&!f.walk){f.x=to.x<200?-20:420;f.y=to.y;f.el.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(f.x,f.y)}
+  f.fast=1;const d=Math.hypot(f.x-to.x,f.y-to.y);setTimeout(()=>{goTo(f,to);f.until=Date.now()+20000},60);return Math.min(4000,d/95*1000+500)}
 
 // tout le monde vient se ranger devant la maison, pour le portrait
 function gather(){syncFoxes();const near=SPOTS.filter(s=>!s.bowl).sort((a,b)=>Math.hypot(a.x-DOOR.x,a.y-DOOR.y)-Math.hypot(b.x-DOOR.x,b.y-DOOR.y));
@@ -501,7 +508,7 @@ function gather(){syncFoxes();const near=SPOTS.filter(s=>!s.bowl).sort((a,b)=>Ma
 function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet").hidden)return false;
   if(at.startsWith("@")?c.b.at!==at:!isTarget(at))return false;
   const b=c.b;
-  if(b.arrive)bringIn(b.arrive,SPOT[b.at.slice(1)]||SPOT.g3);
+  const wait=b.arrive?comeIn(b.arrive,b.arriveAt||SPOT[b.at.slice(1)]||SPOT.g3):0;
   (b.with||[]).forEach((id,i)=>bringIn(id,[SPOT.g1,SPOT.g2,SPOT.g3][i])); // d'autres arrivent avec lui (les frileux)
   if(b.lamps){scn.lamps={L:true,R:true};drawGlow()}
   if(b.gather)gather();
@@ -524,7 +531,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
   });
   // une petite scène jouée avant les répliques (scenes.js) : les renards bougent, lancent, réagissent
   const run=()=>{if(b.game)playGame({...b.game,target:at},go);else go()};
-  if(b.show){try{b.show()}catch(e){}setTimeout(run,b.showMs||1500)}else run();
+  if(b.show){try{b.show()}catch(e){}setTimeout(run,Math.max(wait,b.showMs||1500))}else if(wait)setTimeout(run,wait);else run();
   return true;
 }
 

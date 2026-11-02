@@ -75,7 +75,7 @@ function goTo(f,sp){
   f.walk={to:sp,legs};f.spot=null;leg(f);
 }
 function leg(f){
-  const w=f.walk,to=w.legs.shift(),from={x:f.x,y:f.y},d=Math.hypot(to.x-from.x,to.y-from.y),dur=to.climb?Math.max(1.5,d/24):Math.max(.8,d/38);
+  const w=f.walk,to=w.legs.shift(),from={x:f.x,y:f.y},d=Math.hypot(to.x-from.x,to.y-from.y),dur=to.climb?Math.max(1.5,d/24):Math.max(.8,d/(f.fast?95:38)); // fast : il accourt (comeIn, story.js)
   Object.assign(w,{t0:Date.now(),dur:dur*1000,from,goal:to,climb:!!to.climb});
   if(!to.climb&&Math.abs(to.x-from.x)>2)f.el.classList.toggle("left",to.x<from.x);draw(f);
   w.raf=requestAnimationFrame(()=>{f.el.style.transitionDuration=dur+"s";f.el.style.left=to.x/W*100+"%";f.el.style.top=to.y/H*100+"%";f.x=to.x;f.y=to.y;moveLight(f,dur)});
@@ -86,6 +86,7 @@ function arrive(f){
   // (balançoire, cabane…) glissaient lentement depuis leur ancienne place
   cancelAnimationFrame(w.raf);f.el.style.transitionDuration="0s";f.el.style.left=f.x/W*100+"%";f.el.style.top=f.y/H*100+"%";moveLight(f,0);
   if(w.legs.length){leg(f);return} // étape suivante (l'échelle de la cabane)
+  f.fast=0;
   if(w.to==="edge"){removeFox(f);return}
   if(w.to==="door"){f.inside=true;f.walk=null;f.el.classList.add("inside");moveLight(f);f.until=Date.now()+9000+Math.random()*9000;drawGlow();return}
   f.spot=w.to;f.el.style.zIndex=Math.round(w.to.z||f.y);settle(f);

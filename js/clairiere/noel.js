@@ -35,53 +35,53 @@ function noelNo(){const s=sapinStage();return s?[[60,272,s==="0"?24:44]]:[]}
 Object.assign(STORIES,{
   grelot:{title:"La graine du Nord",souv:"le grelot d'argent",beats:[
     {at:"petitpois",goal:"Petit Pois a entendu un drôle de bruit dans la neige.",lines:[
-      ["petitpois","surprise","Tu entends ? Gling… gling… Ça vient de la forêt !"],
-      ["me","open","On dirait un grelot. Allons voir près des lanternes."]]},
+      ["petitpois","surprise","Tu entends ? Gling… gling… Ça vient de la forêt !",()=>{actEmote("petitpois","!");actPose("petitpois","up","surprise")}],
+      ["me","open","On dirait un grelot. Allons voir près des lanternes.",()=>{actEmote("me","note");setTimeout(()=>actGo("me",100,300),800)}]]},
     {at:"@lampL",arrive:"grelot",goal:"Va voir qui fait gling-gling, près des lanternes.",lines:[
-      ["grelot","joy","Bonjour ! Moi, c'est Grelot. Je viens du Grand Nord, là où il neige toute l'année."],
-      ["grelot","sad","Chez moi, chaque clairière plante son sapin de Noël le 1er décembre. Mais moi, je n'ai pas de clairière…"],
-      ["grelot","shy","J'ai apporté une graine. Je peux la planter ici ?"],
-      ["me","joy","Bien sûr ! Juste là, au pied des lanternes."]]},
+      ["grelot","joy","Bonjour ! Moi, c'est Grelot. Je viens du Grand Nord, là où il neige toute l'année.",()=>{actTrick("grelot","boing");actEmote("grelot","note")}],
+      ["grelot","sad","Chez moi, chaque clairière plante son sapin de Noël le 1er décembre. Mais moi, je n'ai pas de clairière…",()=>{actPose("grelot","sit","sad");actEmote("grelot","goutte")}],
+      ["grelot","shy","J'ai apporté une graine. Je peux la planter ici ?",()=>actEmote("grelot","?")],
+      ["me","joy","Bien sûr ! Juste là, au pied des lanternes.",()=>{actEmote("me","coeur");actTrick("grelot","salto")}]]},
     {at:"grelot",game:{k:"catch",thing:"bell",n:6,say:"Les grelots de Grelot se sont décrochés ! Attrape-les avant qu'ils tombent dans la neige.",win:"Tous les grelots !"},goal:"Aide Grelot à planter la graine.",lines:[
-      ["grelot","joy","Merci ! Un sapin, ça ne pousse qu'avec de la musique. Gling, gling !"],
-      ["grelot","open","Chaque soir, je lui jouerai des grelots. Dans une semaine, tu verras !"]]},
+      ["grelot","joy","Merci ! Un sapin, ça ne pousse qu'avec de la musique. Gling, gling !",()=>{actTrick("grelot","toupie");actEmote("grelot","note")}],
+      ["grelot","open","Chaque soir, je lui jouerai des grelots. Dans une semaine, tu verras !",()=>actEmote("grelot","coeur")]]},
     {at:"petitpois",goal:"Montre la pousse à Petit Pois.",lines:[
-      ["petitpois","surprise","Une pousse de sapin ? Toute petite, toute verte !"],
-      ["petitpois","joy","Je vais lui tricoter une écharpe, pour qu'elle n'ait pas froid."],
-      ["grelot","joy","Reviens dans une semaine : elle aura grandi. Tiens, un de mes grelots, pour t'en souvenir."]]}
+      ["petitpois","surprise","Une pousse de sapin ? Toute petite, toute verte !",()=>{actEmote("petitpois","!");actTrick("petitpois","boing")}],
+      ["petitpois","joy","Je vais lui tricoter une écharpe, pour qu'elle n'ait pas froid.",()=>actEmote("petitpois","coeur")],
+      ["grelot","joy","Reviens dans une semaine : elle aura grandi. Tiens, un de mes grelots, pour t'en souvenir.",()=>actGive("grelot","me","bell")]]}
   ]},
   ramure:{title:"Le renne perdu",souv:"la clochette de traîneau",beats:[
     {at:"grelot",goal:"Grelot a l'air inquiet.",lines:[
-      ["grelot","surprise","Regarde le sapin, il a grandi ! … Mais il y a des traces dans la neige. De très grandes traces."],
-      ["me","open","Des sabots ? Elles vont vers la mare."]]},
-    {at:"@pond",arrive:"ramure",goal:"Suis les grandes traces jusqu'à la mare.",lines:[
-      ["ramure","surprise","Oh ! Pardon, je glissais sur la glace. Je m'appelle Ramure."],
-      ["ramure","sad","Je tire le traîneau de Barbe-Neige. Je me suis perdu dans la tempête… et ma clochette est tombée."],
-      ["me","joy","On va la retrouver !"]]},
+      ["grelot","surprise","Regarde le sapin, il a grandi ! … Mais il y a des traces dans la neige. De très grandes traces.",()=>{actTrick("grelot","boing");setTimeout(()=>{actEmote("grelot","!");actPose("grelot","up","surprise")},1100)}],
+      ["me","open","Des sabots ? Elles vont vers la mare.",()=>{actEmote("me","?");setTimeout(()=>{actGo("me",230,450);actGo("grelot",262,436)},800)}]]},
+    {at:"@pond",arrive:"ramure",arriveAt:{id:"ram",x:196,y:446,poses:["sit"]},goal:"Suis les grandes traces jusqu'à la mare.",lines:[
+      ["ramure","surprise","Oh ! Pardon, je glissais sur la glace. Je m'appelle Ramure.",()=>{actTrick("ramure","roll");actEmote("ramure","goutte");actEmote("me","!")}],
+      ["ramure","sad","Je tire le traîneau de Barbe-Neige. Je me suis perdu dans la tempête… et ma clochette est tombée.",()=>{actPose("ramure","sit","sad");actEmote("ramure","froid")}],
+      ["me","joy","On va la retrouver !",()=>{actTrick("me","boing");actEmote("ramure","coeur");setTimeout(()=>{actGo("me",296,372);actGo("ramure",262,382)},900)}]]},
     {at:"@leaves",game:{k:"search",item:"bell",say:"La clochette a roulé sous la neige. Elle tinte quand le vent souffle ! 3 essais.",win:"Gling ! La voilà !"},goal:"Cherche la clochette de Ramure sous la neige, près des feuilles.",lines:[
-      ["ramure","joy","Ma clochette ! Avec elle, Barbe-Neige m'entendra de très loin."],
-      ["ramure","open","Je reste ici en attendant qu'il me retrouve. Ton sapin, on le voit de partout : c'est un bon repère."]]},
+      ["ramure","joy","Ma clochette ! Avec elle, Barbe-Neige m'entendra de très loin.",()=>{actGive("me","ramure","bell");setTimeout(()=>actTrick("ramure","salto"),1200)}],
+      ["ramure","open","Je reste ici en attendant qu'il me retrouve. Ton sapin, on le voit de partout : c'est un bon repère.",()=>{actEmote("ramure","coeur");actPose("ramure","lie","joy")}]]},
     {at:"petitpois",goal:"Présente Ramure à Petit Pois.",lines:[
-      ["petitpois","surprise","Un renne au refuge ! Tu crois qu'il voudra goûter mes croquettes ?"],
-      ["ramure","shy","… Juste une. Ou deux."],
-      ["grelot","joy","Dans une semaine, le sapin touchera les nuages. Il faudra le décorer !"]]}
+      ["petitpois","surprise","Un renne au refuge ! Tu crois qu'il voudra goûter mes croquettes ?",()=>{actEmote("petitpois","!");actTrick("petitpois","boing");actNear("ramure","petitpois")}],
+      ["ramure","shy","… Juste une. Ou deux.",()=>{actGive("petitpois","ramure","gland");setTimeout(()=>actEmote("ramure","note"),1300)}],
+      ["grelot","joy","Dans une semaine, le sapin touchera les nuages. Il faudra le décorer !",()=>{actTrick("grelot","toupie");actTrick("ramure","boing")}]]}
   ]},
   paillette:{title:"Les boules de Noël",souv:"une boule de verre argentée",cast:["grelot"],beats:[
     {at:"grelot",goal:"Le sapin est immense ! Grelot veut te parler.",lines:[
-      ["grelot","joy","Il est immense ! Maintenant, il lui faut des guirlandes, des boules, des rubans…"],
-      ["grelot","sad","Mais je n'ai rien apporté. Dans le Nord, c'est Paillette qui fait toutes les décorations."],
-      ["me","open","Si on allume les lanternes, elle verra peut-être la lumière ?"]]},
+      ["grelot","joy","Il est immense ! Maintenant, il lui faut des guirlandes, des boules, des rubans…",()=>{actTrick("grelot","boing");actEmote("grelot","!")}],
+      ["grelot","sad","Mais je n'ai rien apporté. Dans le Nord, c'est Paillette qui fait toutes les décorations.",()=>{actPose("grelot","sit","sad");actEmote("grelot","goutte")}],
+      ["me","open","Si on allume les lanternes, elle verra peut-être la lumière ?",()=>{actEmote("me","!");setTimeout(()=>actGo("me",100,300),800)}]]},
     {at:"@lampL",lamps:1,arrive:"paillette",goal:"Allume les lanternes pour guider Paillette.",lines:[
-      ["paillette","joy","Des lanternes dans la neige ! Je les ai vues de très loin."],
-      ["paillette","open","Je suis Paillette. Je fais mes guirlandes avec les étoiles qui tombent."],
-      ["paillette","sad","Mais en venant, mon sac s'est ouvert. Mes boules de Noël roulent partout !"]]},
+      ["paillette","joy","Des lanternes dans la neige ! Je les ai vues de très loin.",()=>{actTrick("paillette","toupie");actEmote("paillette","!")}],
+      ["paillette","open","Je suis Paillette. Je fais mes guirlandes avec les étoiles qui tombent.",()=>actEmote("paillette","note")],
+      ["paillette","sad","Mais en venant, mon sac s'est ouvert. Mes boules de Noël roulent partout !",()=>{actEmote("paillette","goutte");setTimeout(()=>actGo("me",262,424),900)}]]},
     {at:"@bench",game:{k:"catch",thing:"ball",n:7,say:"Les boules de Noël glissent sur la neige. Attrape-les toutes !",win:"Toutes les boules !"},goal:"Rattrape les boules de Paillette, près du banc.",lines:[
-      ["paillette","joy","Toutes là ! Et pas une seule fêlée."]]},
+      ["paillette","joy","Toutes là ! Et pas une seule fêlée.",()=>{actGive("me","paillette","ball");setTimeout(()=>actTrick("paillette","salto"),1200)}]]},
     {at:"paillette",goal:"Décore le sapin avec Paillette.",lines:[
-      ["paillette","joy","Une boule rouge ici… une bleue là… et la guirlande, tout autour !"],
-      ["grelot","surprise","Il est magnifique !"],
-      ["me","open","Il manque quelque chose, tout en haut…"],
-      ["paillette","open","L'étoile. Seul Barbe-Neige en a une assez brillante. Il passe toujours la veille de Noël."]]}
+      ["paillette","joy","Une boule rouge ici… une bleue là… et la guirlande, tout autour !",()=>{actGo("paillette",96,300,"up");setTimeout(()=>actTrick("paillette","toupie"),2200)}],
+      ["grelot","surprise","Il est magnifique !",()=>{actEmote("grelot","coeur");actTrick("grelot","boing")}],
+      ["me","open","Il manque quelque chose, tout en haut…",()=>actEmote("me","?")],
+      ["paillette","open","L'étoile. Seul Barbe-Neige en a une assez brillante. Il passe toujours la veille de Noël.",()=>actEmote("paillette","note")]]}
   ]},
   balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar","bouleneige"],
     end:()=>{let n=0;for(const id of ["filou","radar"]){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now(),tr:2};incoPhoto(id,ph);R.photos.push(ph);n++}
@@ -149,20 +149,20 @@ Object.assign(STORIES,{
   ]},
   barbeneige:{title:"La veille de Noël",souv:"l'étoile du sapin",cast:["grelot","ramure","paillette"],beats:[
     {at:"ramure",goal:"Ramure entend quelque chose dans le ciel.",lines:[
-      ["ramure","surprise","Tu entends ? Des clochettes, là-haut… C'est le traîneau !"],
-      ["ramure","joy","Il a entendu la mienne. Il arrive !"]]},
+      ["ramure","surprise","Tu entends ? Des clochettes, là-haut… C'est le traîneau !",()=>{actPose("ramure","up","surprise");actEmote("ramure","!")}],
+      ["ramure","joy","Il a entendu la mienne. Il arrive !",()=>{actTrick("ramure","salto");setTimeout(()=>actGo("me",228,262),900)}]]},
     {at:"@porch",arrive:"barbeneige",goal:"Accueille le traîneau devant la maison.",lines:[
-      ["barbeneige","joy","Bonsoir, bonsoir ! Je suis Barbe-Neige."],
-      ["barbeneige","open","Ramure, te voilà ! Et quel sapin… Je n'en ai jamais vu d'aussi beau dans tout le Nord."],
-      ["barbeneige","sad","Mais quelle tempête ! En atterrissant, toutes mes lettres se sont envolées."]]},
+      ["barbeneige","joy","Bonsoir, bonsoir ! Je suis Barbe-Neige.",()=>{actTrick("barbeneige","boing");actEmote("barbeneige","coeur")}],
+      ["barbeneige","open","Ramure, te voilà ! Et quel sapin… Je n'en ai jamais vu d'aussi beau dans tout le Nord.",()=>{actNear("ramure","barbeneige","happy");actTrick("ramure","boing")}],
+      ["barbeneige","sad","Mais quelle tempête ! En atterrissant, toutes mes lettres se sont envolées.",()=>{actEmote("barbeneige","goutte");actPose("barbeneige","sit","sad")}]]},
     {at:"barbeneige",game:{k:"catch",thing:"page",n:8,say:"Les lettres des renards s'envolent ! Attrape-les toutes.",win:"Toutes les lettres !"},goal:"Rattrape les lettres de Barbe-Neige.",lines:[
-      ["barbeneige","joy","Merci ! Chaque lettre, c'est le vœu d'un renard. Je ne pouvais pas en perdre une seule."],
-      ["barbeneige","open","Pour te remercier, voici l'étoile du sapin. Elle ne s'éteint jamais."]]},
+      ["barbeneige","joy","Merci ! Chaque lettre, c'est le vœu d'un renard. Je ne pouvais pas en perdre une seule.",()=>{actGive("me","barbeneige","page");setTimeout(()=>actEmote("barbeneige","coeur"),1200)}],
+      ["barbeneige","open","Pour te remercier, voici l'étoile du sapin. Elle ne s'éteint jamais.",()=>actGive("barbeneige","me","eclat")]]},
     {at:"grelot",gather:1,goal:"Pose l'étoile en haut du sapin, avec tout le monde.",lines:[
-      ["grelot","joy","Tout le monde est là ? Un… deux… trois !"],
-      ["petitpois","surprise","Elle brille ! Elle brille jusqu'au ciel !"],
-      ["barbeneige","joy","Joyeux Noël, la clairière."],
-      ["me","joy","Joyeux Noël à tous !"]]}
+      ["grelot","joy","Tout le monde est là ? Un… deux… trois !",()=>{actTrick("grelot","boing");actEmote("grelot","note")}],
+      ["petitpois","surprise","Elle brille ! Elle brille jusqu'au ciel !",()=>{actTrick("petitpois","salto");actEmote("petitpois","!")}],
+      ["barbeneige","joy","Joyeux Noël, la clairière.",()=>{actEmote("barbeneige","coeur");actTrick("ramure","toupie");actTrick("paillette","toupie")}],
+      ["me","joy","Joyeux Noël à tous !",()=>{actTrick("me","salto");actTrick("grelot","boing")}]]}
   ]}
 });
 
