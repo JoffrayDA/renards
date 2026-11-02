@@ -23,7 +23,8 @@ function foxArt(f,o={}){
   if(f.id==="roussette"&&!o.plain&&typeof meLook==="function")f={...f,...meLook(f)}; // le look choisi par le joueur (js/moi.js)
   const sil=o.sil,pose=sil?"sit":(o.pose||"sit");
   const c=sil?{b:"#3a2c34",ch:"#3a2c34",e:"#3a2c34",s:"#3a2c34",t:"#3a2c34"}:f.c;
-  const st=sil?"#2a1f26":INK,e=f.ears||1,sc=f.scale||1,dark="#2e2028";
+  const st=sil?"#2a1f26":f.line||INK, // line : couleur du contour (Balafre, tout noir, a un contour clair)
+  e=f.ears||1,sc=f.scale||1,dark="#2e2028";
   const ey=!sil&&f.eye||dark; // la couleur des yeux (Roussette, js/moi.js)
   const pink=sil?"none":"#f9c0cb",gh=f.ghost&&!sil;
   const earPair=(L,R,base)=>[L,R].map((d,i)=>{const [bx,by]=base[i];

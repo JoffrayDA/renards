@@ -4,7 +4,7 @@
    (cicatrice, queue, masque, patchwork, oreilles) : Joffray les a tous voulus après la planche tools/inconnus.html. Certaines photos n'arrivent qu'à un moment : la nuit, à l'aube,
    sous la pluie (inspiration : Pokémon Snap). Ils ne vont jamais au Café : ils sont dans FOX, pas dans FOXES. */
 const INCO=[
-  {id:"balafre",name:"Balafre",bowl:"poisson",mark:"balafre",eye:"#f2c94a",c:{b:"#2b2730",ch:"#57505d",e:"#15121a",s:"#15121a",t:"#4b4552"}, // tout noir, œil jaune (Joffray : « il fait pas assez méchant »)
+  {id:"balafre",name:"Balafre",bowl:"poisson",mark:"balafre",eye:"#f2c94a",line:"#ece6f0",c:{b:"#2b2730",ch:"#57505d",e:"#15121a",s:"#15121a",t:"#4b4552"}, // tout noir, œil jaune (Joffray : « il fait pas assez méchant »)
     opts:["Balafre","Velours","Bouton"],bio:"Un œil fermé depuis une bagarre avec un sanglier. Il ne dit jamais qui a gagné.",
     hello:"Balafre. Oui, c'est moi. Le poisson était bon. Ne le dis à personne.",pp:"Il fait peur à tout le monde, mais il ramène les petits égarés à leur terrier.",
     clues:[{pose:"eat",txt:"Il mange vite, en surveillant les arbres."},
