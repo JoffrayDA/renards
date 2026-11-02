@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tester les jeux</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:15px system-ui,sans-serif}
+h1{font-size:19px;margin:0 0 4px}p{margin:0 0 12px;opacity:.8}
+a{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:10px 14px;margin-bottom:8px;color:#5b4250;text-decoration:none;font-weight:700}
+a span{font-weight:400;font-size:13px;opacity:.7}
+h2{font-size:16px;margin:18px 0 8px}
+</style>
+</head>
+<body>
+<h1>Tester les petits jeux de la Clairière</h1>
+<p>Chaque lien ouvre le jeu tout seul ; il se relance après chaque partie. Monte le son : musique et bruitages.</p>
+<div id="out"></div>
+<script>
+const J=[["fish","La pêche","Gaston"],["shake","Secouer l'arbre","Luciole, Grignote…"],["search","Fouiller les feuilles","Mitaine"],["catch","Attraper","Galette, Noël"],["firefly","La luciole dorée","Luciole"],
+  ["ricochet","Les ricochets","Plouf"],["cushion","Le jeu des coussins","Pantoufle"],["memory","Les chaussettes","Mamie Brindille"],["basket","Le panier de pommes","Biscuit"],["rake","Le tas de feuilles","Cannelle"],
+  ["lantern","La lanterne dans le brouillard","Charbon"],["umbrella","Le parapluie-feuille","Brume"],["nails","Les clous","Copeau"],["order","La course","Moka"],["simon","La danse des flaques","Plouf"],["still","Ne bouge plus","Gribouille"]];
+document.getElementById("out").innerHTML=J.map(([k,n,w])=>`<a href="../clairiere.html?jeu=${k}">${n}<span>${w}</span></a>`).join("")
+  +`<h2>Planches à valider</h2><a href="noel-poses.html">Les renards de Noël<span>toutes les poses</span></a><a href="bouleneige.html">Boule-de-Neige plus ronde<span>4 versions</span></a><a href="viking.html">Le guerrier viking<span>Ragnar</span></a>`;
+</script>
+</body>
+</html>

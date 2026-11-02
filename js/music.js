@@ -13,7 +13,7 @@ const MUSIC=(()=>{
       const a=e.target.closest("a.home");if(a){e.preventDefault();host.closeGame()}});
     const st=document.createElement("style");st.textContent=H.css;document.head.appendChild(st);
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
+    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),sfx:(k,n)=>H.sfx&&H.sfx(k,n),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
   }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
   const hz=m=>440*Math.pow(2,(m-69)/12);
@@ -117,6 +117,15 @@ const MUSIC=(()=>{
         for(let i=0;i<16;i++)I.hat(t+i*B/4,i%2?.018:.03);[.5,1.5,2.5,3.5].forEach(x=>I.openhat(t+x*B,.02));
         [1.5,3.5].forEach(x=>I.stab(c.map(m=>m+12),t+x*B,.04));
         melody((m,tt)=>I.marimba(m+12,tt,.17),this.mel,b,t,B)}},
+    // les petits jeux de la Clairière (js/clairiere/games.js) : guilleret, pizzicati et marimba
+    jeu:{name:"Petit jeu",bpm:128,beats:4,bars:8,
+      ch:[[48,52,55],[45,48,52],[41,45,48],[43,47,50],[48,52,55],[45,48,52],[41,45,48],[43,47,50]],
+      mel:[[[72,.5],[76,.5],[79,.5],[76,.5],[77,1],[74,1]],[[72,.5],[74,.5],[76,1],[69,2]],[[69,.5],[72,.5],[77,.5],[76,.5],[74,1],[72,1]],[[71,1],[74,1],[79,2]],
+           [[79,.5],[77,.5],[76,.5],[74,.5],[76,1],[72,1]],[[72,.5],[76,.5],[81,1],[79,1],[76,1]],[[77,.5],[76,.5],[74,.5],[72,.5],[74,1],[77,1]],[[79,1],[74,1],[72,2]]],
+      bar(b,t,B){const c=this.ch[b];
+        [0,1,2,3].forEach(x=>I.pizz((x%2?c[2]:c[0])-12,t+x*B,.16));for(let i=0;i<8;i++)I.shaker(t+i*B/2,i%2?.02:.035);
+        [.5,1.5,2.5,3.5].forEach(x=>c.forEach(m=>I.pluck(m+12,t+x*B,.025,.25,2200)));
+        melody((m,tt)=>I.marimba(m+12,tt,.15),this.mel,b,t,B)}},
     // les Nuits de Noël (js/cafe/noelnuits.js) : le refrain de Jingle Bells (domaine public), grelots de traîneau
     noel:{name:"Nuits de Noël",bpm:118,beats:4,bars:8,
       ch:[[48,52,55],[48,52,55],[48,52,55],[48,52,55],[53,57,60],[48,52,55],[50,55,59],[55,59,62]],
@@ -188,6 +197,26 @@ const MUSIC=(()=>{
   function note(m){if(!on||!unlocked)return;init();if(C.state==="suspended")C.resume();const t=C.currentTime+.01;
     const g=gain(t,.006,.16,1.1);g.connect(master);const s=C.createGain();s.gain.value=.25;g.connect(s);s.connect(rev);
     osc("triangle",hz(m),t,t+1.3).connect(g);const g2=gain(t,.004,.07,.4);g2.connect(g);osc("sine",hz(m)*2,t,t+.6).connect(g2)}
+  // les bruitages des petits jeux (games.js), par-dessus la musique ; n : un rang, pour monter la note (ricochets, pierres…)
+  function sfx(k,n=0){if(!on||!unlocked)return;init();if(C.state==="suspended")C.resume();const t=C.currentTime+.01;
+    const o=(g,w=.12)=>{g.connect(master);const s=C.createGain();s.gain.value=w;g.connect(s);s.connect(rev)};
+    const tone=(type,f1,f2,d,v,at=0)=>{const g=gain(t+at,.004,v,d),x=osc(type,f1,t+at,t+at+d+.05);x.frequency.setValueAtTime(f1,t+at);x.frequency.exponentialRampToValueAtTime(f2,t+at+d);x.connect(g);o(g)};
+    const nz=(f,q,d,v,at=0,f2)=>{const bp=filt("bandpass",f,q);if(f2){bp.frequency.setValueAtTime(f,t+at);bp.frequency.exponentialRampToValueAtTime(f2,t+at+d)}const g=gain(t+at,.005,v,d);noiseSrc(t+at,t+at+d+.05).connect(bp);bp.connect(g);o(g,.05)};
+    const bell=(m,v,at=0,d=.6)=>{const f=hz(m),g=gain(t+at,.003,v,d);osc("sine",f,t+at,t+at+d+.1).connect(g);const g2=gain(t+at,.003,v*.3,d/3);osc("sine",f*4,t+at,t+at+d/3).connect(g2);g2.connect(g);o(g,.3)};
+    if(k==="good"){bell(76+n,.16);bell(83+n,.12,.07)}
+    else if(k==="bad"){tone("triangle",330,170,.28,.14)}
+    else if(k==="tap"){tone("sine",900,600,.05,.08);nz(2400,2,.03,.05)}
+    else if(k==="pop"){tone("sine",500,1300,.08,.12)}
+    else if(k==="plic"){tone("sine",2200,1100,.06,.05)}
+    else if(k==="splash"){nz(1400,1.2,.18,.12);tone("sine",700,220,.12,.06)}
+    else if(k==="bite"){tone("sine",420,120,.16,.16);nz(900,1,.12,.06)}
+    else if(k==="rustle"){nz(3000,.8,.14,.06);nz(1800,.8,.12,.04,.05)}
+    else if(k==="whoosh"){nz(300,1.4,.9,.12,0,1400)}
+    else if(k==="knock"){tone("sine",180,70,.12,.25);nz(1200,1.5,.05,.08)}
+    else if(k==="flip"){nz(3200,1,.04,.06);tone("sine",1200,1500,.05,.05)}
+    else if(k==="cheer"){[0,4,7,12].forEach((d,i)=>bell(84+d,.1,i*.06,.5))}
+    else if(k==="win"){[72,76,79,84,88].forEach((m,i)=>bell(m,.14,i*.09,.9));[0,.1,.2].forEach(a=>nz(6000,.7,.4,.03,.45+a))}
+    else if(k==="lose"){[67,64,60].forEach((m,i)=>tone("triangle",hz(m),hz(m)*.98,.3,.11,i*.18))}}
   function jingleEnd(){if(!jtimer)return;clearTimeout(jtimer);jtimer=null;if(cur&&cur.startsWith("jingle:")){stop();if(on&&wanted)play(wanted)}}
 
   function play(id){
@@ -223,7 +252,7 @@ const MUSIC=(()=>{
   const css=".snd{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fffaf2;border:2px solid #ead9cc;box-shadow:0 3px 0 #ead9cc;flex:none;cursor:pointer;padding:0;touch-action:manipulation}.snd svg{display:block}";
   st.textContent=css;document.head.appendChild(st);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-  return{play,stop,volume,want,setOn,paint,icon,css,unlock,jingle,jingleEnd,note,tracks:TRACKS,get current(){return cur},get on(){return on}};
+  return{play,stop,volume,want,setOn,paint,icon,css,unlock,jingle,jingleEnd,note,sfx,tracks:TRACKS,get current(){return cur},get on(){return on}};
 })();
 // visible par les jeux ouverts dans le cadre de l'accueil (une const n'est pas une propriété de window)
 window.MUSIC=MUSIC;

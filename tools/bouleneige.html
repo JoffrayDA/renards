@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boule-de-Neige</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}
+p{margin:0 0 12px;opacity:.8}
+.fox{background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:8px;margin-bottom:10px}
+.fox strong{display:block;font-size:15px}
+.fox em{display:block;font-style:normal;font-size:12px;opacity:.65;margin-bottom:4px}
+.row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px}
+.row figure{margin:0;width:96px;text-align:center}
+.row svg{display:block;width:100%}
+.row figcaption{font-size:11px;opacity:.6}
+.row figure.pt svg{background:#f3e6dc;border:2px solid #ead9cf;border-radius:12px;box-sizing:border-box;width:80px;margin:0 auto}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Boule-de-Neige : plus ronde ?</h1>
+<p>A : la version actuelle. B : toute ronde. C : ronde avec un reflet, comme une boule de Noël. D : ronde, avec le reflet et l'attache dorée d'une boule de sapin.</p>
+<div id="out"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const POSES=[["sit","assis"],["happy","content"],["walk","marche"],["eat","mange"],["groom","toilette"],["up","regarde en l'air"],["lie","allongé"],["sleep","dort"]];
+const EXPR=[["open","normal"],["joy","joie"],["shy","timide"],["surprise","surpris"],["sad","triste"]];
+const B=FOXES.find(f=>f.id==="bouleneige");
+const XF=[{...B,name:"A · actuelle"},{...B,name:"B · toute ronde",round:1},{...B,name:"C · ronde avec un reflet",round:2},{...B,name:"D · ronde, reflet et attache de boule de sapin",round:2,bauble:1}];
+document.getElementById("out").innerHTML=XF.map(f=>`<div class="fox"><strong>${f.name}</strong><em>${f.bio||""}</em>
+  <div class="row">${POSES.map(([p,n])=>`<figure>${foxArt(f,{pose:p})}<figcaption>${n}</figcaption></figure>`).join("")}</div>
+  <div class="row">${EXPR.map(([e,n])=>`<figure class="pt">${foxArt(f,{portrait:1,expr:e})}<figcaption>${n}</figcaption></figure>`).join("")}<figure>${foxArt(f,{sil:1})}<figcaption>silhouette</figcaption></figure></div></div>`).join("");
+</script>
+</body>
+</html>

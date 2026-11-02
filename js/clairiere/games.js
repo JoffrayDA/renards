@@ -46,17 +46,21 @@ function playGame(g,done){
   const el=$("play");let timers=[],raf=0,over=false,cheerN=0;gameOn=true;
   el.innerHTML=`<svg viewBox="0 ${-EXT} 400 ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg><div class="psay" aria-live="polite"></div>`;
   const sv=el.firstChild,sayEl=el.lastChild;
+  // une petite musique guillerette pendant le jeu (pas pour la pêche, qui reste calme), et des bruitages (music.js)
+  const music=!g.free&&g.k!=="fish";if(music)MUSIC.want("jeu");
+  const back=()=>{if(music)MUSIC.want("foret")};
   const api={sv,won:false,tap:null,
+    sfx:(k,n)=>{try{MUSIC.sfx(k,n)}catch(e){}},
     say:t=>{sayEl.textContent=t;replay(sayEl,"pop")},
     // un grand « Bravo ! » au milieu : une étape réussie se voit (Joffray ne voyait pas qu'une suite était validée)
-    cheer:t=>{t=t||["BRAVO !","CONTINUE !","SUPER !"][cheerN++%3];const c=document.createElement("div");c.className="cheer";c.textContent=t;el.appendChild(c);setTimeout(()=>c.remove(),1100)},
+    cheer:t=>{t=t||["BRAVO !","CONTINUE !","SUPER !"][cheerN++%3];if(t!=="PARFAIT !")api.sfx("cheer");const c=document.createElement("div");c.className="cheer";c.textContent=t;el.appendChild(c);setTimeout(()=>c.remove(),1100)},
     later:(f,ms)=>{timers.push(setTimeout(()=>{if(!over)f()},ms))},
     clear:()=>{timers.forEach(clearTimeout);timers=[]},
     loop:f=>{let last=performance.now();const fr=now=>{if(over)return;f(Math.max(0,Math.min(.05,(now-last)/1000)));last=now;raf=requestAnimationFrame(fr)};raf=requestAnimationFrame(fr)},
     // pêche libre : on enchaîne les lancers et on rentre quand on veut
-    close:()=>{over=true;api.clear();cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;done()},
-    win:t=>{if(api.won)return;api.won=true;api.clear();api.say(t);api.cheer("PARFAIT !");
-      setTimeout(()=>{over=true;cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;done()},1400)}};
+    close:()=>{over=true;api.clear();cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;back();done()},
+    win:t=>{if(api.won)return;api.won=true;api.clear();api.say(t);api.cheer("PARFAIT !");api.sfx("win");
+      setTimeout(()=>{over=true;cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;back();done()},1400)}};
   el.onpointerdown=e=>{if(!api.won&&api.tap)api.tap(e)};
   if(g.free){const x=document.createElement("button");x.className="btn pclose";x.type="button";x.textContent="Rentrer";
     x.onpointerdown=e=>{e.stopPropagation();api.close()};el.appendChild(x)}
@@ -129,10 +133,10 @@ const GAMES={
       const a=Math.random()*6.3;sh.style.transition="none";sh.style.transform=`translate(${(Math.cos(a)*170).toFixed(0)}px,${(Math.abs(Math.sin(a))*90+30).toFixed(0)}px)`;
       A.later(()=>{sh.style.transition="";sh.style.transform="translate(0,0)"},60);
       let nib=1+Math.floor(Math.random()*3);
-      const step=()=>{if(nib-->0)A.later(()=>{ring(16,2.2);bob.style.transform="translateY(4px)";A.later(()=>bob.style.transform="",150);A.say("Ploc… ça grignote. Pas encore !");A.later(step,0)},900+Math.random()*900);
-        else A.later(()=>{st="bite";bob.style.transform="translateY(24px)";bob.style.opacity=.3;ring(22,3.6);ring(44,2.6,120);ring(66,1.8,240);drops(7,40);ex.setAttribute("opacity",1);replay(ex,"popin");rod.classList.add("tug");A.say("Ça mord ! Touche vite !");
+      const step=()=>{if(nib-->0)A.later(()=>{ring(16,2.2);bob.style.transform="translateY(4px)";A.later(()=>bob.style.transform="",150);A.sfx("plic");A.say("Ploc… ça grignote. Pas encore !");A.later(step,0)},900+Math.random()*900);
+        else A.later(()=>{st="bite";A.sfx("bite");bob.style.transform="translateY(24px)";bob.style.opacity=.3;ring(22,3.6);ring(44,2.6,120);ring(66,1.8,240);drops(7,40);ex.setAttribute("opacity",1);replay(ex,"popin");rod.classList.add("tug");A.say("Ça mord ! Touche vite !");
           try{navigator.vibrate&&navigator.vibrate(90)}catch(e){}
-          A.later(()=>{if(st==="bite"){st="miss";rod.classList.remove("tug");ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";sh.style.opacity=0;A.say("Trop tard… il a filé. On relance !");A.later(start,1400)}},500)},800+Math.random()*1000)};
+          A.later(()=>{if(st==="bite"){st="miss";rod.classList.remove("tug");ex.setAttribute("opacity",0);bob.style.opacity=1;bob.style.transform="";sh.style.opacity=0;A.sfx("bad");A.say("Trop tard… il a filé. On relance !");A.later(start,1400)}},500)},800+Math.random()*1000)};
       A.later(step,1400)};
     // la prise saute hors de l'eau, puis s'affiche sur une carte
     const show=(it,name,sub,fish)=>{
@@ -144,15 +148,15 @@ const GAMES={
           <text y="46" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="18" fill="${INK}">${name}</text>
           <text y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#8f7a86">${sub}</text>${slots}</g></g>`},520)};
     A.tap=()=>{
-      if(st==="wait"){st="miss";A.clear();pull(0);bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*220}px,60px)`;ring(16,2);A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1500)}
-      else if(st==="bite"){st="won";pull(1);ex.setAttribute("opacity",0);bob.style.opacity=0;sh.style.opacity=0;
+      if(st==="wait"){st="miss";A.clear();pull(0);bob.style.transform="";sh.style.transform=`translate(${(Math.random()<.5?-1:1)*220}px,60px)`;ring(16,2);A.sfx("bad");A.say("Trop tôt ! Le poisson a eu peur. On relance !");A.later(start,1500)}
+      else if(st==="bite"){st="won";pull(1);A.sfx("splash");ex.setAttribute("opacity",0);bob.style.opacity=0;sh.style.opacity=0;
         // pêche libre : un poisson une fois sur trois (Joffray : une sur dix, « trop long »), sinon ce qui traîne au fond de la mare ;
         // jamais plus de deux prises d'affilée sans poisson (R.fishDry) : Joffray en avait raté dix de suite (29/10/2026)
         const j=g.free&&(R.fishDry||0)<2&&Math.random()>=1/3?JUNK[Math.floor(Math.random()*JUNK.length)]:null;
         if(g.free){R.fishDry=j?(R.fishDry||0)+1:0;save()}
-        if(j){show(j[0],j[2],j[1],false);A.say("Ce n'est pas un poisson… On relance ?");A.later(start,2300)}
+        if(j){A.later(()=>A.sfx("bad"),500);show(j[0],j[2],j[1],false);A.say("Ce n'est pas un poisson… On relance ?");A.later(start,2300)}
         else if(!g.free){show("fish","Un poisson !","Tout orange, avec de grands yeux.",true);A.win(g.win||"Attrapé !")}
-        else{const t=g.onFish();show("fish","Un poisson !",g.have()>=g.need?"De quoi remplir la gamelle !":`${g.have()} sur ${g.need} pour la gamelle`,true);A.say(t);A.later(start,2600)}}};
+        else{A.later(()=>{A.sfx("good");A.cheer()},500);const t=g.onFish();show("fish","Un poisson !",g.have()>=g.need?"De quoi remplir la gamelle !":`${g.have()} sur ${g.need} pour la gamelle`,true);A.say(t);A.later(start,2600)}}};
     start();
   },
 
@@ -173,15 +177,15 @@ const GAMES={
       const fs=[{it,x:150+Math.random()*100,good:1},{it:"cone",x:110+Math.random()*60},{it:"cone",x:240+Math.random()*60}].map((o,i)=>({...o,y:150+i*14,vy:-60-i*30,vx:(Math.random()-.5)*50,r:0,
         el:grp(air,`<g transform="scale(${o.good?1.25:1})">${ITEM[o.it]}</g><circle r="${o.good?40:26}" fill="transparent"/>`,o.good?{"data-g":1}:{})}));
       fs.forEach(f=>{f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();if(st!=="fall")return;
-        if(f.good){st="won";f.el.classList.add("popin");A.win(g.win||"Rattrapé !")}else{f.el.remove();f.gone=1;A.say(it==="jar"?"Une pomme de pin ! Le bocal, vite !":"Une pomme de pin ! Pas celle-là, vite !")}}});
+        if(f.good){st="won";f.el.classList.add("popin");A.win(g.win||"Rattrapé !")}else{f.el.remove();f.gone=1;A.sfx("bad");A.say(it==="jar"?"Une pomme de pin ! Le bocal, vite !":"Une pomme de pin ! Pas celle-là, vite !")}}});
       A.say("Il tombe ! Attrape-le avant qu'il touche le sol !");
       A.loop(dt=>{if(st!=="fall"||D!==dn)return;for(const f of fs){if(f.gone)continue;f.vy+=560*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.r+=f.vx*dt*1.5;
         if(f.y>=404){if(f.good){st="broke";f.el.innerHTML=it==="jar"?`<path d="M-16 4 l8 -10 l4 8 l6 -12 l4 14 l8 -6 l2 10Z" fill="#e4f3f9" ${O}/>`:`<g opacity=".45">${ITEM[it]}</g>`;f.el.setAttribute("transform",`translate(${f.x.toFixed(0)} 404)`);
-            try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
+            try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}A.sfx("bad");
             A.say(it==="jar"?"Crac ! Il s'est cassé… Il y en a un autre là-haut. Secoue encore !":"Raté, il s'est perdu dans l'herbe… Il en reste un là-haut. Secoue encore !");A.later(()=>{air.innerHTML="";hang.setAttribute("opacity",.9);k=n-3;st="shake"},1400);return}
           f.gone=1;f.el.remove();continue}
         f.el.setAttribute("transform",`translate(${f.x.toFixed(1)} ${f.y.toFixed(1)}) rotate(${f.r.toFixed(0)})`)}})};
-    A.tap=()=>{if(st!=="shake")return;replay(crown,"shk");k++;
+    A.tap=()=>{if(st!=="shake")return;replay(crown,"shk");k++;A.sfx("rustle");
       for(let i=0;i<2;i++){const x=110+Math.random()*180,c=["#8dbd86","#b5d68f","#f2a35c"][Math.floor(Math.random()*3)];
         const l=grp(fx,`<path d="M-8 0 Q0 -8 8 0 Q0 6 -8 0Z" fill="${c}" stroke="${INK}" stroke-width="2"/>`,{transform:`translate(${x} ${120+Math.random()*100})`});
         const f=mk(l,"animateTransform",{attributeName:"transform",type:"translate",additive:"sum",from:"0 0",to:`${(Math.random()-.5)*60} 300`,dur:"1.2s",fill:"freeze"});f.beginElement();setTimeout(()=>l.remove(),1300)}
@@ -211,9 +215,9 @@ const GAMES={
       const G=gen;A.later(()=>rustle(G),900)};
     const pick=i=>{const p=piles[i];if(A.won||st!=="look"||p.pile.classList.contains("gone"))return;p.pile.classList.add("gone");
       if(i===good){st="won";shown(i,g.item||"wool");A.win(g.win||"Trouvé !");return}
-      const [gi,t]=gags[Math.floor(Math.random()*gags.length)];shown(i,gi);left--;
+      const [gi,t]=gags[Math.floor(Math.random()*gags.length)];shown(i,gi);left--;A.sfx("rustle");
       if(left>0)A.say(`${t} Encore ${left} essai${left>1?"s":""} !`);
-      else{st="lost";piles[good].pile.classList.add("gone");shown(good,g.item||"wool");A.say("Raté ! C'était là… et ça file sous un autre tas. On recommence !");A.later(round,2200)}};
+      else{st="lost";A.sfx("lose");piles[good].pile.classList.add("gone");shown(good,g.item||"wool");A.say("Raté ! C'était là… et ça file sous un autre tas. On recommence !");A.later(round,2200)}};
     round();
   },
 
@@ -230,7 +234,8 @@ const GAMES={
           :`<g filter="url(#wobble)"><circle r="13" fill="${["#e2445e","#5aa0dc","#f2c45a","#9a6ad6","#5fae6c"][bugs0++%5]}" stroke="${INK}" stroke-width="2.4"/><rect x="-4" y="-18" width="8" height="6" rx="1.4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g><circle cx="-4" cy="-4" r="3.4" fill="#fff" opacity=".8"/><circle r="26" fill="transparent"/>`):page?`<g filter="url(#wobble)"><rect x="-13" y="-16" width="26" height="32" rx="3" fill="#fffaf0" stroke="${INK}" stroke-width="2.4"/><path d="M-8 -9 h16 M-8 -3 h16 M-8 3 h11 M-8 9 h14" stroke="#cdb9ad" stroke-width="2"/></g><circle r="26" fill="transparent"/>`
         :`<circle r="30" fill="url(#lg)"/><circle r="5" fill="#fffbe0"/><circle r="26" fill="transparent"/>`);
       b.el.style.cursor="pointer";
-      b.el.onpointerdown=e=>{e.stopPropagation();if(b.got||A.won)return;b.got=1;got++;b.el.classList.add("caught");setTimeout(()=>b.el.remove(),400);
+      b.el.onpointerdown=e=>{e.stopPropagation();if(b.got||A.won)return;b.got=1;got++;b.el.classList.add("caught");setTimeout(()=>b.el.remove(),400);A.sfx("good",got);
+        if(got===Math.ceil(n/2)&&got<n)A.cheer("CONTINUE !");
         if(got===n)A.win(g.win||(xmas?"Tous attrapés !":page?"Toutes les pages !":"Toutes attrapées !"));else A.say(`${got} sur ${n}… encore !`)};
       return b});
     A.say(g.say||`Attrape les ${n} lucioles !`);
@@ -256,7 +261,7 @@ const GAMES={
       b.el.style.cursor="pointer";
       b.el.onpointerdown=e=>{e.stopPropagation();if(done||A.won)return;
         if(b.gold){done=1;b.el.classList.add("caught");A.win(g.win||"Attrapée !")}
-        else{b.flee=.6;b.s=180;b.a+=Math.PI;A.say(g.miss||"Pas celle-là ! Cherche la dorée !")}};
+        else{b.flee=.6;b.s=180;b.a+=Math.PI;A.sfx("pop");A.say(g.miss||"Pas celle-là ! Cherche la dorée !")}};
       return b};
     const flies=[...Array.from({length:28},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[28].el); // la dorée passe devant
     A.say(g.say||"Attrape la luciole dorée !");
@@ -287,12 +292,12 @@ const GAMES={
     A.loop(dt=>{if(st!=="aim")return;t+=dt;cur.setAttribute("x",(X0+pos()*WG-4).toFixed(1))});
     A.tap=()=>{if(st!=="aim")return;
       const x=X0+pos()*WG,y=300-k*10;
-      if(Math.abs(x-200)<=HALF+2){k++;drawPips();const sx=40+k*62;
+      if(Math.abs(x-200)<=HALF+2){k++;drawPips();A.sfx("good",k*2);const sx=40+k*62;
         stone.style.transform=`translate(${sx-40}px,${y-300-24}px)`;
         A.later(()=>{stone.style.transform=`translate(${sx-40}px,${y-300}px)`;grp(rings,`<ellipse cx="${sx}" cy="${y+6}" rx="14" ry="5" fill="none" stroke="#fff" stroke-width="3" class="ring"/>`)},160);
         if(k>=need){st="done";A.win(g.win||`${k} rebonds !`)}
         else{per=Math.max(.5,per-.12);t=per;A.say(`${k} rebond${k>1?"s":""}… encore !`)}}
-      else{st="sink";stone.style.opacity=0;grp(rings,`<ellipse cx="${40+k*62+30}" cy="${y+8}" rx="18" ry="6" fill="none" stroke="#fff" stroke-width="3" class="ring"/>`);
+      else{st="sink";A.sfx("splash");A.later(()=>A.sfx("lose"),200);stone.style.opacity=0;grp(rings,`<ellipse cx="${40+k*62+30}" cy="${y+8}" rx="18" ry="6" fill="none" stroke="#fff" stroke-width="3" class="ring"/>`);
         A.say(k?`Plouf ! ${k} rebond${k>1?"s":""} seulement. On recommence !`:"Plouf ! Raté. On recommence !");A.later(reset,1300)}};
     reset();
   },
@@ -339,11 +344,11 @@ const GAMES={
       if(t>=1){const s=sw.a.slot;sw.a.slot=sw.b.slot;sw.b.slot=s;sw=null;next()}});
     const lift=c=>{const x=X(c.slot,RD[r][0]);put(c.el,x,Y-136,"transform .3s cubic-bezier(.3,1.4,.5,1)");return x};
     const pick=c=>{if(st!=="pick"||A.won)return;st="reveal";const x=lift(c);
-      if(c===under){fox(x,Y+40,"happy","none");fx.style.opacity=1;A.later(()=>fox(x,Y+26,"happy"),20);r++;drawPips();
+      if(c===under){A.sfx("pop");fox(x,Y+40,"happy","none");fx.style.opacity=1;A.later(()=>fox(x,Y+26,"happy"),20);r++;drawPips();
         if(r>=RD.length)A.win(g.win||"Trouvé !");
         else{A.cheer("TROUVÉ !");A.say(["Trouvé ! Il rigole sous son coussin.","Bien vu ! Il n'en revient pas."][r-1]||"Trouvé !");A.later(start,1500)}}
       else{const [it,nm]=LOOT[Math.floor(Math.random()*LOOT.length)];grp(loot,`<g transform="translate(${x} ${Y+10}) scale(1.6)">${ITEM[it]}</g>`);
-        A.say(`Raté, juste ${nm} !`);
+        A.sfx("bad");A.say(`Raté, juste ${nm} !`);
         A.later(()=>{const xu=lift(under);fox(xu,Y+40,"happy","none");fx.style.opacity=1;A.later(()=>fox(xu,Y+26,"happy"),20);A.say(`Hi hi ! ${name} était là. On refait cette manche !`)},700);
         A.later(start,2600)}};
     start();
@@ -369,17 +374,17 @@ const GAMES={
     const turn=(c,up)=>{c.up=up;const f=c.el.firstChild;replay(f,"flipc");
       setTimeout(()=>{f.querySelector(".face").style.display=up?"":"none";f.querySelector(".back").style.display=up?"none":""},140)};
     // un coup de vent : les chaussettes pas encore rangées changent de place
-    const blow=()=>{blown=true;lock=true;A.say("Un coup de vent ! Les chaussettes ont bougé…");
+    const blow=()=>{blown=true;lock=true;A.sfx("whoosh");A.say("Un coup de vent ! Les chaussettes ont bougé…");
       const left=cards.filter(c=>!c.done),slots=left.map(c=>c.slot).sort(()=>Math.random()-.5);
       left.forEach((c,i)=>{c.slot=slots[i];const [x,y]=XY(c.slot);c.el.style.transition="transform .7s cubic-bezier(.5,0,.3,1.3)";c.el.style.transform=`translate(${x}px,${y}px)`});
       A.later(()=>{left.forEach(c=>c.el.style.transition="");lock=false;A.say("Retrouve les paires qui restent !")},800)};
-    const pick=c=>{if(lock||c.up||c.done||A.won)return;turn(c,true);open.push(c);if(open.length<2)return;
+    const pick=c=>{if(lock||c.up||c.done||A.won)return;turn(c,true);A.sfx("flip");open.push(c);if(open.length<2)return;
       const [a,b]=open;open=[];lock=true;
-      if(a.k===b.k){a.done=b.done=true;found++;A.later(()=>{a.el.classList.add("done");b.el.classList.add("done");
+      if(a.k===b.k){a.done=b.done=true;found++;A.later(()=>{a.el.classList.add("done");b.el.classList.add("done");A.sfx("good",found);
           if(found===K)return A.win(g.win||"Toutes les paires !");
-          if(found===3&&!blown)return blow();
-          lock=false;A.cheer("UNE PAIRE !");A.say(`Une paire ! ${found} sur ${K}.`)},350)}
-      else A.later(()=>{turn(a,false);turn(b,false);lock=false;A.say("Pas pareilles… Retourne-les deux par deux.")},850)};
+          if(found===3&&!blown){A.cheer("BIEN JOUÉ !");return blow()}
+          lock=false;A.cheer(["BIEN JOUÉ !","SUPER !","BRAVO !","GÉNIAL !"][found%4]);A.say(`Une paire ! ${found} sur ${K}.`)},350)}
+      else A.later(()=>{A.sfx("bad");turn(a,false);turn(b,false);lock=false;A.say("Pas pareilles… Retourne-les deux par deux.")},850)};
     // on voit toutes les chaussettes un instant
     A.say(g.say||"Regarde bien les chaussettes…");
     A.later(()=>cards.forEach(c=>turn(c,true)),300);
@@ -403,11 +408,11 @@ const GAMES={
       if((next-=dt)<=0){next=Math.max(.45,.9-got*.05);const bad=Math.random()<.22;fr.push({x:40+Math.random()*320,y:100,vy:80+got*10+Math.random()*40,bad,el:grp(box,bad?ROT:APPLE)})}
       for(const f of fr){f.vy+=170*dt;f.y+=f.vy*dt;
         if(f.y>=398&&f.y<=432&&Math.abs(f.x-bx)<48){f.done=1;f.el.remove();
-          if(f.bad){got=Math.max(0,got-1);A.say(`Beurk, une véreuse ! ${got} sur ${n}.`)}
-          else{got++;if(got>=n){st="won";A.win(g.win||"Le panier est plein !");return}A.say(`${got} sur ${n} !`)}continue}
+          if(f.bad){got=Math.max(0,got-1);A.sfx("bad");A.say(`Beurk, une véreuse ! ${got} sur ${n}.`)}
+          else{got++;A.sfx("good",got);if(got>=n){st="won";A.win(g.win||"Le panier est plein !");return}if(got===Math.ceil(n/2))A.cheer("CONTINUE !");A.say(`${got} sur ${n} !`)}continue}
         if(f.y>480){f.done=1;f.el.remove();if(f.bad)continue;lost++;
-          if(lost>=miss){st="lost";A.say(`${miss} pommes par terre… On recommence !`);A.later(reset,1400);return}
-          A.say(`Raté ! Encore ${miss-lost} chance${miss-lost>1?"s":""}.`);continue}
+          if(lost>=miss){st="lost";A.sfx("lose");A.say(`${miss} pommes par terre… On recommence !`);A.later(reset,1400);return}
+          A.sfx("bad");A.say(`Raté ! Encore ${miss-lost} chance${miss-lost>1?"s":""}.`);continue}
         f.el.setAttribute("transform",`translate(${f.x.toFixed(1)} ${f.y.toFixed(1)})`)}
       fr=fr.filter(f=>!f.done)});
     reset();
@@ -429,10 +434,10 @@ const GAMES={
       if(last){const dx=p.x-last.x,dy=p.y-last.y;for(const l of lv)if(!l.in&&Math.hypot(l.x-p.x,l.y-p.y)<46){l.x+=dx;l.y+=dy;l.r+=dx}}last=p});
     A.loop(dt=>{if(st!=="play")return;left-=dt;bar.setAttribute("width",(316*Math.max(0,left)/T).toFixed(1));
       let k=0;for(const l of lv){
-        if(!l.in&&Math.hypot(l.x-PX,(l.y-PY)*1.3)<56){l.in=true;l.x=PX+(Math.random()-.5)*70;l.y=PY+(Math.random()-.5)*30;box.appendChild(l.el)}
+        if(!l.in&&Math.hypot(l.x-PX,(l.y-PY)*1.3)<56){l.in=true;A.sfx("rustle");l.x=PX+(Math.random()-.5)*70;l.y=PY+(Math.random()-.5)*30;box.appendChild(l.el)}
         if(l.in)k++;l.el.setAttribute("transform",`translate(${l.x.toFixed(1)} ${l.y.toFixed(1)}) rotate(${l.r.toFixed(0)})`)}
       if(k>=N){st="won";A.win(g.win||"Un tas tout moelleux !");return}
-      if(left<=0){st="lost";A.say("Le vent se lève et éparpille tout… On recommence !");A.later(reset,1500)}});
+      if(left<=0){st="lost";A.sfx("lose");A.say("Le vent se lève et éparpille tout… On recommence !");A.later(reset,1500)}});
     reset();
   },
 
@@ -457,12 +462,11 @@ const GAMES={
     A.say(g.say||`Quelqu'un se cache dans le brouillard… Promène doucement la lanterne !`);
     A.loop(dt=>{if(st!=="look")return;v*=Math.pow(.02,dt);cool-=dt;const [fx,fy]=S[slot],d=Math.hypot(lx-fx,ly-fy);
       if(d<90&&v>420&&cool<=0){let j;do j=Math.floor(Math.random()*S.length);while(j===slot||Math.hypot(S[j][0]-lx,S[j][1]-ly)<160);
-        slot=j;place();cool=1;hold=0;A.say("Trop vite ! Il a eu peur et s'est caché ailleurs. Doucement…");return}
+        slot=j;place();cool=1;hold=0;A.sfx("whoosh");A.say("Trop vite ! Il a eu peur et s'est caché ailleurs. Doucement…");return}
       if(d<56){hold+=dt;if(hold>.7){st="won";cf.classList.add("popin");A.win(g.win||"Trouvé !")}}else hold=Math.max(0,hold-dt)});
     place();light();
   },
 
-  /* Le parapluie-feuille (Brume) : un renard se promène sous la pluie ; on garde la feuille au-dessus de lui du doigt. */
   /* Le parapluie-feuille (Brume), refait le 01/11/2026 (Joffray : « il fait pitié niveau graphisme et difficulté ») :
      Petit Pois cueille trois champignons dans le sous-bois, un nuage noir le suit. On glisse la feuille du doigt au-dessus de lui ;
      il trottine d'un champignon à l'autre, s'arrête pour cueillir, repart parfois en courant. La pluie forcit, de grosses gouttes
@@ -512,7 +516,7 @@ const GAMES={
       if(st!=="play")return;
       t+=dt;
       // Petit Pois : va au champignon, s'arrête pour le cueillir, repart ; de plus en plus vite, parfois en courant
-      if(pause>0){pause-=dt;show(2);if(pause<=0){picked++;hud();goal.el.remove();
+      if(pause>0){pause-=dt;show(2);if(pause<=0){picked++;hud();goal.el.remove();A.sfx("good",picked);
           if(picked>=NM){st="won";A.win(g.win||"Pas une goutte ! Trois champignons au sec.");return}
           placeMush();if(r()<.45){run=1.6;A.say("Il a vu le suivant : il court !")}}}
       else{const sp0=(46+t*2.2)*(run>0?1.9:1);run-=dt;const d=goal.x-fx;
@@ -522,7 +526,7 @@ const GAMES={
       // le nuage le suit, en retard
       cx+=(fx-cx)*Math.min(1,dt*1.3);cloud.setAttribute("transform",`translate(${(cx+Math.sin(t*1.3)*10).toFixed(1)} ${(CY+Math.sin(t*2)*4).toFixed(1)})`);
       // coups de vent : annoncés, ils penchent la pluie pendant 2,5 s
-      if(t>=gustAt&&gust<=0){gust=2.5;wind=(r()<.5?-1:1)*(80+t*3);gustAt=t+5+r()*3;A.say(wind<0?"Coup de vent vers la gauche !":"Coup de vent vers la droite !");
+      if(t>=gustAt&&gust<=0){gust=2.5;A.sfx("whoosh");wind=(r()<.5?-1:1)*(80+t*3);gustAt=t+5+r()*3;A.say(wind<0?"Coup de vent vers la gauche !":"Coup de vent vers la droite !");
         wnd.innerHTML=[0,1,2].map(i=>`<path d="M${wind<0?320:80} ${150+i*40} q${wind<0?-40:40} -10 ${wind<0?-90:90} 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>`).join("");wnd.setAttribute("opacity","1")}
       if(gust>0){gust-=dt;if(gust<=0){wind=0;wnd.setAttribute("opacity","0")}}
       // les gouttes : surtout sous le nuage, de plus en plus ; parfois une grosse goutte tombée d'une branche
@@ -531,9 +535,9 @@ const GAMES={
         drops.push({x:ox-wind*.9,y:CY+8,vx:wind,vy:big?560:380+r()*90,big,el:grp(dr,big?`<path d="M0 -6 Q5 3 5 6 a5 5 0 0 1 -10 0 Q-5 3 0 -6Z" fill="#cfe6f4" stroke="${INK}" stroke-width="1.6"/>`:`<path d="M0 0 l${(wind*-.03).toFixed(1)} -14" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>`)})}
       for(const d of drops){const y0=d.y;d.y+=d.vy*dt;d.x+=d.vx*dt;
         // on teste le passage entre deux images : à faible cadence, une goutte sauterait par-dessus la feuille
-        if(y0<342&&d.y>=324&&Math.abs(d.x-ux)<LW){d.done=1;d.el.remove();splash(d.x,324,d.big);continue}
-        if(y0<GY-50&&d.y>=GY-56&&Math.abs(d.x-fx)<22){d.done=1;d.el.remove();w++;hud();splash(d.x,GY-56,1);
-          if(w>=wet){st="lost";show(0);A.say("Petit Pois est trempé ! On recommence.");A.later(reset,1400);return}
+        if(y0<342&&d.y>=324&&Math.abs(d.x-ux)<LW){d.done=1;d.el.remove();splash(d.x,324,d.big);if(d.big||Math.random()<.25)A.sfx("plic");continue}
+        if(y0<GY-50&&d.y>=GY-56&&Math.abs(d.x-fx)<22){d.done=1;d.el.remove();w++;hud();A.sfx("bad");splash(d.x,GY-56,1);
+          if(w>=wet){st="lost";A.sfx("lose");show(0);A.say("Petit Pois est trempé ! On recommence.");A.later(reset,1400);return}
           A.say(w===wet-1?"Attention, plus qu'une goutte !":"Plic ! Une goutte sur Petit Pois.");continue}
         if(d.y>GY+10){d.done=1;d.el.remove();splash(d.x,GY+12+r()*20,0);continue}
         d.el.setAttribute("transform",`translate(${d.x.toFixed(1)} ${d.y.toFixed(1)})`)}
@@ -562,12 +566,12 @@ const GAMES={
     A.tap=e=>{if(st!=="play")return;const p=svPt(sv,e);
       ham.setAttribute("transform",`translate(${p.x.toFixed(0)} ${(p.y-6).toFixed(0)})`);ham.setAttribute("opacity",1);replay(ham.firstChild,"shk");
       const n=ns.filter(n=>n.k<3).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
-      if(!n||Math.hypot(n.x-p.x,n.y-p.y)>40){A.say("Aïe, à côté ! Vise la tête du clou.");return}
-      n.k++;n.el.innerHTML=nailSVG(n.k);if(navigator.vibrate)navigator.vibrate(15);
+      if(!n||Math.hypot(n.x-p.x,n.y-p.y)>40){A.sfx("bad");A.say("Aïe, à côté ! Vise la tête du clou.");return}
+      n.k++;n.el.innerHTML=nailSVG(n.k);if(navigator.vibrate)navigator.vibrate(15);A.sfx("knock");
       const left3=ns.filter(n=>n.k<3).length;
-      if(!left3){st="won";A.win(g.win||"Tous les clous sont plantés !")}else if(n.k>=3)A.say(`Plus que ${left3} !`)};
+      if(!left3){st="won";A.win(g.win||"Tous les clous sont plantés !")}else if(n.k>=3){A.sfx("good",N-left3);if(left3===Math.floor(N/2))A.cheer("CONTINUE !");A.say(`Plus que ${left3} !`)}};
     A.loop(dt=>{if(st!=="play")return;left-=dt;bar.setAttribute("width",(316*Math.max(0,left)/T).toFixed(1));
-      if(left<=0){st="lost";A.say("Trop tard, la porte a encore glissé de ses gonds… On recommence !");A.later(reset,1500)}});
+      if(left<=0){st="lost";A.sfx("lose");A.say("Trop tard, la porte a encore glissé de ses gonds… On recommence !");A.later(reset,1500)}});
     reset();
   },
 
@@ -585,10 +589,10 @@ const GAMES={
         e.style.cursor="pointer";e.onpointerdown=ev=>{ev.stopPropagation();hit(i,e)};return e});
       A.say(g.say||`Saute sur les pierres de 1 à ${N}, avant que ${FOX[id].name} arrive au drapeau !`)};
     const hit=(i,e)=>{if(st!=="play")return;
-      if(i!==k){replay(e.firstChild,"nope");A.say(`Pas celle-là ! Cherche le ${k+1}.`);return}
-      k++;e.classList.add("done");if(k>=N){st="won";A.win(g.win||"Gagné !")}else A.say(`${k} ! Maintenant le ${k+1}.`)};
+      if(i!==k){replay(e.firstChild,"nope");A.sfx("bad");A.say(`Pas celle-là ! Cherche le ${k+1}.`);return}
+      k++;e.classList.add("done");A.sfx("good",k);if(k===Math.ceil(N/2)&&k<N)A.cheer("PLUS VITE !");if(k>=N){st="won";A.win(g.win||"Gagné !")}else A.say(`${k} ! Maintenant le ${k+1}.`)};
     A.loop(dt=>{if(st==="play")t+=dt;me.setAttribute("transform",`translate(${(40+320*k/N).toFixed(1)} 132)`);mo.setAttribute("transform",`translate(${(40+320*Math.min(1,t/T)).toFixed(1)} 132)`);
-      if(st==="play"&&t>=T){st="lost";A.say(`${FOX[id].name} est arrivé le premier ! On recommence.`);A.later(reset,1500)}});
+      if(st==="play"&&t>=T){st="lost";A.sfx("lose");A.say(`${FOX[id].name} est arrivé le premier ! On recommence.`);A.later(reset,1500)}});
     reset();
   },
 
@@ -632,7 +636,7 @@ const GAMES={
       A.later(()=>{hopper.style.transform="translate(200px,316px)";st="input";A.say("À toi ! Saute dans les mêmes flaques.")},500+seq.length*STEP+250)};
     const round=()=>{seq=[];for(let i=0;i<L[r];i++){let p;do p=Math.floor(Math.random()*4);while(p===seq[i-1]);seq.push(p)}show()};
     puds.forEach((pd,i)=>pd.onpointerdown=e=>{e.stopPropagation();if(st!=="input"||A.won)return;splash(i);
-      if(i!==seq[idx]){st="show";A.say(`Raté ! ${FOX[id].name} recommence.`);A.later(show,900);return}
+      if(i!==seq[idx]){st="show";A.sfx("bad");A.say(`Raté ! ${FOX[id].name} recommence.`);A.later(show,900);return}
       if(++idx===seq.length){r++;if(r>=L.length)A.win(g.win||"Parfait !");else{st="show";A.cheer();A.say("Bravo ! Une flaque de plus…");A.later(round,1100)}}});
     round();
   },
@@ -653,11 +657,11 @@ const GAMES={
       next-=dt;if(next<=0&&flies.length<(N>1?3:2)){next=N>1?1:1.3;const m=Math.floor(Math.random()*N),[mx,my]=pos[m];
         const f={m,t:0,x:mx+(Math.random()<.5?-1:1)*(w*.6+30),y:my-w*.7,tx:mx,ty:my-w*.42};
         f.el=grp(sv,`<circle r="24" fill="transparent"/><ellipse cx="-5" cy="-6" rx="6" ry="4" fill="#e4f3f9" stroke="${INK}" stroke-width="1.6" class="wing"/><ellipse cx="5" cy="-6" rx="6" ry="4" fill="#e4f3f9" stroke="${INK}" stroke-width="1.6" class="wing"/><circle r="5.5" fill="${INK}"/>`);
-        f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();if(A.won)return;f.el.classList.add("shoo");flies.splice(flies.indexOf(f),1);setTimeout(()=>f.el.remove(),350)};
+        f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();if(A.won)return;A.sfx("pop");f.el.classList.add("shoo");flies.splice(flies.indexOf(f),1);setTimeout(()=>f.el.remove(),350)};
         flies.push(f)}
       for(const f of flies.slice()){f.t+=dt;const k=Math.min(1,f.t/2.2);
         const x=f.x+(f.tx-f.x)*k+Math.sin(f.t*18)*4,y=f.y+(f.ty-f.y)*k+Math.cos(f.t*15)*4;f.el.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
-        if(k>=1){flies.splice(flies.indexOf(f),1);f.el.remove();p=Math.max(0,p-25);replay(models[f.m],"sneeze");A.say(`Atchoum ! ${FOX[ids[f.m]].name} a bougé. On reprend…`)}}
+        if(k>=1){flies.splice(flies.indexOf(f),1);f.el.remove();p=Math.max(0,p-25);replay(models[f.m],"sneeze");A.sfx("bad");A.say(`Atchoum ! ${FOX[ids[f.m]].name} a bougé. On reprend…`)}}
     });
   }
 };

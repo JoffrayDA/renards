@@ -124,7 +124,12 @@ function foxArt(f,o={}){
     return ""};
   // la brioche : une seule forme pour la tête et le corps, déformée selon la pose
   let geo={top:35,bot:88,hw:36};
-  const bun=(top,bot,hw,dx=0)=>{geo={top,bot,hw};const L=60-hw+dx,R=60+hw+dx,m=60+dx;
+  const bun=(top,bot,hw,dx=0)=>{
+    // round : une boule toute ronde au lieu de la brioche (essai pour Boule-de-Neige, « comme une boule de Noël », 02/11/2026)
+    if(f.round&&!gh){const low=bot-top<45,ry=(bot-top)/2+(low?7:4),rx=low?hw*.92:Math.min(hw*1.02,ry*1.12),cy=bot+1-ry; // allongé : une boule un peu écraséegeo={top:cy-ry,bot,hw:rx};
+      return `<ellipse cx="${60+dx}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${c.b}"/>`
+        +(f.round>1&&!sil?`<path d="M${(60+dx-rx*.62).toFixed(1)} ${(cy-ry*.35).toFixed(1)} Q${(60+dx-rx*.5).toFixed(1)} ${(cy-ry*.78).toFixed(1)} ${(60+dx-rx*.08).toFixed(1)} ${(cy-ry*.86).toFixed(1)}" fill="none" stroke="${c.b==="#f6f9fd"||c.b==="#ffffff"?"#cfe0f2":"#fff"}" stroke-width="4.4" stroke-linecap="round" opacity=".9"/>`:"")}
+    geo={top,bot,hw};const L=60-hw+dx,R=60+hw+dx,m=60+dx;
     if(gh)return `<path d="M${L} ${bot-4} C${L-6} ${top+25} ${m-30} ${top} ${m} ${top} C${m+30} ${top} ${R+6} ${top+25} ${R} ${bot-4} L${R+2} ${bot+8}`+[5,4,3,2,1,0].map(i=>{const x=L-2+(R-L+4)*i/6,x2=L-2+(R-L+4)*(i+.5)/6;return ` Q${x2.toFixed(1)} ${bot+1} ${x.toFixed(1)} ${bot+(i?7:8)}`}).join("")+`Z" fill="${c.b}"/>`;
     return `<path d="M${L} ${bot} C${L-6} ${top+25} ${m-30} ${top} ${m} ${top} C${m+30} ${top} ${R+6} ${top+25} ${R} ${bot} Q${m} ${bot+7} ${L} ${bot}Z" fill="${c.b}"/>`};
   // oreilles inclinées (a en degrés : négatif = vers l'extérieur, comme des oreilles basses)
@@ -211,7 +216,8 @@ function foxArt(f,o={}){
   const wr=!sil&&!o.nowear&&typeof wearOf==="function"?wearOf(f.id):null;
   const hideAcc=wr&&(wr.h&&["feuille","gland","bob","bonnet","bonnetnuit","beret","etoile"].includes(f.acc)||wr.s&&["echarpe","noeud","collier"].includes(f.acc));
   body+=markOf(Y)+(f.muzzle&&!sil?`<ellipse cx="60" cy="${Y+4.6}" rx="6.2" ry="3.6" fill="${f.muzzle}" opacity=".55" stroke="none"/>`:"")+(hideAcc?"":acc(T,Y,N,W))
-    +(wr&&wr.s?tenScarf(f.id,N,W):"")+(wr&&wr.h?tenHat(f.id,T,geo.hw):"");
+    +(wr&&wr.s?tenScarf(f.id,N,W):"")+(wr&&wr.h?tenHat(f.id,T,geo.hw):"")
+    +(f.bauble&&!sil?`<circle cx="60" cy="${(geo.top-11).toFixed(1)}" r="4.4" fill="none" stroke="#c9952f" stroke-width="2.6"/><rect x="52" y="${(geo.top-7).toFixed(1)}" width="16" height="9" rx="2.4" fill="#f2c45a"/><path d="M55 ${(geo.top-6).toFixed(1)} v7 M60 ${(geo.top-6).toFixed(1)} v7 M65 ${(geo.top-6).toFixed(1)} v7" stroke="#c9952f" stroke-width="1.4"/>`:"");
   const fxG=fx?`<g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${fx}</g>`:"";
   const zz=pose==="sleep"?`<text class="zz" x="70" y="42" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="80" y="32" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
   if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}" aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}</g></svg>`;
