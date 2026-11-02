@@ -139,7 +139,7 @@ Object.assign(STORIES,{
     // tout le monde aide Boule-de-Neige à refaire sa boule, plus grosse qu'avant
     {at:"bouleneige",goal:"Aide Boule-de-Neige à refaire sa boule, avec toute la bande.",showMs:2600,
       show:()=>{["balafre","filou","radar","petitpois"].forEach((id,i)=>actGo(id,BALL.x+[-90,-50,60,100][i],BALL.y+[-10,30,30,-10][i],"happy"));
-        setTimeout(()=>{R.recordBig=1;R.recordBigAt=Date.now();R.recordGone=0;save();drawBigBall();if(ballEl)ballEl.animate([{transform:"translate(-50%,-100%) scale(.1)"},{transform:"translate(-50%,-100%) scale(1.08)",offset:.8},{transform:"translate(-50%,-100%) scale(1)"}],{duration:1400,easing:"ease-out"});try{MUSIC.sfx("win")}catch(e){}},900)},
+        setTimeout(()=>{R.recordBig=1;R.recordBigAt=Date.now();R.recordGone=0;save();drawHeap();drawBigBall();if(ballEl)ballEl.animate([{transform:"translate(-50%,-100%) scale(.1)"},{transform:"translate(-50%,-100%) scale(1.08)",offset:.8},{transform:"translate(-50%,-100%) scale(1)"}],{duration:1400,easing:"ease-out"});try{MUSIC.sfx("win")}catch(e){}},900)},
       lines:[
       ["bouleneige","joy","Record du monde ! Trois mètres et quart ! Personne n'avait jamais fait mieux.",()=>actTrick("bouleneige","salto")],
       ["filou","joy","Ouais ouais, bien vu… Boule-de-Neige !",()=>actTrick("filou","boing")],
@@ -435,6 +435,7 @@ function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("clea
   drawBigBall()}
 // la boule cassée par la bande, mais le dialogue pas fini (le jeu fermé entre-temps) : elle revient, et la scène se rejoue
 if(R.recordGone&&!(R.beat.balafre>0)){R.recordGone=0;save()}
+setTimeout(()=>drawHeap(),0); // le tas de neige, s'il reste
 if(recordWait()&&!R.recordAt){R.recordAt=Date.now();save()}
 // les trois sauvages arrivent en courant d'un côté de la clairière, jusqu'à un point
 function actArrive(id,x,y){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};save()}let f=sF(id);
@@ -443,12 +444,34 @@ function actArrive(id,x,y){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};s
   setTimeout(()=>{goTo(f,{id:"act-"+id,x,y,poses:["sit"]});f.until=Date.now()+30000},40)}
 // la boule éclate en morceaux
 function crackBall(){if(!ballEl)return;ballCrack++;drawBigBall();ballEl.animate([{transform:"translate(-50%,-100%) rotate(0)"},{transform:"translate(-52%,-100%) rotate(-3deg)"},{transform:"translate(-48%,-100%) rotate(3deg)"},{transform:"translate(-50%,-100%) rotate(0)"}],{duration:300});try{MUSIC.sfx("knock")}catch(e){}}
-function breakBall(){if(!ballEl)return;const r=ballR();R.recordGone=1;save();try{MUSIC.sfx("splash");MUSIC.sfx("lose")}catch(e){}
-  for(let i=0;i<9;i++){const a=-Math.PI*(.1+.8*i/8),d=r*(1.1+Math.random()*.9),k=.35+Math.random()*.35,c=document.createElement("div");c.className="chunk";
-    c.style.cssText=pc(BALL.x,BALL.y-r)+`;width:${(r*k*2)/W*100}%`;c.innerHTML=`<svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M-10 2 Q-11 -8 -2 -10 Q8 -11 10 -2 Q11 8 2 9 Q-8 10 -10 2Z" fill="#fff" stroke="${INK}" stroke-width="2"/></svg>`;$("scene").appendChild(c);
-    const u=$("scene").clientWidth/W,mx=Math.cos(a)*d*u,my=Math.sin(a)*d*.7*u,ly=(r*.9+Math.random()*24)*u;
-    c.animate([{transform:"translate(-50%,-50%) rotate(0)"},{transform:`translate(calc(-50% + ${(mx*.7).toFixed(0)}px),calc(-50% + ${my.toFixed(0)}px)) rotate(${(Math.random()*400-200).toFixed(0)}deg)`,offset:.45},{transform:`translate(calc(-50% + ${mx.toFixed(0)}px),calc(-50% + ${ly.toFixed(0)}px)) rotate(${(Math.random()*500-250).toFixed(0)}deg)`,opacity:1,offset:.8},{transform:`translate(calc(-50% + ${mx.toFixed(0)}px),calc(-50% + ${ly.toFixed(0)}px))`,opacity:0}],{duration:1600,easing:"ease-out",fill:"forwards"}).onfinish=()=>c.remove()}
-  ballEl.remove();ballEl=null}
+// la casse (03/11/2026, Joffray n'aimait pas les morceaux qui volaient) : la boule se fend en deux, les moitiés basculent de chaque
+// côté dans un nuage de poudreuse, puis s'affaissent en un gros tas de neige qui reste là jusqu'à ce qu'on la refasse (drawHeap)
+function breakBall(){if(!ballEl)return;const r=ballR(),x=BALL.x,y=BALL.y,u=$("scene").clientWidth/W;R.recordGone=1;R.heapAt={x:Math.round(x),y:Math.round(y),r};save();
+  try{MUSIC.sfx("splash");setTimeout(()=>MUSIC.sfx("lose"),350)}catch(e){}
+  const half=side=>{const h=document.createElement("div");h.className="bhalf";h.style.cssText=pc(x,y)+`;width:${(2*r+8)/W*100}%;z-index:${Math.round(y)}`;
+    h.innerHTML=`<svg viewBox="-${r+4} -${2*r+6} ${2*r+8} ${2*r+12}" aria-hidden="true"><path d="M0 ${-2*r} A${r} ${r} 0 0 ${side<0?0:1} 0 0 L${side*r*.08} ${-r*1.4} L${-side*r*.1} ${-r*.9} L${side*r*.06} ${-r*.45}Z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></svg>`;
+    $("scene").appendChild(h);
+    h.animate([{transform:"translate(-50%,-100%) rotate(0)"},{transform:`translate(calc(-50% + ${side*r*.25*u}px),-100%) rotate(${side*14}deg)`,offset:.35},
+      {transform:`translate(calc(-50% + ${side*r*.55*u}px),calc(-100% + ${r*.5*u}px)) rotate(${side*58}deg) scaleY(.7)`,opacity:1,offset:.75},
+      {transform:`translate(calc(-50% + ${side*r*.6*u}px),calc(-100% + ${r*.9*u}px)) rotate(${side*70}deg) scaleY(.35)`,opacity:0}],{duration:1300,easing:"cubic-bezier(.5,0,.8,.6)",fill:"forwards"}).onfinish=()=>h.remove()};
+  half(-1);half(1);ballEl.remove();ballEl=null;
+  // le nuage de poudreuse
+  const cl=document.createElement("div");cl.className="bpoof";cl.style.cssText=pc(x,y-r*.6)+`;width:${(r*3.4)/W*100}%`;$("scene").appendChild(cl);setTimeout(()=>cl.remove(),1700);
+  for(let i=0;i<16;i++){const a=-Math.PI*Math.random(),d=r*(.5+Math.random()*1.1),f=document.createElement("i");f.className="bflake";
+    f.style.cssText=pc(x+(Math.random()-.5)*r,y-r*(.4+Math.random()*.9))+`;--dx:${(Math.cos(a)*d*u).toFixed(0)}px;--dy:${(Math.sin(a)*d*.6*u).toFixed(0)}px;--fy:${(r*.5*u).toFixed(0)}px;animation-delay:${(Math.random()*.25).toFixed(2)}s`;
+    $("scene").appendChild(f);setTimeout(()=>f.remove(),1900)}
+  setTimeout(()=>drawHeap(true),650)}
+// le tas de neige qui reste après la casse
+let heapEl=null;
+function drawHeap(grow){const h=R.heapAt,show=noelOn()&&R.recordGone&&!R.recordBig&&!!h;
+  if(!show){if(heapEl){heapEl.remove();heapEl=null}return}
+  if(!heapEl){heapEl=document.createElement("div");heapEl.className="sheap";$("actors").appendChild(heapEl)}
+  const r=h.r;heapEl.style.cssText=pc(h.x,h.y+2)+`;width:${(r*2.6)/W*100}%;z-index:${h.y-6}`;
+  heapEl.innerHTML=`<svg viewBox="${-r*1.3} ${-r*.95} ${r*2.6} ${r*1.05}" aria-hidden="true"><ellipse cy="0" rx="${r*1.25}" ry="${r*.16}" fill="#9fb3cc" opacity=".4"/>
+    <path d="M${-r*1.22} 0 Q${-r*1.1} ${-r*.42} ${-r*.7} ${-r*.5} Q${-r*.55} ${-r*.9} ${-r*.1} ${-r*.78} Q${r*.25} ${-r*.95} ${r*.5} ${-r*.62} Q${r*1.05} ${-r*.6} ${r*1.2} 0Z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M${-r*.6} ${-r*.42} q${r*.15} ${-r*.12} ${r*.3} 0 M${r*.15} ${-r*.55} q${r*.15} ${-r*.1} ${r*.28} 0 M${-r*.2} ${-r*.2} q${r*.12} ${-r*.08} ${r*.24} 0" fill="none" stroke="#cfdbea" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="${-r*.95}" cy="${-r*.1}" r="${r*.13}" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="${r*.98}" cy="${-r*.08}" r="${r*.1}" fill="#fff" stroke="${INK}" stroke-width="2"/></svg>`;
+  if(grow)heapEl.animate([{transform:"translate(-50%,-100%) scale(.4,.1)",opacity:.3},{transform:"translate(-50%,-100%) scale(1.06,1.1)",opacity:1,offset:.7},{transform:"translate(-50%,-100%) scale(1)"}],{duration:700,easing:"ease-out"})}
 
 /* ---------- la neige qui tombe : un peu tout le temps, beaucoup quand il « pleut » ---------- */
 const snowEl=document.createElementNS("http://www.w3.org/2000/svg","svg");snowEl.setAttribute("class","layer");snowEl.id="snow";snowEl.setAttribute("viewBox",`0 0 400 ${H}`);snowEl.setAttribute("preserveAspectRatio","xMidYMid slice");snowEl.setAttribute("aria-hidden","true");

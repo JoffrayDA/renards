@@ -424,3 +424,9 @@ h1 .la{font-style:normal}
 .sgive{position:absolute;width:8%;transform:translate(-50%,-50%);z-index:903;pointer-events:none}.sgive svg{display:block;width:100%;overflow:visible}
 .sgive.held{animation:sheld 1.7s ease-out forwards}@keyframes sheld{0%{transform:translate(-50%,-50%) scale(1)}20%{transform:translate(-50%,-80%) scale(1.25)}75%{opacity:1}100%{transform:translate(-50%,-110%) scale(1.1);opacity:0}}
 .sring{position:absolute;width:10%;aspect-ratio:2;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:50%;z-index:903;pointer-events:none;animation:sring .9s ease-out forwards}@keyframes sring{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(-50%,-50%) scale(1.6);opacity:0}}
+.bhalf{position:absolute;transform:translate(-50%,-100%);pointer-events:none;transform-origin:50% 100%}.bhalf svg{display:block;width:100%;overflow:visible}
+.sheap{position:absolute;transform:translate(-50%,-100%);pointer-events:none}.sheap svg{display:block;width:100%;overflow:visible}
+.bpoof{position:absolute;aspect-ratio:2;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,.6) 55%,rgba(255,255,255,0));z-index:905;pointer-events:none;animation:bpoof 1.6s ease-out forwards}
+@keyframes bpoof{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{opacity:1}100%{transform:translate(-50%,-70%) scale(1.25);opacity:0}}
+.bflake{position:absolute;width:2.4%;aspect-ratio:1;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px #cfdbea;z-index:906;pointer-events:none;animation:bflake 1.5s cubic-bezier(.2,.7,.5,1) forwards}
+@keyframes bflake{0%{transform:translate(-50%,-50%)}55%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)))}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + var(--fy)));opacity:0}}
