@@ -34,110 +34,110 @@ const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","gri
 const STORIES={
   petitpois:{title:"Peur du noir",souv:"le gland porte-bonheur",beats:[
     {at:"petitpois",goal:"Petit Pois a quelque chose à te dire.",lines:[
-      ["petitpois","shy",`${ME()}… le noir, je déteste. Ça fait crac. Hou-hou.`],
-      ["petitpois","open","Tu crois qu'il existe quelqu'un qui n'a jamais peur ?"],
-      ["me","open","Quelqu'un qui brille, peut-être… Je vais voir aux lanternes."]]},
+      ["petitpois","shy",`${ME()}… le noir, je déteste. Ça fait crac. Hou-hou.`,()=>{actPose("petitpois","lie","shy");actEmote("petitpois","goutte")}],
+      ["petitpois","open","Tu crois qu'il existe quelqu'un qui n'a jamais peur ?",()=>{actPose("petitpois","sit","open");actEmote("petitpois","?")}],
+      ["me","open","Quelqu'un qui brille, peut-être… Je vais voir aux lanternes.",()=>{actEmote("me","!");setTimeout(()=>actGo("me",96,290),900)}]]},
     {at:"@lampL",arrive:"luciole",game:{k:"firefly",say:"Plein de lucioles ! Mais une seule brille en or… Attrape-la !",win:"Attrapée ! … Hein ? Elle est toute chaude."},goal:"Cherche quelqu'un qui brille, près des lanternes.",lines:[
-      ["luciole","surprise","Aïe ! Doucement, c'est ma queue que tu tiens !"],
-      ["luciole","joy","Moi, c'est Luciole. Ma queue brille en or, et les lucioles de toutes les couleurs me suivent partout."],
-      ["me","joy","Viens vite, quelqu'un doit absolument te rencontrer."]]},
+      ["luciole","surprise","Aïe ! Doucement, c'est ma queue que tu tiens !",()=>{actTrick("luciole","boing");actEmote("me","goutte")}],
+      ["luciole","joy","Moi, c'est Luciole. Ma queue brille en or, et les lucioles de toutes les couleurs me suivent partout.",()=>{actPose("luciole","happy","joy");actEmote("luciole","note")}],
+      ["me","joy","Viens vite, quelqu'un doit absolument te rencontrer.",()=>{actNear("me","petitpois");setTimeout(()=>actNear("luciole","petitpois","happy"),400)}]]},
     {at:"petitpois",after:[["petitpois","lampR"]],goal:"Présente Luciole à Petit Pois.",lines:[
-      ["petitpois","surprise","Ta queue… elle fait de la lumière ?!"],
-      ["luciole","joy","Viens, Petit Pois. Je vais t'apprendre à allumer les lanternes."]]},
+      ["petitpois","surprise","Ta queue… elle fait de la lumière ?!",()=>{actTrick("petitpois","boing");actEmote("petitpois","!")}],
+      ["luciole","joy","Viens, Petit Pois. Je vais t'apprendre à allumer les lanternes.",()=>{actGo("luciole",310,290,"up");actEmote("luciole","note")}]]},
     {at:"luciole",lamps:1,goal:"Va voir Luciole et Petit Pois aux lanternes.",lines:[
-      ["petitpois","joy","J'ai allumé la grande lanterne ! Du premier coup !"],
-      ["petitpois","open","En fait, le noir, c'est juste le moment où les lanternes sont jolies."],
-      ["petitpois","shy","Tiens, mon gland porte-bonheur. Et maintenant, je peux t'aider au Café !"]]}
+      ["petitpois","joy","J'ai allumé la grande lanterne ! Du premier coup !",()=>actTrick("petitpois","salto")],
+      ["petitpois","open","En fait, le noir, c'est juste le moment où les lanternes sont jolies.",()=>{actPose("petitpois","sit","joy");actEmote("petitpois","coeur")}],
+      ["petitpois","shy","Tiens, mon gland porte-bonheur. Et maintenant, je peux t'aider au Café !",()=>actGive("petitpois","me","gland")]]}
   ]},
   mitaine:{title:"La moufle perdue",souv:"la moufle au flocon",beats:[
     {at:"mitaine",goal:"Mitaine vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["mitaine","sad",`${ME()} ! Tu n'as pas vu ma moufle ? Rouge, avec un flocon brodé.`],
-      ["mitaine","shy","C'est ma grand-mère qui l'a tricotée. Elle a peut-être roulé dans les feuilles…"]]},
+      ["mitaine","sad",`${ME()} ! Tu n'as pas vu ma moufle ? Rouge, avec un flocon brodé.`,()=>{actPose("mitaine","sit","sad");actEmote("mitaine","?")}],
+      ["mitaine","shy","C'est ma grand-mère qui l'a tricotée. Elle a peut-être roulé dans les feuilles…",()=>{actEmote("mitaine","goutte");actEmote("me","!")}]]},
     {at:"@leaves",game:{k:"search",item:"wool",say:"Fouille le tas de feuilles !",win:"Un fil de laine rouge !"},goal:"Cherche la moufle dans le tas de feuilles.",lines:[
-      ["me","surprise","Le fil file tout droit vers le porche… et passe sous Petit Pois."]]},
+      ["me","surprise","Le fil file tout droit vers le porche… et passe sous Petit Pois.",()=>{actEmote("me","?");setTimeout(()=>{actNear("me","petitpois");actNear("mitaine","petitpois")},700)}]]},
     {at:"petitpois",sleep:1,goal:"Réveille Petit Pois, tout doucement.",lines:[
-      ["petitpois","shy","Euh… Mitaine ? Je crois que je dors dedans depuis une semaine."],
-      ["mitaine","joy","Garde-la, va. Elle te va mieux qu'à ma patte."],
-      ["mitaine","open",`Et toi, ${ME()}, prends l'autre. Comme ça, on en a chacun une.`]]}
+      ["petitpois","shy","Euh… Mitaine ? Je crois que je dors dedans depuis une semaine.",()=>{actPose("petitpois","sit","shy");actEmote("petitpois","goutte")}],
+      ["mitaine","joy","Garde-la, va. Elle te va mieux qu'à ma patte.",()=>{actTrick("mitaine","roll");actEmote("petitpois","coeur")}],
+      ["mitaine","open",`Et toi, ${ME()}, prends l'autre. Comme ça, on en a chacun une.`,()=>actGive("mitaine","me","moufle")]]}
   ]},
   luciole:{title:"Une lumière de plus",souv:"le bocal de lumière",beats:[
     {at:"luciole",goal:"Luciole a une idée.",lines:[
-      ["luciole","open","Six lanternes, et on est de plus en plus nombreux. Il en faut une de plus !"],
-      ["luciole","shy","Un vieux bocal est coincé dans le grand arbre. Tu peux le décrocher ?"]]},
+      ["luciole","open","Six lanternes, et on est de plus en plus nombreux. Il en faut une de plus !",()=>{actTrick("luciole","toupie");actEmote("luciole","!")}],
+      ["luciole","shy","Un vieux bocal est coincé dans le grand arbre. Tu peux le décrocher ?",()=>{actEmote("me","?");setTimeout(()=>actGo("me",330,300),800)}]]},
     {at:"@tree",game:{k:"shake",item:"jar",catch:1,say:"Secoue le grand arbre !",win:"Rattrapé au vol ! Pas une fissure."},goal:"Fais tomber le bocal du grand arbre.",lines:[
-      ["me","joy","Pas une fissure. Il n'attend plus que sa lumière."]]},
+      ["me","joy","Pas une fissure. Il n'attend plus que sa lumière.",()=>actTrick("me","boing")]]},
     {at:"luciole",lamps:1,goal:"Apporte le bocal à Luciole.",lines:[
-      ["luciole","surprise","Attends, je souffle dedans…"],
-      ["luciole","joy","Voilà : une lumière qui ne s'éteint jamais, même quand je dors. Elle est pour toi."]]}
+      ["luciole","surprise","Attends, je souffle dedans…",()=>{actGive("me","luciole","jar",{happy:false});actPose("luciole","up","surprise")}],
+      ["luciole","joy","Voilà : une lumière qui ne s'éteint jamais, même quand je dors. Elle est pour toi.",()=>{actTrick("luciole","salto");setTimeout(()=>actGive("luciole","me","jar"),1100)}]]}
   ]},
   gaston:{title:"Le poisson de la mare",souv:"la vieille canne de Gaston",beats:[
     {at:"gaston",after:[["gaston","pond"]],goal:"Gaston veut te demander quelque chose.",lines:[
-      ["gaston","sad",`${ME()}, je pêche depuis toujours. Jamais rien attrapé. Rien de rien.`],
-      ["gaston","open","Il paraît qu'un poisson vit dans ta mare. Tu essaies ? Moi, je porte malheur."]]},
+      ["gaston","sad",`${ME()}, je pêche depuis toujours. Jamais rien attrapé. Rien de rien.`,()=>{actPose("gaston","lie","sad");actEmote("gaston","goutte")}],
+      ["gaston","open","Il paraît qu'un poisson vit dans ta mare. Tu essaies ? Moi, je porte malheur.",()=>{actPose("gaston","sit","open");actEmote("me","!")}]]},
     {at:"@pond",game:{k:"fish",say:"Touche l'eau dès que le bouchon plonge !",win:"Un poisson !"},goal:"Pêche dans la mare avec Gaston.",lines:[
-      ["gaston","surprise","Tu l'as eu ! Un vrai poisson, tout orange !"],
-      ["gaston","sad","Il nous regarde avec de si grands yeux… On le remet à l'eau ?"],
-      ["gaston","joy","Au fond, ce que j'aime, c'est attendre au bord de l'eau avec quelqu'un."],
-      ["gaston","open","Tiens, ma vieille canne. Pêche quand tu veux : un poisson de temps en temps, et beaucoup de vieilles bottes !"]]}
+      ["gaston","surprise","Tu l'as eu ! Un vrai poisson, tout orange !",()=>{actTrick("gaston","salto");actEmote("me","!")}],
+      ["gaston","sad","Il nous regarde avec de si grands yeux… On le remet à l'eau ?",()=>{actPose("gaston","sit","sad");setTimeout(()=>actGive("me",{x:104,y:418},"fish",{arc:50}),600)}],
+      ["gaston","joy","Au fond, ce que j'aime, c'est attendre au bord de l'eau avec quelqu'un.",()=>{actNear("me","gaston");actEmote("gaston","coeur")}],
+      ["gaston","open","Tiens, ma vieille canne. Pêche quand tu veux : un poisson de temps en temps, et beaucoup de vieilles bottes !",()=>actGive("gaston","me","canne")]]}
   ]},
   galette:{title:"Le record de ricochets",souv:"le caillou plat porte-bonheur",beats:[
     {at:"galette",after:[["galette","pond"]],goal:"Galette vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["galette","joy",`Salut ${ME()} ! Trois rebonds : c'est mon record de ricochets. Personne ne l'a jamais battu.`],
-      ["galette","open","Ta mare a l'air parfaite. Tu relèves le défi ?"]]},
+      ["galette","joy",`Salut ${ME()} ! Trois rebonds : c'est mon record de ricochets. Personne ne l'a jamais battu.`,()=>actTrick("galette","boing")],
+      ["galette","open","Ta mare a l'air parfaite. Tu relèves le défi ?",()=>{actEmote("galette","?");setTimeout(()=>actEmote("me","!"),700)}]]},
     {at:"@pond",game:{k:"ricochet",need:4},goal:"Bats le record de Galette à la mare.",lines:[
-      ["galette","surprise","Quatre rebonds d'affilée ?! Tu as battu mon record !"],
-      ["galette","joy","Tiens, mon caillou plat porte-bonheur. Il te revient. Mais je veux ma revanche !"]]}
+      ["galette","surprise","Quatre rebonds d'affilée ?! Tu as battu mon record !",()=>{actPose("galette","sit","surprise");actEmote("galette","!");actTrick("me","salto")}],
+      ["galette","joy","Tiens, mon caillou plat porte-bonheur. Il te revient. Mais je veux ma revanche !",()=>{actGive("galette","me","pebble");setTimeout(()=>actTrick("galette","zoom"),1200)}]]}
   ]},
   pantoufle:{title:"Le renard du dedans",souv:"la pantoufle en laine",beats:[
     {at:"@porch",hide:1,goal:"Quelqu'un s'est glissé dans ta maison. Va voir à la porte.",lines:[
       ["pantoufle","shy","Chut ! Je ne suis pas là."],
-      ["me","open","Pantoufle ? Tu ne veux pas sortir un peu ?"],
+      ["me","open","Pantoufle ? Tu ne veux pas sortir un peu ?",()=>actEmote("me","?")],
       ["pantoufle","sad","Dehors, il y a du vent, des feuilles, des gens. Ici, il y a un coussin."],
-      ["me","joy","Des coussins ? J'ai un jeu pour toi. Je les pose sur le porche…"]]},
+      ["me","joy","Des coussins ? J'ai un jeu pour toi. Je les pose sur le porche…",()=>actEmote("me","note")]]},
     {at:"@porch",hide:1,game:{k:"cushion",who:"pantoufle",win:"Trouvé trois fois ! Et… vous êtes dehors !"},after:[["pantoufle","p2"]],goal:"Propose un jeu des coussins à Pantoufle, devant la porte.",lines:[
       ["pantoufle","joy","Hi hi ! Le jeu des coussins, c'est mon préféré !"],
-      ["pantoufle","surprise","Oh… Je suis dehors. Je ne m'en suis même pas rendu compte."]]},
+      ["pantoufle","surprise","Oh… Je suis dehors. Je ne m'en suis même pas rendu compte.",()=>{actEmote("pantoufle","!");actTrick("me","boing")}]]},
     {at:"pantoufle",goal:"Va voir Pantoufle sous le porche.",lines:[
-      ["pantoufle","open","Dehors, ce n'est pas si mal. Surtout sous le porche."],
-      ["pantoufle","shy","Tiens, ma pantoufle en laine. J'en ai une autre… quelque part dedans."]]}
+      ["pantoufle","open","Dehors, ce n'est pas si mal. Surtout sous le porche.",()=>{actPose("pantoufle","lie","joy");actEmote("pantoufle","coeur")}],
+      ["pantoufle","shy","Tiens, ma pantoufle en laine. J'en ai une autre… quelque part dedans.",()=>actGive("pantoufle","me","pantoufle")]]}
   ]},
   grignote:{title:"Les pages envolées",souv:"la dernière page",beats:[
     {at:"grignote",goal:"Grignote vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["grignote","sad","J'avais un livre magnifique. J'ai lu une page… puis je l'ai mangée. Puis une autre."],
-      ["grignote","shy","Il me restait la fin, mais le vent l'a emportée vers le banc ! Tu m'aides ?"]]},
+      ["grignote","sad","J'avais un livre magnifique. J'ai lu une page… puis je l'ai mangée. Puis une autre.",()=>{actPose("grignote","sit","sad");actEmote("grignote","goutte")}],
+      ["grignote","shy","Il me restait la fin, mais le vent l'a emportée vers le banc ! Tu m'aides ?",()=>{actEmote("me","!");setTimeout(()=>actGo("me",260,420),800)}]]},
     {at:"@bench",game:{k:"catch",thing:"page",n:6,say:"Attrape les pages avant que le vent les emporte !"},goal:"Rattrape les pages de Grignote, près du banc.",lines:[
-      ["me","joy","Six pages, un peu froissées… et la fin de l'histoire !"]]},
+      ["me","joy","Six pages, un peu froissées… et la fin de l'histoire !",()=>actTrick("me","boing")]]},
     {at:"grignote",goal:"Rapporte les pages à Grignote.",lines:[
-      ["grignote","surprise","La fin ! … Le petit renard rentre chez lui, et tout le monde l'attend. Comme ici."],
-      ["grignote","shy","Celle-là, je ne la mangerai pas. Garde-la pour moi ?"]]}
+      ["grignote","surprise","La fin ! … Le petit renard rentre chez lui, et tout le monde l'attend. Comme ici.",()=>{actGive("me","grignote","page",{happy:false});actPose("grignote","sit","surprise");setTimeout(()=>actEmote("grignote","coeur"),900)}],
+      ["grignote","shy","Celle-là, je ne la mangerai pas. Garde-la pour moi ?",()=>actGive("grignote","me","page")]]}
   ]},
   brindille:{title:"Les chaussettes dépareillées",souv:"les chaussettes au gland brodé",beats:[
     {at:"brindille",goal:"Mamie Brindille vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["brindille","joy",`Bonjour, ma petite pelote. J'ai tricoté des chaussettes pour tout le refuge.`],
-      ["brindille","sad","Je les avais mises à sécher près du banc, et le vent les a toutes mélangées. À mon âge, je n'y vois plus très clair."]]},
+      ["brindille","joy",`Bonjour, ma petite pelote. J'ai tricoté des chaussettes pour tout le refuge.`,()=>{actPose("brindille","happy","joy");actEmote("brindille","coeur")}],
+      ["brindille","sad","Je les avais mises à sécher près du banc, et le vent les a toutes mélangées. À mon âge, je n'y vois plus très clair.",()=>{actPose("brindille","sit","sad");actEmote("brindille","?")}]]},
     {at:"@bench",game:{k:"memory",win:"Toutes les paires !"},goal:"Refais les paires de chaussettes près du banc.",lines:[
-      ["me","joy","Six paires, bien rangées ! Le vent n'a qu'à bien se tenir."]]},
+      ["me","joy","Six paires, bien rangées ! Le vent n'a qu'à bien se tenir.",()=>actTrick("me","toupie")]]},
     {at:"brindille",goal:"Rapporte les chaussettes à Mamie Brindille.",lines:[
-      ["brindille","joy","Toutes en paires ! Merci, ma petite pelote."],
-      ["brindille","open","Tiens, celles avec un gland brodé sont pour toi. Les autres, je les donnerai cet hiver : je suis la doyenne, pas la plus pressée."]]}
+      ["brindille","joy","Toutes en paires ! Merci, ma petite pelote.",()=>actGive("me","brindille","chaussette")],
+      ["brindille","open","Tiens, celles avec un gland brodé sont pour toi. Les autres, je les donnerai cet hiver : je suis la doyenne, pas la plus pressée.",()=>actGive("brindille","me","chaussette")]]}
   ]},
   plouf:{title:"La danse des flaques",souv:"les petites bottes de pluie",beats:[
     {at:"plouf",goal:"Plouf vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["plouf","joy",`${ME()} ! Tu connais la danse des flaques ? Je saute, tu répètes !`],
-      ["plouf","open","Pas de pluie ? Pas grave, je viens d'en faire avec l'arrosoir."]]},
+      ["plouf","joy",`${ME()} ! Tu connais la danse des flaques ? Je saute, tu répètes !`,()=>{actTrick("plouf","boing");setTimeout(()=>actTrick("me","boing"),1200)}],
+      ["plouf","open","Pas de pluie ? Pas grave, je viens d'en faire avec l'arrosoir.",()=>actEmote("plouf","note")]]},
     {at:"plouf",game:{k:"simon",who:"plouf",rounds:[3,4,5,6,7]},goal:"Danse dans les flaques avec Plouf.",lines:[
-      ["plouf","joy","Regarde-nous : deux éponges ! C'est le plus beau des compliments."],
-      ["plouf","shy","Tiens, mes petites bottes de pluie. Moi, je préfère les pattes mouillées."]]}
+      ["plouf","joy","Regarde-nous : deux éponges ! C'est le plus beau des compliments.",()=>{actTrick("plouf","toupie");actTrick("me","toupie");actEmote("me","goutte")}],
+      ["plouf","shy","Tiens, mes petites bottes de pluie. Moi, je préfère les pattes mouillées.",()=>actGive("plouf","me","boot")]]}
   ]},
   biscuit:{title:"La tarte aux pommes",souv:"la première part de tarte",beats:[
     {at:"biscuit",goal:"Biscuit vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["biscuit","joy",`${ME()} ! Je veux faire une tarte aux pommes pour tout le refuge.`],
-      ["biscuit","open","Le grand arbre en est plein. Je secoue, tu rattrapes ?"]]},
+      ["biscuit","joy",`${ME()} ! Je veux faire une tarte aux pommes pour tout le refuge.`,()=>{actTrick("biscuit","boing");actEmote("biscuit","coeur")}],
+      ["biscuit","open","Le grand arbre en est plein. Je secoue, tu rattrapes ?",()=>{actEmote("me","!");setTimeout(()=>actGo("me",330,300),800)}]]},
     {at:"@tree",game:{k:"basket",n:8,win:"Huit belles pommes !"},goal:"Rattrape les pommes sous le grand arbre.",lines:[
-      ["me","joy","Huit pommes, pas une seule véreuse !"]]},
+      ["me","joy","Huit pommes, pas une seule véreuse !",()=>actTrick("me","salto")]]},
     {at:"biscuit",goal:"Apporte les pommes à Biscuit.",lines:[
-      ["biscuit","joy","Un peu de beurre, un peu de sucre… et hop, au four !"],
-      ["biscuit","shy","Tiens, la première part. C'est toujours la meilleure."]]}
+      ["biscuit","joy","Un peu de beurre, un peu de sucre… et hop, au four !",()=>{actGive("me","biscuit","pomme",{happy:false});setTimeout(()=>{actTrick("biscuit","toupie");actEmote("biscuit","note")},800)}],
+      ["biscuit","shy","Tiens, la première part. C'est toujours la meilleure.",()=>actGive("biscuit","me","tarte")]]}
   ]},
   cannelle:{title:"Le lit de feuilles",souv:"la feuille d'érable dorée",beats:[
     {at:"cannelle",sleep:1,goal:"Cannelle s'est endormie dans l'herbe. Réveille-la doucement.",lines:[

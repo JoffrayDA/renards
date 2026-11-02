@@ -421,3 +421,6 @@ h1 .la{font-style:normal}
 .decoing .mefox{opacity:.35;pointer-events:none}
 .mefox::before{content:"";position:absolute;left:-2%;right:-2%;bottom:-7%;height:24%;border-radius:50%;background:rgba(255,232,150,.75);border:2px solid rgba(240,170,60,.9);z-index:-1;pointer-events:none}
 .mefox.walking::before{opacity:.5}
+.sgive{position:absolute;width:8%;transform:translate(-50%,-50%);z-index:903;pointer-events:none}.sgive svg{display:block;width:100%;overflow:visible}
+.sgive.held{animation:sheld 1.7s ease-out forwards}@keyframes sheld{0%{transform:translate(-50%,-50%) scale(1)}20%{transform:translate(-50%,-80%) scale(1.25)}75%{opacity:1}100%{transform:translate(-50%,-110%) scale(1.1);opacity:0}}
+.sring{position:absolute;width:10%;aspect-ratio:2;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:50%;z-index:903;pointer-events:none;animation:sring .9s ease-out forwards}@keyframes sring{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(-50%,-50%) scale(1.6);opacity:0}}

@@ -29,3 +29,27 @@ function actThrow(from,to,o={}){const P=v=>typeof v==="string"?(f=>f?{x:f.x,y:f.
     $("scene").appendChild(p);setTimeout(()=>p.remove(),600);try{MUSIC.sfx("splash")}catch(e){}
     if(b.id&&o.hurt!==false){actPose(b.id,"sit","surprise",4000);actEmote(b.id,"goutte",1400);const f=sF(b.id);if(f){f.el.classList.remove("ouch");void f.el.offsetWidth;f.el.classList.add("ouch")}}
     if(o.then)o.then()}}
+// les petits objets qu'on se donne dans les histoires (les autres viennent de ITEM, games.js)
+const PROP={
+  gland:`<g transform="scale(1.4)"><path d="M-10 -2 Q-10 16 0 18 Q10 16 10 -2Z" fill="#c98a5a" stroke="${INK}" stroke-width="2.2"/><path d="M-12 -1.5 Q0 -15 12 -1.5 Q0 3 -12 -1.5Z" fill="#8a5a3a" stroke="${INK}" stroke-width="2.2"/><path d="M0 -8 q2 -5 6 -6" fill="none" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/></g>`,
+  moufle:`<path d="M-11 18 V-4 Q-11 -18 2 -18 Q14 -18 14 -4 V18Z" fill="#e0505a" stroke="${INK}" stroke-width="2.4"/><path d="M-11 0 Q-20 -4 -18 -12 Q-15 -16 -10 -10" fill="#e0505a" stroke="${INK}" stroke-width="2.4"/><rect x="-13" y="12" width="29" height="8" rx="3" fill="#fff3e6" stroke="${INK}" stroke-width="2"/><path d="M2 -10 V2 M-4 -4 L8 -4 M-2 -8 L6 0 M6 -8 L-2 0" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>`,
+  canne:`<path d="M-18 18 L14 -16" stroke="#a9785a" stroke-width="4" stroke-linecap="round"/><path d="M14 -16 Q20 -8 18 6" fill="none" stroke="${INK}" stroke-width="1.2"/><circle cx="18" cy="8" r="3" fill="#e0505a" stroke="${INK}" stroke-width="1.4"/><circle cx="-8" cy="7" r="4" fill="none" stroke="${INK}" stroke-width="2"/>`,
+  pantoufle:`<path d="M-18 8 Q-18 -6 -4 -8 Q10 -10 16 0 Q20 8 14 12 L-14 12 Q-18 12 -18 8Z" fill="#f6c9d4" stroke="${INK}" stroke-width="2.4"/><path d="M-4 -8 Q2 2 16 0" fill="none" stroke="${INK}" stroke-width="2"/><circle cx="6" cy="-6" r="4" fill="#fff" stroke="${INK}" stroke-width="1.8"/>`,
+  page:`<path d="M-14 -18 L10 -18 L16 -12 L16 18 L-14 18Z" fill="#fffaf2" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-8 -8 H10 M-8 -1 H10 M-8 6 H6" stroke="#b9a7b0" stroke-width="2" stroke-linecap="round"/>`,
+  chaussette:`<path d="M-6 -18 H8 V4 Q8 10 14 12 Q20 16 14 20 L-2 20 Q-10 20 -8 10Z" fill="#9ec3ef" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-6 -12 H8 M-6 -6 H8" stroke="#fff" stroke-width="2.4"/><circle cx="1" cy="4" r="3" fill="#c98a5a" stroke="${INK}" stroke-width="1.4"/>`,
+  pomme:`<circle cy="3" r="15" fill="#e0505a" stroke="${INK}" stroke-width="2.4"/><path d="M0 -12 q1 -6 4 -8" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M3 -14 q8 -6 12 0 q-6 4 -12 0Z" fill="#8cc06a" stroke="${INK}" stroke-width="1.6"/><path d="M-8 -4 q2 -4 6 -5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/>`,
+  tarte:`<path d="M-18 10 L16 -14 Q22 -2 18 12Z" fill="#f2c45a" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-18 10 L18 12 L18 17 L-18 15Z" fill="#d9a06a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M0 0 l6 4 M8 -6 l5 4" stroke="#c97a3a" stroke-width="2" stroke-linecap="round"/>`};
+// un renard donne un objet à un autre (ou à un point : la mare, avec un plouf) ; l'objet reste un instant au-dessus de celui
+// qui le reçoit, qui est content
+function actGive(from,to,k,o={}){const P=v=>typeof v==="string"?(f=>f?{x:f.x,y:f.y-40,id:v}:null)(sF(v)):v,a=P(from),b=P(to);if(!a||!b)return;
+  const s=document.createElement("div");s.className="sgive";s.innerHTML=`<svg viewBox="-26 -26 52 52" aria-hidden="true">${PROP[k]||ITEM[k]||""}</svg>`;$("scene").appendChild(s);
+  const kf=n=>({left:`${(a.x+(b.x-a.x)*n)/W*100}%`,top:`${(a.y+(b.y-a.y)*n-(o.arc??40)*4*n*(1-n))/H*100}%`});
+  try{MUSIC.sfx("whoosh")}catch(e){}
+  s.animate([kf(0),kf(.25),kf(.5),kf(.75),kf(1)],{duration:o.ms||750,easing:"ease-in-out",fill:"forwards"}).onfinish=()=>{
+    if(!b.id){s.remove();const r=document.createElement("div");r.className="sring";r.style.cssText=pc(b.x,b.y);$("scene").appendChild(r);setTimeout(()=>r.remove(),900);try{MUSIC.sfx("splash")}catch(e){}return}
+    try{MUSIC.sfx("pop")}catch(e){}s.style.cssText+=";"+pc(b.x,b.y-16);s.classList.add("held");setTimeout(()=>s.remove(),1700);
+    if(o.happy!==false){actPose(b.id,"happy",b.id==="me"?"joy":undefined,5000);actEmote(b.id,"coeur",1600)}}}
+// aller se mettre à côté d'un autre renard, tourné vers lui
+function actNear(id,to,pose="sit"){const f=sF(id),t=sF(to);if(!f||!t||f===t)return;const s=f.x<t.x?-1:1,x=Math.max(26,Math.min(374,t.x+s*40)),y=Math.max(252,Math.min(H-24,t.y+6));
+  if(f===meF){meGo({x,y,face:t.x},[pose],20000);return}
+  if(Math.hypot(f.x-x,f.y-y)<20)return;actGo(id,x,y,pose)}

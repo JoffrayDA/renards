@@ -7,7 +7,7 @@ const meF={id:"roussette",me:1,spot:null,pose:"sit",x:200,y:330,until:0,walk:nul
 meF.el=document.createElement("div");meF.el.className="fox mefox";
 meF.badge=document.createElement("div");meF.badge.className="fbadge";
 meF.el.onpointerdown=e=>{e.stopPropagation();if(shooting){toast("Pas de selfie : touche un renard.");return}
-  if(decoMode||meF.walk)return;hugFx(meF,{p:1,hearts:false})};
+  if(decoMode||gameOn)return;if(!meF.walk)hugFx(meF,{trick:"boing",hearts:false});setTimeout(()=>moiSheet(null,null),450)}; // la toucher ouvre son look
 $("actors").appendChild(meF.el);$("lights").appendChild(meF.badge);
 // à côté d'un renard (ou d'un endroit), du côté du milieu de la clairière, sans entrer dans la maison
 function meBeside(x,y){const s=x>200?-1:1,X=Math.max(26,Math.min(374,x+s*40)),Y=Math.max(252,Math.min(H-24,y+6));return {x:X,y:Y,face:x}}
