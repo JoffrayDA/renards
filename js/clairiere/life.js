@@ -64,14 +64,30 @@ function settle(f){
   if(objOf(sp)){f.pose=objOf(sp).pose;f.until=Date.now()+30000+Math.random()*30000} // un long moment dans un objet du refuge
   draw(f);
 }
-// Roussette (roussette.js) occupe aussi son endroit
-const taken=sp=>[...foxes,...(typeof meF==="object"?[meF]:[])].some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
+// les obstacles posés par terre (la boule géante, le tas de neige : noelObst dans noel.js), en ellipses au sol ;
+// on ne s'assoit pas dessous, et on en fait le tour (Joffray : des renards passaient au travers de la boule)
+const obst=()=>typeof noelObst==="function"?noelObst():[];
+const inObst=(p,m=0)=>!!p&&obst().some(o=>((p.x-o.x)/(o.rx+m))**2+((p.y-o.y)/(o.ry+m))**2<1);
+function crossObst(a,b,m=1){for(const o of obst()){const ax=(a.x-o.x)/o.rx,ay=(a.y-o.y)/o.ry,bx=(b.x-o.x)/o.rx,by=(b.y-o.y)/o.ry,dx=bx-ax,dy=by-ay,L=dx*dx+dy*dy||1,
+  t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/L));if((ax+dx*t)**2+(ay+dy*t)**2<m*m)return o}return null}
+// un détour par le côté le plus court de l'obstacle
+function aroundObst(a,b){const o=crossObst(a,b);if(!o)return [];
+  const C=[[o.x-o.rx-22,o.y],[o.x+o.rx+22,o.y],[o.x,o.y+o.ry+20],[o.x-o.rx*.85,o.y+o.ry*1.05],[o.x+o.rx*.85,o.y+o.ry*1.05],[o.x,o.y-o.ry-20],[o.x-o.rx*.85,o.y-o.ry*1.05],[o.x+o.rx*.85,o.y-o.ry*1.05]]
+    .map(([x,y])=>({x:Math.max(16,Math.min(384,x)),y:Math.max(250,Math.min(H-20,y))})),D=(p,q)=>Math.hypot(q.x-p.x,q.y-p.y);
+  // un point de passage, sinon deux (par devant la boule, de préférence), toujours avec de la marge
+  let best=null,bl=1e9;for(const c of C)if(!crossObst(a,c,1.15)&&!crossObst(c,b,1.15)){const l=D(a,c)+D(c,b);if(l<bl){bl=l;best=[c]}}
+  if(!best)for(const c of C)for(const d of C)if(c!==d&&!crossObst(a,c,1.15)&&!crossObst(c,d,1.15)&&!crossObst(d,b,1.15)){const l=D(a,c)+D(c,d)+D(d,b);if(l<bl){bl=l;best=[c,d]}}
+  return best||[]}
+// Roussette (roussette.js) occupe aussi son endroit, et personne ne s'assoit sous un obstacle
+const taken=sp=>inObst(sp)||[...foxes,...(typeof meF==="object"?[meF]:[])].some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
 // un trajet se fait par étapes : pour la cabane (via), on passe par le pied de l'échelle et on grimpe (climb)
 function goTo(f,sp){
   const legs=[];
   if(f.spot&&f.spot.via&&f.spot!==sp)legs.push(f.spot.via[1],{...f.spot.via[0],climb:1});
   if(sp&&sp.via)legs.push(sp.via[0],{...sp.via[1],climb:1});
   legs.push(sp==="door"?DOOR:sp==="edge"?EDGE:sp);
+  // les obstacles au sol : on en fait le tour
+  if(obst().length){let p={x:f.x,y:f.y};for(let i=0;i<legs.length;i++){const q=legs[i];if(!q.climb){const d=aroundObst(p,q);if(d.length){legs.splice(i,0,...d);i+=d.length}}p=legs[i]}}
   f.walk={to:sp,legs};f.spot=null;leg(f);
 }
 function leg(f){
@@ -133,6 +149,7 @@ function tick(){
     if(now>f.until&&(isTarget(f.id)||envHold(f)||storyStay(f.id))){f.until=now+5000;continue}
     // sous le choc après l'arrivée de la bande de Balafre : ils ne bougent plus jusqu'à la fin de la bataille (noel.js)
     if(f.shock){if((R.beat.balafre||0)<2){f.until=now+5000;continue}f.shock=0}
+    if(f.spot&&!f.spot.via&&!f.inside&&inObst(f)&&!f.wild){const sp=choose(f);if(sp){goTo(f,sp);continue}} // assis là où la boule vient d'apparaître : il se pousse
     // et même si le jeu a été fermé entre l'arrivée de la bande et la bataille : tout le refuge reste sous le choc
     if(R.beat.balafre===1&&noelOn()&&!f.wild&&!["balafre","filou","radar","bouleneige"].includes(f.id)&&!storyDone("balafre")){
       if(!f.walk&&f.expr!=="surprise"&&f.expr!=="sad"){f.pose="sit";f.expr=f.id.length%2?"surprise":"sad";draw(f)}f.until=now+5000;continue}

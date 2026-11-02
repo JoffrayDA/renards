@@ -466,6 +466,9 @@ function breakBall(){if(!ballEl)return;const r=ballR(),x=BALL.x,y=BALL.y,u=$("sc
   setTimeout(()=>drawHeap(true),650)}
 // le tas de neige qui reste après la casse
 let heapEl=null;
+// la boule géante refaite et le tas de neige sont des obstacles : les renards en font le tour (life.js)
+function noelObst(){const L=[];if(bigOn()&&noelOn()&&!recordWait())L.push({x:BALL.x,y:BALL.y-8,rx:74+16,ry:30});
+  if(heapEl&&R.heapAt)L.push({x:R.heapAt.x,y:R.heapAt.y-6,rx:R.heapAt.r*1.25+14,ry:24});return L}
 function drawHeap(grow){const h=R.heapAt,show=noelOn()&&R.recordGone&&!R.recordBig&&!!h;
   if(!show){if(heapEl){heapEl.remove();heapEl=null}return}
   if(!heapEl){heapEl=document.createElement("div");heapEl.className="sheap";$("actors").appendChild(heapEl)}
