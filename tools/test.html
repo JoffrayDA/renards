@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tout tester</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:15px system-ui,sans-serif;max-width:560px;margin:auto}
+h1{font-size:20px;margin:0 0 4px}p{margin:0 0 12px;opacity:.85;line-height:1.4}
+h2{font-size:16px;margin:22px 0 8px}
+a,button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;box-sizing:border-box;background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:10px 14px;margin-bottom:8px;color:#5b4250;text-decoration:none;font:700 15px system-ui,sans-serif;text-align:left;cursor:pointer}
+a span,button span{font-weight:400;font-size:13px;opacity:.7;text-align:right}
+button.main{background:#5b4250;color:#fff;border-color:#5b4250}button.main span{opacity:.85}
+.box{background:#fff3d6;border:2px solid #f0d49a;border-radius:14px;padding:10px 14px;margin:12px 0;font-size:14px}
+#st{font-weight:700}
+</style>
+</head>
+<body>
+<h1>Tout tester</h1>
+<p>Chaque lien ouvre le jeu comme si on était un autre jour ou à une autre heure. Les tests de Noël font vraiment avancer les histoires : mets ta partie de côté avant, et remets-la après.</p>
+
+<div class="box">Ta partie : <span id="st"></span></div>
+<button class="main" id="b-save">Mettre ma partie de côté<span>une copie, sur ce téléphone</span></button>
+<button id="b-new">Repartir d'une partie neuve<span>pour tout tester depuis le début</span></button>
+<button id="b-back">Remettre ma vraie partie<span>quand tu as fini</span></button>
+
+<div id="out"></div>
+<script>
+// les sauvegardes du jeu (les mêmes que la sauvegarde en ligne, js/cloud.js)
+const SAVED=["cafe-renards-v1","clairiere-renards-v2","clairiere-renards-v1","renards-stats","renards-son","kitsune-bourse"],BK="renards-test-copie";
+const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},set=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+function status(){const b=get(BK);document.getElementById("st").textContent=b?`mise de côté le ${new Date(JSON.parse(b).t).toLocaleString("fr-FR",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})}`:"pas encore mise de côté"}
+document.getElementById("b-save").onclick=()=>{if(get(BK)&&!confirm("Une copie existe déjà. La remplacer par la partie actuelle ?"))return;
+  const d={};for(const k of SAVED)d[k]=get(k);set(BK,JSON.stringify({t:Date.now(),d}));status();alert("Ta partie est de côté. Tu peux tester tranquille.")};
+document.getElementById("b-new").onclick=()=>{if(!get(BK)){alert("Mets d'abord ta partie de côté.");return}
+  if(!confirm("Effacer la partie de ce téléphone pour repartir de zéro ? (ta copie reste de côté)"))return;for(const k of SAVED)if(k!=="renards-son")set(k,null);alert("Partie neuve. Ouvre un lien.")};
+document.getElementById("b-back").onclick=()=>{const b=get(BK);if(!b){alert("Aucune copie de côté.");return}
+  if(!confirm("Remettre ta vraie partie ? Ce que tu as fait pendant les tests sera effacé."))return;
+  const {d}=JSON.parse(b);for(const k of SAVED)set(k,d[k]);set(BK,null);status();alert("Ta vraie partie est revenue.")};
+status();
+const C="../clairiere.html?",F="../cafe.html?",I="../index.html?";
+const S=[
+  ["Noël à la Clairière",[[C+"noel=1","1er décembre","Grelot plante la graine, la neige tombe"],[C+"noel=8","8 décembre","Ramure, le renne perdu"],[C+"noel=15","15 décembre","Paillette et les boules"],
+    [C+"noel=18&record=12","18 décembre","le record de Boule-de-Neige (boule depuis 12 h)"],[C+"noel=19&record=25","19 décembre","la bande de Balafre, la bataille, la luge, le curling"],
+    [C+"noel=24","24 décembre","Barbe-Neige et l'étoile"],[C+"noel=24&heure=22","24 décembre, la nuit","le sapin illuminé"],[C+"noel=32","1er janvier","les invités sont encore là"],[C+"noel=0","après le 6 janvier","les invités sont repartis"]]],
+  ["Noël au Café",[[F+"noel=1","Nuits de Noël, 1er décembre","l'animation d'ouverture"],[F+"noel=24","Nuits de Noël, 24 décembre","le Café décoré, les 24 nuits"]]],
+  ["Calendrier de l'Avent",[[I+"avent=1","1er décembre","la carte rouge sur l'accueil"],[I+"avent=12","12 décembre","au milieu du mois"],[I+"avent=24","24 décembre","la case double et l'Étoile dorée"]]],
+  ["La Clairière",[[C+"heure=7","À l'aube",""],[C+"heure=14","En plein jour",""],[C+"heure=22","La nuit","lanternes, renards qui dorment"],[C+"vite=1","Histoires sans attendre","le renard suivant arrive tout de suite"],
+    [C+"voir=maison","La maison","même fermée"],[C+"lite=1","Version iPhone","sans le trait qui tremble"],["jeux.html","Tous les petits jeux","à rejouer à volonté"]]],
+  ["Halloween",[[F+"halloween=1","Le Café d'Halloween","Nuits des citrouilles, déguisés"]]],
+  ["Planches de dessin",[["noel-poses.html","Les renards de Noël",""],["sauvages.html","Les sauvages et les inconnus",""],["inconnus.html","Les inconnus de la forêt",""],["planche.html","Toutes les poses",""],["viking.html","Le guerrier viking","Ragnar"]]]];
+document.getElementById("out").innerHTML=S.map(([h,L])=>`<h2>${h}</h2>`+L.map(([u,n,w])=>`<a href="${u}">${n}<span>${w}</span></a>`).join("")).join("");
+</script>
+</body>
+</html>
