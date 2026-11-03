@@ -20,65 +20,65 @@ function sleighArt(o={}){const fox=(id,x,y,w,op)=>`<g transform="translate(${x} 
 const giftSVG=(c="#e2445e",r="#f7d77a")=>`<rect x="-9" y="-8" width="18" height="16" rx="2" fill="${c}" stroke="${INK}" stroke-width="2"/><path d="M0 -8 V8" stroke="${r}" stroke-width="4"/><path d="M0 -8 q-8 -8 -9 -1 q4 3 9 1 q8 -8 9 -1 q-4 3 -9 1" fill="${r}" stroke="${INK}" stroke-width="1.4"/>`;
 
 /* ---------- le jeu : la tournée ---------- */
-// du doigt, on monte et on descend le traîneau ; passer juste au-dessus d'une cheminée y lâche le cadeau. Nuages et grands sapins secouent
-// (3 chocs : on recommence). Une cheminée ratée revient plus loin. Tout au bout, le grand sapin de la clairière : y poser l'étoile.
-GAMES.tournee=function(g,A){const sv=A.sv,N=g.n||7,SXL=118,TOP=Math.max(-EXT+70,30),ids=Object.keys(R.res).filter(i=>FOX[i]&&!["barbeneige","ramure"].includes(i));
-  const COL=["#d98a5c","#a9785a","#c97f6a","#8d7ba8","#7a9a8a"];let st,scroll,sy,ty,vy,left,hits,inv,items,lastX,bob=0,done=0,spd,sn=0;
+// refait le 03/11/2026 (Joffray : « on comprend pas ce qu'il faut faire ») : le traîneau vole tout seul ; une ligne en pointillés montre où
+// tombera le cadeau ; on touche l'écran quand il passe au-dessus de la cheminée signalée par la flèche. 3 ratés : on recommence la tournée.
+// Tout au bout, le grand sapin de la clairière : même geste pour y poser l'étoile.
+GAMES.tournee=function(g,A){const sv=A.sv,N=g.n||7,SXL=118,SY=Math.max(-EXT+120,150),ids=Object.keys(R.res).filter(i=>FOX[i]&&!["barbeneige","ramure"].includes(i));
+  const COL=["#d98a5c","#a9785a","#c97f6a","#8d7ba8","#7a9a8a"];let st,scroll,left,miss,items,lastX,bob=0,done=0,spd,fall=[];
   sv.innerHTML=`<defs><linearGradient id="tkS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121a44"/><stop offset=".65" stop-color="#3b3a78"/><stop offset="1" stop-color="#7a6aa0"/></linearGradient>
     <radialGradient id="tkG"><stop offset="0" stop-color="#fff6c0"/><stop offset="1" stop-color="#ffe680" stop-opacity="0"/></radialGradient></defs>
     <rect y="${-EXT}" width="400" height="${H}" fill="url(#tkS)"/>
     ${Array.from({length:50},(_,i)=>`<circle cx="${(i*83)%400}" cy="${-EXT+((i*57)%(EXT+330))}" r="${1+i%2*.8}" fill="#fff" opacity="${.4+(i%3)*.25}"/>`).join("")}
-    <circle cx="320" cy="${Math.max(-EXT+70,50)}" r="30" fill="#fff4cc"/><circle cx="320" cy="${Math.max(-EXT+70,50)}" r="70" fill="url(#tkG)" opacity=".5"/>
-    <path d="M-20 ${Math.max(-EXT+120,70)} Q110 ${Math.max(-EXT+70,30)} 220 ${Math.max(-EXT+120,70)} T420 ${Math.max(-EXT+90,50)}" fill="none" stroke="#7fe0c0" stroke-width="26" opacity=".13" stroke-linecap="round"/>
-    <g id="tkH"></g><g id="tkW"></g><g id="tkF"></g><g id="tkSl"></g><g id="tkN"></g>`;
-  const hills=sv.querySelector("#tkH"),w=sv.querySelector("#tkW"),fx=sv.querySelector("#tkF"),sl=sv.querySelector("#tkSl"),flakes=sv.querySelector("#tkN");
-  hills.innerHTML=[0,1].map(k=>`<path transform="translate(${k*800} 0)" d="M0 480 V400 Q100 340 220 395 T430 370 T640 395 T800 400 V480Z" fill="#2b2f60"/>`).join("");
-  sl.innerHTML=`<g id="tkSi" transform="translate(-70 -95) scale(.74)"><foreignObject x="-20" y="-10" width="0" height="0"></foreignObject></g>`;
-  const si=sl.firstChild;si.innerHTML=sleighArt({ram:1,me:1}).replace(/^<svg/,`<svg x="-30" y="-10" width="240" height="114"`);
+    <circle cx="330" cy="${SY-40}" r="28" fill="#fff4cc"/><circle cx="330" cy="${SY-40}" r="70" fill="url(#tkG)" opacity=".5"/>
+    <g id="tkH"></g><g id="tkW"></g><path id="tkAim" d="M${SXL} ${SY+6} V470" stroke="#fff6c0" stroke-width="3" stroke-dasharray="4 9" stroke-linecap="round" opacity=".55"/><g id="tkF"></g><g id="tkSl"></g><g id="tkN"></g>`;
+  const $$=q=>sv.querySelector(q),hills=$$("#tkH"),w=$$("#tkW"),fx=$$("#tkF"),sl=$$("#tkSl"),flakes=$$("#tkN"),aim=$$("#tkAim");
+  hills.innerHTML=[0,1].map(k=>`<path transform="translate(${k*800} 0)" d="M0 480 V410 Q100 360 220 405 T430 385 T640 405 T800 410 V480Z" fill="#2b2f60"/>`).join("");
+  // le traîneau : le point de chute (sous la hotte) est en (SXL, SY)
+  sl.innerHTML=`<g transform="translate(-58 -82) scale(.66)">${sleighArt({ram:1,me:1}).replace(/^<svg/,`<svg x="-30" y="-10" width="240" height="114"`)}</g>`;
   const fl=Array.from({length:26},(_,i)=>({x:(i*61)%400,y:-EXT+((i*97)%H),r:1.4+i%3,el:mk(flakes,"circle",{fill:"#fff",opacity:.8})}));fl.forEach(f=>f.el.setAttribute("r",f.r));
+  // une maison : sa cheminée est en (x+24, cy) ; une flèche qui sautille montre la prochaine
   const house=(x,cy,c)=>{const y=cy+34,id=ids.length?ids[Math.floor(Math.random()*ids.length)]:"petitpois";
-    return grp(w,`<rect x="${x-54}" y="${y+40}" width="108" height="${480-y-40}" fill="${c}" stroke="${INK}" stroke-width="3"/><rect class="dk" x="${x-18}" y="${y+56}" width="36" height="32" rx="5" fill="#2a2850" stroke="${INK}" stroke-width="2.6"/>
+    return grp(w,`<rect x="${x-54}" y="${y+40}" width="108" height="${480-y-40}" fill="${c}" stroke="${INK}" stroke-width="3"/><rect x="${x-18}" y="${y+56}" width="36" height="32" rx="5" fill="#2a2850" stroke="${INK}" stroke-width="2.6"/>
       <g class="lit" opacity="0"><rect x="${x-18}" y="${y+56}" width="36" height="32" rx="5" fill="#ffe08a" stroke="${INK}" stroke-width="2.6"/>${noWob(faceAt(id,x,y+72,30))}</g>
-      <rect x="${x+14}" y="${cy}" width="20" height="44" fill="#9a6a58" stroke="${INK}" stroke-width="3"/><rect x="${x+10}" y="${cy-5}" width="28" height="9" rx="3" fill="#fff" stroke="${INK}" stroke-width="2.4"/>
       <path d="M${x-72} ${y+44} L${x} ${y-14} L${x+72} ${y+44}Z" fill="#a0463e" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M${x-72} ${y+44} L${x} ${y-14} L${x+72} ${y+44} Q${x+46} ${y+34} ${x+30} ${y+24} Q${x+6} ${y+34} ${x-14} ${y+18} Q${x-34} ${y+42} ${x-72} ${y+44}Z" fill="#fff" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
-      <circle class="tkm" cx="${x+24}" cy="${cy-58}" r="20" fill="#fff" opacity=".0"/><path d="M${x+24} ${cy-26} l-9 -10 h18Z" fill="#ffe27a" stroke="${INK}" stroke-width="2"/>`)};
-  const cloud=(x,y)=>grp(w,`<g transform="translate(${x} ${y})"><path d="M-44 14 Q-58 -2 -34 -10 Q-30 -32 -6 -24 Q14 -38 28 -14 Q54 -12 46 12 Q0 26 -44 14Z" fill="#5a5888" stroke="${INK}" stroke-width="3"/><path d="M-22 -8 q4 3 8 0 M12 -8 q4 3 8 0" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M-8 6 q6 -5 12 0" stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`);
-  const pine=(x,y)=>grp(w,`<rect x="${x-7}" y="${y+150}" width="14" height="${Math.max(0,330-y)}" fill="#6a4a3a" stroke="${INK}" stroke-width="2.6"/>${[0,1,2].map(i=>`<path d="M${x} ${y+i*46} L${x-(28+i*12)} ${y+60+i*46} H${x+28+i*12}Z" fill="#2f6a4c" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M${x} ${y+i*46} L${x-14-i*4} ${y+30+i*46} H${x+14+i*4}Z" fill="#fff"/>`).join("")}`);
+      <rect x="${x+14}" y="${cy}" width="20" height="${Math.max(10,y+20-cy)}" fill="#9a6a58" stroke="${INK}" stroke-width="3"/><rect x="${x+10}" y="${cy-5}" width="28" height="9" rx="3" fill="#fff" stroke="${INK}" stroke-width="2.4"/>
+      <g class="arw"><path d="M${x+24} ${cy-14} l-11 -14 h7 v-14 h8 v14 h7Z" fill="#ffe27a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/></g>`)};
   const bigtree=(x,y)=>grp(w,`${[0,1,2,3,4,5].map(i=>`<path d="M${x} ${y+i*58} L${x-(40+i*22)} ${y+78+i*58} H${x+40+i*22}Z" fill="#2c5f46" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>${[-1,1].map(s=>`<circle cx="${x+s*(18+i*11)}" cy="${y+66+i*58}" r="6" fill="${["#e2445e","#7cb8e0","#f2c45a"][(i+s+3)%3]}" stroke="${INK}" stroke-width="1.8"/>`).join("")}`).join("")}
     <g class="tst" opacity="0" transform="translate(${x} ${y-8})"><circle r="70" fill="url(#tkG)"/><path d="M0 -24 L6 -7 L24 -6 L10 5 L14 23 L0 12 L-14 23 L-10 5 L-24 -6 L-6 -7Z" fill="#ffe27a" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/></g>
-    <path class="tar" d="M${x} ${y-30} l-10 -12 h20Z" fill="#ffe27a" stroke="${INK}" stroke-width="2"/>`);
-  // une maison de plus sur le parcours, avec de quoi monter et descendre entre deux cheminées
-  const addHouse=()=>{const cy=270+Math.random()*90,x=lastX+(items.length?330:420);items.push({k:"h",x,cy,el:house(x,cy,COL[Math.floor(Math.random()*COL.length)])});lastX=x;
-    const r=Math.random();if(done+items.filter(i=>i.k==="h").length>1||r<.5){const ox=x+165;if(r<.5){const oy=cy-90-Math.random()*70;items.push({k:"c",x:ox,y:oy,el:cloud(ox,oy)})}else{const py=230+Math.random()*40;items.push({k:"p",x:ox,y:py,el:pine(ox,py)})}}};
-  const say=()=>A.say(`Plus que ${left} maison${left>1?"s":""} ! Passe juste au-dessus des cheminées.`);
-  const reset=()=>{w.innerHTML="";fx.innerHTML="";items=[];lastX=400;scroll=0;sy=ty=220;vy=0;left=N;hits=0;inv=0;done=0;spd=165;st="play";for(let i=0;i<N;i++)addHouse();say()};
-  drag(A,p=>{ty=Math.max(TOP,Math.min(450,p.y))});
-  const drop=(x,y,cy,then)=>{const e=grp(fx,giftSVG(["#e2445e","#7cb8e0","#8fca7a","#c9a0ec"][done%4]));let t=0,vy0=y;const f={x,y:vy0,cy,e,then,t};fall.push(f)};let fall=[];
-  const finale=()=>{const x=lastX+420,y=150+Math.random()*30;items.push({k:"t",x,y,el:bigtree(x,y)});lastX=x;A.say("La dernière maison : la tienne ! Pose l'étoile tout en haut du sapin !")};
-  A.dbg=()=>({st,sy,scroll,left,hits,items:items.map(i=>({k:i.k,x:i.x-scroll,cy:i.cy,y:i.y}))});A.set=y=>{ty=y};
-  A.loop(dt=>{if(st==="won")dt*=.2;bob+=dt*5;scroll+=spd*dt;spd=Math.min(215,spd+dt*2);
-    sn+=dt;w.setAttribute("transform",`translate(${(-scroll).toFixed(1)} 0)`);hills.setAttribute("transform",`translate(${(-(scroll*.25)%800).toFixed(1)} 0)`);
-    const ny=sy+(ty-sy)*Math.min(1,dt*6);vy=(ny-sy)/Math.max(dt,.001);sy=ny;
-    sl.setAttribute("transform",`translate(${SXL} ${(sy+Math.sin(bob)*3).toFixed(1)}) rotate(${Math.max(-16,Math.min(16,vy*.05)).toFixed(1)})${inv>0&&Math.floor(inv*10)%2?" scale(1 .92)":""}`);
+    <g class="arw"><path d="M${x} ${y-14} l-11 -14 h7 v-14 h8 v14 h7Z" fill="#ffe27a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/></g>`);
+  const addHouse=()=>{const cy=300+Math.random()*60,x=lastX+(items.length?300:440);items.push({k:"h",x,cx:x+24,cy,el:house(x,cy,COL[Math.floor(Math.random()*COL.length)])});lastX=x};
+  const finale=()=>{const x=lastX+460,y=Math.max(SY+90,200);items.push({k:"t",x,cx:x,cy:y,el:bigtree(x,y)});lastX=x};
+  const next=()=>items.find(i=>!i.done&&!i.gone);
+  const say=t=>A.say(t||(left>0?`Plus que ${left} maison${left>1?"s":""} ! Touche l'écran au-dessus de la cheminée.`:"La dernière maison : la tienne ! Lâche l'étoile au-dessus du sapin !"));
+  const reset=()=>{w.innerHTML="";fx.innerHTML="";fall=[];items=[];lastX=400;scroll=0;left=N;miss=0;done=0;spd=120;st="play";for(let i=0;i<N;i++)addHouse();
+    say("Touche l'écran quand le traîneau passe au-dessus de la cheminée (la flèche) : le cadeau tombe dedans !")};
+  const rate=t=>{miss++;A.sfx("bad");try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
+    if(miss>=3){st="lost";A.sfx("lose");A.say("Trois ratés : Barbe-Neige reprend la tournée du début !");A.later(reset,1700);return}
+    A.say(`${t} Encore ${3-miss} raté${3-miss>1?"s":""} permis.`)};
+  // lâcher : un cadeau (ou l'étoile) tombe tout droit ; il entre s'il arrive au-dessus de la cheminée
+  A.tap=()=>{if(st!=="play"||fall.length)return;const it=next(),star=!!it&&it.k==="t";
+    const e=grp(fx,star?`<path d="M0 -16 L4 -5 L16 -4 L7 3 L10 15 L0 8 L-10 15 L-7 3 L-16 -4 L-4 -5Z" fill="#ffe27a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`:giftSVG(["#e2445e","#7cb8e0","#8fca7a","#c9a0ec"][done%4]));
+    fall.push({x:scroll+SXL,y:SY+10,t:0,e,it,star});A.sfx("whoosh")};
+  A.dbg=()=>({st,scroll,left,miss,sled:SXL,falling:fall.length,items:items.filter(i=>!i.gone&&!i.done).map(i=>({k:i.k,x:i.cx-scroll,cy:i.cy}))});
+  A.loop(dt=>{bob+=dt*5;if(st==="play"){scroll+=spd*dt;spd=Math.min(190,spd+dt*3)}
+    w.setAttribute("transform",`translate(${(-scroll).toFixed(1)} 0)`);hills.setAttribute("transform",`translate(${(-(scroll*.25)%800).toFixed(1)} 0)`);
+    sl.setAttribute("transform",`translate(${SXL} ${(SY+Math.sin(bob)*3).toFixed(1)})`);aim.setAttribute("opacity",fall.length?".2":".55");
     fl.forEach(f=>{f.x-=(spd*.45+f.r*20)*dt;f.y+=(24+f.r*10)*dt;if(f.x<0)f.x+=400;if(f.y>480)f.y=-EXT;f.el.setAttribute("cx",f.x.toFixed(0));f.el.setAttribute("cy",f.y.toFixed(0))});
-    for(const f of fall){f.t+=dt;f.y+=(90+f.t*420)*dt;f.x+=(-spd*.0)*dt;f.e.setAttribute("transform",`translate(${(f.x-scroll).toFixed(1)} ${f.y.toFixed(1)})`);if(f.y>=f.cy){f.e.remove();f.dead=1;f.then()}}fall=fall.filter(f=>!f.dead);
-    if(st!=="play")return;inv=Math.max(0,inv-dt);
-    for(const it of items){const dx=it.x-scroll-SXL;
-      if(it.k==="c"&&!it.off&&inv<=0&&Math.hypot(dx,sy-30-it.y)<54)hit("Un nuage de neige !");
-      if(it.k==="p"&&!it.off&&inv<=0&&Math.abs(dx)<34&&sy>it.y+18)hit("Un sapin ! Monte !");
-      if(it.k==="h"&&!it.pass&&dx<-22){it.pass=1;
-        const ok=sy>it.cy-96&&sy<it.cy-14;
-        if(ok){done++;left--;A.sfx("good",done);const e=it.el,xs=it.x+24;drop(xs,sy,it.cy,()=>{A.sfx("pop");const l=e.querySelector(".lit");l.setAttribute("opacity",1);l.animate([{transform:"scale(1)"},{transform:"scale(1)"}],{duration:200});e.querySelector(".tkm").setAttribute("opacity",0)});
-          it.el.querySelector("path[d*='l-9 -10']")?.remove();
-          if(left===Math.floor(N/2)&&left)A.cheer("CONTINUE !");if(left>0)say();else finale()}
-        else{A.sfx("bad");A.say("Cheminée ratée ! La maison revient plus loin.");it.el.querySelector("path[d*='l-9 -10']")?.remove();const tree=items.find(i=>i.k==="t");if(tree){}addHouse()}}
-      if(it.k==="t"&&!it.pass&&dx<4){it.pass=1;const ok=sy>it.y-104&&sy<it.y+6;
-        if(ok){st="won";spd=70;const s=it.el.querySelector(".tst");it.el.querySelector(".tar").remove();s.setAttribute("opacity",1);A.sfx("win");A.win(g.win||"L'étoile brille en haut du sapin !")}
-        else{A.sfx("bad");A.say("Trop loin ! Ramure refait un tour…");it.el.remove();it.off=1;lastX=it.x;finale()}}
-      if(dx<-300&&it.el){it.el.remove();it.off=1}}
-    items=items.filter(i=>!i.off||i.x-scroll>-300)});
-  function hit(t){inv=1.1;hits++;A.sfx("bad");try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
-    if(hits>=3){st="lost";A.sfx("lose");A.say("Trop de chocs : les cadeaux sont tombés ! On recommence la tournée.");A.later(reset,1600);return}A.say(`${t} Encore ${3-hits} choc${3-hits>1?"s":""} et les cadeaux tombent.`)}
+    const nx=next();for(const it of items){const a=it.el&&it.el.querySelector(".arw");if(a){a.style.display=it===nx?"":"none";if(it===nx)a.setAttribute("transform",`translate(0 ${(Math.sin(bob*1.6)*5).toFixed(1)})`)}}
+    for(const f of fall){f.t+=dt;f.y+=(80+f.t*460)*dt;f.e.setAttribute("transform",`translate(${(f.x-scroll).toFixed(1)} ${f.y.toFixed(1)})${f.star?` rotate(${(f.t*300).toFixed(0)})`:""}`);
+      const it=f.it,tg=it?it.cy:470;if(f.y<tg)continue;f.dead=1;f.e.remove();if(st!=="play")continue;
+      if(it&&!it.gone&&Math.abs(f.x-it.cx)<(f.star?24:20)){it.done=1;it.el.querySelector(".arw")?.remove();
+        if(f.star){st="won";spd=40;it.el.querySelector(".tst").setAttribute("opacity",1);A.win(g.win||"L'étoile brille en haut du sapin !");continue}
+        done++;left--;A.sfx("good",done);A.sfx("pop");it.el.querySelector(".lit").setAttribute("opacity",1);A.cheer(["SUPER !","BRAVO !","PILE DEDANS !"][done%3]);
+        if(!left)finale();say()}
+      else rate(f.star?"L'étoile est tombée à côté !":"Raté, à côté de la cheminée !")}
+    fall=fall.filter(f=>!f.dead);
+    if(st!=="play")return;
+    // une maison passée sans cadeau : ratée, elle revient plus loin
+    for(const it of items)if(!it.done&&!it.gone&&it.cx-scroll<SXL-70&&!fall.some(f=>f.it===it)){it.gone=1;it.el.querySelector(".arw")?.remove();
+      if(it.k==="t"){finale();rate("Le sapin est passé ! Ramure refait un tour.")}else{addHouse();rate("Une maison oubliée ! Elle revient plus loin.")}}
+    for(const it of items)if(it.el&&it.cx-scroll<-260){it.el.remove();it.el=null}
+    items=items.filter(i=>i.el)});
   reset()};
 
 /* ---------- la boule à neige : l'énorme cadeau ---------- */
