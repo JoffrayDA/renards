@@ -269,6 +269,12 @@ const MUSIC=(()=>{
     else if(k==="swap"){nz(700,1.3,.2,.07,0,2600);tone("sine",520,780,.06,.04,.14)}
     else if(k==="whoosh"){nz(300,1.4,.9,.12,0,1400)}
     else if(k==="snowhit"){tone("sine",200,60,.14,.24);nz(600,.6,.16,.22);nz(2600,1.2,.07,.1,.01)} // une boule de neige qui touche : « pouf »
+    // « Oh oh oh ! » : une grosse voix grave (dent de scie filtrée sur les formants du « o »), trois fois
+    else if(k==="hohoho"){[0,.34,.68].forEach((a,i)=>{const t0=t+a,f0=i===2?118:128,src=osc("sawtooth",f0,t0,t0+.34);src.frequency.setValueAtTime(f0,t0);src.frequency.exponentialRampToValueAtTime(f0*.82,t0+.3);
+        const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.55,t0+.03);g.gain.setValueAtTime(.5,t0+(i===2?.24:.16));g.gain.linearRampToValueAtTime(0,t0+(i===2?.34:.24));
+        [[430,6,1],[780,7,.5],[2400,8,.12]].forEach(([fr,q,v])=>{const bp=filt("bandpass",fr,q),gv=C.createGain();gv.gain.value=v;src.connect(bp);bp.connect(gv);gv.connect(g)});o(g,.25)})}
+    // un gros boum (le traîneau qui s'écrase)
+    else if(k==="boom"){tone("sine",110,28,.7,.6);nz(380,.7,.6,.45);nz(1600,1,.12,.22);tone("triangle",60,30,.5,.3,.05)}
     else if(k==="knock"){tone("sine",180,70,.12,.25);nz(1200,1.5,.05,.08)}
     else if(k==="flip"){nz(3200,1,.04,.06);tone("sine",1200,1500,.05,.05)}
     else if(k==="cheer"){[0,4,7,12].forEach((d,i)=>bell(84+d,.1,i*.06,.5))}

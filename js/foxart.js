@@ -166,12 +166,14 @@ function foxArt(f,o={}){
       h=base+eyes;
       if(mode==="up")h=h.replace(/<path d="M56 [^"]*"[^>]*\/>/,"")+mouthO(Y);
     }
-    if(["sad","surprise","shy"].includes(mode)){
+    if(["sad","surprise","shy","ko"].includes(mode)){
       const noMouth=face(Y,true).replace(/<path d="M44 [^"]*" fill="none" stroke-width="2.6"\/>/,"").replace(/<path d="M56 [^"]*"[^>]*\/>/,"");
       // Feu Follet garde ses grands yeux brillants dans toutes les expressions
       const dot=(x,y,rx,ry,hl)=>gh?`<ellipse cx="${x-.9}" cy="${y-.5}" rx="${(rx*1.6).toFixed(1)}" ry="${(ry*1.77).toFixed(1)}" fill="${dark}" stroke="none"/><circle cx="${x+.5}" cy="${(y-ry*.9).toFixed(1)}" r="${(hl*1.8).toFixed(1)}" fill="#fff" stroke="none"/><circle cx="${x-2.4}" cy="${(y+ry*.75).toFixed(1)}" r=".8" fill="#fff" stroke="none"/>`:`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${ey}" stroke="none"/><circle cx="${x+.9}" cy="${y-ry*.4}" r="${hl}" fill="#fff" stroke="none"/>`;
       if(mode==="sad")h=noMouth+dot(48,Y+.6,2.8,3.2,.9)+dot(72,Y+.6,2.8,3.2,.9)
         +`<path d="M42.5 ${Y-6} L51 ${Y-8.6} M77.5 ${Y-6} L69 ${Y-8.6}" fill="none" stroke-width="2"/><path d="M56 ${Y+9} Q60 ${Y+6} 64 ${Y+9}" fill="none" stroke-width="1.8"/><path d="M44 ${Y+5} q-2.6 4 0 5.4 q2.6 -1.4 0 -5.4Z" fill="#9ec3ef" stroke-width="1.2"/>`;
+      // K.O. : yeux en croix et bouche en zigzag (Barbe-Neige après le crash)
+      else if(mode==="ko")h=noMouth+`<path d="M44.5 ${Y-4.5} l7 7 M51.5 ${Y-4.5} l-7 7 M68.5 ${Y-4.5} l7 7 M75.5 ${Y-4.5} l-7 7" fill="none" stroke-width="2.4"/><path d="M54 ${Y+8} l3 -2 l3 2 l3 -2 l3 2" fill="none" stroke-width="1.8"/>`;
       else if(mode==="surprise")h=noMouth+dot(48,Y-.4,3.6,4.4,1.3)+dot(72,Y-.4,3.6,4.4,1.3)
         +`<path d="M43 ${Y-9} Q48 ${Y-12} 53 ${Y-9} M67 ${Y-9} Q72 ${Y-12} 77 ${Y-9}" fill="none" stroke-width="2"/>`+`<ellipse cx="60" cy="${Y+8}" rx="2.6" ry="3.2" fill="#e2546e" stroke-width="1.6"/>`;
       else h=noMouth+dot(49.3,Y+1.2,2.6,3,.8)+dot(73.3,Y+1.2,2.6,3,.8)

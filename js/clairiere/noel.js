@@ -182,8 +182,9 @@ Object.assign(STORIES,{
       ["ramure","surprise","Le traîneau ! Sans moi pour le tirer, il vole de travers !",()=>actEmote("ramure","!")],
       ["radar","surprise","J'entends un boulon qui saute. Puis un autre. Puis plus rien… Ça vient par ici !",()=>actEmote("radar","goutte")],
       ["me","surprise","Tout le monde, devant la maison, vite !",()=>actGo("me",150,300)]]},
-    {at:"@porch",goal:"Le traîneau tombe ! Cours devant la maison.",showMs:2300,show:()=>sceneCrash(),lines:[
-      ["barbeneige","surprise","Ouille… Bonsoir, bonsoir ! Je suis Barbe-Neige. Ce n'était pas un accident, hein. C'était… un atterrissage. Voilà.",()=>actEmote("barbeneige","goutte")],
+    {at:"@porch",goal:"Le traîneau tombe ! Cours devant la maison.",showMs:3200,show:()=>sceneCrash(),lines:[
+      ["grelot","surprise","Chef ! Chef, vous allez bien ???",()=>{actNear("grelot","barbeneige","up");actEmote("grelot","!")}],
+      ["barbeneige","joy","Hum hum… Mais oui, mais oui ! Bonsoir, bonsoir, je suis Barbe-Neige. Et ce n'était pas un crash : tout était calculé.",()=>{bnKO(0);musHush=0;try{MUSIC.want(clMusic())}catch(e){}actTrick("barbeneige","boing")}],
       ["ramure","sad","Patron ! C'est ma faute, je n'aurais jamais dû me perdre.",()=>actEmote("ramure","goutte")],
       ["barbeneige","sad","Le patin est cassé net. Et il me reste toutes les maisons de la forêt à livrer avant minuit.",()=>actPose("barbeneige","sit","sad")],
       ["petitpois","sad","Alors… il n'y aura pas de Noël ?",()=>actEmote("petitpois","goutte")],
@@ -512,8 +513,8 @@ function bandeAttack(){const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
 let bandeOn=0;
 // choix de Joffray (03/11/2026) : la forêt sous la neige du 1er décembre au 6 janvier, Douce nuit du 23 au 26, We Wish You a Merry
 // Christmas pendant l'histoire de Barbe-Neige ; le thème de la bande garde la priorité pendant la bataille de neige
-let bnMusic=0;
-function clMusic(){if(!noelOn())return "foret";
+let bnMusic=0,musHush=0; // musHush : la musique coupée net (le crash du traîneau)
+function clMusic(){if(musHush)return "silence";if(!noelOn())return "foret";
   if(!storyDone("balafre")&&(bandeOn&&!(R.beat.balafre>0)||R.beat.balafre>=1&&R.beat.balafre<=3))return "bande";
   if((bnMusic||R.beat.barbeneige>0)&&!storyDone("barbeneige"))return "wewish";
   const d=noelDay();return d>=23&&d<=26?"doucenuit":"foretneige"}
