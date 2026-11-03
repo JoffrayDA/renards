@@ -59,6 +59,11 @@ function playGame(g,done){
     later:(f,ms)=>{timers.push(setTimeout(()=>{if(!over)f()},ms))},
     clear:()=>{timers.forEach(clearTimeout);timers=[]},
     loop:f=>{let last=performance.now();const fr=now=>{if(over)return;f(Math.max(0,Math.min(.05,(now-last)/1000)));last=now;raf=requestAnimationFrame(fr)};raf=requestAnimationFrame(fr)},
+    // un chrono en bas du jeu (Joffray, 03/11/2026 : les jeux « attrape-les tous » n'avaient aucune pression) ; à zéro, out()
+    clock:(T,out)=>{const b=document.createElement("div");b.className="pclock";b.innerHTML="<i></i>";el.appendChild(b);const fill=b.firstChild;
+      const c={left:T,on:true,reset(){c.left=T;c.on=true;fill.style.width="100%";b.classList.remove("low")}};
+      const iv=setInterval(()=>{if(over||api.won){clearInterval(iv);return}if(!c.on)return;c.left-=.1;fill.style.width=Math.max(0,c.left/T*100)+"%";b.classList.toggle("low",c.left<T*.3);
+        if(c.left<=0){c.on=false;api.sfx("lose");out()}},100);return c},
     // pêche libre : on enchaîne les lancers et on rentre quand on veut
     close:()=>{over=true;api.clear();cancelAnimationFrame(raf);el.hidden=true;el.innerHTML="";gameOn=false;back();done()},
     win:t=>{if(api.won)return;api.won=true;api.clear();api.say(t);api.cheer("PARFAIT !");api.sfx("win");
@@ -237,11 +242,14 @@ const GAMES={
           :`<g filter="url(#wobble)"><circle r="13" fill="${["#e2445e","#5aa0dc","#f2c45a","#9a6ad6","#5fae6c"][bugs0++%5]}" stroke="${INK}" stroke-width="2.4"/><rect x="-4" y="-18" width="8" height="6" rx="1.4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g><circle cx="-4" cy="-4" r="3.4" fill="#fff" opacity=".8"/><circle r="26" fill="transparent"/>`):page?`<g filter="url(#wobble)"><rect x="-13" y="-16" width="26" height="32" rx="3" fill="#fffaf0" stroke="${INK}" stroke-width="2.4"/><path d="M-8 -9 h16 M-8 -3 h16 M-8 3 h11 M-8 9 h14" stroke="#cdb9ad" stroke-width="2"/></g><circle r="26" fill="transparent"/>`
         :`<circle r="30" fill="url(#lg)"/><circle r="5" fill="#fffbe0"/><circle r="26" fill="transparent"/>`);
       b.el.style.cursor="pointer";
-      b.el.onpointerdown=e=>{e.stopPropagation();if(b.got||A.won)return;b.got=1;got++;b.el.classList.add("caught");setTimeout(()=>b.el.remove(),400);A.sfx("good",got);
+      b.el.onpointerdown=e=>{e.stopPropagation();if(b.got||A.won||!clk.on)return;b.got=1;got++;b.el.classList.add("caught");setTimeout(()=>{if(b.got)b.el.style.display="none"},400);A.sfx("good",got);
         if(got===Math.ceil(n/2)&&got<n)A.cheer("CONTINUE !");
         if(got===n)A.win(g.win||(xmas?"Tous attrapés !":page?"Toutes les pages !":"Toutes attrapées !"));else A.say(`${got} sur ${n}… encore !`)};
       return b});
     A.say(g.say||`Attrape les ${n} lucioles !`);
+    // le temps de les attraper toutes ; à zéro, tout s'envole à nouveau
+    const clk=A.clock(g.time||Math.round(4+n*1.6),()=>{A.say(`Trop tard ! ${got} sur ${n}… On recommence !`);
+      A.later(()=>{got=0;bugs.forEach(b=>{b.got=0;b.el.classList.remove("caught");b.el.style.display=""});clk.reset();A.say(g.say||`Attrape les ${n} lucioles !`)},1400)});
     A.loop(dt=>{for(const b of bugs){if(b.got)continue;b.a+=(Math.random()-.5)*4*dt;b.x+=Math.cos(b.a)*b.s*dt;b.y+=Math.sin(b.a)*b.s*dt;
       if(b.x<30||b.x>370)b.a=Math.PI-b.a;if(b.y<60||b.y>420)b.a=-b.a;b.x=Math.max(30,Math.min(370,b.x));b.y=Math.max(60,Math.min(420,b.y));
       b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`+(page?` rotate(${(Math.sin(b.a*3)*25).toFixed(0)})`:""))}});
@@ -262,12 +270,13 @@ const GAMES={
       b.el=grp(box,gold?`<circle r="50" fill="url(#ffg)" class="glim"/><circle r="6" fill="#fffbe0" stroke="#ffb800" stroke-width="2"/><circle r="34" fill="transparent"/>`
         :`<circle r="${26+Math.random()*14}" fill="url(#ffc${i%COL.length})" class="glim" style="animation-delay:${(-Math.random()*2).toFixed(2)}s"/><circle r="3.6" fill="#fff"/><circle r="22" fill="transparent"/>`);
       b.el.style.cursor="pointer";
-      b.el.onpointerdown=e=>{e.stopPropagation();if(done||A.won)return;
+      b.el.onpointerdown=e=>{e.stopPropagation();if(done||A.won||!clk.on)return;
         if(b.gold){done=1;b.el.classList.add("caught");A.win(g.win||"Attrapée !")}
         else{b.flee=.6;b.s=180;b.a+=Math.PI;A.sfx("pop");A.say(g.miss||"Pas celle-là ! Cherche la dorée !")}};
       return b};
     const flies=[...Array.from({length:28},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[28].el); // la dorée passe devant
     A.say(g.say||"Attrape la luciole dorée !");
+    const clk=A.clock(g.time||15,()=>{A.say("Trop tard, elle s'est cachée ! Encore une fois…");A.later(()=>{clk.reset();A.say(g.say||"Attrape la luciole dorée !")},1400)});
     A.loop(dt=>{for(const b of flies){if(done&&b.gold)continue;b.t+=dt;
       if(b.flee>0&&(b.flee-=dt)<=0)b.s=45+Math.random()*45;
       // la dorée change souvent de direction, d'un coup

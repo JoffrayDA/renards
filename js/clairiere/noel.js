@@ -90,7 +90,7 @@ Object.assign(STORIES,{
     // 03/11/2026 (copine de Joffray : « pas hyper clair ») : le thème des méchants, on se demande qui ils sont, puis l'attaque
     {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:2600,
       show:()=>{const bx=BALL.x,by=BALL.y;bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){}
-        actArrive("filou",Math.max(40,bx-140),by-60);setTimeout(()=>actArrive("radar",Math.min(360,bx+120),by-70),250);setTimeout(()=>actArrive("balafre",bx-30,by-150),500);
+        const cl=(x,y)=>[Math.max(36,Math.min(364,x)),Math.max(300,Math.min(H-30,y))];actArrive("filou",...cl(bx-120,by+40));setTimeout(()=>actArrive("radar",...cl(bx+90,by+50)),250);setTimeout(()=>actArrive("balafre",...cl(bx-20,by+100)),500);
         setTimeout(()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");defendAll(bx,by)},900);
         setTimeout(()=>{actEmote("balafre","colere");actEmote("filou","note");actEmote("radar","note")},1800)},
       lines:()=>[

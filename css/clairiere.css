@@ -439,3 +439,6 @@ h1 .la{font-style:normal}
 .bgtxt{z-index:2;display:flex;flex-direction:column;gap:6px;align-items:center;max-width:340px}.bgtxt b{font-family:"Mochiy Pop One",sans-serif;font-weight:400;font-size:21px;line-height:1.2}.bgtxt span{font-size:15px;opacity:.9}
 .bgrew{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0}.bgrew em{font-style:normal;font-weight:700;font-size:13px;background:#fffaf2;color:#5b4250;border-radius:99px;padding:4px 10px}
 .bgconf{position:absolute;left:50%;top:40%;width:10px;height:10px;border-radius:2px;pointer-events:none}
+/* le chrono des petits jeux (games.js, A.clock) */
+.pclock{position:absolute;left:12%;right:12%;bottom:14px;height:12px;border-radius:99px;background:#fffaf2;border:2.4px solid #5b4250;overflow:hidden;z-index:5;pointer-events:none}
+.pclock i{display:block;height:100%;width:100%;background:#f2a35c;border-radius:99px;transition:width .1s linear}.pclock.low i{background:#e0505a;animation:plow .5s ease-in-out infinite alternate}@keyframes plow{to{opacity:.55}}
