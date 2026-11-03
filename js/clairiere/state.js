@@ -11,6 +11,8 @@ if(REJ&&R&&R.ver===2){const NO=["grelot","ramure","paillette","balafre","barbene
   // la bataille de neige : la boule du record a roulé ses 24 h, la bande n'est pas encore là
   if(REJ==="balafre"){R.res.bouleneige=R.res.bouleneige||{at:Date.now(),h:0,pet:""};["balafre","filou","radar"].forEach(k=>delete R.res[k]);
     R.recordAt=Date.now()-25*36e5;R.recordGone=0;R.recordBig=0;R.recordBigAt=0;R.heapAt=null}
+  // la veille de Noël : pas encore d'étoile ni de cadeau, la bande est là (elle est dans la dernière scène)
+  if(REJ==="barbeneige"){R.noelStar=0;R.bigGift=0;["balafre","filou","radar"].forEach(k=>{R.res[k]=R.res[k]||{at:Date.now(),h:0,pet:""};R.inco=R.inco||{};R.inco[k]=R.inco[k]||{};R.inco[k].found=1})}
   setTimeout(()=>{try{toast("Mode rejouer : rien n'est sauvegardé.")}catch(e){}},1500)}
 if(!R||R.ver!==2){
   // nouvelle partie ; de l'ancienne Clairière (v1, restée intacte) on ne garde que les renards déjà croisés
