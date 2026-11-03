@@ -607,6 +607,7 @@ function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;
 // jamais avant la fin de sa propre histoire ; et ils ne reviennent pas (Joffray : « personne ne reste, c'est des renards sauvages »)
 const noelAway=id=>{if(!FOX[id])return false;
   if(NOEL_WILD.includes(id)&&INC[id]){if(!storyDone("balafre"))return false;return noelOn()?storyDone("adieux"):true}
+  if((id==="barbeneige"||id==="ramure")&&R.bnAway===today())return true; // repartis après le cadeau, ils reviennent demain (tournee.js)
   return FOX[id].event==="noel"&&!noelOn()};
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
 if(!noelOn()&&[...NOEL_WILD,"miette","pataud","frisette"].some(id=>R.res[id])){for(const id of [...NOEL_WILD,"miette","pataud","frisette"])delete R.res[id];save()}

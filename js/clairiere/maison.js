@@ -70,7 +70,15 @@ function souvIcon(id){const l=hL(1.6);return ({
   aurore:`<path d="M-7 0 Q-8 -8 -2 -9 Q4 -10 3 -5 Q2 -1 -2 -3 Q-4 -7 2 -13 Q6 -16 8 -12" fill="none" stroke="#3d2a35" stroke-width="4.4" stroke-linecap="round"/><path d="M-7 0 Q-8 -8 -2 -9 Q4 -10 3 -5 Q2 -1 -2 -3 Q-4 -7 2 -13 Q6 -16 8 -12" fill="none" stroke="url(#hRib)" stroke-width="2.6" stroke-linecap="round"/>`,
   maree:`<ellipse cx="0" cy="-3.4" rx="6.6" ry="3.4" fill="#a9a0b6" ${l}/>${[-4,-1.4,1.2,3.8].map(x=>`<circle cx="${x}" cy="-3.6" r=".9" fill="#fff" opacity=".85"/>`).join("")}`,
   perle:`<path d="M-7 -2 Q-7 -10 0 -10 Q7 -10 7 -2Z" fill="#f6d6e4" ${l}/><path d="M-7 -2 Q0 2 7 -2" fill="#f2c0d4" ${l}/><circle cx="0" cy="-3.6" r="2.8" fill="#fffaf2" ${l}/><circle cx="-.8" cy="-4.4" r=".8" fill="#fff"/>`,
-  yeti:`<path d="M-6 0 Q-9 -4 -5 -7 Q-6 -12 -1 -11 Q1 -15 4 -11 Q8 -11 7 -6 Q9 -2 5 0Z" fill="#fbfdff" ${l}/><path d="M-2 -6 q2 -2 4 0" stroke="#d9e4f0" stroke-width="1" fill="none"/>`
+  yeti:`<path d="M-6 0 Q-9 -4 -5 -7 Q-6 -12 -1 -11 Q1 -15 4 -11 Q8 -11 7 -6 Q9 -2 5 0Z" fill="#fbfdff" ${l}/><path d="M-2 -6 q2 -2 4 0" stroke="#d9e4f0" stroke-width="1" fill="none"/>`,
+  // Noël : le grelot d'argent (Grelot), la clochette de traîneau (Ramure), la boule argentée (Paillette), la boule de neige qui ne fond
+  // pas (la bataille), l'étoile (Barbe-Neige), la boule de neige signée d'une griffe (les adieux de la bande)
+  grelot:`<circle cx="0" cy="-6" r="5.6" fill="#d9dee6" ${l}/><path d="M-5.6 -6 h11.2" stroke="${INK}" stroke-width="1.2"/><circle cx="0" cy="-3" r="1.2" fill="${INK}"/><circle cx="0" cy="-12.6" r="1.4" fill="none" ${l}/><circle cx="-2" cy="-8.4" r="1.2" fill="#fff"/>`,
+  ramure:`<path d="M0 -14 C-4.6 -14 -5.6 -10 -5.6 -6 V-3 L-7.4 -.6 H7.4 L5.6 -3 V-6 C5.6 -10 4.6 -14 0 -14Z" fill="#f6cc4e" ${l}/><circle cx="0" cy=".8" r="1.8" fill="#e0a52e" ${l}/><path d="M0 -14 l-3.6 -3 q-1 2.6 1.6 3 M0 -14 l3.6 -3 q1 2.6 -1.6 3" fill="#e2445e" ${l}/>`,
+  paillette:`<circle cx="0" cy="-6" r="6" fill="#c8d2de" ${l}/><rect x="-1.8" y="-14" width="3.6" height="2.6" rx=".6" fill="#f2c45a" ${l}/><path d="M-3 -8.4 q1.4 -2 3.6 -2.2" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>`,
+  balafre:`<circle cx="0" cy="-6" r="6" fill="#fbfdff" ${l}/><path d="M-2.6 -8 q1.6 -1.6 3.8 -1.2" stroke="#cfdbea" stroke-width="1.2" fill="none"/><path d="M-6 -1 h12" stroke="#9ec3ef" stroke-width="1.4"/>`,
+  barbeneige:`<path d="M0 -15 L2 -9.6 L7.6 -9.4 L3.2 -6 L4.8 -.6 L0 -3.8 L-4.8 -.6 L-3.2 -6 L-7.6 -9.4 L-2 -9.6Z" fill="#ffe27a" ${l}/>`,
+  adieux:`<circle cx="0" cy="-6" r="6" fill="#fbfdff" ${l}/><path d="M-3 -9 l2.4 5 M-.6 -9.4 l2.4 5 M1.8 -9.8 l2.4 5" stroke="#3d2a35" stroke-width="1" stroke-linecap="round"/>`
 })[id]||`<rect x="-6" y="-11" width="12" height="11" rx="1.6" fill="#f6a5b4" ${l}/><path d="M0 -11 v11 M-6 -6 h12" stroke="#fff" stroke-width="1.6"/>`}
 // où va chaque souvenir : quelques-uns ont leur place à eux, les autres vont sur l'étagère, puis sur le linteau et le rebord de la fenêtre
 const SOUV_SPOT={gribouille:1,gaston:1,luciole:1,flocon:1,moka:1,sesame:1,plouf:1,brindille:1};
