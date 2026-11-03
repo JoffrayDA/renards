@@ -183,7 +183,7 @@ Object.assign(STORIES,{
       ["radar","surprise","J'entends un boulon qui saute. Puis un autre. Puis plus rien… Ça vient par ici !",()=>actEmote("radar","goutte")],
       ["me","surprise","Tout le monde, devant la maison, vite !",()=>actGo("me",150,300)]]},
     {at:"@porch",goal:"Le traîneau tombe ! Cours devant la maison.",showMs:2300,show:()=>sceneCrash(),lines:[
-      ["barbeneige","surprise","Bonsoir, bonsoir… Barbe-Neige. Personne n'a rien vu.",()=>actEmote("barbeneige","goutte")],
+      ["barbeneige","surprise","Ouille… Bonsoir, bonsoir ! Je suis Barbe-Neige. Ce n'était pas un accident, hein. C'était… un atterrissage. Voilà.",()=>actEmote("barbeneige","goutte")],
       ["ramure","sad","Patron ! C'est ma faute, je n'aurais jamais dû me perdre.",()=>actEmote("ramure","goutte")],
       ["barbeneige","sad","Le patin est cassé net. Et il me reste toutes les maisons de la forêt à livrer avant minuit.",()=>actPose("barbeneige","sit","sad")],
       ["petitpois","sad","Alors… il n'y aura pas de Noël ?",()=>actEmote("petitpois","goutte")],
