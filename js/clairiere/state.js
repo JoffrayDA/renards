@@ -6,7 +6,7 @@ const REJ=new URLSearchParams(location.search).get("rejouer");
 if(REJ){const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===KEY||k===CAFEKEY||k===BOURSE_KEY)return;return set.call(this,k,v)}}
 deliverGifts(); // les cadeaux du calendrier de l'Avent (bourse.js), avant de lire la sauvegarde
 let R=load(KEY);
-if(REJ&&R&&R.ver===2){const NO=["grelot","ramure","paillette","balafre","barbeneige"],i=NO.indexOf(REJ);R.beat=R.beat||{};R.beat[REJ]=0;
+if(REJ&&R&&R.ver===2){const NO=["grelot","ramure","paillette","balafre","barbeneige","adieux"],i=NO.indexOf(REJ);R.beat=R.beat||{};R.beat[REJ]=0;
   if(i>=0){NO.slice(0,i).forEach(k=>R.beat[k]=99);NO.slice(i+1).forEach(k=>R.beat[k]=0);R.res.grelot=R.res.grelot||{at:Date.now(),h:0,pet:""}}
   // la bataille de neige : la boule du record a roulé ses 24 h, la bande n'est pas encore là
   if(REJ==="balafre"){R.res.bouleneige=R.res.bouleneige||{at:Date.now(),h:0,pet:""};["balafre","filou","radar"].forEach(k=>delete R.res[k]);
