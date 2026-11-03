@@ -568,7 +568,7 @@ function noelObst(){const L=[];if(bigOn()&&noelOn()&&!recordWait())L.push({x:BAL
   // la boule du record aussi (un renard de la bande la traversait en montant au perron)
   if(recordWait()&&!R.recordGone&&ballEl){const r=ballR();if(r>0)L.push({x:BALL.x,y:BALL.y-6,rx:r+16,ry:Math.max(14,r*.42)})}
   if(heapEl&&R.heapAt)L.push({x:R.heapAt.x,y:R.heapAt.y-6,rx:R.heapAt.r*1.25+14,ry:24});return L.concat(sleighObst())}
-function drawHeap(grow){const h=R.heapAt,show=noelOn()&&R.recordGone&&!R.recordBig&&!!h;
+function drawHeap(grow){const h=R.heapAt,show=noelOn()&&R.recordGone&&!R.recordBig&&!!h&&!storyDone("balafre"); // le tas n'existe qu'entre la casse et la boule refaite (Joffray)
   if(!show){if(heapEl){heapEl.remove();heapEl=null}return}
   if(!heapEl){heapEl=document.createElement("div");heapEl.className="sheap";$("actors").appendChild(heapEl)}
   const r=h.r;heapEl.style.cssText=pc(h.x,h.y+2)+`;width:${(r*2.6)/W*100}%;z-index:${h.y-6}`;

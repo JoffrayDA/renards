@@ -442,3 +442,6 @@ h1 .la{font-style:normal}
 /* le chrono des petits jeux (games.js, A.clock) */
 .pclock{position:absolute;left:12%;right:12%;bottom:14px;height:12px;border-radius:99px;background:#fffaf2;border:2.4px solid #5b4250;overflow:hidden;z-index:5;pointer-events:none}
 .pclock i{display:block;height:100%;width:100%;background:#f2a35c;border-radius:99px;transition:width .1s linear}.pclock.low i{background:#e0505a;animation:plow .5s ease-in-out infinite alternate}@keyframes plow{to{opacity:.55}}
+
+/* pendant un petit jeu, la clairière dessous n'est plus dessinée (games.js) */
+.scene.gaming>:not(#play){visibility:hidden}

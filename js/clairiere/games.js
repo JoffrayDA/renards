@@ -50,7 +50,9 @@ function playGame(g,done){
   const sv=el.firstChild,sayEl=el.lastChild;
   // une petite musique guillerette pendant le jeu (pas pour la pêche, qui reste calme), et des bruitages (music.js)
   const music=!g.free&&g.k!=="fish";if(music)MUSIC.want("jeu");
-  const back=()=>{if(music)MUSIC.want(typeof clMusic==="function"?clMusic():"foret")};
+  // la clairière, cachée derrière le jeu, n'est plus dessinée pendant qu'on joue (les jeux ramaient : luge, tournée)
+  $("scene").classList.add("gaming");
+  const back=()=>{$("scene").classList.remove("gaming");if(music)MUSIC.want(typeof clMusic==="function"?clMusic():"foret")};
   const api={sv,won:false,tap:null,
     sfx:(k,n)=>{try{MUSIC.sfx(k,n)}catch(e){}},
     say:t=>{sayEl.textContent=t;replay(sayEl,"pop")},
@@ -661,7 +663,7 @@ const GAMES={
     // une luge en bois, le renard assis dessus, de dos, son écharpe qui flotte au vent
     const sled=(id,col)=>`<g><ellipse cy="12" rx="36" ry="8" fill="#9fb3cc" opacity=".45"/><path d="M-32 8 H30 Q40 8 40 -2" fill="none" stroke="#b07a4e" stroke-width="4.5" stroke-linecap="round"/><path d="M-32 8 H30 Q40 8 40 -2" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round" opacity=".5"/>`
       +`<rect x="-30" y="-6" width="60" height="12" rx="5" fill="${col}" ${PS}/><path d="M-22 0 H22" stroke="#fff" stroke-width="2" opacity=".5"/>`
-      +`<g class="lscarf"><path d="M-6 -36 q-18 4 -30 14 q10 2 26 -6Z" fill="${col}" ${PS}/></g>${foxAt(id,0,-2,64,{pose:"back"})}</g>`;
+      +`<g class="lscarf"><path d="M-6 -36 q-18 4 -30 14 q10 2 26 -6Z" fill="${col}" ${PS}/></g>${foxAt(id,0,-2,64,{pose:"back"}).replace(/ ?filter="url\(#wobble\)"/g,"")}</g>`; // sans le trait tremblé : il ramait en bougeant
     const tree=k=>`<g transform="scale(${k})"><ellipse cy="4" rx="24" ry="6" fill="#9fb3cc" opacity=".4"/><rect x="-4" y="-10" width="8" height="12" fill="#8a5a3a" stroke="${INK}" stroke-width="2"/><path d="M0 -64 L21 -31 H11 L27 -8 H-27 L-11 -31 H-21Z" fill="#4f8a5a" ${PS}/><path d="M-11 -33 Q0 -27 11 -33 M-19 -10 Q0 -3 19 -10 M-4 -54 Q0 -51 4 -54" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></g>`;
     const rock=`<g><ellipse cy="6" rx="22" ry="6" fill="#9fb3cc" opacity=".4"/><path d="M-19 5 Q-21 -12 -4 -17 Q15 -19 19 -2 Q21 7 6 8 Q-8 9 -19 5Z" fill="#cfc6c0" ${PS}/><path d="M-14 -6 Q-6 -20 10 -15 Q2 -13 -14 -6Z" fill="#fff"/></g>`;
     const flags=gap=>`<g><path d="M${-gap/2} -2 Q0 6 ${gap/2} -2" fill="none" stroke="#f2c45a" stroke-width="2" stroke-dasharray="3 4" opacity=".8"/>${[-1,1].map(s=>`<g transform="translate(${s*gap/2} 0)"><ellipse cy="3" rx="6" ry="2" fill="#9fb3cc" opacity=".5"/><path d="M0 3 V-36" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M0 -36 l${-s*18} 7 l${s*18} 7Z" fill="${s<0?"#e0505a":"#5aa0dc"}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/></g>`).join("")}</g>`;
@@ -681,10 +683,13 @@ const GAMES={
     drag(A,pt=>{if(st==="play")tx=Math.max(64,Math.min(336,pt.x))});
     const port=(id,x,y,s)=>`<svg x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}" viewBox="8 -8 104 104">${foxArt(FOX[id],{portrait:1,expr:"joy"}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>`;
     // en haut : la piste en petit, les deux têtes qui avancent vers le drapeau
-    const hud=()=>{const Y=-EXT+150,X=f=>(64+262*Math.min(1,f/D)).toFixed(1);
-      gUi.innerHTML=`<rect x="44" y="${Y-22}" width="312" height="44" rx="22" fill="#fffaf2" stroke="${INK}" stroke-width="2.4"/><path d="M64 ${Y} H330" stroke="#cfdbea" stroke-width="6" stroke-linecap="round"/>`
-        +`<g transform="translate(336 ${Y})"><path d="M0 10 V-14" stroke="${INK}" stroke-width="2.4"/><path d="M0 -14 h14 v9 h-14Z" fill="${INK}"/><rect x="0" y="-14" width="7" height="4.5" fill="#fff"/><rect x="7" y="-9.5" width="7" height="4.5" fill="#fff"/></g>`
-        +port(rival,X(rp),Y,30)+port(me,X(p),Y,34)};
+    // la petite piste en haut est dessinée une fois ; seules les deux têtes avancent (la redessiner à chaque image faisait ramer)
+    const HY=-EXT+150,HX=f=>(64+262*Math.min(1,f/D)).toFixed(1);
+    gUi.innerHTML=`<rect x="44" y="${HY-22}" width="312" height="44" rx="22" fill="#fffaf2" stroke="${INK}" stroke-width="2.4"/><path d="M64 ${HY} H330" stroke="#cfdbea" stroke-width="6" stroke-linecap="round"/>`
+      +`<g transform="translate(336 ${HY})"><path d="M0 10 V-14" stroke="${INK}" stroke-width="2.4"/><path d="M0 -14 h14 v9 h-14Z" fill="${INK}"/><rect x="0" y="-14" width="7" height="4.5" fill="#fff"/><rect x="7" y="-9.5" width="7" height="4.5" fill="#fff"/></g>`
+      +`<g id="lhR">${port(rival,0,HY,30)}</g><g id="lhM">${port(me,0,HY,34)}</g>`;
+    const hR=gUi.querySelector("#lhR"),hM=gUi.querySelector("#lhM");
+    const hud=()=>{hR.setAttribute("transform",`translate(${HX(rp)} 0)`);hM.setAttribute("transform",`translate(${HX(p)} 0)`)};
     const reset=()=>{st="count";t=0;px=tx=200;v=180;boost=0;spin=0;p=0;rp=0;objs.forEach(o=>o.el.remove());objs=[];next=.9;hud();place(0);
       A.say(g.say||`Glisse le doigt pour guider ${FOX[me].name}. Passe entre les fanions, évite les sapins et les rochers !`);
       A.later(()=>{A.cheer("3");A.sfx("tap")},700);A.later(()=>{A.cheer("2");A.sfx("tap")},1500);A.later(()=>{A.cheer("1");A.sfx("tap")},2300);
