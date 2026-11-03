@@ -100,6 +100,7 @@ const SCAPE={
     fields:["#eef3fa","#dfe8f4","#f6f9fd"],hedge:"#9fb2c8",path:"#c9d6e6",fence:"#fbfdff",fx:"neige",night:1}
 };
 function outsideSVG(sea){
+  if(sea==="italie")return outsideIt(); // la Petite Italie (italie.js)
   if(HWV())return outsideOld(sea);
   const P=SCAPE[sea],R=rng(11),f=n=>n.toFixed(1),l=(w=2.4)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`,fx=[];
   const g=(id,a,b,x2=0,y2=1)=>`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
@@ -251,16 +252,16 @@ function roomSVG(night){
   s+=kJarF(40,60,16,24,"#f2b8c4","#a8785a")+kJarF(60,66,15,18,"#f7d77a","#a8785a")+kBooks(37,146,["#9ec3ef","#f59a8b","#a9d68f","#f6a5c8"]);
   // étagère de droite : tourne-disque (ou livres), et une plante
   s+=kShelf(518,84,50)+kShelf(518,146,50);
-  if(S.own.disque)s+=`<rect x="522" y="66" width="42" height="18" rx="3" fill="url(#kWood)" ${BO}/><ellipse cx="538" cy="66" rx="13" ry="4.2" fill="#3d2a35" ${BO}/><ellipse cx="538" cy="65.4" rx="8" ry="2.4" fill="none" stroke="#6a5a66" stroke-width="1"/><circle cx="538" cy="66" r="2.2" fill="#f47f9a"/><path d="M558 66 L551 55" stroke="${INK}" stroke-width="2.6"/><circle cx="558" cy="66" r="2" fill="#d9c8b4" stroke="${INK}" stroke-width="1.4"/>`;
+  if(OWN().disque)s+=`<rect x="522" y="66" width="42" height="18" rx="3" fill="url(#kWood)" ${BO}/><ellipse cx="538" cy="66" rx="13" ry="4.2" fill="#3d2a35" ${BO}/><ellipse cx="538" cy="65.4" rx="8" ry="2.4" fill="none" stroke="#6a5a66" stroke-width="1"/><circle cx="538" cy="66" r="2.2" fill="#f47f9a"/><path d="M558 66 L551 55" stroke="${INK}" stroke-width="2.6"/><circle cx="558" cy="66" r="2" fill="#d9c8b4" stroke="${INK}" stroke-width="1.4"/>`;
   else s+=`<path d="M526 84 h26 v-6 h-26z M528 78 h22 v-6 h-22z M530 72 h18 v-6 h-18z" fill="#fff" stroke="${INK}" stroke-width="2"/>`;
-  s+=S.own.plantes?potSVG(543,146,.85):kBooks(524,146,["#c9b8f2","#f2c75c","#9ec3ef","#f59a8b"]);
+  s+=OWN().plantes?potSVG(543,146,.85):kBooks(524,146,["#c9b8f2","#f2c75c","#9ec3ef","#f59a8b"]);
   // lampe suspendue en laiton, et son cône de lumière
   s+=`<path d="M300 ${GY0} V36" stroke="${INK}" stroke-width="2.4"/><path d="M300 52 L${night?200:236} ${GY1} H${night?400:364}Z" fill="url(#kCone)"/><path d="M280 52 Q300 26 320 52Z" fill="url(#kBrass)" ${BO}/><path d="M287 47 Q296 36 304 36" fill="none" stroke="#fff6d0" stroke-width="2" stroke-linecap="round"/><ellipse cx="300" cy="53" rx="9" ry="3" fill="#fff6c8"/>`;
-  if(S.own.plantes){
+  if(OWN().plantes){
     s+=potSVG(GX0+26,GY1,1)+potSVG(GX1-26,GY1,1);
     s+=`<path d="M140 ${GY0} L150 40 L160 ${GY0}" fill="none" stroke="${INK}" stroke-width="2"/><path d="M140 40 H160 L156 52 H144Z" fill="#fff5e8" ${BO}/><path d="M142 50 q-6 14 -2 28 M150 52 q0 16 4 30 M158 50 q6 12 2 24" fill="none" stroke="#6fae5e" stroke-width="4" stroke-linecap="round"/>${[[140,64],[152,70],[160,62],[139,76],[154,80]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="3.4" ry="2" fill="#8fca7a" stroke="${INK}" stroke-width="1"/>`).join("")}`;
   }
-  if(S.own.guirlande){s+=`<path d="M-10 ${GY0} Q150 62 300 30 T610 ${GY0}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+  if(OWN().guirlande){s+=`<path d="M-10 ${GY0} Q150 62 300 30 T610 ${GY0}" fill="none" stroke="${INK}" stroke-width="2"/>`;
     for(let i=0;i<14;i++){const x=10+i*44,t=x<300?x/300:(x-300)/300,y=x<300?GY0+(30-GY0)*t+24*Math.sin(Math.PI*t):30+(GY0-30)*t-14*Math.sin(Math.PI*t);
       const c=(HWV()?["#f2a35c","#b48ae0","#f7d77a","#8fca7a"]:["#f2c75c","#f47f9a","#9ec3ef","#8fca7a"])[i%4];s+=`<circle cx="${x}" cy="${y+6}" r="${night?14:10}" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><rect x="${x-2.6}" y="${y-1}" width="5.2" height="3.6" rx="1" fill="#9a8f88" stroke="${INK}" stroke-width="1.2"/><ellipse cx="${x}" cy="${y+6}" rx="4.5" ry="6" fill="${c}" stroke="${INK}" stroke-width="2"/><ellipse cx="${x-1.4}" cy="${y+4}" rx="1.4" ry="2" fill="#fff" opacity=".7"/>`}}
   if(HWV()){
@@ -278,7 +279,7 @@ function roomSVG(night){
       +[[-12,-24,"#e0505a"],[10,-30,"#f2c45a"],[-4,-48,"#9ec3ef"],[16,-18,"#f6a5b4"],[2,-60,"#e0505a"]].map(([dx,dy,c])=>`<circle cx="${tx+dx}" cy="${ty+dy}" r="3.6" fill="${c}" stroke="${INK}" stroke-width="1.4"/>`).join("")
       +`<path d="M${tx} ${ty-90} l3 6.4 7 .8 -5.2 4.8 1.4 7 -6.2 -3.6 -6.2 3.6 1.4 -7 -5.2 -4.8 7 -.8z" fill="#ffe680" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`;
   }
-  if(S.own.lanternes)[[232,"#f59a8b"],[368,"#f2c75c"],[440,"#c9b8f2"]].forEach(([x,c],i)=>{const y=i===1?58:48;s+=`<path d="M${x} ${GY0} V${y-14}" stroke="${INK}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="22" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><ellipse cx="${x}" cy="${y}" rx="12" ry="14" fill="${c}" ${BO}/><path d="M${x} ${y-14} V${y+14} M${x-6} ${y-12} Q${x-10} ${y} ${x-6} ${y+12} M${x+6} ${y-12} Q${x+10} ${y} ${x+6} ${y+12}" fill="none" stroke="${INK}" stroke-width="1.5"/><ellipse cx="${x-4}" cy="${y-5}" rx="2.4" ry="4" fill="#fff" opacity=".55"/><rect x="${x-5}" y="${y-17}" width="10" height="4" rx="1.4" fill="#5b4250"/><rect x="${x-5}" y="${y+13}" width="10" height="4" rx="1.4" fill="#5b4250"/>`});
+  if(OWN().lanternes)[[232,"#f59a8b"],[368,"#f2c75c"],[440,"#c9b8f2"]].forEach(([x,c],i)=>{const y=i===1?58:48;s+=`<path d="M${x} ${GY0} V${y-14}" stroke="${INK}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="22" fill="${c}" opacity="${night?.6:.35}" filter="url(#soft)"/><ellipse cx="${x}" cy="${y}" rx="12" ry="14" fill="${c}" ${BO}/><path d="M${x} ${y-14} V${y+14} M${x-6} ${y-12} Q${x-10} ${y} ${x-6} ${y+12} M${x+6} ${y-12} Q${x+10} ${y} ${x+6} ${y+12}" fill="none" stroke="${INK}" stroke-width="1.5"/><ellipse cx="${x-4}" cy="${y-5}" rx="2.4" ry="4" fill="#fff" opacity=".55"/><rect x="${x-5}" y="${y-17}" width="10" height="4" rx="1.4" fill="#5b4250"/><rect x="${x-5}" y="${y+13}" width="10" height="4" rx="1.4" fill="#5b4250"/>`});
   return s;
 }
 // mélange une couleur avec du blanc (k = part de blanc), pour éclairer le haut des collines
@@ -290,7 +291,7 @@ function bgSVG(){
   o.defs+=hg("kH0",H[0])+hg("kH1",H[1])+`<linearGradient id="kMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity="${night?.12:.45}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;
   o.st=o.st.replace(`fill="${H[0]}"`,`fill="url(#kH0)"`).replace(`fill="${H[1]}"`,`fill="url(#kH1)"`);
   o.st=o.st.replace(/(<path d="M0 172 Q130 148)/,`<rect x="0" y="128" width="600" height="44" fill="url(#kMist)"/>$1`);
-  return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${o.defs}${hdDefs(night)}</defs><g filter="url(#wobble)">${o.st}</g>${o.an}<g filter="url(#wobble)">${roomSVG(night)}</g><rect width="600" height="375" fill="url(#kVig)"/><rect width="600" height="375" fill="url(#kGrain)"/></svg>${S.own.disque?`<span class="notes">♪</span><span class="notes" style="left:90%;animation-delay:1.2s">♫</span>`:""}`;
+  return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${o.defs}${hdDefs(night)}</defs><g filter="url(#wobble)">${o.st}</g>${o.an}<g filter="url(#wobble)">${roomSVG(night)}</g><rect width="600" height="375" fill="url(#kVig)"/><rect width="600" height="375" fill="url(#kGrain)"/></svg>${OWN().disque?`<span class="notes">♪</span><span class="notes" style="left:90%;animation-delay:1.2s">♫</span>`:""}`;
 }
 function counterSVG(){
   const C=styleOf("counter");
@@ -302,15 +303,15 @@ function counterSVG(){
   s+=`<ellipse cx="570" cy="248" rx="26" ry="4" fill="#3d2a35" opacity=".15"/><rect x="548" y="214" width="44" height="34" rx="5" fill="#f59a8b" ${BO}/><rect x="548" y="214" width="44" height="10" rx="5" fill="#fff" opacity=".25"/><rect x="554" y="220" width="32" height="10" rx="2" fill="#fff5e8" stroke="${INK}" stroke-width="2"/>${[0,1,2].map(i=>`<rect x="${556+i*10}" y="234" width="7" height="5" rx="1.4" fill="#fff5e8" stroke="${INK}" stroke-width="1.2"/>`).join("")}<rect x="560" y="204" width="22" height="12" rx="3" fill="#d8ccd4" stroke="${INK}" stroke-width="2"/>`;
   s+=`<ellipse cx="30" cy="248" rx="24" ry="4" fill="#3d2a35" opacity=".15"/><rect x="6" y="243" width="48" height="5" rx="2" fill="#fffaf2" ${BO}/><circle cx="30" cy="236" r="9" fill="#f6a5c8" stroke="${INK}" stroke-width="2"/><path d="M24 233 q6 -5 12 0" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="30" cy="226" r="2" fill="#e2445e" stroke="${INK}" stroke-width="1"/><path d="M10 246 Q10 214 30 214 Q50 214 50 246Z" fill="rgba(220,240,255,.55)" ${BO}/><path d="M16 238 Q16 222 28 218" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".85"/><circle cx="30" cy="212" r="3" fill="#d8ccd4" stroke="${INK}" stroke-width="1.6"/>`;
   s+=`<rect x="508" y="226" width="18" height="22" rx="4" fill="url(#kJar2)" ${BO}/><path d="M512 230 v12" stroke="#fff" stroke-width="2" opacity=".8" stroke-linecap="round"/><circle cx="517" cy="242" r="3.4" fill="#f2c45a" stroke="${INK}" stroke-width="1.2"/><circle cx="520" cy="238" r="3" fill="#f2c45a" stroke="${INK}" stroke-width="1.2"/>`;
-  if(S.own.coussins)[100,300,500].forEach(x=>s+=`<ellipse cx="${x}" cy="378" rx="24" ry="4" fill="#3d2a35" opacity=".15"/><rect x="${x-4}" y="338" width="8" height="40" fill="#a8785a" ${BO}/><rect x="${x-30}" y="322" width="60" height="18" rx="9" fill="#c9b8f2" ${BO}/><path d="M${x-24} 334 h48" stroke="#3d2a35" stroke-width="2" opacity=".15"/><ellipse cx="${x}" cy="322" rx="30" ry="7" fill="#ffc7d8" ${BO}/><ellipse cx="${x-8}" cy="320" rx="12" ry="2.4" fill="#fff" opacity=".6"/>`);
-  if(S.own.fauteuils)[[44,1],[556,-1]].forEach(([x,f])=>s+=`<rect x="${x-30}" y="318" width="60" height="40" rx="14" fill="#f6a5b4" ${BO}/><path d="M${x-22} 324 q22 -4 44 0" fill="none" stroke="#fff" stroke-width="2" opacity=".55"/><rect x="${x-38}" y="332" width="16" height="34" rx="7" fill="#f59a8b" ${BO}/><rect x="${x+22}" y="332" width="16" height="34" rx="7" fill="#f59a8b" ${BO}/><rect x="${x-22}" y="340" width="44" height="20" rx="6" fill="#ffd6e0" ${BO}/><circle cx="${x}" cy="350" r="2" fill="#f59a8b" stroke="${INK}" stroke-width="1"/>`);
+  if(OWN().coussins)[100,300,500].forEach(x=>s+=`<ellipse cx="${x}" cy="378" rx="24" ry="4" fill="#3d2a35" opacity=".15"/><rect x="${x-4}" y="338" width="8" height="40" fill="#a8785a" ${BO}/><rect x="${x-30}" y="322" width="60" height="18" rx="9" fill="#c9b8f2" ${BO}/><path d="M${x-24} 334 h48" stroke="#3d2a35" stroke-width="2" opacity=".15"/><ellipse cx="${x}" cy="322" rx="30" ry="7" fill="#ffc7d8" ${BO}/><ellipse cx="${x-8}" cy="320" rx="12" ry="2.4" fill="#fff" opacity=".6"/>`);
+  if(OWN().fauteuils)[[44,1],[556,-1]].forEach(([x,f])=>s+=`<rect x="${x-30}" y="318" width="60" height="40" rx="14" fill="#f6a5b4" ${BO}/><path d="M${x-22} 324 q22 -4 44 0" fill="none" stroke="#fff" stroke-width="2" opacity=".55"/><rect x="${x-38}" y="332" width="16" height="34" rx="7" fill="#f59a8b" ${BO}/><rect x="${x+22}" y="332" width="16" height="34" rx="7" fill="#f59a8b" ${BO}/><rect x="${x-22}" y="340" width="44" height="20" rx="6" fill="#ffd6e0" ${BO}/><circle cx="${x}" cy="350" r="2" fill="#f59a8b" stroke="${INK}" stroke-width="1"/>`);
   const g=(id,a,b,o1,o2)=>`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}" stop-opacity="${o1}"/><stop offset="1" stop-color="${b}" stop-opacity="${o2}"/></linearGradient>`;
   return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${g("kTop2","#ffffff","#3d2a35",.3,.15)}${g("kPanel2","#3d2a35","#ffffff",.12,.12)}<linearGradient id="kJar2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8f4fb"/><stop offset="1" stop-color="#b9d8ea"/></linearGradient></defs><g filter="url(#wobble)">${s}</g></svg>`;
 }
 function renderDecor(){
   $("bgl").innerHTML=bgSVG();$("counter").innerHTML=counterSVG();
   // le compagnon : assis pendant le service, endormi quand le café est fermé
-  $("helper").innerHTML=S.own.serveur?`<div class="buddy" style="position:absolute;left:3%;bottom:30%;width:11%"><div>${foxSVG({...FOX[buddy()],scale:1},{pose:G&&G.run?"sit":"sleep"})}</div></div>`:"";
+  $("helper").innerHTML=OWN().serveur?`<div class="buddy" style="position:absolute;left:3%;bottom:30%;width:11%"><div>${foxSVG({...FOX[buddy()],scale:1},{pose:G&&G.run?"sit":"sleep"})}</div></div>`:"";
 }
 // petit saut de joie du compagnon (combo, service)
 function buddyHop(){const b=document.querySelector("#helper .buddy>div");if(!b)return;b.classList.remove("hop");void b.offsetWidth;b.classList.add("hop")

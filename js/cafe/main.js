@@ -38,12 +38,14 @@ $("open-menu").onclick=openMap;
 function onAct(a){
   if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="noel"){const yr=new Date().getFullYear();if(S.noelIntro!==yr){S.noelIntro=yr;save();noelIntro(noelSheet)}else noelSheet()}else if(a==="noelintro"){closeSheet();noelIntro(noelSheet)}else if(a==="costumes")costumesSheet();else if(a==="hwintro"){closeSheet();hwIntro(hwSheet)}else if(a==="quests")questsSheet();
   else if(a==="map")openMap();
+  else if(a==="italie")goWorld("italie");else if(a==="monde1")goWorld("");else if(a==="lorenzo")lorenzoIntro();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
 }
 $("map").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.day)daySheet(+b.dataset.day);else if(b.dataset.gate)gateSheet(+b.dataset.gate);else if(b.dataset.guest)guestSheet(+b.dataset.guest);else if(b.dataset.act)onAct(b.dataset.act);
+  if(b.dataset.itday)itDaySheet(+b.dataset.itday);else if(b.dataset.itguest!==undefined)itGuestSheet();
+  else if(b.dataset.day)daySheet(+b.dataset.day);else if(b.dataset.gate)gateSheet(+b.dataset.gate);else if(b.dataset.guest)guestSheet(+b.dataset.guest);else if(b.dataset.act)onAct(b.dataset.act);
 });
 $("mscroll").addEventListener("scroll",mapLabel,{passive:true});
 $("sheet").addEventListener("click",e=>{
@@ -59,11 +61,13 @@ $("sheet").addEventListener("click",e=>{
   if(b.dataset.nnplay){closeSheet();newNoel(+b.dataset.nnplay);return}
   if(b.dataset.night){nightSheet(+b.dataset.night);return}
   if(b.dataset.nplay){closeSheet();newNight(+b.dataset.nplay);return}
-  if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<nx.c||(nx.from&&S.day<nx.from))return;S.coins-=nx.c;S.own[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
+  if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<upPrice(nx)||upLocked(nx))return;S.coins-=upPrice(nx);OWN()[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
   if(b.dataset.sbuy||b.dataset.style){const [k,id]=(b.dataset.sbuy||b.dataset.style).split(":"),it=STYLE[k].items.find(x=>x.id===id),key=`st-${k}-${id}`;
     if(b.dataset.sbuy){if(it.cb){if(S.candy<it.cb)return;S.candy-=it.cb}else{if(S.coins<it.c)return;S.coins-=it.c}S.own[key]=1;toast(`${it.name} : acheté !`)}
     S.style=S.style||{};S.style[k]=id;save();if(k==="acc"){const m=meB();m.a=id;if(id)m.own["a:"+id]=1;mePut(m)} // la page « C'est toi » suit (js/moi.js)
     renderDecor();renderHud();if(MAPL&&!$("map").hidden)renderMap();shop.y=$("sheet-in").scrollTop;shop();return}
+  if(b.dataset.itplay){closeSheet();newDay(+b.dataset.itplay);return}
+  if(b.dataset.itday){itDaySheet(+b.dataset.itday);return}
   if(b.dataset.play){closeSheet();newDay(+b.dataset.play);return}
   if(b.dataset.day){daySheet(+b.dataset.day);return}
   if(b.dataset.act)onAct(b.dataset.act);
@@ -80,5 +84,5 @@ function loop(ts){
 $("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;$("ic-b").innerHTML=bellSVG;
 if(HW)$("hwbtn").hidden=false;
 if(xmasDay())$("noelbtn").hidden=false; // les nuits de Noël (noelnuits.js)
-SEA=chapOf(curDay()).sea;renderDecor();render();requestAnimationFrame(loop);
+SEA=seaNow();renderDecor();render();requestAnimationFrame(loop);
 openMap();

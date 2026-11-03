@@ -136,7 +136,7 @@ function mapSVG(L){
   if(xmasDay()&&(bourse().noel||{}).houx)s+=`<circle cx="200" cy="${cy-1}" r="7.4" fill="none" stroke="#3f6a4f" stroke-width="5"/><circle cx="200" cy="${cy-1}" r="7.4" fill="none" stroke="#5f9468" stroke-width="2.4" stroke-dasharray="2 3"/>${[[-5,-5],[5,-4],[0,6]].map(([dx,dy])=>`<circle cx="${200+dx}" cy="${cy-1+dy}" r="1.8" fill="#e0505a"/>`).join("")}<path d="M200 ${cy+6} l-4 4 v-6Z M200 ${cy+6} l4 4 v-6Z" fill="#e0505a" stroke="${INK}" stroke-width="1"/>`;
   gates.forEach(g=>s+=gateSVG(g.x,Y(g.u),gateOpen(CHAP[g.i]),CHAP[g.i]));
   const e=way[way.length-1],ey=Y(e.u);
-  s+=`<rect x="${e.x-4}" y="${ey-30}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${e.x-48} ${ey-56} H${e.x+40} L${e.x+52} ${ey-44} L${e.x+40} ${ey-32} H${e.x-48}Z" fill="#fffaf2" ${BO}/><text x="${e.x}" y="${ey-39}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">À suivre…</text>`;
+  s+=`<rect x="${e.x-4}" y="${ey-30}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${e.x-48} ${ey-56} H${e.x+40} L${e.x+52} ${ey-44} L${e.x+40} ${ey-32} H${e.x-48}Z" fill="#fffaf2" ${BO}/><text x="${e.x}" y="${ey-39}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${typeof itOpen==="function"&&itOpen()?"Petite Italie":"À suivre…"}</text>`;
   return `<svg viewBox="0 0 ${MW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
 }
 let MAPL=null;
@@ -153,16 +153,20 @@ function renderMap(){
   guests.forEach(g=>{const c=CHAP[g.i],ok=S.guest[c.guest];h+=`<button class="mguest${ok?" ok":""}" style="${pc(g.x,g.u)}" data-guest="${g.i}" type="button" aria-label="Invité d'honneur ${c.name}">${foxSVG(FOX[c.guest],{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?FOX[c.guest].name:`${chapStars(c)}/30 ★`}</em></button>`});
   if(HW)h+=`<button class="mhw" style="${pc(322,104)}" data-act="hw" type="button" aria-label="Les nuits d'Halloween"><svg viewBox="0 0 90 70" aria-hidden="true"><g stroke="${INK}">${ghostie(66,40,.8)}${jack(36,66,1.25)}${jack(66,68,.7)}</g></svg><em>Nuits ${Object.values(S.hwStars).filter(x=>x).length} / 5</em></button>`;
   if(xmasDay())h+=`<button class="mhw mnoel" style="${pc(HW?78:322,104)}" data-act="noel" type="button" aria-label="Les nuits de Noël">${sapinMini()}<em>Noël ${Object.values(S.noelStars).filter(x=>x).length} / ${NOEL_NIGHTS.length}</em></button>`;
+  // le panneau du haut mène à la Petite Italie (italie.js) une fois le jour 40 réussi
+  {const e=L.way[L.way.length-1];h+=`<button class="mnext" style="${pc(e.x,e.u+44)}" data-act="italie" type="button" aria-label="Petite Italie"></button>`}
   h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG({...FOX.roussette,acc:styleOf("acc").id||undefined},{pose:"happy"})}</div>`;
   const w=$("mwrap");w.style.aspectRatio=`${MW}/${H}`;w.innerHTML=h;
   mapLabel();
 }
 function mapLabel(){
-  if(!MAPL)return;const sc=$("mscroll"),w=$("mwrap"),H=MAPL.H;
+  if(!MAPL||WORLD)return;const sc=$("mscroll"),w=$("mwrap"),H=MAPL.H;
   const u=H-(sc.scrollTop+sc.clientHeight/2)/w.offsetHeight*H,b=MAPL.bands.find(b=>u>=b.lo&&u<b.hi)||MAPL.bands[0];
   $("mchap").textContent=`${b.c.name} · ${chapStars(b.c)} / 30 ★`;$("mstars").textContent=`★ ${starSum()}`;
 }
 function openMap(){
+  if(WORLD)return openMapIt(); // la Petite Italie (italie.js)
+  document.querySelector(".mtt b").textContent="Kitsune Café";
   MUSIC.want(HW?"fantomes":xmasDay()?"noel":"ukulele");
   closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";
   if(!G||!G.run){const se=chapOf(curDay()).sea;if(se!==SEA){SEA=se;renderDecor();dirty=true}}

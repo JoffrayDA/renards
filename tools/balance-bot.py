@@ -13,6 +13,7 @@ Usage     : python tools/balance-bot.py [jours...]   (par défaut : une sélecti
             python tools/balance-bot.py --economie       (pièces d'un bon joueur face aux achats du kit)
             python tools/balance-bot.py --nuits          (propose la table NIGHTS des Nuits d'Halloween)
             python tools/balance-bot.py --noel           (propose la table NOEL_NIGHTS des 24 Nuits de Noël)
+            python tools/balance-bot.py --italie         (propose la table IT_DAYS des 20 journées de la Petite Italie)
 
 Une journée tire ses commandes avec une graine propre au jour : le même jour se rejoue à l'identique,
 donc une seule partie par vitesse suffit pour le calibrage.
@@ -27,9 +28,10 @@ RUNS = 4
 
 # Une journée jouée par le bot : renvoie [recette, objectif, servis, clients, fâchés].
 BOT = """(args) => {
-  const [day, own, react, seed] = args;
-  S.own = own; S.coins = 0; S.guest = {}; S.stars = {}; window.toast = () => {};
-  closeSheet(); newDay(day); if (seed != null) G.rng = rng(day * 7919 + seed + 1);
+  const [day, own, react, seed, world] = args;
+  WORLD = world || ""; if (WORLD) { S.it.own = own; S.it.stars = {}; } else S.own = own;
+  S.coins = 0; S.guest = {}; S.stars = {}; window.toast = () => {};
+  closeSheet(); newDay(day); if (seed != null) G.rng = rng((WORLD ? IT_DAYS[day - 1].base : day) * 7919 + seed + 1);
   const cfg = G.cfg; let t = 0, next = 0, res = null;
   const origEnd = endDay;
   endDay = () => { res = [G.earned, cfg.goal, G.served, cfg.c, G.lost, G.gain]; G = null; };
@@ -76,16 +78,30 @@ def own_for(day):
     return own
 
 
+# Petite Italie : recettes du quartier (IT_DAY dans data.js) et équipement prévu (IT_KIT, lu dans italie.js)
+IT_RECIPES = {"the": 2, "cookie": 4, "choco": 6, "smoothie": 9, "chantilly": 11, "gateau": 13}
+IT_KIT = []
+
+
+def own_it(day):
+    own = {k: 1 for k, d in IT_RECIPES.items() if d < day}
+    for k, n, d in IT_KIT:
+        if d <= day:
+            own[k] = max(own.get(k, 0), n)
+    return own
+
+
 NOEL_BASES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 30, 33, 36, 39]
 CALIB = "--calibrer" in sys.argv
 ECO = "--economie" in sys.argv
 NUITS = "--nuits" in sys.argv
 NOEL = "--noel" in sys.argv
+ITALIE = "--italie" in sys.argv
 PERFECT = 0.25   # réaction du bot « parfait » : ★★★ demande environ 94 % de son score
 STAR3 = 1.8
 GOOD, PASS = 0.8, 1.08   # le bon joueur doit toujours réussir (★), avec un peu de marge
 SEEDS_TRIED = 16
-days = list(range(1, 41)) if CALIB or ECO or NUITS or NOEL else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
+days = list(range(1, 41)) if CALIB or ECO or NUITS or NOEL or ITALIE else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
 with sync_playwright() as p:
     browser = p.chromium.launch()
     page = browser.new_page()
@@ -94,6 +110,26 @@ with sync_playwright() as p:
     page.goto(PAGE)
     page.wait_for_timeout(500)
     KIT = [tuple(x) for x in page.evaluate("() => KIT")]
+    IT_KIT = [tuple(x) for x in page.evaluate("() => IT_KIT")]
+    if ITALIE:
+        # Petite Italie : même règle que --calibrer, sur les 20 journées du quartier (rythme d'un jour de référence,
+        # recettes et équipement du quartier)
+        bases = page.evaluate("() => IT_DAYS.map(x => x.base)")
+        ids = list(range(1, len(bases) + 1))
+        runs = [[(page.evaluate(BOT, [d, own_it(d), PERFECT, k, "italie"])[0], k) for k in range(SEEDS_TRIED)] for d in ids]
+        med = [sorted(x for x, _ in r)[len(r) // 2] for r in runs]
+        smooth = [sum(med[max(0, i - 2):i + 3]) / len(med[max(0, i - 2):i + 3]) for i in range(len(med))]
+        for i in range(1, len(smooth)):
+            smooth[i] = max(smooth[i], smooth[i - 1])
+        out = []
+        for d, r, t in zip(ids, runs, smooth):
+            good = {k: page.evaluate(BOT, [d, own_it(d), GOOD, k, "italie"])[0] for _, k in r}
+            goal = lambda x: round(min(x[0] / STAR3, good[x[1]] / PASS))
+            e, k = min(r, key=lambda x: abs(goal(x) - t / STAR3) + .25 * abs(x[0] - t) / STAR3)
+            out.append(f"{{base:{bases[d - 1]},seed:{k},goal:{goal((e, k))}}}")
+            print(f"jour {d:>2} (rythme du jour {bases[d - 1]}) : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {good[k]}, objectif {goal((e, k))}", file=sys.stderr, flush=True)
+        print("const IT_DAYS=[" + ",".join(out) + "];")
+        browser.close(); sys.exit()
     if CALIB:
         # Pour chaque jour, on joue plusieurs graines en « parfait ». On lisse la médiane des scores en une courbe
         # qui ne redescend jamais, puis on garde la graine la plus proche de cette courbe : les journées ne sont

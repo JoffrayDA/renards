@@ -1,6 +1,13 @@
 /* Kitsune Café : données du jeu (recettes, saisons, boutique, quêtes, difficulté). */
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
+// Les mondes du Café (03/11/2026) : "" = le premier (4 saisons, 40 journées), "italie" = la Petite Italie (js/cafe/italie.js, 20 journées).
+// Chaque monde a ses journées, ses étoiles et son équipement (S.it pour l'Italie) ; les pièces, les quêtes, les bonus et le style sont communs.
+let WORLD="";
+const OWN=()=>WORLD?S.it.own:S.own;
+// journée où une recette ou une option se gagne, dans le monde affiché (0 = dès le départ)
+const IT_DAY={the:2,cookie:4,choco:6,smoothie:9,chantilly:11,gateau:13,lait:0};
+const recDay=k=>WORLD?IT_DAY[k]||0:(REC[k]||OPTS[k]).day||0;
 // Halloween, la Nuit des citrouilles : du 17 octobre au 2 novembre inclus (?halloween=1 ou =0 pour forcer, pour tester)
 const HW=(()=>{const q=new URLSearchParams(location.search).get("halloween");if(q)return q==="1";const d=new Date(),m=d.getMonth(),j=d.getDate();return(m===9&&j>=17)||(m===10&&j<=2)})();
 const REC={
@@ -18,9 +25,11 @@ const OPTS={
   lait:{name:"Lait",for:["cafe"],price:2,cost:1.2,day:4,desc:"Touche « Lait » pour transformer un café du plateau en café crème."},
   chantilly:{name:"Chantilly",for:["choco","gateau"],price:3,cost:1.8,day:13,desc:"Touche « Chantilly » pour en mettre sur un chocolat chaud ou une part de gâteau du plateau."}
 };
+// en Petite Italie, le lait devient la mousse (cappuccino) et la chantilly la panna
+for(const o in OPTS){const x=OPTS[o];x.nm=x.name;Object.defineProperty(x,"name",{get:()=>WORLD?{lait:"Mousse",chantilly:"Panna"}[o]:x.nm})}
 const itemKey=o=>o.r+(o.o?"+"+o.o:"");
 const baseOf=k=>k.split("+")[0];
-const itemName=k=>{const [r,o]=k.split("+");return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
+const itemName=k=>{const [r,o]=k.split("+");if(WORLD&&o)return o==="lait"&&r==="cafe"?"Cappuccino":`${REC[r].name} panna`;return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
 const itemPrice=k=>{const [r,o]=k.split("+");return REC[r].price+(o?OPTS[o].price:0)};
 const itemCost=k=>{const [r,o]=k.split("+");return REC[r].cost+(o?OPTS[o].cost:0)};
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
@@ -34,7 +43,7 @@ const VAR={
   halloween:{cookie:["Cookie fantôme","cookies fantômes"],smoothie:["Potion de sorcière","potions de sorcière"],gateau:["Gâteau citrouille","parts de gâteau citrouille"]}
 };
 // pendant une Nuit de Noël, la carte de Noël passe avant tout (noelnuits.js)
-const vName=(k,sea=SEA)=>(typeof G!=="undefined"&&G&&G.noel&&VAR.noel&&VAR.noel[k])||(HW&&VAR.halloween[k])||VAR[sea][k]||[REC[k].nm,REC[k].npl];
+const vName=(k,sea=SEA)=>(typeof G!=="undefined"&&G&&G.noel&&VAR.noel&&VAR.noel[k])||(HW&&sea!=="italie"&&VAR.halloween[k])||(VAR[sea]||{})[k]||[REC[k].nm,REC[k].npl];
 for(const k in REC){const r=REC[k];r.nm=r.name;r.npl=r.pl;Object.defineProperty(r,"name",{get:()=>vName(k)[0]});Object.defineProperty(r,"pl",{get:()=>vName(k)[1]})}
 /* La carte : 4 saisons de 10 journées. Une porte demande un total d'étoiles, et un invité d'honneur rejoint le café quand toute la saison est en ★★★. */
 // 03/11/2026, Joffray : saisons décalées de deux (Noisette en Automne, Zaza au Printemps, Flocon en Hiver, Comète la légendaire au jour 40, on finit par l'Été).
@@ -67,7 +76,11 @@ const UPG={
     {id:"lanternes",name:"Lanternes de saison",lv:[{d:"+25 % de pourboires.",c:1400,from:31}]}
   ]
 };
-const lv=id=>+S.own[id]||0;
+const lv=id=>+OWN()[id]||0;
+// en Petite Italie, l'équipement se rachète un peu plus cher, et les achats des dernières saisons arrivent plus tôt
+const IT_FROM={21:8,31:12};
+const upPrice=nx=>WORLD?Math.round(nx.c*1.3/10)*10:nx.c;
+const upLocked=nx=>!!nx.from&&(WORLD?S.it.day<IT_FROM[nx.from]:S.day<nx.from);
 // Bonus à usage unique (S.boost[id] = nombre en réserve) : on les choisit avant une journée, ils ne servent qu'une fois.
 const BOOSTS=[
   {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",c:90,ic:"the"},
@@ -124,10 +137,10 @@ const QUESTS=[
   {k:"candy",n:80,t:"Récolte 80 bonbons",g:30,cdy:1,hw:1},{k:"night",n:2,t:"Réussis 2 Nuits d'Halloween",g:40,cdy:1,hw:1}
 ];
 const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
-const has=k=>(REC[k]&&!REC[k].day)||!!S.own[k];
+const has=k=>!recDay(k)||!!OWN()[k];
 // au menu d'une journée : les recettes gagnées avant elle seulement, même quand on rejoue une ancienne journée
-const onMenu=(k,d=G&&G.run?G.day:curDay())=>has(k)&&!(REC[k].day>=d);
-const optOn=(o,d=G&&G.run?G.day:curDay())=>!!S.own[o]&&OPTS[o].day<d;
+const onMenu=(k,d=G&&G.run?G.day:curDay())=>has(k)&&!(recDay(k)>=d);
+const optOn=(o,d=G&&G.run?G.day:curDay())=>has(o)&&recDay(o)<d;
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 // les six renards sauvages viennent d'abord à la gamelle du refuge ; une fois rencontrés, ils passent au Café en VIP
@@ -147,9 +160,10 @@ const KIT=[["plantes",1,4],["comptoir1",1,6],["double",1,6],["guirlande",1,8],["
 const EQUIP=.02;
 // seulement tant que le jour n'est pas réussi : rejouer un jour avec plus d'équipement doit être plus facile, pas plus dur
 // (la copine de Joffray, niveau 19, ne pouvait plus faire ★★★ au jour 1 : il fallait 70 pièces, le bot parfait en fait 71)
-function equipBonus(d,fresh=!((S.stars||{})[d]>0)){
+function equipBonus(d,fresh=!(((WORLD?S.it.stars:S.stars)||{})[d]>0)){
   if(!fresh)return 0;
-  let n=0;for(const u of ALLUP){const k=Math.max(0,...KIT.filter(x=>x[0]===u.id&&x[2]<=d).map(x=>x[1]));n+=Math.max(0,lv(u.id)-k)}
+  const kit=WORLD?IT_KIT:KIT;
+  let n=0;for(const u of ALLUP){const k=Math.max(0,...kit.filter(x=>x[0]===u.id&&x[2]<=d).map(x=>x[1]));n+=Math.max(0,lv(u.id)-k)}
   return Math.min(.12,EQUIP*n);
 }
 function cfgOf(d){

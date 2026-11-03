@@ -54,6 +54,7 @@ const S=[
   ["Calendrier de l'Avent",[[I+"avent=1","1er décembre","la carte rouge sur l'accueil"],[I+"avent=12","12 décembre","au milieu du mois"],[I+"avent=24","24 décembre","la case double et l'Étoile dorée"]]],
   ["La Clairière",[[C+"heure=7","À l'aube",""],[C+"heure=14","En plein jour",""],[C+"heure=22","La nuit","lanternes, renards qui dorment"],[C+"vite=1","Histoires sans attendre","le renard suivant arrive tout de suite"],
     [C+"voir=maison","La maison","même fermée"],[C+"lite=1","Version iPhone","sans le trait qui tremble"],["jeux.html","Tous les petits jeux","à rejouer à volonté"]]],
+  ["Petite Italie",[[F+"italie=1","La Petite Italie","Monde 2 : ouvre le panneau en haut de la carte, même sans le jour 40"],["italie.html","La maquette","carte et journée dessinées"]]],
   ["Halloween",[[F+"halloween=1","Le Café d'Halloween","Nuits des citrouilles, déguisés"]]],
   ["Planches de dessin",[["noel-poses.html","Les renards de Noël",""],["sauvages.html","Les sauvages et les inconnus",""],["inconnus.html","Les inconnus de la forêt",""],["planche.html","Toutes les poses",""],["viking.html","Le guerrier viking","Ragnar"]]]];
 document.getElementById("out").innerHTML=S.map(([h,L])=>`<h2>${h}</h2>`+L.map(([u,n,w])=>`<a href="${u}">${n}<span>${w}</span></a>`).join("")).join("");

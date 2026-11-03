@@ -2,17 +2,19 @@
 /* ---------- jeu ---------- */
 const spotsN=()=>2+lv("comptoir1");
 const trayCap=()=>3+lv("plateau");
-const patMult=()=>1+[0,.15,.25][lv("plantes")]+(S.own.disque?.1:0)+(S.own.fauteuils?.2:0);
-const tipMult=()=>1+[0,.25,.4][lv("guirlande")]+(S.own.disque?.1:0)+(S.own.lanternes?.25:0);
-const batchOf=k=>REC[k].batch*(S.own.four2?2:1);
+const patMult=()=>1+[0,.15,.25][lv("plantes")]+(OWN().disque?.1:0)+(OWN().fauteuils?.2:0);
+const tipMult=()=>1+[0,.25,.4][lv("guirlande")]+(OWN().disque?.1:0)+(OWN().lanternes?.25:0);
+const batchOf=k=>REC[k].batch*(OWN().four2?2:1);
 let uid=0;
 function newDay(d){
-  const cfg=cfgOf(d),st={};SEA=chapOf(d).sea;
+  // en Petite Italie (italie.js), d est la journée du quartier : rythme d'un jour de référence du premier monde, graine et objectif à elle
+  const it=WORLD==="italie"&&IT_DAYS[d-1];
+  const cfg=it?itCfg(d):cfgOf(d),st={};SEA=it?"italie":chapOf(d).sea;
   const bo={};for(const id of boostSel)if(S.boost[id]>0){S.boost[id]--;bo[id]=1}boostSel.clear();
-  for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:k==="cafe"?1+lv("double"):S.own.machines?2:1},()=>({t:0,busy:0,ready:0}));
+  for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:k==="cafe"?1+lv("double"):OWN().machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:rng(d*7919+SEED[d-1]+1),run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:(S.stars[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
+  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?S.it.stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want("service");
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
@@ -31,11 +33,12 @@ function genOrder(){
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
   const here=new Set(G.cust.map(c=>c.fox));
-  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[]),...(S.noelKeep?[FOX.guimauve]:[])];
+  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[]),...(S.noelKeep?[FOX.guimauve]:[]),...(S.it&&S.it.guest?[FOX.donnalimone]:[])];
   let f,vip=false;
   // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
   if(G.rng()<vipCh){vip=true;const pool=(G.noel?NOELF:HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:[...VIPS,...wildMet()]).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
-  if(!f){vip=false;const pool=REG.slice(0,Math.min(REG.length,4+2*(G.day-1))).filter(x=>!here.has(x.id));f=pick(pool)}
+  // en Petite Italie, les gens du quartier viennent souvent, mêlés aux habitués du premier café
+  if(!f){vip=false;const pool=(G.it?[...ITF_REG,...ITF_REG,...ITF_REG,...REG]:REG.slice(0,Math.min(REG.length,4+2*(G.day-1)))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1)*(G.boost.patience?1.3:1);
   const costume=HW&&!G.noel&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé
@@ -69,7 +72,7 @@ function update(dt){
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte au client le plus pressé ce qui l'attend sur le plateau
   // (la « vitrine » de Joffray) ; il ne touche jamais au plan de travail : sinon c'est de la triche, et on ne comprend plus
-  if(S.own.serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
+  if(OWN().serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
     for(const c of w){let got=0;for(const it of c.order){if(it.done)continue;const k=G.tray.indexOf(itemKey(it));if(k<0)continue;
         flyPastry(itemKey(it),custEl(c),got+1,k);G.tray.splice(k,1);it.done=1;got++;G.arm=null;G.pick=null}
@@ -125,5 +128,5 @@ function tapStation(k,el){
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
 }
 function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
-function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(S.own.four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
+function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(OWN().four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}

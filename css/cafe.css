@@ -212,6 +212,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .gbtn{position:absolute;transform:translate(-50%,-50%);width:100px;height:80px;background:none;border:0;cursor:pointer;border-radius:20px}
 .gbtn.want{animation:gwant 1.3s ease-in-out infinite}
 @keyframes gwant{50%{background:rgba(242,199,92,.35)}}
+.mnext{position:absolute;transform:translate(-50%,-50%);width:120px;height:56px;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mguest{position:absolute;transform:translate(-50%,-80%);width:78px;background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center}
 .mguest svg{width:78px;display:block;filter:drop-shadow(0 4px 0 rgba(91,66,80,.15))}
 .mguest em{font-style:normal;font-size:11.5px;font-weight:900;background:#fffaf2;border:2px solid var(--ink);border-radius:99px;padding:0 8px;margin-top:-6px;white-space:nowrap}

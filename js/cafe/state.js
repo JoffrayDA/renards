@@ -39,7 +39,7 @@ const chapStars=c=>{let n=0;for(let d=c.from;d<=c.to;d++)n+=S.stars[d]||0;return
 if(!S.gate2){const old={ete:20,automne:45,hiver:72},n=Object.values(S.stars).reduce((a,b)=>a+b,0);for(const c of CHAP)if(c.gate&&S.day>=c.from&&n>=old[c.id])S.pass[c.id]=1;S.gate2=1}
 function gateOpen(c){if(!c.gate||S.pass[c.id])return true;if(starSum()>=c.gate){S.pass[c.id]=1;save();return true}return false}
 const dayOpen=d=>d>=1&&d<=Math.min(S.day,LASTDAY)&&gateOpen(chapOf(d));
-const curDay=()=>{let d=Math.min(S.day,LASTDAY);while(d>1&&!dayOpen(d))d--;return d};
+const curDay=()=>{if(WORLD)return itCur();let d=Math.min(S.day,LASTDAY);while(d>1&&!dayOpen(d))d--;return d};
 function checkGuests(){const n=[];for(const c of CHAP)if(!S.guest[c.guest]&&chapStars(c)>=30){S.guest[c.guest]=1;n.push(c)}return n}
 checkGuests();
 function questAvail(q){if(q.hw)return HW&&(q.k!=="night"||nightOpen(1))&&(q.k!=="hwguest"||S.day>=3);return q.k==="serve"?has(q.r):q.k==="vip"?S.day>=3:q.k==="big"?S.day>=4:true}

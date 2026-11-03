@@ -1,12 +1,13 @@
 /* Kitsune Café : fin de journée et de nuit, quêtes affichées. */
 /* ---------- fin de journée ---------- */
 // le compagnon dans l'écran de fin : une journée ensemble par jour réel fait grandir l'amitié au refuge
-function buddyRow(){if(!S.own.serveur)return "";const id=buddy(),f=FOX[id],td=todayStr(),t=S.together[id]||(S.together[id]={n:0,last:""}),first=t.last!==td;
+function buddyRow(){if(!OWN().serveur)return "";const id=buddy(),f=FOX[id],td=todayStr(),t=S.together[id]||(S.together[id]={n:0,last:""}),first=t.last!==td;
   if(first){t.n++;t.last=td}
   return itRow(foxSVG(f,{pose:"happy"}),`${f.name} était là pour t'aider !`,first?"Une journée de plus ensemble : votre amitié grandit au refuge.":"Votre journée ensemble compte déjà pour aujourd'hui.","background:#fff3e2")}
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
 const albumRow=()=>G.albumNew?itRow(foxSVG({...FOX.roussette,acc:"couronne"},{pose:"happy"}),"Album d'Halloween complet !",`Tu as servi les ${HWF.length} invités : ${ME()} gagne la Couronne de citrouilles (dans la boutique, onglet Style).`,"background:#efe4fb"):"";
 function endDay(){
+  if(G.it)return endIt();
   if(G.noel)return endNoel();
   if(G.night)return endNight();
   const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=G.day,prev=S.stars[d]||0,before=starSum();
