@@ -133,7 +133,7 @@ Object.assign(STORIES,{
     // s'excusent et promettent d'aider à refaire la boule
     {at:"@porch",goal:"La bande s'en va… Rattrape-la devant la maison.",lines:[
       ["balafre","open","Bon. On a perdu, on se casse. Allez, les gars.",()=>{actEmote("balafre","colere");actGo("balafre",336,288,"up");setTimeout(()=>{actGo("filou",376,300,"up");actGo("radar",292,294,"up")},300)}],
-      ["petitpois","surprise","Attendez ! Non, ce n'est pas ça, la magie de Noël. Restez un peu… Au moins le temps d'un vrai chocolat chaud !",()=>{actEmote("petitpois","!");actNear("petitpois","balafre","up")}],
+      ["petitpois","surprise","Attendez ! Non, ce n'est pas ça, la magie de Noël. Restez un peu… Au moins le temps d'un vrai chocolat chaud !",()=>{actEmote("petitpois","!");actGo("petitpois",232,318,"up");setTimeout(()=>actFace("petitpois","balafre"),2600)}], // à côté de la bande, pas caché derrière Radar
       ["radar","shy","Un… vrai chocolat chaud ? Avec des guimauves ?",()=>actEmote("radar","coeur")],
       ["filou","shy","Personne ne nous a jamais invités nulle part…",()=>actPose("filou","sit","shy")],
       ["balafre","open","Non mais arrêtez de faire vos victimes, les gars. On rentre.",()=>{actEmote("balafre","colere");actPose("balafre","up","open")}],
@@ -596,9 +596,10 @@ function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;
     ()=>playGame({k:"snowball",n:10},()=>{if(R.snowDay!==today()){R.snowDay=today();const b=bourse();b.sucres=(b.sucres||0)+3;putBourse(b);save();toast("Bataille gagnée ! +3 sucres d'orge")}else toast("Bien joué !")}));
   return true}
 // la bande repart après ses adieux (histoire « adieux », du 31 décembre au 6 janvier) ou, si on ne les a pas faits, à la fin de Noël ;
-// jamais avant la fin de sa propre histoire ; après Noël, Filou et Radar reviennent s'ils ont fini leur histoire à eux (incos.js)
+// jamais avant la fin de sa propre histoire ; après Noël, chacun revient s'il a fini son histoire à lui (Joffray : « les trois
+// restent ») : Filou et Radar leur histoire d'inconnu (incos.js), Balafre la bataille de neige
 const noelAway=id=>{if(!FOX[id])return false;
-  if(NOEL_WILD.includes(id)&&INC[id]){if(!storyDone("balafre"))return false;if(noelOn())return storyDone("adieux");return id==="balafre"||!(STORIES[id]&&storyDone(id))}
+  if(NOEL_WILD.includes(id)&&INC[id]){if(!storyDone("balafre"))return false;if(noelOn())return storyDone("adieux");return !(STORIES[id]&&storyDone(id))}
   return FOX[id].event==="noel"&&!noelOn()};
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
 if(!noelOn()&&[...NOEL_WILD,"miette","pataud","frisette"].some(id=>R.res[id])){for(const id of [...NOEL_WILD,"miette","pataud","frisette"])delete R.res[id];save()}
