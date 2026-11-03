@@ -126,7 +126,9 @@ function sleighSync(){const m=slWant();if(m!==slMode){slMode=m;if(slEl){slEl.rem
   for(const id of ["barbeneige","ramure"]){const f=sF(id);if(f){f.el.style.display=away?"none":"";f.badge.style.display=away?"none":""}}}
 setInterval(sleighSync,1000);setTimeout(sleighSync,0);
 // un obstacle tant qu'il est garé (noel.js, noelObst)
-const sleighObst=()=>{const L=[];if(slMode){const p=slPos(slMode);L.push({x:p.x,y:p.y-6,rx:82,ry:24})}if(bgEl)L.push({x:BG.x,y:BG.y-6,rx:64,ry:22});return L};
+// la zone du crash reste libre tant que le traîneau n'est pas tombé (Joffray : pas de renard dessous)
+const CRASHZ={x:276,y:388,rx:118,ry:40},crashWait=()=>noelOn()&&!storyDone("barbeneige")&&slBeat()===1&&!crashHit;let crashHit=0;
+const sleighObst=()=>{const L=crashWait()?[CRASHZ]:[];if(slMode){const p=slPos(slMode);L.push({x:p.x,y:p.y-6,rx:82,ry:24})}if(bgEl)L.push({x:BG.x,y:BG.y-6,rx:64,ry:22});return L};
 // il traverse la scène : pts = [[x, y, angle], ...]
 function sleighFly(pts,ms,o={}){const e=document.createElement("div");e.className="sleighfx";e.style.cssText=`width:${(o.ram?190:130)/W*100}%;z-index:906;left:0;top:0`;e.innerHTML=sleighArt(o);$("actors").appendChild(e);
   const a=e.animate(pts.map(([x,y,r=0])=>({left:`${x/W*100}%`,top:`${y/H*100}%`,transform:`translate(-50%,-90%) rotate(${r}deg)`})),{duration:ms,easing:o.ease||"linear",fill:"forwards"});try{MUSIC.sfx("whoosh")}catch(err){}
@@ -135,11 +137,13 @@ function snowPoof(x,y,r=60){const p=document.createElement("div");p.className="s
   const s=$("scene");s.animate([{transform:"translateY(0)"},{transform:"translateY(5px)"},{transform:"translateY(-4px)"},{transform:"translateY(2px)"},{transform:"translateY(0)"}],{duration:380});try{MUSIC.sfx("splash");navigator.vibrate&&navigator.vibrate(90)}catch(e){}}
 function foxDrop(id,x,y,pose,expr){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};save()}const f=sF(id)||makeFox(id,null);if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;f.el.style.display="";f.badge.style.display="";place(f,{id:"act-"+id,x,y,z:y,poses:[pose]});f.pose=pose;f.expr=expr;f.until=Date.now()+60000;draw(f)}
 // le traîneau passe, de travers : personne pour le tirer
-// « Oh oh oh ! » écrit dans le ciel, au passage du traîneau
-function skyHo(x,y){const e=document.createElement("div");e.className="skyho";e.textContent="Oh oh oh !";e.style.cssText=pc(x,y);$("scene").appendChild(e);setTimeout(()=>e.remove(),1900)}
-function sceneSkyPass(){bnMusic=1;try{MUSIC.want(clMusic())}catch(e){}setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}skyHo(170,90)},700);sleighFly([[-90,150,-6],[60,110,8],[180,150,-10],[300,95,10],[490,140,-4]],2900)}
+function sceneSkyPass(){bnMusic=1;try{MUSIC.want(clMusic())}catch(e){}setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}},700);sleighFly([[-90,150,-6],[60,110,8],[180,150,-10],[300,95,10],[490,140,-4]],2900)}
 // il s'écrase devant la maison
-function sceneCrash(){sleighFly([[470,20,18],[350,190,24],[SLP.x+20,SLP.y-4,30]],1250,{ease:"ease-in",then:()=>{
+function sceneCrash(){// ceux qui sont encore dans la zone s'écartent avant l'impact (puis la zone n'est plus gardée : Barbe-Neige y atterrit)
+  setTimeout(()=>crashHit=1,1200);
+  for(const f of foxes)if(!f.wild&&!f.walk&&!f.inside&&inObst(f,10)){const sp=choose(f);if(sp&&sp!=="door"){f.fast=1;goTo(f,sp)}}
+  if(inObst(meF,10))meGo(meBeside(140,330),["up"],12000);
+  sleighFly([[470,20,18],[350,190,24],[SLP.x+20,SLP.y-4,30]],1250,{ease:"ease-in",then:()=>{
     slOv={b:1,mode:"broken"};sleighSync();snowPoof(SLP.x,SLP.y-20,70);
     // boum, la musique s'arrête net, et Barbe-Neige est K.O., la tête en bas, les yeux en croix (Joffray)
     musHush=1;try{MUSIC.sfx("boom");MUSIC.want(clMusic())}catch(e){}
@@ -167,7 +171,7 @@ function ringAround(){const cx=BG.x,cy=BG.y-8,rx=150,ry=64,now=Date.now();
     f.fast=1;goTo(f,{id:"ring"+i,x,y,poses:["sit"]});f.until=now+60000;setTimeout(()=>{if(!f.walk)f.el.classList.toggle("left",cx<f.x)},3200)};
   front.forEach((id,i)=>put(id,Math.PI*(.12+.76*(front.length>1?i/(front.length-1):.5)),i));
   back.forEach((id,i)=>put(id,Math.PI*(1.08+.84*(back.length>1?i/(back.length-1):.5)),10+i))}
-function sceneBigGift(){slOv={b:5,mode:null};setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}skyHo(BG.x,70)},500);
+function sceneBigGift(){slOv={b:5,mode:null};setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}},500);
   sleighFly([[-120,110,-8],[BG.x,96,2],[520,70,-6]],3000,{ram:1});
   setTimeout(()=>{const e=document.createElement("div");e.className="sleighfx";e.style.cssText=`width:${118/W*100}%;z-index:906;left:0;top:0`;e.innerHTML=giftBox();$("actors").appendChild(e);
     e.animate([{left:`${BG.x/W*100}%`,top:`${110/H*100}%`,transform:"translate(-50%,-96%) rotate(-10deg)"},{left:`${BG.x/W*100}%`,top:`${BG.y/H*100}%`,transform:"translate(-50%,-96%) rotate(0)"}],{duration:620,easing:"cubic-bezier(.5,0,1,.6)"}).onfinish=()=>{e.remove();drawBigGift();snowPoof(BG.x,BG.y,70);foxes.filter(f=>!f.wild).slice(0,8).forEach((f,i)=>setTimeout(()=>actEmote(f.id,"!",1500),i*60))}},1450);
