@@ -453,7 +453,7 @@ const lastReady=()=>OTHERS.every(id=>STORIES[id]&&storyDone(id));
 // une histoire déjà commencée passe avant tout (l'ordre a changé le 29/10/2026 : on ne coupe personne au milieu)
 // à Noël, le chapitre du sapin qui attend passe juste après (noel.js)
 // les inconnus de la forêt (incos.js) : leur histoire vient dès qu'on a deviné leur prénom, sans attente, avant la suite d'ORDER
-const INCO_ORDER=INCO.map(f=>f.id).filter(id=>id!=="balafre"),incoStory=k=>!!STORIES[k]&&!!(R.inco[k]||{}).found&&!storyDone(k);
+const INCO_ORDER=INCO.map(f=>f.id).filter(id=>id!=="balafre"),incoStory=k=>!!STORIES[k]&&!!(R.inco[k]||{}).found&&!storyDone(k)&&!(typeof noelAway==="function"&&noelAway(k)); // pas Filou ni Radar une fois la bande repartie
 const incoNext=()=>INCO_ORDER.find(k=>R.beat[k]>0&&incoStory(k))||INCO_ORDER.find(incoStory)||null;
 // une histoire qui n'attend ni l'arrivée de son renard, ni l'heure (Noël, inconnus) : il arrive pendant l'histoire
 const freeStory=id=>isNoelStory(id)||!!INC[id];
