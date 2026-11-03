@@ -174,7 +174,7 @@ function status(id,M){
   if(WILD[id])return R.met[id]?{ok:1,txt:"Sauvage · vient à la gamelle"}:{ok:0,txt:`Vit dans ${WILD_HINT[WILD[id]]}. Une gamelle de ${BOWLS[WILD[id]].name.toLowerCase()} l'attirera peut-être.`};
   if(STORIES[id])return {ok:0,seen:M.cafe.has(id),txt:"Viendra au refuge pour son histoire."};
   if(M.cafe.has(id))return {ok:0,seen:1,txt:chainDone()?"Croisé au Café. Sers-le bien, il te suivra peut-être.":"Croisé au Café. Il viendra au refuge après les histoires."};
-  const guest={zaza:"l'Automne",flocon:"l'Hiver",noisette:"le Printemps",comete:"l'Été"}[id]; // saisons du Café (CHAP, décalées le 03/11/2026)
+  const guest={noisette:"l'Automne",flocon:"l'Hiver",zaza:"le Printemps",comete:"l'Été"}[id]; // saisons du Café (CHAP, décalées le 03/11/2026)
   if(guest)return (load(CAFEKEY)||{guest:{}}).guest?.[id]?{ok:0,seen:1,txt:"Invité d'honneur du Café. Il viendra au refuge après les histoires."}:{ok:0,txt:`Invité d'honneur du Café : ★★★ sur tout ${guest}.`};
   return {ok:0,txt:M.old.has(id)?"Déjà croisé dans l'ancienne clairière. Retrouve-le au Café.":"Pas encore venu au Café."};
 }
