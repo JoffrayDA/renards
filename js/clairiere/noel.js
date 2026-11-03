@@ -56,9 +56,9 @@ Object.assign(STORIES,{
       ["me","open","Des sabots ? Elles vont vers la mare.",()=>{actEmote("me","?");setTimeout(()=>{actGo("me",230,450);actGo("grelot",262,436)},800)}]]},
     {at:"@pond",arrive:"ramure",arriveAt:{id:"ram",x:196,y:446,poses:["sit"]},goal:"Suis les grandes traces jusqu'à la mare.",lines:[
       ["ramure","surprise","Oh ! Pardon, je glissais sur la glace. Je m'appelle Ramure.",()=>{actTrick("ramure","roll");actEmote("ramure","goutte");actEmote("me","!")}],
-      ["ramure","sad","Je tire le traîneau de Barbe-Neige. Je me suis perdu dans la tempête… et ma clochette est tombée.",()=>{actPose("ramure","sit","sad");actEmote("ramure","froid")}],
-      ["me","joy","On va la retrouver !",()=>{actTrick("me","boing");actEmote("ramure","coeur");setTimeout(()=>{actGo("me",296,372);actGo("ramure",262,382)},900)}]]},
-    {at:"@leaves",game:{k:"search",snow:1,item:"bell",say:"La clochette a roulé sous la neige. Elle tinte quand le vent souffle ! 3 essais.",win:"Gling ! La voilà !"},goal:"Cherche la clochette de Ramure sous la neige, près des feuilles.",lines:[
+      ["ramure","sad","Je tire le traîneau de Barbe-Neige. Je me suis perdu dans la tempête… et ma clochette est tombée. Elle glisse sur la glace, je n'arrive pas à la rattraper !",()=>{actPose("ramure","sit","sad");actEmote("ramure","froid")}],
+      ["me","joy","On va la rattraper ensemble !",()=>{actTrick("me","boing");actEmote("ramure","coeur")}]]},
+    {at:"ramure",game:{k:"skate",n:3,win:"Gling ! La clochette !"},goal:"Aide Ramure à rattraper sa clochette sur la mare gelée.",lines:[
       ["ramure","joy","Ma clochette ! Avec elle, Barbe-Neige m'entendra de très loin.",()=>{actGive("me","ramure","bell");setTimeout(()=>actTrick("ramure","salto"),1200)}],
       ["ramure","open","Je reste ici en attendant qu'il me retrouve. Ton sapin, on le voit de partout : c'est un bon repère.",()=>{actEmote("ramure","coeur");actPose("ramure","lie","joy")}]]},
     {at:"petitpois",goal:"Présente Ramure à Petit Pois.",lines:[

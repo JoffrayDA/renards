@@ -81,6 +81,46 @@ GAMES.tournee=function(g,A){const sv=A.sv,N=g.n||7,SXL=118,SY=Math.max(-EXT+120,
     items=items.filter(i=>i.el)});
   reset()};
 
+/* ---------- le jeu de Ramure : la clochette sur la glace ---------- */
+// Joffray trouvait la recherche sous la neige « nulle » : la clochette glisse sur la mare gelée, on guide Ramure du doigt (il patine :
+// il glisse et met du temps à tourner) ; l'attraper 3 fois, de plus en plus vite ; deux trous dans la glace (plouf, il repart du bord).
+GAMES.skate=function(g,A){const sv=A.sv,N=g.n||3,CY=-EXT+H/2+10,RX=172,RY=Math.min(215,H/2-60);
+  let st="play",p,v,b,bv,got=0,down=false,tx=0,ty=0,holes=[],t=0,splash=0;
+  sv.innerHTML=`<defs><radialGradient id="skI" cx=".45" cy=".4" r=".75"><stop offset="0" stop-color="#eef8fd"/><stop offset=".7" stop-color="#cfe7f4"/><stop offset="1" stop-color="#a9d0e6"/></radialGradient></defs>
+    <rect y="${-EXT}" width="400" height="${H}" fill="#f4f8fc"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${-EXT+(i*89)%H}" r="${1.5+i%3}" fill="#fff"/>`).join("")}
+    <ellipse cx="200" cy="${CY+8}" rx="${RX+16}" ry="${RY+14}" fill="#fff" stroke="${INK}" stroke-width="3"/>
+    <ellipse cx="200" cy="${CY}" rx="${RX}" ry="${RY}" fill="url(#skI)" stroke="${INK}" stroke-width="3"/>
+    ${[[110,CY-60,60],[250,CY+40,70],[160,CY+110,50],[280,CY-110,44]].map(([x,y,l])=>`<path d="M${x} ${y} l${l*.4} ${l*.15} l${l*.3} -${l*.2} M${x+l*.4} ${y+l*.15} l${l*.1} ${l*.3}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>`).join("")}
+    <g id="skH"></g><g id="skT"></g><g id="skB"></g><g id="skR"></g>`;
+  const $$=q=>sv.querySelector(q),gH=$$("#skH"),gT=$$("#skT"),gB=$$("#skB"),gR=$$("#skR");
+  const inside=(x,y,m=0)=>((x-200)/(RX-m))**2+((y-CY)/(RY-m))**2<1;
+  const rnd=m=>{for(;;){const x=200+(Math.random()*2-1)*RX,y=CY+(Math.random()*2-1)*RY;if(inside(x,y,m))return {x,y}}};
+  gB.innerHTML=`<g transform="scale(1.15)">${ITEM.bell}</g>`;
+  const fx=(on,frame)=>noWob(foxAt("ramure",0,0,74,{pose:on?"walk":"sit",frame})).replace(/^<svg/,"<svg");
+  const start=()=>({x:200,y:CY+RY-40});
+  const placeBell=()=>{let q;do{q=rnd(40)}while(Math.hypot(q.x-p.x,q.y-p.y)<150);b=q;const a=Math.random()*6.28,sp=95+got*55;bv={x:Math.cos(a)*sp,y:Math.sin(a)*sp}};
+  const reset=()=>{p=start();v={x:0,y:0};got=0;st="play";holes=[];
+    while(holes.length<2){const q=rnd(50);if(Math.hypot(q.x-p.x,q.y-p.y)>110&&holes.every(h=>Math.hypot(h.x-q.x,h.y-q.y)>120))holes.push({...q,r:24})}
+    gH.innerHTML=holes.map(h=>`<ellipse cx="${h.x.toFixed(0)}" cy="${h.y.toFixed(0)}" rx="${h.r+6}" ry="${(h.r+6)*.7}" fill="#fff" stroke="${INK}" stroke-width="2.4"/><ellipse cx="${h.x.toFixed(0)}" cy="${(h.y+1).toFixed(0)}" rx="${h.r}" ry="${h.r*.66}" fill="#2f5f86" stroke="${INK}" stroke-width="2"/><path d="M${(h.x-10).toFixed(0)} ${(h.y-3).toFixed(0)} q6 -4 12 0" stroke="#7fb6dc" stroke-width="2" fill="none"/>`).join("");
+    placeBell();clk.reset();A.say(g.say||"La clochette glisse sur la glace ! Guide Ramure du doigt pour l'attraper. Attention aux trous !")};
+  const clk=A.clock(g.time||22,()=>{st="lost";A.say(`Trop tard ! ${got} sur ${N}… On recommence !`);A.later(reset,1500)});
+  drag(A,(pt,d)=>{down=d;tx=pt.x;ty=pt.y});
+  A.loop(dt=>{t+=dt;if(st!=="play"&&st!=="splash")return;
+    if(st==="splash"){splash-=dt;if(splash<=0){p=start();v={x:0,y:0};st="play"}}
+    else{if(down){const dx=tx-p.x,dy=ty-p.y,d=Math.hypot(dx,dy)||1;if(d>8){v.x+=dx/d*560*dt;v.y+=dy/d*560*dt}}
+      v.x*=1-.55*dt;v.y*=1-.55*dt;const sp=Math.hypot(v.x,v.y);if(sp>380){v.x*=380/sp;v.y*=380/sp}
+      p.x+=v.x*dt;p.y+=v.y*dt;
+      if(!inside(p.x,p.y,18)){const ang=Math.atan2((p.y-CY)/(RY-18),(p.x-200)/(RX-18));p.x=200+Math.cos(ang)*(RX-19);p.y=CY+Math.sin(ang)*(RY-19);const nx=Math.cos(ang),ny=Math.sin(ang),dot=v.x*nx+v.y*ny;if(dot>0){v.x=(v.x-2*dot*nx)*.55;v.y=(v.y-2*dot*ny)*.55;A.sfx("knock")}}
+      for(const h of holes)if(Math.hypot(p.x-h.x,(p.y-h.y)/.7)<h.r){st="splash";splash=1.1;A.sfx("splash");A.say("Plouf ! Ramure est passé dans un trou. Il repart du bord…");try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}break}}
+    // la clochette glisse, tourne un peu, rebondit sur le bord
+    if(Math.random()<dt*.8){const a=Math.atan2(bv.y,bv.x)+(Math.random()-.5)*1.4,s=Math.hypot(bv.x,bv.y);bv={x:Math.cos(a)*s,y:Math.sin(a)*s}}
+    b.x+=bv.x*dt;b.y+=bv.y*dt;if(!inside(b.x,b.y,22)){const ang=Math.atan2((b.y-CY)/(RY-22),(b.x-200)/(RX-22)),nx=Math.cos(ang),ny=Math.sin(ang),dot=bv.x*nx+bv.y*ny;b.x=200+nx*(RX-23);b.y=CY+ny*(RY-23);if(dot>0){bv.x-=2*dot*nx;bv.y-=2*dot*ny}}
+    gB.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)}) rotate(${(Math.sin(t*9)*14).toFixed(0)})`);
+    const moving=Math.hypot(v.x,v.y)>30,fr=Math.floor(t*6)%2;gR.innerHTML=`<g transform="translate(${p.x.toFixed(1)} ${(p.y+(st==="splash"?14:0)).toFixed(1)})${v.x<0?" scale(-1 1)":""}" opacity="${st==="splash"?.35:1}">${fx(moving,fr)}</g>`;
+    if(st==="play"&&Math.hypot(p.x-b.x,p.y-30-b.y)<40){got++;A.sfx("gling");A.sfx("good",got);
+      if(got>=N){st="won";A.win(g.win||"Gling ! La clochette !");return}A.cheer(got===N-1?"ENCORE UNE !":"ATTRAPÉE !");A.say(`${got} sur ${N} ! Elle repart encore plus vite…`);placeBell()}});
+  reset()};
+
 /* ---------- la boule à neige : l'énorme cadeau ---------- */
 // la clairière en tout petit, sous verre (big : avec les renards et la neige qui tombe)
 function globeArt(big){const fl=big?Array.from({length:22},(_,i)=>{const x=-58+(i*37)%116,d=3+i%4;return `<circle cx="${x}" r="${1.4+i%3*.6}" fill="#fff"><animate attributeName="cy" from="-112" to="-30" dur="${d}s" begin="-${(i*.7).toFixed(1)}s" repeatCount="indefinite"/></circle>`}).join(""):[[-30,-90],[8,-104],[32,-78],[-14,-64],[22,-54]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="#fff"/>`).join("");
