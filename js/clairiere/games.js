@@ -620,12 +620,12 @@ const GAMES={
       if(st==="pick")return;t+=dt;
       if(shake>0){shake-=dt;sv.style.transform=`translate(${((Math.random()-.5)*6*shake/.3).toFixed(1)}px,${((Math.random()-.5)*6*shake/.3).toFixed(1)}px)`}else sv.style.transform="";
       // les adversaires : ils sortent la tête, lancent parfois, se recachent ; de plus en plus vite
-      const pace=Math.min(1,t/40);
+      const pace=Math.min(1,t/40),HD=g.hard||1; // g.hard : plus dur (lancers plus fréquents et plus rapides)
       for(const f of foes){if(f.ko){place(f);continue}
         if(f.hurt>0)f.hurt-=dt;f.timer-=dt;
         if(f.timer<=0){if(f.up){f.up=false;f.timer=.7+Math.random()*1.4-pace*.4}else{f.up=true;f.threw=0;f.timer=(f.boss?1.5:1.25)-pace*.45}if(f.hurt<=0)drawF(f)}
-        if(f.up&&!f.threw&&f.timer<(f.boss?1.1:.9)-pace*.3){const tg=alive(mine);if(tg.length&&Math.random()<(f.boss?.85:.6)){f.threw=1;const n=f.boss&&f.hp<=2?2:1;
-          for(let k=0;k<n;k++){const to=tg[Math.floor(Math.random()*tg.length)];A.later(()=>{if(st==="play"&&!f.ko)toss(f,to,(f.boss?1.05:1.25)-pace*.25,true,()=>hit(to))},k*260)}}else f.threw=1}
+        if(f.up&&!f.threw&&f.timer<(f.boss?1.1:.9)-pace*.3){const tg=alive(mine);if(tg.length&&Math.random()<Math.min(.97,(f.boss?.85:.6)*HD)){f.threw=1;const n=f.boss&&f.hp<=2?2:1;
+          for(let k=0;k<n;k++){const to=tg[Math.floor(Math.random()*tg.length)];A.later(()=>{if(st==="play"&&!f.ko)toss(f,to,((f.boss?1.05:1.25)-pace*.25)/Math.sqrt(HD),true,()=>hit(to))},k*260)}}else f.threw=1}
         place(f)}
       // nos coéquipiers lancent aussi de temps en temps (un sur deux touche)
       for(const f of mine){if(f.ko){place(f);continue}if(f.duck>0)f.duck-=dt;if(f.hurt>0){f.hurt-=dt;if(f.hurt<=0)drawF(f)}

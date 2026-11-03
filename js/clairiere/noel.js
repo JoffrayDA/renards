@@ -106,7 +106,7 @@ Object.assign(STORIES,{
       ["radar","open","Le chef est imbattable. C'est lui qui l'a dit.",()=>actEmote("radar","!")],
       ["me","joy","Pari tenu ! Je choisis mon équipe.",()=>actTrick("petitpois","salto")]]},
     // trois défis : après chaque défaite, Balafre parle de chance et en réclame un autre (Joffray, 03/11/2026 : pas de « tournoi »)
-    {at:"balafre",game:{k:"battle",foes:["balafre","filou","radar"],boss:"balafre",win:"Victoire ! Les sauvages se rendent !"},goal:"Relève le défi : une bataille de neige, trois contre trois.",lines:[
+    {at:"balafre",game:{k:"battle",hard:1.2,foes:["balafre","filou","radar"],boss:"balafre",win:"Victoire ! Les sauvages se rendent !"},goal:"Relève le défi : une bataille de neige, trois contre trois.",lines:[
       ["radar","surprise","On a… perdu ? Je n'ai même pas vu venir la dernière boule !",()=>actEmote("radar","goutte")],
       ["balafre","open","Ouais. Vous avez eu de la chance. Le vent soufflait de votre côté.",()=>actEmote("balafre","colere")],
       ["filou","joy","Ouais ouais, le vent ! Bien vu chef !",()=>actTrick("filou","boing")],
@@ -142,13 +142,10 @@ Object.assign(STORIES,{
       ["balafre","surprise","Hé ! Revenez !",()=>actEmote("balafre","!")],
       ["grelot","joy","Et toi, Balafre ? Il reste de la place pour un de plus, tu sais.",()=>actNear("grelot","balafre","up")],
       ["me","joy","Reste. Juste le temps d'un chocolat chaud.",()=>actNear("me","balafre","up")],
-      ["petitpois","joy","Avec des guimauves !",()=>actTrick("petitpois","boing")],
-      ["balafre","shy","… Bon. D'accord. Mais on repart le 31 au soir. Pas plus tard !",()=>{actPose("balafre","sit","shy");actEmote("balafre","coeur")}],
+      ["balafre","shy","… Bon. D'accord. Mais on repart le 31 au soir. Pas plus tard !",()=>{const f=sF("balafre");if(f){f.fast=1;goTo(f,"door");f.until=Date.now()+9e8}}],
       ["petitpois","surprise",`Psst, ${ME()}… On ne lui a jamais demandé de rester aussi longtemps, si ?`,()=>actEmote("petitpois","?")],
-      ["me","joy","Chut. Laisse-le croire que c'est son idée.",()=>actEmote("me","note")],
-      ["balafre","shy","Et… pardon. Pour la boule, pour le tribut, pour tout. On va vous aider à la refaire. Encore plus grosse qu'avant.",()=>{actGo("balafre",208,270,"happy");actEmote("balafre","coeur")}],
-      ["filou","joy","Ouais ouais, encore plus grosse ! … Là, j'ai le droit de dire ouais ouais ?",()=>actTrick("filou","boing")],
-      ["radar","joy","Et j'entends déjà les guimauves fondre. C'est le plus beau bruit du monde.",()=>actEmote("radar","note")]]},
+      ["me","open","Non. Il s'est clairement imposé, là.",()=>actEmote("me","goutte")],
+      ["balafre","shy","Et… pardon. Pour la boule, pour le tribut, pour tout. On va vous aider à la refaire. Encore plus grosse qu'avant.",()=>{actGo("balafre",208,270,"happy");setTimeout(()=>actEmote("balafre","coeur"),1200)}]]},
     // tout le monde aide Boule-de-Neige à refaire sa boule, plus grosse qu'avant
     {at:"bouleneige",goal:"Aide Boule-de-Neige à refaire sa boule, avec toute la bande.",showMs:2600,
       show:()=>{["balafre","filou","radar","petitpois"].forEach((id,i)=>actGo(id,BALL.x+[-90,-50,60,100][i],BALL.y+[-10,30,30,-10][i],"happy"));
