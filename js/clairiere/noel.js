@@ -74,9 +74,9 @@ Object.assign(STORIES,{
     {at:"@lampL",lamps:1,arrive:"paillette",goal:"Allume les lanternes pour guider Paillette.",lines:[
       ["paillette","joy","Des lanternes dans la neige ! Je les ai vues de très loin.",()=>{actTrick("paillette","toupie");actEmote("paillette","!")}],
       ["paillette","open","Je suis Paillette. Je fais mes guirlandes avec les étoiles qui tombent.",()=>actEmote("paillette","note")],
-      ["paillette","sad","Mais en venant, mon sac s'est ouvert. Mes boules de Noël roulent partout !",()=>{actEmote("paillette","goutte");setTimeout(()=>actGo("me",262,424),900)}]]},
-    {at:"@bench",game:{k:"catch",thing:"ball",n:7,say:"Les boules de Noël glissent sur la neige. Attrape-les toutes !",win:"Toutes les boules !"},goal:"Rattrape les boules de Paillette, près du banc.",lines:[
-      ["paillette","joy","Toutes là ! Et pas une seule fêlée.",()=>{actGive("me","paillette","ball");setTimeout(()=>actTrick("paillette","salto"),1200)}]]},
+      ["paillette","sad","Mais en venant, mon sac s'est ouvert. Mes boules de Noël roulent partout !",()=>actEmote("paillette","goutte")]]},
+    {at:"paillette",game:{k:"decor",n:7,win:"Le sapin est tout décoré !"},goal:"Aide Paillette à accrocher ses boules au sapin.",lines:[
+      ["paillette","joy","Toutes accrochées ! Et pas une seule fêlée.",()=>{setTimeout(()=>actTrick("paillette","salto"),1200)}]]},
     {at:"paillette",goal:"Décore le sapin avec Paillette.",lines:[
       ["paillette","joy","Une boule rouge ici… une bleue là… et la guirlande, tout autour !",()=>{actGo("paillette",96,300,"up");setTimeout(()=>actTrick("paillette","toupie"),2200)}],
       ["grelot","surprise","Il est magnifique !",()=>{actEmote("grelot","coeur");actTrick("grelot","boing")}],
