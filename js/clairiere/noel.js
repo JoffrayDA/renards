@@ -83,7 +83,7 @@ Object.assign(STORIES,{
       ["me","open","Il manque quelque chose, tout en haut…",()=>actEmote("me","?")],
       ["paillette","open","L'étoile. Seul Barbe-Neige en a une assez brillante. Il passe toujours la veille de Noël.",()=>actEmote("paillette","note")]]}
   ]},
-  balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar","bouleneige"],
+  balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar","bouleneige","grelot"],
     end:()=>{let n=0;for(const id of ["filou","radar"]){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now(),tr:2};incoPhoto(id,ph);R.photos.push(ph);n++}
       R.recordBig=1;R.recordBigAt=R.recordBigAt||Date.now();save();drawBigBall();if(n)setTimeout(()=>toast("Filou et Radar t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
     // 03/11/2026 (Joffray) : la bande regarde le record depuis le début, assise de dos au premier rang, incognito ; Petit Pois la
@@ -136,9 +136,18 @@ Object.assign(STORIES,{
       ["petitpois","surprise","Attendez ! Non, ce n'est pas ça, la magie de Noël. Restez un peu… Au moins le temps d'un vrai chocolat chaud !",()=>{actEmote("petitpois","!");actNear("petitpois","balafre","up")}],
       ["radar","shy","Un… vrai chocolat chaud ? Avec des guimauves ?",()=>actEmote("radar","coeur")],
       ["filou","shy","Personne ne nous a jamais invités nulle part…",()=>actPose("filou","sit","shy")],
-      ["balafre","shy","… Pardon. Pour la boule, pour le tribut, pour tout. Et merci.",()=>{actPose("balafre","sit","shy");actEmote("balafre","coeur")}],
-      ["balafre","open","Et la boule de Boule-de-Neige, on va vous aider à la refaire. Encore plus grosse qu'avant.",()=>{actTrick("balafre","boing");["balafre","filou","radar"].forEach((id,i)=>setTimeout(()=>actGo(id,[200,160,240][i],[262,270,270][i],"happy"),400+i*150))}],
-      ["filou","joy","Ouais ouais, encore plus grosse !",()=>actTrick("filou","boing")],
+      ["balafre","open","Non mais arrêtez de faire vos victimes, les gars. On rentre.",()=>{actEmote("balafre","colere");actPose("balafre","up","open")}],
+      ["radar","open","Non. Ça suffit, chef. On en a marre de t'écouter tout le temps.",()=>{actEmote("radar","!");actPose("radar","up","open")}],
+      ["filou","joy","Ouais ouais, bien vu ch… Euh, non ! Nous, on y va !",()=>{actTrick("filou","salto");setTimeout(()=>{actGo("filou",186,262,"happy");actGo("radar",230,264,"happy")},700)}],
+      ["balafre","surprise","Hé ! Revenez !",()=>actEmote("balafre","!")],
+      ["grelot","joy","Et toi, Balafre ? Il reste de la place pour un de plus, tu sais.",()=>actNear("grelot","balafre","up")],
+      ["me","joy","Reste. Juste le temps d'un chocolat chaud.",()=>actNear("me","balafre","up")],
+      ["petitpois","joy","Avec des guimauves !",()=>actTrick("petitpois","boing")],
+      ["balafre","shy","… Bon. D'accord. Mais on repart le 31 au soir. Pas plus tard !",()=>{actPose("balafre","sit","shy");actEmote("balafre","coeur")}],
+      ["petitpois","surprise",`Psst, ${ME()}… On ne lui a jamais demandé de rester aussi longtemps, si ?`,()=>actEmote("petitpois","?")],
+      ["me","joy","Chut. Laisse-le croire que c'est son idée.",()=>actEmote("me","note")],
+      ["balafre","shy","Et… pardon. Pour la boule, pour le tribut, pour tout. On va vous aider à la refaire. Encore plus grosse qu'avant.",()=>{actGo("balafre",208,270,"happy");actEmote("balafre","coeur")}],
+      ["filou","joy","Ouais ouais, encore plus grosse ! … Là, j'ai le droit de dire ouais ouais ?",()=>actTrick("filou","boing")],
       ["radar","joy","Et j'entends déjà les guimauves fondre. C'est le plus beau bruit du monde.",()=>actEmote("radar","note")]]},
     // tout le monde aide Boule-de-Neige à refaire sa boule, plus grosse qu'avant
     {at:"bouleneige",goal:"Aide Boule-de-Neige à refaire sa boule, avec toute la bande.",showMs:2600,
