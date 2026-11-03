@@ -129,11 +129,17 @@ Object.assign(STORIES,{
         ["balafre","sad","Et puis… on ne la voulait pas vraiment, la clairière. On avait juste froid. Très froid.",()=>["balafre","filou","radar"].forEach(id=>actEmote(id,"froid"))],
         ["radar","sad","Mes oreilles sont deux glaçons. Je n'entends plus que mes dents claquer."],
         ["balafre","shy","Le perdant paie le tribut. Voilà le nôtre : tout ce qu'on avait gardé pour l'hiver.",()=>{R.glands+=30;const b=bourse();b.sucres=(b.sucres||0)+5;putBourse(b);save();renderHud();toast("Le tribut des vaincus : +30 glands, +5 sucres d'orge")}]]}},
-    {at:"@porch",goal:"Offre un chocolat chaud à la bande, sous le porche.",lines:[
-      ["petitpois","joy","Un chocolat chaud pour les vaincus… et pour les vainqueurs aussi !",()=>actGo("petitpois",200,236,"happy")],
-      ["radar","joy","J'entends les guimauves fondre. C'est le plus beau bruit du monde.",()=>actEmote("radar","coeur")],
-      ["filou","shy","Je peux emprunter une chaussette de Noël ? Pour la rendre. Un jour.",()=>actEmote("filou","note")],
-      ["balafre","open","Dans la forêt, l'hiver, chacun reste dans son terrier. Ici, tout le monde est ensemble.",()=>actEmote("balafre","coeur")]]},
+    // 03/11/2026 (Joffray) : Balafre, vexé, s'en va avec sa bande ; Petit Pois les rattrape pour un vrai chocolat chaud ; émus, ils
+    // s'excusent et promettent d'aider à refaire la boule
+    {at:"@porch",goal:"La bande s'en va… Rattrape-la devant la maison.",lines:[
+      ["balafre","open","Bon. On a perdu, on se casse. Allez, les gars.",()=>{actEmote("balafre","colere");actGo("balafre",340,330,"up");setTimeout(()=>{actGo("filou",372,350,"up");actGo("radar",310,354,"up")},300)}],
+      ["petitpois","surprise","Attendez ! Non, ce n'est pas ça, la magie de Noël. Restez un peu… Au moins le temps d'un vrai chocolat chaud !",()=>{actEmote("petitpois","!");actNear("petitpois","balafre","up")}],
+      ["radar","shy","Un… vrai chocolat chaud ? Avec des guimauves ?",()=>actEmote("radar","coeur")],
+      ["filou","shy","Personne ne nous a jamais invités nulle part…",()=>actPose("filou","sit","shy")],
+      ["balafre","shy","… Pardon. Pour la boule, pour le tribut, pour tout. Et merci.",()=>{actPose("balafre","sit","shy");actEmote("balafre","coeur")}],
+      ["balafre","open","Et la boule de Boule-de-Neige, on va vous aider à la refaire. Encore plus grosse qu'avant.",()=>{actTrick("balafre","boing");["balafre","filou","radar"].forEach((id,i)=>setTimeout(()=>actGo(id,[200,160,240][i],[262,270,270][i],"happy"),400+i*150))}],
+      ["filou","joy","Ouais ouais, encore plus grosse !",()=>actTrick("filou","boing")],
+      ["radar","joy","Et j'entends déjà les guimauves fondre. C'est le plus beau bruit du monde.",()=>actEmote("radar","note")]]},
     // tout le monde aide Boule-de-Neige à refaire sa boule, plus grosse qu'avant
     {at:"bouleneige",goal:"Aide Boule-de-Neige à refaire sa boule, avec toute la bande.",showMs:2600,
       show:()=>{["balafre","filou","radar","petitpois"].forEach((id,i)=>actGo(id,BALL.x+[-90,-50,60,100][i],BALL.y+[-10,30,30,-10][i],"happy"));
