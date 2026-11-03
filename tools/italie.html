@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Petite Italie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+:root{--ink:#5b4250;--cream:#fffaf5;--line:#ead9cf}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#f6ece4;color:var(--ink);font:500 14px "Zen Maru Gothic",system-ui,sans-serif}
+h1,h2,.ttl{font-family:"Mochiy Pop One",sans-serif;font-weight:400}
+h1{font-size:20px;margin:0 0 4px}
+.intro{margin:0 0 16px;max-width:760px;opacity:.85}
+.wrap{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.col{width:360px;max-width:100%}
+.col>h2{font-size:15px;margin:0 0 8px}
+.phone{background:#fdf6ee;border:3px solid var(--ink);border-radius:26px;overflow:hidden;box-shadow:0 6px 0 #e3cfc2}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--cream);border-bottom:2px solid var(--line)}
+.back{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:900}
+.bar .ttl{font-size:16px;line-height:1.1}
+.bar small{display:block;font-size:11px;opacity:.7;font-family:"Zen Maru Gothic"}
+.pill{margin-left:auto;padding:4px 10px;border-radius:99px;background:#ffe7a8;border:2px solid #f0cf72;font-weight:900;font-size:13px}
+.pill+.pill{margin-left:0;background:#fff;border-color:var(--line)}
+.map svg{display:block;width:100%;height:auto}
+.btns{display:flex;gap:8px;padding:10px;background:var(--cream);border-top:2px solid var(--line)}
+.btns span{flex:1;text-align:center;padding:9px 0;border-radius:99px;border:2px solid var(--line);background:#fff;font-weight:900}
+/* la journée */
+.room{position:relative;margin:10px;border:3px solid var(--ink);border-radius:18px;overflow:hidden;aspect-ratio:7/5}
+.room>svg{position:absolute;inset:0;width:100%;height:100%}
+.cu{position:absolute;bottom:22%;width:24%;transform:translateX(-50%)}
+.cu svg{display:block;width:100%}
+.bub{position:absolute;left:50%;top:-30%;transform:translateX(-50%);background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:2px 5px;display:flex;gap:1px}
+.bub svg{width:26px;height:24px}
+.pat{position:absolute;left:18%;right:18%;bottom:-8px;height:6px;border-radius:9px;background:#eee;border:1.5px solid var(--ink);overflow:hidden}
+.pat i{display:block;height:100%;background:#8fd18a}
+.vip{position:absolute;top:-52%;left:50%;transform:translateX(-50%);font-size:10px;font-weight:900;background:#ffd36a;border:2px solid var(--ink);border-radius:8px;padding:0 4px}
+.clients{position:absolute;left:8px;bottom:8px;background:#fff;border:2px solid var(--line);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:900}
+.tray{display:flex;gap:6px;align-items:center;margin:0 10px;padding:8px;background:#fff;border:2px solid var(--line);border-radius:16px}
+.slot{width:46px;height:46px;border-radius:12px;border:2px dashed #e6d3c4;background:#fbf3ea;display:grid;place-items:center}
+.slot.f{border:2px solid var(--ink);background:#fff}
+.slot svg{width:38px}
+.opt{margin-left:auto;display:flex;gap:6px}
+.opt span{width:50px;height:50px;border-radius:50%;background:#e9f3fb;border:2px solid #b9d6ee;display:grid;place-items:center;font-size:10px;font-weight:900;text-align:center;line-height:1}
+.opt svg{width:26px;display:block;margin:0 auto}
+.tiles{display:grid;gap:8px;margin:8px 10px 12px}
+.t2{grid-template-columns:1fr 1fr}.t3{grid-template-columns:1fr 1fr 1fr}
+.tile{position:relative;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 4px 8px;text-align:center;font-weight:900;font-size:12.5px;box-shadow:0 3px 0 #ecdcd0}
+.tile svg{width:48px;height:44px;display:block;margin:0 auto 2px}
+.tile .bar2{height:6px;margin:5px 14px 0;border-radius:9px;background:#f0e4da;overflow:hidden}
+.tile .bar2 i{display:block;height:100%;background:#f3b06a}
+.tile .n{position:absolute;top:-8px;right:-6px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;display:grid;place-items:center}
+/* fiches */
+.card{background:var(--cream);border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 6px}
+.card p{margin:4px 0}
+.card ul{margin:4px 0;padding-left:18px}
+.rec{display:grid;grid-template-columns:44px 1fr;gap:4px 8px;align-items:center}
+.rec svg{width:42px;height:38px}
+.rec b{display:block}
+.rec span{font-size:12px;opacity:.75}
+.foxes{display:flex;flex-wrap:wrap;gap:8px}
+.fx{width:150px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px;text-align:center}
+.fx svg{width:96px;display:block;margin:0 auto}
+.fx b{display:block}.fx span{font-size:11.5px;opacity:.75;display:block}
+.tag{display:inline-block;font-size:10px;font-weight:900;padding:0 6px;border-radius:6px;background:#f3e6dc;margin-bottom:2px}
+.tag.l{background:#ffd36a}
+@media (max-width:420px){body{padding:10px}.col{width:100%}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Monde 2 · la Petite Italie (maquette)</h1>
+<p class="intro">Premier quartier de la Ville : 10 journées, un nouveau café avec sa boutique, des recettes et des renards du quartier. Les règles du jeu ne changent pas : mêmes gestes, même plateau, mêmes étoiles. Rien n'est encore jouable, c'est pour choisir l'ambiance.</p>
+<div class="wrap">
+  <div class="col"><h2>La carte</h2><div class="phone map" id="map"></div></div>
+  <div class="col"><h2>Une journée (jour 3)</h2><div class="phone" id="day"></div></div>
+  <div class="col" id="info"></div>
+</div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const K=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+const f1=n=>Math.round(n*10)/10;
+/* ---------- les recettes du quartier (mêmes clés que le Café : prix, cuisson et équilibrage identiques) ---------- */
+const IC={
+  espresso:`<ellipse cx="20" cy="31" rx="15" ry="3.6" fill="#fff" ${K}/><path d="M30 18 Q36 18 35 22 Q34 26 29 25" fill="none" ${K}/><path d="M8 15 H31 Q31 30 19.5 30 Q8 30 8 15Z" fill="#fff" ${K}/><ellipse cx="19.5" cy="15" rx="11.5" ry="2.8" fill="#6b3f2a" ${K}/><path d="M16 9 q-2 -3 0 -6 M22 9 q-2 -3 0 -6" fill="none" stroke="#c9b3a8" stroke-width="1.8" stroke-linecap="round"/>`,
+  cappuccino:`<ellipse cx="20" cy="32" rx="16" ry="3.6" fill="#fff" ${K}/><path d="M31 17 Q38 17 37 22 Q36 27 30 26" fill="none" ${K}/><path d="M5 14 H32 Q32 31 18.5 31 Q5 31 5 14Z" fill="#9fc8a8" ${K}/><ellipse cx="18.5" cy="14" rx="13.5" ry="3.2" fill="#f6e2c6" ${K}/><path d="M18.5 16.4 q-4 -3 -1.6 -4.4 q1.6 -.6 1.6 1 q0 -1.6 1.6 -1 q2.4 1.4 -1.6 4.4Z" fill="#c98a5a"/>`,
+  granita:`<path d="M9 12 H31 L27 33 H13Z" fill="#fff6c8" ${K}/><path d="M10 12 Q14 4 20 6 Q26 3 30 12Z" fill="#fde98a" ${K}/><circle cx="16" cy="9" r="1" fill="#fff"/><circle cx="24" cy="8" r="1" fill="#fff"/><circle cx="31" cy="11" r="5" fill="#ffe36a" ${K}/><path d="M31 6.5 V15.5 M27 9 L35 13 M27 13 L35 9" stroke="#f2c94a" stroke-width="1.2"/><path d="M24 2 L22 14" ${K} stroke="#f47f9a"/>`,
+  cornetto:`<path d="M4 26 Q8 12 20 10 Q32 12 36 26 Q30 31 20 30 Q10 31 4 26Z" fill="#f2b765" ${K}/><path d="M13 13 Q15 22 14 29 M20 10.5 V30 M27 13 Q25 22 26 29" fill="none" stroke="#c98a45" stroke-width="2" stroke-linecap="round"/><g fill="#fff">${[[10,16],[17,14],[24,15],[30,18],[14,21],[28,22],[21,20]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.2"/>`).join("")}</g>`,
+  cannoli:`<g transform="rotate(-18 20 20)"><rect x="8" y="12" width="24" height="15" rx="7.5" fill="#e9a65c" ${K}/><path d="M12 13 l4 13 M18 12.5 l4 14 M24 12.5 l4 14" stroke="#c98a45" stroke-width="1.6"/><ellipse cx="7" cy="19.5" rx="4.4" ry="7.5" fill="#fff8ea" ${K}/><ellipse cx="33" cy="19.5" rx="4.4" ry="7.5" fill="#fff8ea" ${K}/><circle cx="5.6" cy="17" r="1.4" fill="#8fbf5a"/><circle cx="7.6" cy="22" r="1.3" fill="#8fbf5a"/><circle cx="34" cy="17" r="1.4" fill="#8fbf5a"/><circle cx="32.4" cy="22" r="1.3" fill="#e0505a"/></g>`,
+  cioccolata:`<ellipse cx="20" cy="32" rx="16" ry="3.6" fill="#fff" ${K}/><path d="M31 17 Q38 17 37 22 Q36 27 30 26" fill="none" ${K}/><path d="M5 14 H32 Q32 31 18.5 31 Q5 31 5 14Z" fill="#f4a6b4" ${K}/><ellipse cx="18.5" cy="14" rx="13.5" ry="3.2" fill="#5a3324" ${K}/><path d="M14 13 q4 -2 9 0" stroke="#8a5a44" stroke-width="1.6" fill="none"/>`,
+  gelato:`<path d="M12 20 L20 37 L28 20Z" fill="#f2c27a" ${K}/><path d="M14 23 L26 23 M15.5 27 L24.5 27" stroke="#c98a45" stroke-width="1.4"/><circle cx="15" cy="17" r="7" fill="#b6dc8a" ${K}/><circle cx="25" cy="17" r="7" fill="#f9b8c6" ${K}/><circle cx="20" cy="9" r="6.5" fill="#fff4dc" ${K}/><circle cx="18" cy="7" r="1.2" fill="#fff"/>`,
+  tiramisu:`<path d="M5 16 L20 9 L35 16 V30 L20 37 L5 30Z" fill="#fbe9cf" ${K}/><path d="M5 16 L20 23 L35 16" fill="none" ${K}/><path d="M20 23 V37" ${K}/><path d="M5 21 L20 28 L35 21 M5 25.5 L20 32.5 L35 25.5" fill="none" stroke="#8a5a3a" stroke-width="2.6"/><path d="M5 16 L20 9 L35 16 L20 23Z" fill="#8a5a3a" ${K}/><g fill="#5b3a2a"><circle cx="15" cy="15" r=".9"/><circle cx="22" cy="13" r=".9"/><circle cx="26" cy="17" r=".9"/><circle cx="19" cy="18" r=".9"/></g>`,
+  mousse:`<path d="M8 22 Q6 12 16 12 Q18 6 24 9 Q32 8 32 16 Q36 22 30 26 H10 Q6 26 8 22Z" fill="#fffaf0" ${K}/><path d="M14 18 q3 -2 6 0" stroke="#e6d3c4" stroke-width="1.6" fill="none"/>`,
+  four:`<rect x="5" y="7" width="30" height="26" rx="6" fill="#f4a6a0" ${K}/><rect x="10" y="13" width="20" height="13" rx="3" fill="#fff3e2" ${K}/><circle cx="16" cy="19" r="1.4" fill="${INK}"/><circle cx="24" cy="19" r="1.4" fill="${INK}"/><path d="M18 22 q2 2 4 0" fill="none" stroke="${INK}" stroke-width="1.4"/><circle cx="12" cy="29.5" r="1.4" fill="${INK}"/><circle cx="28" cy="29.5" r="1.4" fill="${INK}"/>`
+};
+const ic=(k,w=40,h=38)=>`<svg viewBox="0 0 40 38" width="${w}" height="${h}" aria-hidden="true"><g filter="url(#wobble)">${IC[k]}</g></svg>`;
+const RECS=[["cafe","espresso","Espresso","Le café. Avec la mousse de lait : cappuccino."],["croissant","cornetto","Cornetto","Le croissant du quartier, sucre glace."],["the","granita","Granita citron","Glace pilée au citron, à la place du thé."],["cookie","cannoli","Cannoli","Coque croustillante, crème et pistache (fournées de 4)."],["choco","cioccolata","Cioccolata","Chocolat chaud si épais que la cuillère tient debout."],["smoothie","gelato","Gelato","Trois boules, pistache, fraise, fior di latte."],["gateau","tiramisu","Tiramisù","Le plus cher de la carte, par plats de 2 parts."]];
+
+/* ---------- les renards du quartier (originaux, avec les accessoires qui existent déjà ; leurs vrais accessoires seront dessinés ensuite) ---------- */
+const LOC=[
+  {id:"it1",name:"Pistache",rar:"commun",acc:"lunettes",c:{b:"#e9d49a",ch:"#fffaf0",e:"#9a7a4a",s:"#8a6a44",t:"#fffaf0"},bio:"Livre les cannoli en scooter. Toujours pressée, jamais en retard."},
+  {id:"it2",name:"Ricotta",rar:"commun",acc:"noeud",c:{b:"#fbf4ea",ch:"#ffffff",e:"#d8b8a8",s:"#c9a896",t:"#ffffff"},bio:"Toute ronde, toute blanche. Pétrit la pâte à cornetti avant l'aube."},
+  {id:"it3",name:"Tito",rar:"discret",acc:"bob",scale:.84,c:{b:"#c98552",ch:"#fff3e2",e:"#7a4a2c",s:"#6a3c26",t:"#fff3e2"},bio:"Le plus petit du quartier. Pêche des pièces au fond de la fontaine."},
+  {id:"it4",name:"Donna Limone",rar:"legend",acc:"fleur",c:{b:"#f7d46a",ch:"#fffbe8",e:"#c99a3a",s:"#b88a2a",t:"#fffbe8"},bio:"L'invitée d'honneur du quartier. Ses citronniers donnent la meilleure granita du monde."}
+];
+const fx=(f,o)=>foxArt(f,o||{});
+
+/* ---------- la carte ---------- */
+function mapSVG(){
+  const W=400,H=1000,P=[[200,912],[112,846],[100,756],[196,700],[298,640],[292,540],[196,486],[104,420],[126,322],[228,262]];
+  let d="",s="",deco="";
+  // sol pavé chaud, pavés dessinés
+  d+=`<pattern id="cob" width="44" height="30" patternUnits="userSpaceOnUse"><rect width="44" height="30" fill="#f7e6cd"/><g fill="none" stroke="#ebd2ae" stroke-width="2"><rect x="2" y="2" width="18" height="11" rx="5"/><rect x="24" y="2" width="18" height="11" rx="5"/><rect x="-9" y="17" width="18" height="11" rx="5"/><rect x="13" y="17" width="18" height="11" rx="5"/><rect x="35" y="17" width="18" height="11" rx="5"/></g></pattern>`;
+  s+=`<rect width="${W}" height="${H}" fill="url(#cob)"/>`;
+  // le canal en travers, avec son pont
+  s+=`<path d="M0 588 Q100 578 200 590 T400 586 V618 Q300 626 200 614 T0 620Z" fill="#9fd3e8" ${K}/><path d="M30 600 q10 -4 20 0 M140 604 q10 -4 20 0 M330 598 q10 -4 20 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  // maisons : façade ocre ou rose, toit de tuiles, volets verts, jardinière
+  const house=(x,y,w,h,col,roof="#d9774e",sh="#7fb48a")=>{let g=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${col}" ${K}/><path d="M${x-6} ${y+2} L${x+w/2} ${y-20} L${x+w+6} ${y+2}Z" fill="${roof}" ${K}/>`;
+    for(let i=0;i<w/30-0.5;i++){const wx=x+10+i*30;g+=`<rect x="${wx}" y="${y+12}" width="12" height="16" rx="5" fill="#bfe1f0" ${K}/><rect x="${wx-6}" y="${y+12}" width="6" height="16" rx="1.5" fill="${sh}" ${K}/><rect x="${wx+12}" y="${y+12}" width="6" height="16" rx="1.5" fill="${sh}" ${K}/><rect x="${wx-3}" y="${y+28}" width="18" height="5" rx="2" fill="#c98a5a" ${K}/><circle cx="${wx+1}" cy="${y+28}" r="2.4" fill="#f47f9a"/><circle cx="${wx+7}" cy="${y+27}" r="2.4" fill="#ffd36a"/><circle cx="${wx+12}" cy="${y+28}" r="2.4" fill="#f47f9a"/>`}
+    if(h>50)g+=`<path d="M${x+w/2-9} ${y+h} V${y+h-20} Q${x+w/2} ${y+h-30} ${x+w/2+9} ${y+h-20} V${y+h}Z" fill="#a8664a" ${K}/>`;return g};
+  const lemon=(x,y)=>`<path d="M${x-9} ${y} L${x-7} ${y+14} H${x+7} L${x+9} ${y}Z" fill="#d9774e" ${K}/><circle cx="${x}" cy="${y-11}" r="13" fill="#8cc47a" ${K}/>${[[-6,-14],[5,-16],[1,-6],[-7,-5],[7,-8]].map(([a,b])=>`<ellipse cx="${x+a}" cy="${y+b}" rx="2.8" ry="2.2" fill="#ffe36a" stroke="${INK}" stroke-width="1"/>`).join("")}`;
+  const lamp=(x,y)=>`<path d="M${x} ${y} V${y-34}" ${K}/><path d="M${x-7} ${y-34} H${x+7} L${x+4} ${y-44} H${x-4}Z" fill="#ffe9a8" ${K}/><circle cx="${x}" cy="${y-38}" r="14" fill="#ffe9a8" opacity=".35"/>`;
+  const cypress=(x,y,k=1)=>`<path d="M${x} ${y-56*k} Q${x+12*k} ${y-26*k} ${x+8*k} ${y} H${x-8*k} Q${x-12*k} ${y-26*k} ${x} ${y-56*k}Z" fill="#5f9a6a" ${K}/>`;
+  const vespa=(x,y)=>`<circle cx="${x-14}" cy="${y}" r="6" fill="#6a5560" ${K}/><circle cx="${x+14}" cy="${y}" r="6" fill="#6a5560" ${K}/><path d="M${x-20} ${y-3} Q${x-20} ${y-16} ${x-4} ${y-16} H${x+6} L${x+12} ${y-28} M${x+6} ${y-16} Q${x+20} ${y-14} ${x+20} ${y-3}Z" fill="#9fd8c4" ${K}/><path d="M${x+8} ${y-28} H${x+18}" ${K}/><rect x="${x-14}" y="${y-22}" width="14" height="5" rx="2.5" fill="#a8664a" ${K}/>`;
+  const fountain=(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="38" ry="13" fill="#e8e1d8" ${K}/><ellipse cx="${x}" cy="${y-2}" rx="31" ry="8" fill="#9fd3e8" ${K}/><rect x="${x-4}" y="${y-30}" width="8" height="26" fill="#e8e1d8" ${K}/><ellipse cx="${x}" cy="${y-30}" rx="13" ry="4.5" fill="#e8e1d8" ${K}/><path d="M${x} ${y-34} q-12 -8 -18 22 M${x} ${y-34} q12 -8 18 22" fill="none" stroke="#7fc4e0" stroke-width="2.4" stroke-linecap="round"/>`;
+  const laundry=(x1,x2,y)=>{let g=`<path d="M${x1} ${y} Q${(x1+x2)/2} ${y+12} ${x2} ${y}" fill="none" stroke="${INK}" stroke-width="1.6"/>`;["#f9b8c6","#bfe1f0","#fff","#ffe08a"].forEach((c,i)=>{const t=(i+1)/5,x=x1+(x2-x1)*t,yy=y+12*4*t*(1-t);g+=`<rect x="${x-6}" y="${yy}" width="12" height="14" rx="2" fill="${c}" ${K}/>`});return g};
+  // le décor posé loin du chemin
+  deco+=house(4,820,66,70,"#f7c99a")+house(318,850,78,60,"#f6b7a8")+house(306,730,90,64,"#fbe0a0","#d9774e","#6fa8c8")+house(4,630,58,56,"#f6b7a8")
+    +house(330,452,66,60,"#f7c99a")+house(4,470,60,62,"#fbe0a0","#d9774e","#6fa8c8")+house(300,300,96,64,"#f6b7a8")+house(4,200,74,64,"#f7c99a");
+  deco+=laundry(62,96,640)+laundry(70,110,836);
+  deco+=lemon(276,900)+lemon(36,936)+lemon(206,620-60)+lemon(370,690)+lemon(232,410)+lemon(52,380);
+  deco+=lamp(154,880)+lamp(250,730)+lamp(150,560)+lamp(70,300)+lamp(296,250);
+  deco+=fountain(300,410)+vespa(186,800)+vespa(350,580-10);
+  deco+=cypress(370,250,.8)+cypress(386,270,.6)+cypress(24,560,.7);
+  // le chemin et la part déjà faite
+  const pts=P.map(([x,y])=>[x,y]);let path=`M200 990 L${pts[0][0]} ${pts[0][1]}`;for(let i=1;i<pts.length;i++){const [a,b]=pts[i-1],[c,e]=pts[i];path+=` Q${a} ${(b+e)/2} ${(a+c)/2} ${(b+e)/2} T${c} ${e}`}path+=` L200 168`;
+  s+=deco;
+  s+=`<path d="${path}" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><path d="${path}" fill="none" stroke="#fdf1df" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/><path d="${path}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
+  // le pont sur le canal
+  s+=`<path d="M266 590 Q295 566 324 590 V606 H266Z" fill="#f2d9b8" ${K}/><path d="M270 590 Q295 572 320 590" fill="none" stroke="#c9a888" stroke-width="2"/><path d="M262 586 H328" ${K}/>`;
+  // l'arche d'entrée (depuis le Monde 1) en bas
+  s+=`<path d="M140 1004 V984 Q200 948 260 984 V1004" fill="none" stroke="${INK}" stroke-width="16" stroke-linecap="round"/><path d="M140 1004 V984 Q200 948 260 984 V1004" fill="none" stroke="#f7c99a" stroke-width="10" stroke-linecap="round"/><rect x="146" y="968" width="108" height="22" rx="8" fill="#fff" ${K}/><text x="200" y="984" text-anchor="middle" font-family="Mochiy Pop One" font-size="11" fill="${INK}">Petite Italie</text>`;
+  // le café du quartier en haut : store rayé vert et blanc, tables en terrasse
+  s+=`<rect x="110" y="52" width="180" height="100" rx="6" fill="#fbe0a0" ${K}/><path d="M100 54 L200 14 L300 54Z" fill="#d9774e" ${K}/><rect x="182" y="104" width="36" height="48" rx="6" fill="#a8664a" ${K}/><circle cx="211" cy="130" r="2" fill="#ffd36a"/>`;
+  let aw=`<path d="M112 82 H288 L296 102 H104Z" fill="#fff" ${K}/>`;for(let i=0;i<8;i++)aw+=`<path d="M${113+i*22} 82 h11 l${3} 20 h-11Z" fill="#7fb48a"/>`;aw+=`<path d="M104 102 ${Array.from({length:8},(_,i)=>`q${12} 9 ${24}`).join(" ")}" fill="#fff" ${K}/><path d="M112 82 H288 L296 102 H104Z" fill="none" ${K}/>`;
+  s+=aw+`<rect x="138" y="58" width="124" height="20" rx="8" fill="#fff" ${K}/><text x="200" y="73" text-anchor="middle" font-family="Mochiy Pop One" font-size="11" fill="${INK}">Caffè Kitsune</text>`;
+  s+=[130,270].map(x=>`<path d="M${x} 168 V146" ${K}/><path d="M${x-16} 150 Q${x} 136 ${x+16} 150Z" fill="#f47f9a" ${K}/><ellipse cx="${x}" cy="168" rx="13" ry="4" fill="#fff" ${K}/>`).join("")+lemon(318,150)+lemon(84,150);
+  // les journées
+  const st=[3,3,0,0,0,0,0,0,0,0];
+  P.forEach(([x,y],i)=>{const n=i+1,op=n<=3,cur=n===3;
+    s+=`<circle cx="${x}" cy="${y}" r="26" fill="${op?"#ffd86a":"#efe3d6"}" ${K} stroke-width="3"/><text x="${x}" y="${y+8}" text-anchor="middle" font-family="Mochiy Pop One" font-size="21" fill="${op?INK:"#b8a69a"}">${n}</text>`;
+    if(st[i])s+=[ -16,0,16].map(o=>`<path d="M${x+o} ${y+24} l2.6 5.4 5.8 .8 -4.2 4 1 5.8 -5.2 -2.8 -5.2 2.8 1 -5.8 -4.2 -4 5.8 -.8Z" fill="#ffd36a" stroke="${INK}" stroke-width="1.4"/>`).join("");
+    if(cur)s+=`<g transform="translate(${x-26} ${y-78}) scale(.44)">${fx(FOX.roussette).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g>`});
+  // l'invitée d'honneur à côté du jour 10
+  s+=`<g transform="translate(300 196) scale(.52)" opacity=".95">${fx(LOC[3],{sil:1}).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</g><rect x="306" y="250" width="56" height="16" rx="6" fill="#fff" ${K} stroke-width="1.6"/><text x="334" y="262" text-anchor="middle" font-size="10" font-weight="900" fill="${INK}">???</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" aria-label="Carte de la Petite Italie"><defs>${d}</defs><g filter="url(#wobble)">${s}</g></svg>`;
+}
+document.getElementById("map").innerHTML=`<div class="bar"><span class="back">‹</span><div class="ttl">Petite Italie<small>La Ville · ★ 6 / 30</small></div><span class="pill">★ 126</span><span class="pill">2 140</span></div>${mapSVG()}<div class="btns"><span>Boutique</span><span>Quêtes</span><span>Carnet</span></div>`;
+
+/* ---------- la journée ---------- */
+function roomSVG(){
+  let s="";
+  // dehors : ciel, collines et cyprès au loin, façades d'en face avec volets et linge
+  s+=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd2f0"/><stop offset="1" stop-color="#fde7cf"/></linearGradient></defs>`;
+  s+=`<rect x="0" y="0" width="420" height="200" fill="url(#sky)"/><circle cx="330" cy="40" r="16" fill="#fff4c4"/><path d="M0 120 Q80 92 170 112 T340 100 T420 108 V200 H0Z" fill="#b8d89a"/>`;
+  s+=[[60,112],[72,116],[250,104],[262,108]].map(([x,y])=>`<path d="M${x} ${y-26} Q${x+6} ${y-12} ${x+4} ${y} H${x-4} Q${x-6} ${y-12} ${x} ${y-26}Z" fill="#6aa676" stroke="${INK}" stroke-width="1.6"/>`).join("");
+  const fac=(x,w,top,col)=>{let g=`<rect x="${x}" y="${top}" width="${w}" height="${200-top}" fill="${col}" stroke="${INK}" stroke-width="2"/><path d="M${x-3} ${top} H${x+w+3}" stroke="#d9774e" stroke-width="6"/>`;
+    for(let i=0;i<Math.floor(w/32);i++)for(let j=0;j<2;j++){const wx=x+10+i*32,wy=top+12+j*34;g+=`<rect x="${wx}" y="${wy}" width="12" height="18" rx="5" fill="#8fbcd4" stroke="${INK}" stroke-width="1.6"/><rect x="${wx-6}" y="${wy}" width="6" height="18" fill="#7fb48a" stroke="${INK}" stroke-width="1.4"/><rect x="${wx+12}" y="${wy}" width="6" height="18" fill="#7fb48a" stroke="${INK}" stroke-width="1.4"/>`}return g};
+  s+=fac(-10,120,92,"#f7c99a")+fac(110,110,110,"#f6b7a8")+fac(220,120,86,"#fbe0a0")+fac(340,90,104,"#f7c99a");
+  s+=`<path d="M100 104 Q160 118 222 102" fill="none" stroke="${INK}" stroke-width="1.4"/>`+[["#f9b8c6",130],["#fff",152],["#bfe1f0",176],["#ffe08a",198]].map(([c,x])=>`<rect x="${x-6}" y="${110+Math.sin((x-100)/122*Math.PI)*6}" width="12" height="13" rx="2" fill="${c}" stroke="${INK}" stroke-width="1.4"/>`).join("");
+  // la véranda : montants, guirlande de petits citrons, store rayé
+  s+=`<rect x="0" y="0" width="420" height="16" fill="#fff"/>`;for(let i=0;i<14;i++)s+=`<path d="M${i*30} 0 h15 v16 h-15Z" fill="#7fb48a"/>`;s+=`<path d="M0 16 ${Array.from({length:14},()=>"q7.5 9 15 0 q7.5 9 15 0").join(" ")}" fill="#fff" stroke="${INK}" stroke-width="2.2"/>`;
+  s+=`<path d="M0 34 Q105 52 210 34 T420 34" fill="none" stroke="${INK}" stroke-width="1.4"/>`+Array.from({length:13},(_,i)=>{const x=16+i*32,y=34+Math.abs(Math.sin(x/420*2*Math.PI))*12+4;return `<ellipse cx="${x}" cy="${y}" rx="5" ry="4" fill="#ffe36a" stroke="${INK}" stroke-width="1.4"/>`}).join("");
+  s+=[0,140,280,412].map(x=>`<rect x="${x-6}" y="16" width="14" height="190" fill="#fffaf0" stroke="${INK}" stroke-width="2.4"/>`).join("");
+  // le mur et le comptoir de marbre, étagères à biscotti
+  s+=`<rect x="0" y="198" width="420" height="102" fill="#f4e0c8"/><path d="M0 198 H420" stroke="${INK}" stroke-width="2.4"/>`;
+  s+=[[18,214],[350,214]].map(([x,y])=>`<rect x="${x}" y="${y+22}" width="52" height="5" rx="2" fill="#c98a5a" stroke="${INK}" stroke-width="1.8"/><rect x="${x+4}" y="${y}" width="14" height="22" rx="4" fill="#fff4dc" stroke="${INK}" stroke-width="1.8"/><rect x="${x+21}" y="${y+6}" width="12" height="16" rx="3" fill="#e9a65c" stroke="${INK}" stroke-width="1.8"/><rect x="${x+36}" y="${y+2}" width="13" height="20" rx="4" fill="#b6dc8a" stroke="${INK}" stroke-width="1.8"/>`).join("");
+  s+=`<rect x="-4" y="226" width="428" height="16" rx="4" fill="#f4f1ee" stroke="${INK}" stroke-width="2.6"/><path d="M40 230 q30 6 60 2 M200 236 q40 -4 70 2 M320 230 q24 6 50 0" stroke="#d8d0cc" stroke-width="1.6" fill="none"/><rect x="0" y="242" width="420" height="60" fill="#e6a77a" stroke="${INK}" stroke-width="2.4"/>`+[0,1,2,3,4,5].map(i=>`<rect x="${10+i*70}" y="252" width="56" height="40" rx="6" fill="#efb88c" stroke="${INK}" stroke-width="2"/>`).join("");
+  s+=`<g transform="translate(372 196)">${IC.espresso.replace(/stroke-width="2.4"/g,'stroke-width="2"')}</g>`;
+  return `<svg viewBox="0 0 420 300" preserveAspectRatio="xMidYMid slice"><g filter="url(#wobble)">${s}</g></svg>`;
+}
+const cu=(f,left,items,p,vip)=>`<div class="cu" style="left:${left}%">${vip?`<span class="vip">VIP ×3</span>`:""}<span class="bub">${items.map(k=>ic(k,26,24)).join("")}</span>${fx(f)}<span class="pat"><i style="width:${p}%"></i></span></div>`;
+document.getElementById("day").innerHTML=`<div class="bar"><span class="back">‹</span><div class="ttl">Jour 3<small>Objectif 160 · ★★★ 272</small></div><span class="pill">★ 0</span><span class="pill">74</span></div>
+<div class="room">${roomSVG()}
+  ${cu(LOC[0],20,["cannoli","espresso"],82)}${cu(FOX.petitpois||LOC[2],50,["cappuccino"],55)}${cu(LOC[1],80,["cornetto","granita"],30)}
+  <span class="clients">Clients 7</span></div>
+<div class="tray"><span class="slot f">${ic("espresso",38,36)}</span><span class="slot f">${ic("cornetto",38,36)}</span><span class="slot"></span>
+  <div class="opt"><span>${ic("mousse",26,24)}Mousse</span></div></div>
+<div class="tiles t2"><div class="tile">${ic("espresso",48,44)}Espresso<div class="bar2"><i style="width:60%"></i></div></div><div class="tile">${ic("granita",48,44)}Granita citron<div class="bar2"><i style="width:100%;background:#8fd18a"></i></div></div></div>
+<div class="tiles t3"><div class="tile">${ic("four",48,44)}Four<div class="bar2"><i style="width:35%"></i></div></div><div class="tile"><span class="n">2</span>${ic("cornetto",48,44)}Cornetto</div><div class="tile"><span class="n">4</span>${ic("cannoli",48,44)}Cannoli</div></div>`;
+
+/* ---------- les fiches ---------- */
+document.getElementById("info").innerHTML=`
+<div class="card"><h2>La carte du quartier</h2><p>Mêmes prix et mêmes cuissons que le Café (rien à rééquilibrer pour les gestes), seuls le nom et le dessin changent.</p>
+<div class="rec">${RECS.map(([k,i,n,d])=>`${ic(i,42,38)}<div><b>${n}</b><span>${d}</span></div>`).join("")}${ic("cappuccino",42,38)}<div><b>Cappuccino</b><span>Espresso + mousse de lait (l'option Lait).</span></div></div></div>
+<div class="card"><h2>Les renards du quartier</h2><p>Ils ne viennent qu'ici. Leurs vrais accessoires (casque de scooter, tablier, chapeau de paille, couronne de citrons) seront dessinés ensuite.</p>
+<div class="foxes">${LOC.map(f=>`<div class="fx">${fx(f)}<span class="tag${f.rar==="legend"?" l":""}">${{commun:"commun",discret:"discret",legend:"légendaire"}[f.rar]}</span><b>${f.name}</b><span>${f.bio}</span></div>`).join("")}</div></div>
+<div class="card"><h2>Comment ça marche</h2><ul>
+<li><b>On y entre</b> par le panneau « À suivre » en haut de la carte du Café, une fois le jour 40 réussi.</li>
+<li><b>10 journées</b>, une seule saison (l'été en ville), sans porte au milieu. ★★★ partout = Donna Limone vient en VIP, partout.</li>
+<li><b>Un nouveau café</b> : sa propre boutique d'améliorations à racheter (four, machine, plateau…), un peu plus chère. Les pièces et les clochettes restent communes.</li>
+<li><b>Plus dur dès le départ</b> : le jour 1 du quartier se joue au rythme du jour 15-20 du Café, puis ça monte.</li>
+<li><b>Une spécialité</b> par quartier : ici la mousse de lait arrive dès le jour 1, et le gelato se compose (choisir 1, 2 ou 3 boules, plus cher).</li>
+</ul></div>`;
+</script>
+</body>
+</html>
