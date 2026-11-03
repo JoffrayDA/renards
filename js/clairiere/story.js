@@ -236,7 +236,7 @@ const STORIES={
       ["copeau","surprise","Et cette porte… Elle est coincée depuis combien de temps ?",()=>actEmote("copeau","?")],
       ["me","shy","Depuis toujours. On vit dehors, sous le porche.",()=>actEmote("me","goutte")],
       ["copeau","open","Dehors ? Avec une maison juste là ? Viens, on s'en occupe.",()=>{actGo("copeau",186,258);setTimeout(()=>actGo("me",226,262),400)}]]},
-    {at:"@porch",game:{k:"nails",n:5,time:12,say:"Les gonds sont tout rouillés. Plante les clous neufs : trois coups chacun !",win:"Tac, tac, tac ! Des gonds tout neufs."},goal:"Aide Copeau à réparer la porte de la maison.",lines:[
+    {at:"@porch",game:{k:"nails",n:5,time:7,say:"Les gonds sont tout rouillés. Plante les clous neufs : trois coups chacun !",win:"Tac, tac, tac ! Des gonds tout neufs."},goal:"Aide Copeau à réparer la porte de la maison.",lines:[
       ["copeau","joy","Elle ne grince plus du tout. Écoute ce silence !",()=>actTrick("copeau","salto")],
       ["copeau","surprise","…Mais elle ne s'ouvre toujours pas. Il y a une serrure. Et pas de clé.",()=>actEmote("copeau","?")],
       ["petitpois","sad","Personne n'a jamais eu la clé…",()=>actEmote("petitpois","goutte")]]},

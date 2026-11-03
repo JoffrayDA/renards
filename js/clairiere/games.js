@@ -866,12 +866,12 @@ const GAMES={
     A.tap=e=>{if(st!=="play")return;const p=svPt(sv,e);
       ham.setAttribute("transform",`translate(${p.x.toFixed(0)} ${(p.y-6).toFixed(0)})`);ham.setAttribute("opacity",1);replay(ham.firstChild,"shk");
       const n=ns.filter(n=>n.k<3).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
-      if(!n||Math.hypot(n.x-p.x,n.y-p.y)>40){A.sfx("bad");A.say("Aïe, à côté ! Vise la tête du clou.");return}
+      if(!n||Math.hypot(n.x-p.x,n.y-p.y)>40){left-=1;A.sfx("bad");A.say("Aïe, à côté ! Une seconde de perdue.");return} // un coup à côté coûte une seconde (Joffray : trop simple)
       n.k++;n.el.innerHTML=nailSVG(n.k);if(navigator.vibrate)navigator.vibrate(15);A.sfx("knock");
       const left3=ns.filter(n=>n.k<3).length;
       if(!left3){st="won";A.win(g.win||"Tous les clous sont plantés !")}else if(n.k>=3){A.sfx("good",N-left3);if(left3===Math.floor(N/2))A.cheer("CONTINUE !");A.say(`Plus que ${left3} !`)}};
     A.loop(dt=>{if(st!=="play")return;left-=dt;bar.setAttribute("width",(316*Math.max(0,left)/T).toFixed(1));
-      if(left<=0){st="lost";A.sfx("lose");A.say("Trop tard, la porte a encore glissé de ses gonds… On recommence !");A.later(reset,1500)}});
+      if(left<=0){st="lost";A.sfx("lose");A.say(g.sled?"Trop tard, le patin s'est encore détaché… On recommence !":"Trop tard, la porte a encore glissé de ses gonds… On recommence !");A.later(reset,1500)}});
     reset();
   },
 

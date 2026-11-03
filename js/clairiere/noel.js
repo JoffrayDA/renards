@@ -192,7 +192,7 @@ Object.assign(STORIES,{
       ["copeau","surprise","… Mon marteau ? Il était à ma ceinture ! J'ai couru si vite qu'il a dû sauter dans la neige.",()=>{actEmote("copeau","!");actPose("copeau","sit","surprise")}]]},
     {at:"copeau",game:{k:"search",snow:1,item:"marteau",say:"Le marteau de Copeau a volé dans la neige. Le bon tas frémit… 3 essais !",win:"Le marteau !"},goal:"Retrouve le marteau de Copeau dans la neige.",lines:[
       ["copeau","joy","Le voilà. Maintenant, on tient le patin, et on ne bouge plus.",()=>actGive("me","copeau","marteau")]]},
-    {at:"copeau",game:{k:"nails",sled:1,n:6,time:14,say:"Six clous pour remettre le patin. Trois coups chacun, avant minuit !",win:"Tac, tac, tac ! Le patin tient !"},goal:"Répare le patin avec Copeau, avant minuit.",lines:[
+    {at:"copeau",game:{k:"nails",sled:1,n:7,time:9,say:"Sept clous pour remettre le patin. Trois coups chacun, vite : minuit approche !",win:"Tac, tac, tac ! Le patin tient !"},goal:"Répare le patin avec Copeau, avant minuit.",lines:[
       ["copeau","joy","Plus solide que neuf. Il tiendrait une tonne de cadeaux.",()=>actTrick("copeau","boing")],
       ["barbeneige","joy","Ramure, à ton poste ! Et toi, grimpe : il me faut quelqu'un pour tenir les rênes. Moi, j'ai les lunettes coincées dans la barbe.",()=>{actTrick("barbeneige","boing");actEmote("ramure","note")}]]},
     {at:"barbeneige",game:{k:"tournee",n:7,win:"L'étoile brille en haut du sapin !"},goal:"Monte dans le traîneau : la tournée des maisons !",lines:()=>{R.noelStar=1;save();drawBg();drawGlow();return [
