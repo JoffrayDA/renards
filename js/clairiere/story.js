@@ -586,12 +586,12 @@ function renderStory(){
 /* ---------- le journal des histoires ---------- */
 function journal(){
   const c=cur(),nx=nextId();
-  const row=id=>{const S=STORIES[id],n=R.beat[id]||0,N=beats(id).length,f=FOX[id];
-    if(storyDone(id))return `<div class="opt"><span class="thumb">${foxArt(f,{expr:"joy",portrait:1})}</span><div class="txt"><strong>${S.title}</strong><span>${nameOf(id)} · terminée. Souvenir : ${R.souv[id]||S.souv}.</span></div><button class="btn ghost" data-reread="${id}" type="button">Relire</button></div>`;
+  const row=id=>{const S=STORIES[id],fid=S.fox||id,n=R.beat[id]||0,N=beats(id).length,f=FOX[fid]; // fox : une histoire qui ne porte pas le nom de son renard (les adieux de la bande, noel.js)
+    if(storyDone(id))return `<div class="opt"><span class="thumb">${foxArt(f,{expr:"joy",portrait:1})}</span><div class="txt"><strong>${S.title}</strong><span>${nameOf(fid)} · terminée. Souvenir : ${R.souv[id]||S.souv}.</span></div><button class="btn ghost" data-reread="${id}" type="button">Relire</button></div>`;
     const dots=`<span class="dots">${Array.from({length:N},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
     if(c&&c.id===id)return `<div class="opt now"><span class="thumb">${foxArt(f,{expr:"open",portrait:1})}</span><div class="txt"><strong>${S.title}</strong>${dots}<span>${c.b.goal}</span></div></div>`;
-    if(id===nx)return `<div class="opt"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>${isRes(id)?S.title:"???"}</strong><span>${goalText().g}</span></div></div>`;
-    return `<div class="opt unseen"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(id)})}</span><div class="txt"><strong>???</strong><span>${isRes(id)?`${nameOf(id)} te racontera son histoire plus tard.`:"Une histoire à venir."}</span></div></div>`};
+    if(id===nx)return `<div class="opt"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(fid)})}</span><div class="txt"><strong>${isRes(fid)?S.title:"???"}</strong><span>${goalText().g}</span></div></div>`;
+    return `<div class="opt unseen"><span class="thumb">${foxArt(f,{portrait:1,sil:!isRes(fid)})}</span><div class="txt"><strong>???</strong><span>${isRes(fid)?`${nameOf(fid)} te racontera son histoire plus tard.`:"Une histoire à venir."}</span></div></div>`};
   openSheet(`<h2>Les histoires</h2><p class="sub">Une histoire à la fois. Touche le renard ou l'endroit qui porte un <b class="markin">!</b> pour avancer.</p>${[...noelRows(),...INCO_ORDER.filter(k=>STORIES[k]&&(R.inco[k]||{}).found),...ORDER].map(row).join("")}`);
 }
 

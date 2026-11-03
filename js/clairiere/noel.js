@@ -13,7 +13,7 @@ const noelOn=()=>noelDay()>0;
 // clairière pour l'hiver ; bataille de neige en 3 contre 3 (jeu battle, on choisit son équipe), puis course de luge (luge) et curling (curling) :
 // à chaque défaite, Balafre parle de chance et réclame un autre défi. Balafre ne dit son nom que si on
 // gagne ; les deux autres laissent une photo-indice. Ils restent jusqu'au 6 janvier, puis repartent dans la forêt.
-const NOEL_ORDER=["grelot","ramure","paillette","balafre","barbeneige"],NOEL_FROM={grelot:1,ramure:8,paillette:15,balafre:19,barbeneige:24},NOEL_WILD=["balafre","filou","radar"];
+const NOEL_ORDER=["grelot","ramure","paillette","balafre","barbeneige","adieux"],NOEL_FROM={grelot:1,ramure:8,paillette:15,balafre:19,barbeneige:24,adieux:31},NOEL_WILD=["balafre","filou","radar"];
 const isNoelStory=id=>NOEL_ORDER.includes(id);
 // le chapitre qui attend : sa date est passée et le précédent est fini
 function noelNext(){if(!noelOn())return null;return NOEL_ORDER.find((k,i)=>!storyDone(k)&&noelDay()>=NOEL_FROM[k]&&(!i||storyDone(NOEL_ORDER[i-1]))&&(k!=="balafre"||R.beat.balafre>0||recordDone()))||null} // la bande attend que la boule de Boule-de-Neige ait roulé 24 h
@@ -132,7 +132,7 @@ Object.assign(STORIES,{
     // 03/11/2026 (Joffray) : Balafre, vexé, s'en va avec sa bande ; Petit Pois les rattrape pour un vrai chocolat chaud ; émus, ils
     // s'excusent et promettent d'aider à refaire la boule
     {at:"@porch",goal:"La bande s'en va… Rattrape-la devant la maison.",lines:[
-      ["balafre","open","Bon. On a perdu, on se casse. Allez, les gars.",()=>{actEmote("balafre","colere");actGo("balafre",340,330,"up");setTimeout(()=>{actGo("filou",372,350,"up");actGo("radar",310,354,"up")},300)}],
+      ["balafre","open","Bon. On a perdu, on se casse. Allez, les gars.",()=>{actEmote("balafre","colere");actGo("balafre",336,288,"up");setTimeout(()=>{actGo("filou",376,300,"up");actGo("radar",292,294,"up")},300)}],
       ["petitpois","surprise","Attendez ! Non, ce n'est pas ça, la magie de Noël. Restez un peu… Au moins le temps d'un vrai chocolat chaud !",()=>{actEmote("petitpois","!");actNear("petitpois","balafre","up")}],
       ["radar","shy","Un… vrai chocolat chaud ? Avec des guimauves ?",()=>actEmote("radar","coeur")],
       ["filou","shy","Personne ne nous a jamais invités nulle part…",()=>actPose("filou","sit","shy")],
@@ -156,6 +156,25 @@ Object.assign(STORIES,{
       ["radar","joy","Aha ! Trop fort, la boule !",()=>actTrick("radar","toupie")],
       ["balafre","shy","On reste jusqu'à ce que la neige fonde. Pour garder la clairière… avec vous, cette fois.",()=>actEmote("balafre","coeur")],
       ["me","joy","Bienvenue au refuge. C'est ça, la magie de Noël."]]}
+  ]},
+  // les adieux de la bande (03/11/2026, Joffray) : du 31 décembre à minuit jusqu'au 6 janvier ; la bande attend sur place, une dernière
+  // bataille 3 contre 3 bien plus dure, puis elle repart dans la forêt
+  adieux:{title:"Les adieux de la bande",fox:"balafre",souv:"une boule de neige signée d'une griffe",cast:["filou","radar","bouleneige","grelot"],
+    end:()=>{["balafre","filou","radar"].forEach((id,i)=>setTimeout(()=>{const f=sF(id);if(f){f.fast=0;actGo(id,430,300+i*24,"walk")}},1500+i*400))},beats:[
+    {at:"balafre",goal:"La bande a fait ses bagages. Balafre t'attend.",lines:[
+      ["balafre","open","C'est le 31. On avait dit : pas plus tard.",()=>actPose("balafre","up","open")],
+      ["filou","sad","On pourrait dire… le 32 ?",()=>actPose("filou","sit","sad")],
+      ["radar","sad","J'entends déjà le froid de la forêt. Il siffle.",()=>actEmote("radar","froid")],
+      ["petitpois","sad","Vous allez nous manquer…",()=>actNear("petitpois","balafre","sit")],
+      ["balafre","joy","Alors on part comme on est arrivés. Une dernière bataille, trois contre trois. Et cette fois, pas de cadeau.",()=>{actEmote("balafre","colere");actTrick("balafre","boing")}],
+      ["me","joy","Pari tenu !",()=>actTrick("me","salto")]]},
+    {at:"balafre",game:{k:"battle",hard:1.7,foes:["balafre","filou","radar"],boss:"balafre",say:"La revanche ! Ils se sont entraînés tout l'hiver…",win:"Victoire ! Même la revanche !"},goal:"La dernière bataille de neige : ils se sont entraînés tout l'hiver.",lines:[
+      ["radar","surprise","Encore perdu ?! On s'est entraînés tous les soirs derrière la maison…",()=>actEmote("radar","!")],
+      ["filou","joy","Ouais ouais… Vous êtes trop forts. C'est dit.",()=>actTrick("filou","boing")],
+      ["balafre","shy","Vous savez quoi ? C'était le meilleur hiver de ma vie.",()=>{actPose("balafre","sit","shy");actEmote("balafre","coeur")}],
+      ["bouleneige","joy","Revenez l'hiver prochain ! On fera une boule encore plus grosse.",()=>actTrick("bouleneige","salto")],
+      ["balafre","joy","Promis. Gardez-nous trois places au chaud, près du feu.",()=>actGive("balafre","me","neige")],
+      ["me","joy","Et des guimauves.",()=>{actEmote("me","coeur");["balafre","filou","radar"].forEach(id=>actEmote(id,"coeur"))}]]}
   ]},
   // refaite le 03/11/2026 (tournee.js) : le traîneau s'écrase, le marteau, Copeau répare, la tournée des maisons, l'énorme cadeau
   barbeneige:{title:"La veille de Noël",souv:"l'étoile du sapin",cast:["grelot","ramure","paillette","copeau","balafre","filou","radar"],end:()=>bigGiftEnd(),beats:[
@@ -472,6 +491,16 @@ function bandUp(){bandMove=1;bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e
   setTimeout(()=>{
     // là-haut, ils se retournent (s'il en reste un en chemin, il y est déjà : les boules partent toujours des marches)
     BAND.forEach((id,i)=>{const f=sF(id);if(!f)return;if(f.walk||f.spot!==BANDP[i]){f.walk=null;place(f,BANDP[i])}f.pose="up";f.expr=id==="balafre"?"open":"joy";draw(f)});actEmote("balafre","colere",2600);actEmote("filou","note");actEmote("radar","note")},3700)}
+// entre les défis (luge, curling) et jusqu'au chocolat chaud, la bande reste dehors près de la mare : elle rentrait dans la maison, et
+// ressortait par la porte au moment de partir (Joffray : « Radar reste sur le perron »)
+const BWAIT=[{id:"bw0",x:166,y:378,poses:["sit"]},{id:"bw1",x:210,y:392,poses:["sit"]},{id:"bw2",x:124,y:392,poses:["sit"]}];
+setInterval(()=>{const n=R.beat.balafre||0;if(!noelOn()||n<2||n>4||storyDone("balafre")||gameOn||!$("talk").hidden)return;
+  BAND.forEach((id,i)=>{const f=sF(id);if(!f||f.walk)return;if(f.inside||Math.hypot(f.x-BWAIT[i].x,f.y-BWAIT[i].y)>90){if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}goTo(f,BWAIT[i]);f.until=Date.now()+9e8}})},1500);
+// le 31 et après, en attendant les adieux : la bande attend sur place, devant le perron, ses bagages faits
+const adieuxWait=()=>noelOn()&&noelDay()>=NOEL_FROM.adieux&&storyDone("balafre")&&!storyDone("adieux");
+const ADX=[{id:"adx0",x:300,y:322,poses:["sit"]},{id:"adx1",x:256,y:334,poses:["sit"]},{id:"adx2",x:344,y:336,poses:["sit"]}];
+setInterval(()=>{if(!adieuxWait()||gameOn||!$("talk").hidden)return;const c=cur();if(c&&c.id==="adieux"&&c.n>0)return;
+  BAND.forEach((id,i)=>{const f=sF(id);if(!f||f.walk)return;if(f.inside||f.spot!==ADX[i]){f.fast=0;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}goTo(f,ADX[i]);f.until=Date.now()+9e8}})},1500);
 // la bande attaque la boule : deux boules la fissurent, celle de Balafre la fend, puis une volée sur Boule-de-Neige
 function bandeAttack(){const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
   actThrow("filou",X(),{hurt:false,then:crackBall});setTimeout(()=>actThrow("radar",X(),{hurt:false,then:crackBall}),600);
@@ -566,11 +595,10 @@ function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;
     :[["bouleneige","joy",`${ME()} ! Une bataille de boules de neige ? Touche ceux qui sortent la tête… mais pas moi, je suis fait de neige !`],["me","joy","C'est parti !"]],
     ()=>playGame({k:"snowball",n:10},()=>{if(R.snowDay!==today()){R.snowDay=today();const b=bourse();b.sucres=(b.sucres||0)+3;putBourse(b);save();toast("Bataille gagnée ! +3 sucres d'orge")}else toast("Bien joué !")}));
   return true}
-// la bande repart le 31 décembre au soir (Joffray : Balafre l'avait dit, « pas plus tard ») ; jamais avant la fin de sa propre histoire ;
-// après Noël, Filou et Radar reviennent s'ils ont fini leur histoire à eux (incos.js), Balafre non
-const bandGone=()=>{const d=noelDay();return d>31||d===31&&hourNow()>=18};
+// la bande repart après ses adieux (histoire « adieux », du 31 décembre au 6 janvier) ou, si on ne les a pas faits, à la fin de Noël ;
+// jamais avant la fin de sa propre histoire ; après Noël, Filou et Radar reviennent s'ils ont fini leur histoire à eux (incos.js)
 const noelAway=id=>{if(!FOX[id])return false;
-  if(NOEL_WILD.includes(id)&&INC[id]){if(!storyDone("balafre"))return false;return noelOn()?bandGone():id==="balafre"||!(STORIES[id]&&storyDone(id))}
+  if(NOEL_WILD.includes(id)&&INC[id]){if(!storyDone("balafre"))return false;if(noelOn())return storyDone("adieux");return id==="balafre"||!(STORIES[id]&&storyDone(id))}
   return FOX[id].event==="noel"&&!noelOn()};
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
 if(!noelOn()&&[...NOEL_WILD,"miette","pataud","frisette"].some(id=>R.res[id])){for(const id of [...NOEL_WILD,"miette","pataud","frisette"])delete R.res[id];save()}

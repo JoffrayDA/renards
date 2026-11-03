@@ -150,7 +150,7 @@ function tick(){
     // sous le choc après l'arrivée de la bande de Balafre : ils ne bougent plus jusqu'à la fin de la bataille (noel.js)
     if(f.shock){if((R.beat.balafre||0)<2){f.until=now+5000;continue}f.shock=0}
     // la bande reste plantée devant la boule cassée jusqu'à la bataille (avant, elle repartait sur le perron au bout de 30 s)
-    if(["balafre","filou","radar"].includes(f.id)&&!f.wild&&noelOn()&&!storyDone("balafre")&&(R.beat.balafre===1||R.beat.balafre===4||typeof bandeOn!=="undefined"&&bandeOn&&!(R.beat.balafre>0)||bandIncog())){f.until=now+5000;continue} // et pendant la scène du chocolat chaud (4)
+    if(["balafre","filou","radar"].includes(f.id)&&!f.wild&&noelOn()&&!storyDone("balafre")&&(R.beat.balafre>=1&&R.beat.balafre<=4||typeof adieuxWait==="function"&&adieuxWait()||typeof bandeOn!=="undefined"&&bandeOn&&!(R.beat.balafre>0)||bandIncog())){f.until=now+5000;continue} // et pendant la scène du chocolat chaud (4)
     // pendant le record, personne ne bouge, même ceux qui n'ont pas de place de spectateur (Joffray : Paillette n'arrêtait pas de bouger)
     if(typeof gardenCleared==="function"&&gardenCleared()&&!f.wild&&f.id!=="bouleneige"&&!(R.beat.balafre>0)&&!(typeof bandMove!=="undefined"&&bandMove&&BAND.includes(f.id))){f.until=now+5000;continue}
     if(f.spot&&!f.spot.via&&!f.inside&&inObst(f)&&!f.wild&&f.id!=="bouleneige"){const sp=choose(f);if(sp){goTo(f,sp);continue}} // assis là où la boule vient d'apparaître : il se pousse
