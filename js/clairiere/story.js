@@ -28,6 +28,8 @@ const TG={pond:{x:96,y:418,name:"la mare"},porch:{x:200,y:226,name:"le porche"},
   leaves:{x:322,y:334,name:"le tas de feuilles"},tree:{x:366,y:150,name:"le grand arbre"},bench:{x:300,y:398,name:"le banc"}};
 // Gribouille vient en dernier : son histoire réunit tout le monde pour le grand portrait. Les nouvelles histoires se glissent avant lui.
 // Copeau et Sésame (la maison) avancés juste après Biscuit le 29/10/2026 : Joffray trouvait l'intérieur trop long à débloquer
+// Copeau a déjà réparé le patin du traîneau à Noël (3e moment de l'histoire de Barbe-Neige, noel.js)
+const copeauNoel=()=>(R.beat.barbeneige||0)>=3;
 const ORDER=["petitpois","mitaine","luciole","gaston","galette","pantoufle","grignote","brindille","plouf","biscuit","copeau","sesame","cannelle","charbon","brume","moka","painepice","libellule","brioche","marquis","zaza","flocon","noisette","givre","comete","somnus","reglisse","aurore","maree","perle","yeti","gribouille"];
 // game : petit jeu avant le dialogue (games.js) ; after : renards qui se déplacent une fois le moment fini ;
 // hide : le renard de l'histoire reste caché dans la maison pendant ce moment ; peu de texte, ça doit bouger
@@ -231,8 +233,10 @@ const STORIES={
   ]},
   // la maison (demande de Joffray) : Copeau répare la porte coincée, Sésame l'ouvre ; ensuite on y entre (maison.js) et Copeau l'agrandit
   copeau:{title:"La porte coincée",souv:"le clou porte-bonheur",beats:[
-    {at:"copeau",goal:"Copeau vient d'arriver au refuge. Va lui dire bonjour.",lines:[
-      ["copeau","joy",`Bonjour ${ME()} ! Copeau, bricoleur. Je répare tout ce qui grince, tout ce qui coince, tout ce qui penche.`,()=>actTrick("copeau","boing")],
+    // déjà venu réparer le traîneau de Barbe-Neige (Noël, avant son histoire) : il ne vient pas d'arriver, il est resté
+    {at:"copeau",get goal(){return copeauNoel()?"Copeau est resté au refuge depuis la réparation du traîneau. Va le voir.":"Copeau vient d'arriver au refuge. Va lui dire bonjour."},lines:()=>[
+      copeauNoel()?["copeau","joy",`Re-bonjour ${ME()} ! Depuis le traîneau, je ne suis jamais vraiment reparti. Ici, tout grince, tout coince, tout penche : le paradis du bricoleur.`,()=>actTrick("copeau","boing")]
+        :["copeau","joy",`Bonjour ${ME()} ! Copeau, bricoleur. Je répare tout ce qui grince, tout ce qui coince, tout ce qui penche.`,()=>actTrick("copeau","boing")],
       ["copeau","surprise","Et cette porte… Elle est coincée depuis combien de temps ?",()=>actEmote("copeau","?")],
       ["me","shy","Depuis toujours. On vit dehors, sous le porche.",()=>actEmote("me","goutte")],
       ["copeau","open","Dehors ? Avec une maison juste là ? Viens, on s'en occupe.",()=>{actGo("copeau",186,258);setTimeout(()=>actGo("me",226,262),400)}]]},
