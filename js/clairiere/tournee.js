@@ -122,11 +122,11 @@ function slWant(){if(!noelOn()||storyDone("barbeneige"))return null;const b=slBe
 const slPos=m=>m==="back"?SLF:SLP;
 function sleighSync(){const m=slWant();if(m!==slMode){slMode=m;if(slEl){slEl.remove();slEl=null}
     if(m){const p=slPos(m);slEl=document.createElement("div");slEl.className="sleighfx parked";slEl.style.cssText=pc(p.x,p.y)+`;width:${140/W*100}%;z-index:${p.y};transform:translate(-50%,-92%)${m==="broken"?" rotate(7deg)":""}`;slEl.innerHTML=sleighArt({broken:m==="broken",empty:1});$("actors").appendChild(slEl)}}
-  const away=noelOn()&&!storyDone("barbeneige")&&slBeat()===5&&!(slOv&&slOv.b===5);
+  const away=noelOn()&&!storyDone("barbeneige")&&slBeat()===5&&!(slOv&&slOv.b===5&&slOv.land);
   for(const id of ["barbeneige","ramure"]){const f=sF(id);if(f){f.el.style.display=away?"none":"";f.badge.style.display=away?"none":""}}}
 setInterval(sleighSync,1000);setTimeout(sleighSync,0);
 // un obstacle tant qu'il est garé (noel.js, noelObst)
-const sleighObst=()=>{const L=[];if(slMode){const p=slPos(slMode);L.push({x:p.x,y:p.y-6,rx:82,ry:24})}if(bgEl)L.push({x:BG.x,y:BG.y-6,rx:84,ry:24});return L};
+const sleighObst=()=>{const L=[];if(slMode){const p=slPos(slMode);L.push({x:p.x,y:p.y-6,rx:82,ry:24})}if(bgEl)L.push({x:BG.x,y:BG.y-6,rx:64,ry:22});return L};
 // il traverse la scène : pts = [[x, y, angle], ...]
 function sleighFly(pts,ms,o={}){const e=document.createElement("div");e.className="sleighfx";e.style.cssText=`width:${(o.ram?190:130)/W*100}%;z-index:906;left:0;top:0`;e.innerHTML=sleighArt(o);$("actors").appendChild(e);
   const a=e.animate(pts.map(([x,y,r=0])=>({left:`${x/W*100}%`,top:`${y/H*100}%`,transform:`translate(-50%,-90%) rotate(${r}deg)`})),{duration:ms,easing:o.ease||"linear",fill:"forwards"});try{MUSIC.sfx("whoosh")}catch(err){}
@@ -141,14 +141,29 @@ function sceneCrash(){sleighFly([[470,20,18],[350,190,24],[SLP.x+20,SLP.y-4,30]]
     slOv={b:1,mode:"broken"};sleighSync();snowPoof(SLP.x,SLP.y-20,70);
     foxDrop("barbeneige",SLP.x-92,SLP.y+10,"lie","surprise");actEmote("barbeneige","goutte",2400);
     setTimeout(()=>actNear("ramure","barbeneige","up"),250)}})}
-// le retour : le traîneau revient avec Ramure, lâche l'énorme cadeau devant la maison et se pose
-const BG={x:190,y:352};
-function drawBigGift(){if(bgEl)return;bgEl=document.createElement("div");bgEl.className="sleighfx parked";bgEl.style.cssText=pc(BG.x,BG.y)+`;width:${176/W*100}%;z-index:${BG.y};transform:translate(-50%,-96%)`;
-  bgEl.innerHTML=`<svg viewBox="-70 -90 140 170" aria-hidden="true" style="display:block;width:100%"><rect x="-58" y="-36" width="116" height="22" rx="4" fill="#ef5c70" stroke="${INK}" stroke-width="3.4"/><path d="M0 -36 V-14" stroke="#f7d77a" stroke-width="16"/><path d="M0 -38 q-34 -32 -38 -4 q16 12 38 4 q34 -32 38 -4 q-16 12 -38 4" fill="#f7d77a" stroke="${INK}" stroke-width="3"/><rect x="-50" y="-14" width="100" height="84" rx="5" fill="#e2445e" stroke="${INK}" stroke-width="3.4"/><path d="M0 -14 V70" stroke="#f7d77a" stroke-width="16"/></svg>`;$("actors").appendChild(bgEl)}
-function sceneBigGift(){sleighFly([[-110,110,-8],[190,120,4],[SLF.x-30,SLF.y-90,8],[SLF.x,SLF.y,0]],3100,{ram:1,then:()=>{
-    slOv={b:5,mode:"back"};sleighSync();snowPoof(SLF.x,SLF.y,36);foxDrop("barbeneige",SLF.x-74,SLF.y-2,"happy","joy");foxDrop("ramure",SLF.x+64,Math.min(SLF.y-2,H-20),"happy","joy")}});
-  setTimeout(()=>{const e=document.createElement("div");e.className="sleighfx";e.style.cssText=`width:${176/W*100}%;z-index:906;left:0;top:0`;e.innerHTML=`<svg viewBox="-70 -90 140 170" aria-hidden="true" style="display:block;width:100%"><rect x="-50" y="-30" width="100" height="100" rx="5" fill="#e2445e" stroke="${INK}" stroke-width="3.4"/><path d="M0 -30 V70" stroke="#f7d77a" stroke-width="16"/></svg>`;$("actors").appendChild(e);
-    e.animate([{left:`${BG.x/W*100}%`,top:`${80/H*100}%`,transform:"translate(-50%,-96%) rotate(-10deg)"},{left:`${BG.x/W*100}%`,top:`${BG.y/H*100}%`,transform:"translate(-50%,-96%) rotate(0)"}],{duration:560,easing:"cubic-bezier(.5,0,1,.6)"}).onfinish=()=>{e.remove();drawBigGift();snowPoof(BG.x,BG.y,70);foxes.filter(f=>!f.wild).slice(0,8).forEach((f,i)=>setTimeout(()=>actEmote(f.id,"!",1500),i*60))}},1050)}
+// le retour : le traîneau passe avec Ramure, lâche l'énorme cadeau au milieu de la clairière et repart ; Barbe-Neige et Ramure sautent
+// dans la neige, et tout le monde se met en rond autour du cadeau, ceux qui parlent devant (Joffray : on en voyait parler derrière)
+const BG={x:200,y:380};
+const giftBox=()=>`<svg viewBox="-70 -90 140 170" aria-hidden="true" style="display:block;width:100%"><rect x="-58" y="-36" width="116" height="22" rx="4" fill="#ef5c70" stroke="${INK}" stroke-width="3.4"/><path d="M0 -36 V-14" stroke="#f7d77a" stroke-width="16"/><path d="M0 -38 q-34 -32 -38 -4 q16 12 38 4 q34 -32 38 -4 q-16 12 -38 4" fill="#f7d77a" stroke="${INK}" stroke-width="3"/><rect x="-50" y="-14" width="100" height="84" rx="5" fill="#e2445e" stroke="${INK}" stroke-width="3.4"/><path d="M0 -14 V70" stroke="#f7d77a" stroke-width="16"/></svg>`;
+function drawBigGift(){if(bgEl)return;bgEl=document.createElement("div");bgEl.className="sleighfx parked";bgEl.style.cssText=pc(BG.x,BG.y)+`;width:${118/W*100}%;z-index:${BG.y};transform:translate(-50%,-96%)`;
+  bgEl.innerHTML=giftBox();$("actors").appendChild(bgEl)}
+// le rond autour du cadeau : ceux qui parlent sur l'arc de devant, les autres derrière et sur les côtés
+const RING_FRONT=["radar","filou","balafre","petitpois","me","barbeneige","ramure"];
+function ringAround(){const cx=BG.x,cy=BG.y-8,rx=150,ry=64,now=Date.now();
+  const front=RING_FRONT.filter(id=>id==="me"||sF(id)),back=foxes.filter(f=>!f.wild&&!RING_FRONT.includes(f.id)&&f.el.style.display!=="none").map(f=>f.id);
+  const put=(id,a,i)=>{const x=Math.max(26,Math.min(374,cx+Math.cos(a)*rx)),y=Math.min(H-26,cy+Math.sin(a)*ry);
+    if(id==="me"){meGo({x,y,face:cx},["sit"],60000);return}
+    const f=sF(id);if(!f)return;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}
+    f.fast=1;goTo(f,{id:"ring"+i,x,y,poses:["sit"]});f.until=now+60000;setTimeout(()=>{if(!f.walk)f.el.classList.toggle("left",cx<f.x)},3200)};
+  front.forEach((id,i)=>put(id,Math.PI*(.12+.76*(front.length>1?i/(front.length-1):.5)),i));
+  back.forEach((id,i)=>put(id,Math.PI*(1.08+.84*(back.length>1?i/(back.length-1):.5)),10+i))}
+function sceneBigGift(){slOv={b:5,mode:null};
+  sleighFly([[-120,110,-8],[BG.x,96,2],[520,70,-6]],3000,{ram:1});
+  setTimeout(()=>{const e=document.createElement("div");e.className="sleighfx";e.style.cssText=`width:${118/W*100}%;z-index:906;left:0;top:0`;e.innerHTML=giftBox();$("actors").appendChild(e);
+    e.animate([{left:`${BG.x/W*100}%`,top:`${110/H*100}%`,transform:"translate(-50%,-96%) rotate(-10deg)"},{left:`${BG.x/W*100}%`,top:`${BG.y/H*100}%`,transform:"translate(-50%,-96%) rotate(0)"}],{duration:620,easing:"cubic-bezier(.5,0,1,.6)"}).onfinish=()=>{e.remove();drawBigGift();snowPoof(BG.x,BG.y,70);foxes.filter(f=>!f.wild).slice(0,8).forEach((f,i)=>setTimeout(()=>actEmote(f.id,"!",1500),i*60))}},1450);
+  // Barbe-Neige et Ramure sautent du traîneau, puis tout le monde fait le rond
+  setTimeout(()=>{slOv.land=1;foxDrop("barbeneige",BG.x+60,BG.y+40,"happy","joy");foxDrop("ramure",BG.x+110,BG.y+30,"happy","joy");snowPoof(BG.x+80,BG.y+40,40)},2300);
+  setTimeout(ringAround,2600)}
 // la fin : la boule à neige sortie, le traîneau se range derrière la maison, tout le monde fait la fête
 function bigGiftEnd(){bigGiftReward();if(bgEl){bgEl.remove();bgEl=null}
   setTimeout(()=>openBigGift(()=>{slOv=null;sleighSync();["petitpois","grelot","paillette","ramure","barbeneige","copeau","balafre","filou","radar"].forEach((id,i)=>setTimeout(()=>{actTrick(id,["salto","toupie","boing"][i%3]);actEmote(id,"coeur",1800)},i*140));drawBg();drawGlow()}),900)}

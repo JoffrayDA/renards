@@ -199,8 +199,8 @@ Object.assign(STORIES,{
       ["barbeneige","joy","Toutes livrées, et ton sapin a enfin son étoile. On la voit depuis le Nord !",()=>actEmote("barbeneige","coeur")],
       ["ramure","open","Il reste une maison. Une seule…",()=>actEmote("ramure","note")],
       ["barbeneige","joy","La tienne. Saute, file devant ta porte et ferme les yeux. Ramure ! On a une dernière chose à aller chercher.",()=>actGo("me",150,300)]]}},
-    {at:"@porch",gather:1,goal:"Barbe-Neige a dit : file devant ta porte et ferme les yeux !",showMs:4000,show:()=>sceneBigGift(),lines:[
-      ["petitpois","surprise","C'est… C'est PLUS GROS QUE LA MAISON !",()=>{actTrick("petitpois","salto");actEmote("petitpois","!")}],
+    {at:"@porch",goal:"Barbe-Neige a dit : file devant ta porte et ferme les yeux !",showMs:5600,show:()=>sceneBigGift(),lines:[
+      ["petitpois","surprise","C'est… C'est le plus gros cadeau que j'aie jamais vu !",()=>{actTrick("petitpois","salto");actEmote("petitpois","!")}],
       ["ramure","joy","Je l'ai tiré tout seul depuis le Nord. Je tiens à ce que ce soit dit.",()=>actTrick("ramure","boing")],
       ["barbeneige","open","Attends, une dernière lettre. Sans nom, juste une griffe : « Une couverture. Pas pour moi. Pour deux idiots qui ont froid. »",()=>actGive("barbeneige","balafre","coussin")],
       ["balafre","shy","… Je ne sais pas qui a écrit ça.",()=>actPose("balafre","sit","shy")],
