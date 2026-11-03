@@ -107,7 +107,7 @@ Object.assign(STORIES,{
       ["me","joy","Pari tenu ! Je choisis mon équipe.",()=>actTrick("petitpois","salto")]]},
     // trois défis : après chaque défaite, Balafre parle de chance et en réclame un autre (Joffray, 03/11/2026 : pas de « tournoi »)
     {at:"balafre",game:{k:"battle",foes:["balafre","filou","radar"],boss:"balafre",win:"Victoire ! Les sauvages se rendent !"},goal:"Relève le défi : une bataille de neige, trois contre trois.",lines:[
-      ["radar","surprise","On a… perdu ? Je n'ai même pas entendu venir la dernière boule !",()=>actEmote("radar","goutte")],
+      ["radar","surprise","On a… perdu ? Je n'ai même pas vu venir la dernière boule !",()=>actEmote("radar","goutte")],
       ["balafre","open","Ouais. Vous avez eu de la chance. Le vent soufflait de votre côté.",()=>actEmote("balafre","colere")],
       ["filou","joy","Ouais ouais, le vent ! Bien vu chef !",()=>actTrick("filou","boing")],
       ["balafre","open","Une course de luge, du haut de la colline jusqu'au grand arbre. Radar contre votre plus rapide.",()=>actPose("balafre","happy")],
@@ -119,10 +119,10 @@ Object.assign(STORIES,{
       ["balafre","open","Encore de la chance. La piste était plus glissante de votre côté. Tout le monde l'a vu.",()=>actEmote("balafre","colere")],
       ["filou","joy","Ouais ouais, glissante ! Chef, laisse-moi faire. Personne ne me bat sur la glace.",()=>actGo("filou",TG.pond.x+50,TG.pond.y-30,"happy")],
       ["filou","open","Du curling sur la mare gelée. Trois pierres chacun. La plus proche du centre gagne.",()=>actEmote("filou","!")],
-      ["me","joy","Allez, une dernière !",()=>actEmote("petitpois","coeur")]]},
+      ["me","open","Bon. C'est la dernière, et après, vous partez !",()=>{actEmote("me","colere");actPose("me","up","open")}]]},
     {at:"@pond",game:{k:"curling",rival:"filou",who:"petitpois",watch:["balafre","radar"],win:"Ta pierre est au cœur de la cible !"},goal:"Le curling sur la mare gelée : bats Filou, trois pierres chacun.",lines:()=>{const was=known("balafre");
       if(!was){const s=incOf("balafre");s.found=1;save()}
-      return [["filou","surprise","Pile au centre ?! Même moi, je n'aurais pas pu l'emprunter de là.",()=>actEmote("filou","goutte")],
+      return [["filou","surprise","Pile au centre ?! Même en trichant, je n'aurais pas fait mieux.",()=>actEmote("filou","goutte")],
         ["radar","shy","Chef… trois fois de la chance, ça commence à ressembler à autre chose.",()=>actEmote("radar","?")],
         ["balafre","shy","… Ouais. Bon. Vous êtes forts. Voilà, c'est dit.",()=>actPose("balafre","sit","shy")],
         ["balafre",was?"joy":"open",was?"Tu m'as reconnu, et tu m'as battu trois fois. Ça fait beaucoup pour un seul hiver.":"Une promesse est une promesse. Je m'appelle Balafre.",()=>actEmote("balafre","!")],

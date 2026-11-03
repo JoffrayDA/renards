@@ -699,7 +699,7 @@ const GAMES={
         if(spin>0){spin-=dt;v=Math.max(140,v-220*dt)}else v=Math.min(330,v+42*dt);
         boost=Math.max(0,boost-55*dt);
         // Radar : régulier, il accélère dans la dernière ligne droite
-        rp+=(270+Math.sin(t*1.3)*16+(rp>D*.72?22:0))*dt;
+        rp+=(282+Math.sin(t*1.3)*16+(rp>D*.72?30:0))*dt; // un poil plus dur (Joffray, 03/11/2026)
         px+=(tx-px)*Math.min(1,dt*(spin>0?2:8))}
       const sp=st==="play"?v+boost:Math.max(0,(v+boost)*(1-t*.02));p+=sp*dt;
       place(dt);
@@ -713,7 +713,7 @@ const GAMES={
       for(const s of spray){s.t-=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.el.setAttribute("transform",`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`);s.el.setAttribute("opacity",Math.max(0,s.t*2).toFixed(2));if(s.t<=0){s.el.remove();s.done=1}}
       spray=spray.filter(s=>!s.done);
       // les obstacles et les bonus arrivent d'en haut, de plus en plus serrés
-      if(st==="play"&&(next-=dt)<=0&&D-p>PY-TOP+120){next=(.95-p/D*.4)*(260/sp);const r=Math.random(),X=()=>76+Math.random()*248;
+      if(st==="play"&&(next-=dt)<=0&&D-p>PY-TOP+120){next=(.86-p/D*.4)*(260/sp);const r=Math.random(),X=()=>76+Math.random()*248;
         const o=r<.36?{k:"tree",x:X(),rad:20}:r<.58?{k:"rock",x:X(),rad:18}:r<.84?{k:"gate",x:120+Math.random()*160,gap:100}:{k:"ice",x:X(),rad:38};
         // jamais deux obstacles l'un sur l'autre
         if(!objs.some(q=>q.y<TOP+90&&Math.abs(q.x-o.x)<60)){o.y=TOP;o.el=grp(gOb,o.k==="tree"?tree(1):o.k==="rock"?rock:o.k==="gate"?flags(o.gap):ice);objs.push(o)}}
@@ -721,7 +721,7 @@ const GAMES={
         if(st==="play"&&!o.hit&&y0<PY-4&&o.y>=PY-4){
           if(o.k==="gate"){o.hit=1;if(Math.abs(px-o.x)<o.gap/2-6){boost+=95;A.sfx("good",3);A.cheer(["SUPER !","VITE !","ZOOM !"][Math.floor(Math.random()*3)])}}
           else if(o.k==="ice"){if(Math.abs(px-o.x)<o.rad+6){o.hit=1;boost+=60;A.sfx("plic")}}
-          else if(Math.abs(px-o.x)<o.rad+20&&spin<=0){o.hit=1;spin=.75;A.sfx("bad");try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}A.say(o.k==="tree"?"Aïe, un sapin ! La luge tourne…":"Bing, un rocher !");
+          else if(Math.abs(px-o.x)<o.rad+22&&spin<=0){o.hit=1;spin=.85;A.sfx("bad");try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}A.say(o.k==="tree"?"Aïe, un sapin ! La luge tourne…":"Bing, un rocher !");
             o.el.animate([{opacity:1},{opacity:.3},{opacity:1}],{duration:400})}}
         if(o.y>540){o.el.remove();o.done=1}}
       objs=objs.filter(o=>!o.done);hud();
