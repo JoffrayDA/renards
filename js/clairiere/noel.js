@@ -91,8 +91,7 @@ Object.assign(STORIES,{
     {at:"grelot",goal:"Grelot a remarqué trois drôles de spectateurs, tout devant.",lines:()=>[
       ["grelot","surprise",`Eh, dis-moi ${ME()}, c'est qui, les trois renards juste devant nous ?`,()=>actEmote("grelot","?")],
       ["me","surprise","… Mais je ne sais pas, je ne les ai jamais vus !",()=>{actEmote("me","!");actPose("me","sit","surprise")}],
-      ["grelot","surprise","Quoi ?!",()=>{actEmote("grelot","!");actPose("grelot","up","surprise")}],
-      ["me","surprise","Tiens… ils se lèvent.",()=>talkHold(700,bandUp,5000)],
+      ["grelot","surprise","Quoi ?!",()=>{actEmote("grelot","!");actPose("grelot","up","surprise");talkHold(900,bandUp,5000)}],
       ["balafre","open","Belle boule.",()=>actEmote("balafre","colere")],
       ["me","surprise","Oh ! Attention, Boule-de-Neige !!!",()=>{actEmote("me","!");talkHold(1100,()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");bandeAttack();setTimeout(()=>defendAll(BALL.x,BALL.y),2100)},4600)}],
       ["bouleneige","sad","Ma boule ! Mon record du monde… Il ne manquait presque rien !",()=>actEmote("bouleneige","goutte")],
