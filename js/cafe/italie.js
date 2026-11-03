@@ -9,7 +9,7 @@
 
 /* ---------- les renards du quartier (dans FOX, pas dans FOXES : ni la Clairière, ni le grand portrait) ---------- */
 const ITF=[
-  {id:"lorenzo",name:"Lorenzo",rar:"commun",acc:"coppola",scale:.84,c:{b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"},bio:"Le petit renard du quartier. Il connaît chaque pavé de la rue, et il accueille tous les nouveaux."},
+  {id:"lorenzo",name:"Lorenzo",rar:"commun",acc:"garcon",scale:.84,c:{b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"},bio:"Le garçon de café du quartier, moustache bien lissée. Il connaît chaque pavé de la rue, et il accueille tous les nouveaux."},
   {id:"pistache",name:"Pistache",rar:"commun",acc:"casque",c:{b:"#e9d49a",ch:"#fffaf0",e:"#9a7a4a",s:"#8a6a44",t:"#fffaf0"},bio:"Livre les cannoli en scooter. Toujours pressée, jamais en retard."},
   {id:"ricotta",name:"Ricotta",rar:"commun",acc:"tablier",c:{b:"#fbf4ea",ch:"#ffffff",e:"#d8b8a8",s:"#c9a896",t:"#ffffff"},bio:"Toute ronde, toute blanche. Pétrit la pâte à cornetti avant l'aube."},
   {id:"tito",name:"Tito",rar:"commun",acc:"paille",scale:.8,c:{b:"#c98552",ch:"#fff3e2",e:"#7a4a2c",s:"#6a3c26",t:"#fff3e2"},bio:"Le plus petit du quartier. Pêche des pièces au fond de la fontaine."},
