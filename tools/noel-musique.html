@@ -24,9 +24,16 @@ button.on{background:#ffe9e4}
 <button data-t="noel"><i>5</i><div><b>Jingle Bells (Café)</b><span>Les Nuits de Noël du Café, version plus punchy.</span></div></button>
 </div>
 <button class="stop" data-t="">Arrêter</button>
+<h1 style="font-size:18px;margin-top:22px">Bruitages</h1>
+<div class="list">
+<button data-s="hohoho"><i>♪</i><div><b>Oh oh oh !</b><span>Barbe-Neige qui passe dans le ciel.</span></div></button>
+<button data-s="boom"><i>♪</i><div><b>Boum</b><span>Le traîneau qui s'écrase.</span></div></button>
+<button data-s="dizzy"><i>♪</i><div><b>Sonné</b><span>Les petits oiseaux quand il est K.O.</span></div></button>
+</div>
 <script src="../js/music.js"></script>
 <script>
 document.querySelectorAll("button[data-t]").forEach(b=>b.onclick=()=>{MUSIC.setOn(true);const t=b.dataset.t;
   document.querySelectorAll("button[data-t]").forEach(x=>x.classList.toggle("on",x===b&&!!t));if(t)MUSIC.want(t);else MUSIC.stop()});
+document.querySelectorAll("button[data-s]").forEach(b=>b.onclick=()=>{MUSIC.setOn(true);MUSIC.sfx(b.dataset.s)});
 </script>
 </body></html>

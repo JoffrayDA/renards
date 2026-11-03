@@ -269,12 +269,16 @@ const MUSIC=(()=>{
     else if(k==="swap"){nz(700,1.3,.2,.07,0,2600);tone("sine",520,780,.06,.04,.14)}
     else if(k==="whoosh"){nz(300,1.4,.9,.12,0,1400)}
     else if(k==="snowhit"){tone("sine",200,60,.14,.24);nz(600,.6,.16,.22);nz(2600,1.2,.07,.1,.01)} // une boule de neige qui touche : « pouf »
-    // « Ho ! Ho ! Ho ! » façon dessin animé (la voix synthétisée faisait malade, Joffray) : trois notes de tuba qui rebondissent,
-    // la dernière plus longue, et des grelots de traîneau
-    else if(k==="hohoho"){[[48,0,.16],[48,.26,.16],[43,.52,.42]].forEach(([m,a,d])=>{const f=hz(m),t0=t+a,lp=filt("lowpass",500,3);lp.frequency.setValueAtTime(380,t0);lp.frequency.linearRampToValueAtTime(1100,t0+.04);lp.frequency.exponentialRampToValueAtTime(520,t0+d);
-        const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.42,t0+.02);g.gain.setValueAtTime(.36,t0+d*.7);g.gain.linearRampToValueAtTime(0,t0+d+.05);
-        [-6,6].forEach(dt=>osc("sawtooth",f,t0,t0+d+.1,dt).connect(lp));const sb=osc("sine",f/2,t0,t0+d+.1),sg=C.createGain();sg.gain.value=.5;sb.connect(sg);sg.connect(g);lp.connect(g);o(g,.18)});
-      for(let i=0;i<10;i++)nz(6500,1.2,.06,.05,i*.09);[84,88,91].forEach((m,i)=>bell(m,.06,.55+i*.12,.5))}
+    // « Oh oh oh ! » : une grosse voix ronde (deux dents de scie un peu désaccordées, filtrées sur les formants du « o », un fond grave),
+    // un souffle « h » avant chaque syllabe, la hauteur qui monte un peu puis redescend doucement, la dernière plus longue ;
+    // la première version descendait trop et trop vite : on aurait dit qu'il était malade (Joffray)
+    else if(k==="hohoho"){[[0,.24,112],[.34,.24,108],[.68,.5,100]].forEach(([a,d,f0])=>{const t0=t+.08+a; // .08 : le souffle « h » part avant la syllabe
+        const hb=filt("bandpass",1300,1.2),hg=C.createGain();hg.gain.setValueAtTime(0,t0-.05);hg.gain.linearRampToValueAtTime(.16,t0-.02);hg.gain.linearRampToValueAtTime(0,t0+.05);noiseSrc(t0-.06,t0+.08).connect(hb);hb.connect(hg);o(hg,.2);
+        const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.5,t0+.05);g.gain.setValueAtTime(.46,t0+d-.06);g.gain.linearRampToValueAtTime(0,t0+d+.06);
+        const vib=osc("sine",5.5,t0,t0+d+.1),vg=C.createGain();vg.gain.value=f0*.012;vib.connect(vg);
+        [-7,7].forEach(dt=>{const v=osc("sawtooth",f0,t0,t0+d+.1,dt);v.frequency.setValueAtTime(f0,t0);v.frequency.linearRampToValueAtTime(f0*1.06,t0+d*.3);v.frequency.linearRampToValueAtTime(f0*.94,t0+d);vg.connect(v.frequency);
+          [[480,7,1],[820,9,.55],[2700,10,.1]].forEach(([fr,q,amp])=>{const bp=filt("bandpass",fr,q),ga=C.createGain();ga.gain.value=amp;v.connect(bp);bp.connect(ga);ga.connect(g)})});
+        const ch=osc("sine",f0,t0,t0+d+.1),cg=C.createGain();cg.gain.value=.35;ch.frequency.setValueAtTime(f0,t0);ch.frequency.linearRampToValueAtTime(f0*.94,t0+d);ch.connect(cg);cg.connect(g);o(g,.3)})}
     // sonné, façon dessin animé : des petits oiseaux qui gazouillent en tournant, et un tintement de clochettes
     else if(k==="dizzy"){[0,.18,.36,.54].forEach((a,i)=>{const f1=i%2?2900:2300,x=osc("sine",f1,t+a,t+a+.16);x.frequency.setValueAtTime(f1,t+a);x.frequency.linearRampToValueAtTime(f1*1.35,t+a+.06);x.frequency.linearRampToValueAtTime(f1*.95,t+a+.13);
         const g=gain(t+a,.005,.07,.13);x.connect(g);o(g,.35)});[88,91,95].forEach((m,i)=>bell(m,.045,.1+i*.22,.35))}
