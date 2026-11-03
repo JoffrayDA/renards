@@ -16,7 +16,7 @@ const MUSIC=(()=>{
     return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),sfx:(k,n)=>H.sfx&&H.sfx(k,n),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
   }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
-  const MUSIC_GREL="A"; // le grelot choisi (sfx, plus bas)
+  const MUSIC_GREL="B"; // le grelot choisi par Joffray (sfx, plus bas)
   const hz=m=>440*Math.pow(2,(m-69)/12);
   function init(){
     if(C)return;
