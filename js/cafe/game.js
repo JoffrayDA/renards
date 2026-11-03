@@ -7,7 +7,7 @@ const tipMult=()=>1+[0,.25,.4][lv("guirlande")]+(S.own.disque?.1:0)+(S.own.lante
 const batchOf=k=>REC[k].batch*(S.own.four2?2:1);
 let uid=0;
 function newDay(d){
-  const cfg=cfgOf(d),st={};SEA=chapOf(d).id;
+  const cfg=cfgOf(d),st={};SEA=chapOf(d).sea;
   const bo={};for(const id of boostSel)if(S.boost[id]>0){S.boost[id]--;bo[id]=1}boostSel.clear();
   for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:k==="cafe"?1+lv("double"):S.own.machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;

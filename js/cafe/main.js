@@ -80,5 +80,5 @@ function loop(ts){
 $("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;$("ic-b").innerHTML=bellSVG;
 if(HW)$("hwbtn").hidden=false;
 if(xmasDay())$("noelbtn").hidden=false; // les nuits de Noël (noelnuits.js)
-SEA=chapOf(curDay()).id;renderDecor();render();requestAnimationFrame(loop);
+SEA=chapOf(curDay()).sea;renderDecor();render();requestAnimationFrame(loop);
 openMap();

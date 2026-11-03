@@ -24,7 +24,7 @@ const itemName=k=>{const [r,o]=k.split("+");return REC[r].name+(o?` ${o==="lait"
 const itemPrice=k=>{const [r,o]=k.split("+");return REC[r].price+(o?OPTS[o].price:0)};
 const itemCost=k=>{const [r,o]=k.split("+");return REC[r].cost+(o?OPTS[o].cost:0)};
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
-let SEA="printemps";
+let SEA="automne";
 const VAR={
   printemps:{cookie:["Tartelette myrtille","tartelettes myrtille"],the:["Thé sakura","thés sakura"]},
   ete:{croissant:["Tartelette fraise","tartelettes fraise"],the:["Thé glacé","thés glacés"],cookie:["Cookie citron","cookies citron"],choco:["Milkshake choco","milkshakes choco"],gateau:["Fraisier","parts de fraisier"]},
@@ -37,11 +37,13 @@ const VAR={
 const vName=(k,sea=SEA)=>(typeof G!=="undefined"&&G&&G.noel&&VAR.noel&&VAR.noel[k])||(HW&&VAR.halloween[k])||VAR[sea][k]||[REC[k].nm,REC[k].npl];
 for(const k in REC){const r=REC[k];r.nm=r.name;r.npl=r.pl;Object.defineProperty(r,"name",{get:()=>vName(k)[0]});Object.defineProperty(r,"pl",{get:()=>vName(k)[1]})}
 /* La carte : 4 saisons de 10 journées. Une porte demande un total d'étoiles, et un invité d'honneur rejoint le café quand toute la saison est en ★★★. */
+// 03/11/2026, Joffray : saisons décalées de deux (Flocon en Hiver, Comète la légendaire au jour 40, on finit par l'Été).
+// id = clé des portes dans la sauvegarde (S.pass), gardée par position ; sea = la saison affichée (décor, carte, recettes).
 const CHAP=[
-  {id:"printemps",name:"Printemps",from:1,to:10,gate:0,guest:"zaza"},
-  {id:"ete",name:"Été",from:11,to:20,gate:24,guest:"flocon"},
-  {id:"automne",name:"Automne",from:21,to:30,gate:50,guest:"noisette"},
-  {id:"hiver",name:"Hiver",from:31,to:40,gate:78,guest:"comete"}
+  {id:"printemps",sea:"automne",name:"Automne",from:1,to:10,gate:0,guest:"zaza"},
+  {id:"ete",sea:"hiver",name:"Hiver",from:11,to:20,gate:24,guest:"flocon"},
+  {id:"automne",sea:"printemps",name:"Printemps",from:21,to:30,gate:50,guest:"noisette"},
+  {id:"hiver",sea:"ete",name:"Été",from:31,to:40,gate:78,guest:"comete"}
 ];
 const LASTDAY=40;
 // Boutique : chaque achat a un ou plusieurs niveaux (S.own[id] = niveau atteint, 0 ou absent = pas acheté).

@@ -102,7 +102,7 @@ function mapSVG(L){
   let defs="",s="";
   // saisons : on dessine du haut vers le bas pour que chaque bord ondulé recouvre la saison du dessus
   for(const b of [...bands].reverse()){
-    const id=b.c.id,ld=LAND[id],top=Y(b.hi),bot=Y(b.lo);
+    const id=b.c.sea,ld=LAND[id],top=Y(b.hi),bot=Y(b.lo);
     defs+=`<pattern id="pt-${id}" width="120" height="104" patternUnits="userSpaceOnUse"><path d="M10 16 l3 -6 l3 6 M78 70 l3 -6 l3 6 l3 -6 l3 6" fill="none" stroke="${ld.mk}" stroke-width="2.4" stroke-linecap="round"/>${[[54,22],[24,82]].map(([x,y])=>[0,1,2,3].map(i=>`<circle cx="${x+[-3,3,0,0][i]}" cy="${y+[0,0,-3,3][i]}" r="2.2" fill="${ld.mk}"/>`).join("")).join("")}<circle cx="100" cy="30" r="2.4" fill="${ld.mk}"/><circle cx="58" cy="94" r="1.8" fill="${ld.mk}"/><path d="M36 52 q6 -8 12 0 q-6 4 -12 0Z M104 92 q5 -7 10 0 q-5 3 -10 0Z" fill="${ld.mk}"/></pattern>`;
     let edge=`M0 ${bot} L0 ${top}`;
     if(b.hi<H){for(let x=0;x<MW;x+=50)edge+=` Q${x+25} ${top-14} ${x+50} ${top}`}else edge+=` L${MW} ${top}`;
@@ -119,7 +119,7 @@ function mapSVG(L){
   // déco : posée au hasard (graine fixe) loin du chemin, des portes et des invités
   const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80],...(HW?[[322,104,62]]:[])],deco=[];
   for(const b of bands){
-    const n=Math.floor((b.hi-b.lo)/44),fs=HW?[...DECO[b.c.id],jack,ghostie,jack]:DECO[b.c.id],last=[];
+    const n=Math.floor((b.hi-b.lo)/44),fs=HW?[...DECO[b.c.sea],jack,ghostie,jack]:DECO[b.c.sea],last=[];
     for(let j=0;j<n;j++)for(let t=0;t<14;t++){
       const u=b.lo+34+R()*(b.hi-b.lo-60),x=24+R()*(MW-48);
       if(Math.abs(x-pathX(way,u))<76||taken.some(([a,c,r])=>Math.hypot(a-x,c-u)<r)||deco.some(o=>Math.hypot(o.x-x,o.u-u)<54))continue;
@@ -146,7 +146,7 @@ function renderMap(){
   for(let d=1;d<=LASTDAY;d++){
     const p=P[d],st=S.stars[d]||0,op=dayOpen(d),rk=Object.keys(REC).find(k=>REC[k].day===d);
     const cls=!op?"lock":d===cur&&!st?"cur":st===3?"gold":"done";
-    const badge=rk&&!S.own[rk]?`<span class="nb">${icon(rk,chapOf(d).id)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
+    const badge=rk&&!S.own[rk]?`<span class="nb">${icon(rk,chapOf(d).sea)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
     h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-day="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
   }
   gates.forEach(g=>{const c=CHAP[g.i],op=gateOpen(c);h+=`<button class="gbtn${!op&&S.day>=c.from?" want":""}" style="${pc(g.x,g.u+44)}" data-gate="${g.i}" type="button" aria-label="Porte ${c.name} : ${c.gate} étoiles"></button>`});
@@ -165,7 +165,7 @@ function mapLabel(){
 function openMap(){
   MUSIC.want(HW?"fantomes":xmasDay()?"noel":"ukulele");
   closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";
-  if(!G||!G.run){const se=chapOf(curDay()).id;if(se!==SEA){SEA=se;renderDecor();dirty=true}}
+  if(!G||!G.run){const se=chapOf(curDay()).sea;if(se!==SEA){SEA=se;renderDecor();dirty=true}}
   renderMap();renderHud();
   const n=document.querySelector(".node.cur")||document.querySelector(`.node[data-day="${curDay()}"]`),sc=$("mscroll");
   sc.scrollTop=n.offsetTop-sc.clientHeight*.55;mapLabel();
