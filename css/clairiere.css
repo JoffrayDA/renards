@@ -407,7 +407,7 @@ h1 .la{font-style:normal}
 .bteam .go{margin-left:auto}
 .bgrid button.lock{opacity:.45;cursor:default}.bnote{font-size:12px!important}
 /* les renards jouent les histoires (scenes.js) */
-.emote{position:absolute;width:9%;transform:translate(-50%,-100%);z-index:902;pointer-events:none;animation:emote 2.2s ease-out forwards}.emote svg{display:block;width:100%}
+.emote{position:absolute;width:9%;transform:translate(-50%,-100%);z-index:902;pointer-events:none;animation:emote 2.2s ease-out forwards}.emote svg{display:block;width:100%;overflow:visible;filter:drop-shadow(0 0 1.2px #fff) drop-shadow(0 0 1.2px #fff) drop-shadow(0 0 1px #fff)}
 @keyframes emote{0%{opacity:0;transform:translate(-50%,-60%) scale(.4)}12%{opacity:1;transform:translate(-50%,-100%) scale(1.1)}20%{transform:translate(-50%,-100%) scale(1)}85%{opacity:1}100%{opacity:0;transform:translate(-50%,-120%)}}
 .sball{position:absolute;width:5.5%;transform:translate(-50%,-50%);z-index:903;pointer-events:none}.sball svg{display:block;width:100%}
 .ssplat{position:absolute;width:11%;transform:translate(-50%,-50%);z-index:903;pointer-events:none;animation:ssplat .6s ease-out forwards}.ssplat svg{display:block;width:100%}

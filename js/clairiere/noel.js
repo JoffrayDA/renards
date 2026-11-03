@@ -87,22 +87,23 @@ Object.assign(STORIES,{
     end:()=>{let n=0;for(const id of ["filou","radar"]){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now(),tr:2};incoPhoto(id,ph);R.photos.push(ph);n++}
       R.recordBig=1;R.recordBigAt=R.recordBigAt||Date.now();save();drawBigBall();if(n)setTimeout(()=>toast("Filou et Radar t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
     // la bande débarque et casse la boule du record
-    {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:6400,
-      show:()=>{const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
+    // 03/11/2026 (copine de Joffray : « pas hyper clair ») : le thème des méchants, on se demande qui ils sont, puis l'attaque
+    {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:2600,
+      show:()=>{const bx=BALL.x,by=BALL.y;bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){}
         actArrive("filou",Math.max(40,bx-140),by-60);setTimeout(()=>actArrive("radar",Math.min(360,bx+120),by-70),250);setTimeout(()=>actArrive("balafre",bx-30,by-150),500);
         setTimeout(()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");defendAll(bx,by)},900);
-        setTimeout(()=>actThrow("filou",X(),{hurt:false,then:crackBall}),1700);
-        setTimeout(()=>actThrow("radar",X(),{hurt:false,then:crackBall}),2300);
-        setTimeout(()=>{actEmote("balafre","colere");actThrow("balafre",X(),{hurt:false,arc:110,ms:760,then:breakBall})},2900);
-        [3900,4250,4600,4950].forEach((t,i)=>setTimeout(()=>actThrow(["filou","radar","balafre","filou"][i],"bouleneige",{ms:520}),t));
-        setTimeout(()=>{gardenSync();actPose("bouleneige","lie","sad",30000);actEmote("bouleneige","goutte");["filou","radar"].forEach(id=>actTrick(id,"boing"))},5600)},
+        setTimeout(()=>{actEmote("balafre","colere");actEmote("filou","note");actEmote("radar","note")},1800)},
       lines:()=>[
+      ["petitpois","surprise",known("balafre")?"Balafre ?! Et c'est qui, les deux autres avec lui ?":"Mais attends… c'est qui, ces trois-là ?",()=>actEmote("petitpois","?")],
+      ["me","surprise","Je sais pas, je ne les ai jamais vus ! Ils n'ont pas l'air commodes…",()=>actEmote("me","goutte")],
+      ["balafre","open","Belle boule.",()=>{actPose("balafre","happy");actEmote("balafre","colere")}],
+      ["me","surprise","Oh ! Attention, Boule-de-Neige !!!",()=>{actEmote("me","!");talkHold(1100,bandeAttack,4300)}],
       ["bouleneige","sad","Ma boule ! Mon record du monde… Il ne manquait presque rien !",()=>actEmote("bouleneige","goutte")],
-      ["balafre","open","Belle boule. Dommage pour elle.",()=>actPose("balafre","happy")],
+      ["balafre","open","Dommage pour elle.",()=>actPose("balafre","happy")],
       ["filou","joy","Ouais ouais, bien vu chef !",()=>actTrick("filou","boing")],
       ["radar","joy","Aha ! Trop fort, le chef ! Trop, trop fort !",()=>actEmote("radar","note")],
       ["balafre","open","Cette clairière est à nous jusqu'au printemps. Et chaque jour, vous paierez un tribut : vos couvertures, vos glands, et tout le chocolat chaud.",()=>actEmote("balafre","colere")],
-      ["petitpois","surprise",known("balafre")?"Balafre ?! C'est toi ?":"Mais… qui es-tu ?",()=>actEmote("petitpois","?")],
+      ["petitpois","surprise",known("balafre")?"Balafre ! Pourquoi tu fais ça ?":"Mais… qui es-tu, d'abord ?",()=>actEmote("petitpois","?")],
       ["balafre","joy",known("balafre")?"Peut-être. Gagne, et on en reparlera.":"Mon nom ? Je te le dirai seulement si vous gagnez."],
       ["filou","joy","Une bataille de boules de neige. Trois contre trois.",()=>actThrow("filou",{x:200,y:300},{hurt:false})],
       ["radar","open","Le chef est imbattable. C'est lui qui l'a dit.",()=>actEmote("radar","!")],
@@ -437,6 +438,16 @@ function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","bal
     // puis, la boule cassée, ils restent figés sur place, sous le choc, jusqu'à la fin de la bataille (shock, life.js)
     setTimeout(()=>{const g=sF(id);if(g&&!g.walk){g.pose="sit";g.expr=i%2?"surprise":"sad";draw(g);actEmote(id,i%2?"!":"goutte",2000)}},5200+i*120)});
   meGo(meBeside(bx,by+20),["up"],20000)}
+// la bande attaque la boule : deux boules la fissurent, celle de Balafre la fend, puis une volée sur Boule-de-Neige
+function bandeAttack(){const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
+  actThrow("filou",X(),{hurt:false,then:crackBall});setTimeout(()=>actThrow("radar",X(),{hurt:false,then:crackBall}),600);
+  setTimeout(()=>{actEmote("balafre","colere");actThrow("balafre",X(),{hurt:false,arc:110,ms:760,then:breakBall})},1200);
+  [2200,2550,2900,3250].forEach((t,i)=>setTimeout(()=>actThrow(["filou","radar","balafre","filou"][i],"bouleneige",{ms:520}),t));
+  setTimeout(()=>{gardenSync();actPose("bouleneige","lie","sad",30000);actEmote("bouleneige","goutte");["filou","radar"].forEach(id=>actTrick(id,"boing"))},3900)}
+// la musique de la clairière : le thème de la bande, de son arrivée jusqu'à la fin des trois défis (music.js)
+let bandeOn=0;
+const clMusic=()=>noelOn()&&!storyDone("balafre")&&(bandeOn&&!(R.beat.balafre>0)||R.beat.balafre>=1&&R.beat.balafre<=3)?"bande":"foret";
+setInterval(()=>{try{if(!gameOn&&!document.querySelector(".bgift")&&["foret","bande",null].includes(MUSIC.current))MUSIC.want(clMusic())}catch(e){}},1500);
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
 const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null,storedWas=false;
 // les objets et la déco restent rangés du record jusqu'au départ de la boule géante refaite (Joffray : « une fois que la boule est

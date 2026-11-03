@@ -50,7 +50,7 @@ function playGame(g,done){
   const sv=el.firstChild,sayEl=el.lastChild;
   // une petite musique guillerette pendant le jeu (pas pour la pêche, qui reste calme), et des bruitages (music.js)
   const music=!g.free&&g.k!=="fish";if(music)MUSIC.want("jeu");
-  const back=()=>{if(music)MUSIC.want("foret")};
+  const back=()=>{if(music)MUSIC.want(typeof clMusic==="function"?clMusic():"foret")};
   const api={sv,won:false,tap:null,
     sfx:(k,n)=>{try{MUSIC.sfx(k,n)}catch(e){}},
     say:t=>{sayEl.textContent=t;replay(sayEl,"pop")},
@@ -595,7 +595,7 @@ const GAMES={
       balls.push(b);A.sfx("swap")};
     const alive=L=>L.filter(f=>!f.ko);
     const hit=(f,dmg=1)=>{if(f.ko)return;f.hp=Math.max(0,f.hp-dmg);f.hurt=.6;if(f.foe)f.up=false;else f.duck=.5;
-      if(!f.hp){f.ko=true;(f.foe?sv.querySelector("#bfortE"):sv.querySelector("#bfortM")).after(f.el);A.sfx(f.foe?"cheer":"lose");if(f.foe)A.cheer(f.boss?"CHEF K.O. !":"K.O. !")}else A.sfx(f.foe?"good":"bad",f.foe?3-f.hp:0);
+      A.sfx("snowhit");if(!f.hp){f.ko=true;(f.foe?sv.querySelector("#bfortE"):sv.querySelector("#bfortM")).after(f.el);A.sfx(f.foe?"cheer":"lose");if(f.foe)A.cheer(f.boss?"CHEF K.O. !":"K.O. !")}else A.sfx(f.foe?"good":"bad",f.foe?3-f.hp:0);
       drawF(f);hud();if(!f.foe){shake=.3;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}}
     const start=()=>{st="play";t=0;balls.forEach(b=>b.el.remove());balls=[];[...foes,...mine].forEach(f=>f.el&&f.el.remove());gFoe.innerHTML="";gMe.innerHTML="";
       foes=FOE.map((id,i)=>({id,foe:1,boss:id===BOSS,x:EX[i],y:EY-24,w:70,hp:id===BOSS?5:3,max:id===BOSS?5:3,up:false,dy:40,hurt:0,ko:false,timer:.8+i*.7,threw:0}));
@@ -820,7 +820,7 @@ const GAMES={
     const throwAt=(x,y,ok)=>{const b=grp(balls,`<circle r="9" fill="#fff" stroke="${INK}" stroke-width="2.4"/>`);
       b.animate([{transform:"translate(200px,500px) scale(1.4)"},{transform:`translate(${x}px,${y}px) scale(.8)`}],{duration:220,easing:"ease-out"}).onfinish=()=>{b.remove();
         const s=grp(balls,`<g transform="translate(${x} ${y-10})">${[0,60,120,180,240,300].map(a=>`<circle cx="${(Math.cos(a*Math.PI/180)*12).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*12).toFixed(1)}" r="4" fill="#fff" stroke="${INK}" stroke-width="1.4"/>`).join("")}<circle r="7" fill="#fff"/></g>`);
-        s.animate([{opacity:1},{opacity:0}],{duration:500}).onfinish=()=>s.remove();A.sfx(ok?"good":"bad",ok?hits:0)}};
+        s.animate([{opacity:1},{opacity:0}],{duration:500}).onfinish=()=>s.remove();A.sfx("snowhit");A.sfx(ok?"good":"bad",ok?hits:0)}};
     A.loop(dt=>{if(st!=="play")return;t+=dt;bar.setAttribute("width",(316*Math.min(1,t/T)).toFixed(1));
       if((next-=dt)<=0&&pop.length<2){next=Math.max(.35,.9-t*.02);const free=F.map((p,i)=>i).filter(i=>!pop.some(p=>p.i===i));if(free.length){
         const i=free[Math.floor(Math.random()*free.length)],[x,y]=F[i],bn=Math.random()<.18,id=bn?"bouleneige":who[Math.floor(Math.random()*who.length)]||"petitpois";

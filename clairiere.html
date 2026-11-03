@@ -86,7 +86,7 @@
 <script src="js/clairiere/roussette.js"></script>
 <script src="js/clairiere/main.js"></script>
 <script src="js/music.js"></script>
-<script>MUSIC.want("foret")</script>
+<script>MUSIC.want(typeof clMusic==="function"?clMusic():"foret")</script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>

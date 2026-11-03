@@ -59,6 +59,10 @@ const MUSIC=(()=>{
     shaker(t,v=.04){const hp=filt("highpass",5000),g=gain(t,.01,v,.07);noiseSrc(t,t+.1).connect(hp);hp.connect(g);out(g,.1)},
     clap(t,v=.1){[0,.012,.025].forEach(o=>{const bp=filt("bandpass",1300,1),g=gain(t+o,.001,v,.08);noiseSrc(t+o,t+o+.12).connect(bp);bp.connect(g);out(g,.3)})},
     wood(t,v=.12){const g=gain(t,.001,v,.07);osc("sine",880,t,t+.1).connect(g);const g2=gain(t,.001,v*.5,.04);osc("sine",1420,t,t+.08).connect(g2);g2.connect(g);out(g,.2)},
+    // cuivres (le thème de la bande) : deux dents de scie, le filtre s'ouvre à l'attaque
+    brass(m,t,dur,v=.07){const f=hz(m),lp=filt("lowpass",700,2);lp.frequency.setValueAtTime(700,t);lp.frequency.linearRampToValueAtTime(2800,t+.04);lp.frequency.exponentialRampToValueAtTime(1300,t+.25);
+      const g=C.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.025);g.gain.setValueAtTime(v*.8,t+Math.max(.05,dur-.05));g.gain.linearRampToValueAtTime(0,t+dur+.06);
+      [-8,8].forEach(dt=>osc("sawtooth",f,t,t+dur+.1,dt).connect(lp));lp.connect(g);out(g,.15)},
     // marimba : bois chaud, très court
     marimba(m,t,v=.2){const f=hz(m),g=gain(t,.002,v,.35);osc("sine",f,t,t+.4).connect(g);const g2=gain(t,.002,v*.35,.08);osc("sine",f*4,t,t+.12).connect(g2);g2.connect(g);out(g,.25)},
     // accord plaqué, cuivré et bref
@@ -135,6 +139,17 @@ const MUSIC=(()=>{
         for(let i=0;i<8;i++)I.shaker(t+i*B/2,i%2?.03:.05);[0,2].forEach(x=>I.kick(t+x*B,.3));[1,3].forEach(x=>I.snare(t+x*B,.07));
         [0,1,2,3].forEach(x=>I.pluck((x%2?c[2]:c[0])+12,t+x*B,.04,.4,2400));I.bass(c[0]-12,t,B*1.8,.18);I.bass(c[0]-5,t+2*B,B*1.8,.15);
         melody((m,tt)=>I.box(m+12,tt,.16,1.2),this.mel,b,t,B)}},
+    // la bande de Balafre débarque (Noël, Clairière) : les méchants sont là, cuivres et basse qui sautille, mi mineur
+    bande:{name:"La bande",bpm:150,beats:4,bars:8,
+      ch:[[52,55,59],[52,55,59],[48,52,55],[47,51,54],[52,55,59],[52,55,59],[45,48,52],[47,51,54]],
+      mel:[[[64,.5],[null,.5],[64,.5],[67,.5],[66,1],[63,1]],[[64,.5],[71,.5],[70,.5],[69,.5],[67,2]],[[72,.5],[null,.5],[72,.5],[71,.5],[69,1],[67,1]],[[71,1.5],[70,.5],[71,2]],
+           [[64,.5],[null,.5],[64,.5],[67,.5],[66,1],[63,1]],[[64,.5],[67,.5],[71,.5],[76,.5],[75,1],[74,1]],[[72,.5],[71,.5],[69,.5],[67,.5],[66,1],[63,1]],[[64,2],[null,1],[59,.5],[63,.5]]],
+      bar(b,t,B){const c=this.ch[b],r=c[0]-12;
+        for(let i=0;i<8;i++)I.pizz(r+(i%2?12:0),t+i*B/2,.2);I.bass(r,t,B*.45,.2);I.bass(r,t+2*B,B*.45,.18);
+        [0,2].forEach(x=>I.kick(t+x*B,.38));[1,3].forEach(x=>I.snare(t+x*B,.11));for(let i=0;i<8;i++)I.hat(t+i*B/2,i%2?.02:.035);
+        if(b===7)[3,3.25,3.5,3.75].forEach((x,i)=>I.snare(t+x*B,.05+i*.025));
+        [1.5,3.5].forEach(x=>I.stab(c.map(m=>m+12),t+x*B,.035));
+        melody((m,tt,d)=>{I.brass(m+12,tt,Math.min(d,.9),.06);I.pizz(m+24,tt,.05)},this.mel,b,t,B)}},
     fantomes:{name:"Petits fantômes",bpm:104,beats:4,bars:8,
       ch:[[57,60,64],[53,57,60],[50,53,57],[52,56,59],[57,60,64],[53,57,60],[50,53,57],[52,56,59]],
       mel:[[[76,.5],[77,.5],[76,.5],[75,.5],[76,1],[72,1]],[[77,1],[76,.5],[74,.5],[72,1],[69,1]],[[74,.5],[77,.5],[81,1],[80,.5],[81,.5],[77,1]],[[76,2],[68,1],[71,1]],
@@ -175,6 +190,13 @@ const MUSIC=(()=>{
       const E=T+.3+6*B;I.pad([45,52,57,59,64],E,2.2,.03);I.box(81,E,.12,2.4);I.box(88,E+.15,.08,2.4);I.bass(33,E,2.2,.2)  // accord final
     }}
     ,
+    // la bande de Balafre apparaît : « dan, dan, daaaan », puis le thème de la bande
+    bande:{len:2.6,play(t){
+      [0,.32].forEach(x=>{I.kick(t+x,.5);I.stab([52,55,59,64],t+x,.07);I.brass(64,t+x,.2,.09);I.bass(40,t+x,.25,.25)});
+      I.kick(t+.7,.55);I.brass(70,t+.7,1.3,.09);I.brass(58,t+.7,1.3,.07);I.stab([46,52,58],t+.7,.06);I.bass(34,t+.7,1.4,.26);I.openhat(t+.7,.08);
+      for(let i=0;i<12;i++)I.snare(t+.9+i*.07,.03+i*.006);
+      [59,60,61,62,63].forEach((m,i)=>I.pizz(m,t+1.9+i*.08,.18))}}
+    ,
     // Nuits de Noël (js/cafe/noelintro.js) : grelots, la lune, le traîneau qui passe, les lumières du sapin, le refrain au titre
     noelintro:{len:10,play(t){
       const B=60/118;
@@ -213,6 +235,7 @@ const MUSIC=(()=>{
     else if(k==="rustle"){nz(3000,.8,.14,.06);nz(1800,.8,.12,.04,.05)}
     else if(k==="swap"){nz(700,1.3,.2,.07,0,2600);tone("sine",520,780,.06,.04,.14)}
     else if(k==="whoosh"){nz(300,1.4,.9,.12,0,1400)}
+    else if(k==="snowhit"){tone("sine",200,60,.14,.24);nz(600,.6,.16,.22);nz(2600,1.2,.07,.1,.01)} // une boule de neige qui touche : « pouf »
     else if(k==="knock"){tone("sine",180,70,.12,.25);nz(1200,1.5,.05,.08)}
     else if(k==="flip"){nz(3200,1,.04,.06);tone("sine",1200,1500,.05,.05)}
     else if(k==="cheer"){[0,4,7,12].forEach((d,i)=>bell(84+d,.1,i*.06,.5))}
