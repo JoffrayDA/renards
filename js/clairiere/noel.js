@@ -188,7 +188,8 @@ Object.assign(STORIES,{
       ["barbeneige","sad","Le patin est cassé net. Et il me reste toutes les maisons de la forêt à livrer avant minuit.",()=>actPose("barbeneige","sit","sad")],
       ["petitpois","sad","Alors… il n'y aura pas de Noël ?",()=>actEmote("petitpois","goutte")],
       ["me","joy","Si. On connaît quelqu'un qui répare tout. COPEAU !",()=>{actEmote("me","!");actArrive("copeau",SLP.x+96,SLP.y+18)}],
-      ["copeau","open","Un patin ? Deux minutes. Mais donne-moi un marteau : le mien a volé quand ça a fait boum.",()=>actEmote("copeau","?")]]},
+      ["copeau","joy","Oh, la belle bête ! Un vrai traîneau du Nord. Ce patin, je te le répare en trois coups de marteau.",()=>actTrick("copeau","boing")],
+      ["copeau","surprise","… Mon marteau ? Il était à ma ceinture ! J'ai couru si vite qu'il a dû sauter dans la neige.",()=>{actEmote("copeau","!");actPose("copeau","sit","surprise")}]]},
     {at:"copeau",game:{k:"search",snow:1,item:"marteau",say:"Le marteau de Copeau a volé dans la neige. Le bon tas frémit… 3 essais !",win:"Le marteau !"},goal:"Retrouve le marteau de Copeau dans la neige.",lines:[
       ["copeau","joy","Le voilà. Maintenant, on tient le patin, et on ne bouge plus.",()=>actGive("me","copeau","marteau")]]},
     {at:"copeau",game:{k:"nails",sled:1,n:6,time:14,say:"Six clous pour remettre le patin. Trois coups chacun, avant minuit !",win:"Tac, tac, tac ! Le patin tient !"},goal:"Répare le patin avec Copeau, avant minuit.",lines:[
