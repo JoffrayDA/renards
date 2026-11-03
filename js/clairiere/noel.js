@@ -86,18 +86,15 @@ Object.assign(STORIES,{
   balafre:{title:"La bataille de neige",souv:"une boule de neige qui ne fond pas",cast:["filou","radar","bouleneige"],
     end:()=>{let n=0;for(const id of ["filou","radar"]){const s=incOf(id);if(s.found||s.n>=5)continue;const ph={id,bowl:null,t:Date.now(),tr:2};incoPhoto(id,ph);R.photos.push(ph);n++}
       R.recordBig=1;R.recordBigAt=R.recordBigAt||Date.now();save();drawBigBall();if(n)setTimeout(()=>toast("Filou et Radar t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
-    // la bande débarque et casse la boule du record
-    // 03/11/2026 (copine de Joffray : « pas hyper clair ») : le thème des méchants, on se demande qui ils sont, puis l'attaque
-    {at:"bouleneige",goal:"Boule-de-Neige crie au secours près de sa boule !",showMs:2600,
-      show:()=>{const bx=BALL.x,by=BALL.y;bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){}
-        const cl=(x,y)=>[Math.max(36,Math.min(364,x)),Math.max(300,Math.min(H-30,y))];actArrive("filou",...cl(bx-120,by+40));setTimeout(()=>actArrive("radar",...cl(bx+90,by+50)),250);setTimeout(()=>actArrive("balafre",...cl(bx-20,by+100)),500);
-        setTimeout(()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");defendAll(bx,by)},900);
-        setTimeout(()=>{actEmote("balafre","colere");actEmote("filou","note");actEmote("radar","note")},1800)},
-      lines:()=>[
-      ["petitpois","surprise",known("balafre")?"Balafre ?! Et c'est qui, les deux autres avec lui ?":"Mais attends… c'est qui, ces trois-là ?",()=>actEmote("petitpois","?")],
-      ["me","surprise","Je sais pas, je ne les ai jamais vus ! Ils n'ont pas l'air commodes…",()=>actEmote("me","goutte")],
-      ["balafre","open","Belle boule.",()=>{actPose("balafre","happy");actEmote("balafre","colere")}],
-      ["me","surprise","Oh ! Attention, Boule-de-Neige !!!",()=>{actEmote("me","!");talkHold(1100,bandeAttack,4300)}],
+    // 03/11/2026 (Joffray) : la bande regarde le record depuis le début, assise de dos au premier rang, incognito ; Petit Pois la
+    // remarque, elle monte jusqu'au perron sans se retourner, se retourne là-haut (thème des méchants), et casse la boule
+    {at:"petitpois",goal:"Petit Pois a remarqué trois drôles de spectateurs, tout devant.",lines:()=>[
+      ["petitpois","surprise",`Eh, dis-moi ${ME()}… c'est qui, les trois, tout devant ?`,()=>actEmote("petitpois","?")],
+      ["me","open","Je ne sais pas du tout, je ne les ai jamais vus. Ils sont là depuis le début du record…",()=>actEmote("me","?")],
+      ["petitpois","open","Ils n'ont pas bougé une oreille. Même pas pour applaudir.",()=>actEmote("petitpois","!")],
+      ["me","surprise","Tiens… ils se lèvent.",()=>talkHold(700,bandUp,5000)],
+      ["balafre","open","Belle boule.",()=>actEmote("balafre","colere")],
+      ["me","surprise","Oh ! Attention, Boule-de-Neige !!!",()=>{actEmote("me","!");talkHold(1100,()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");defendAll(BALL.x,BALL.y);bandeAttack()},4300)}],
       ["bouleneige","sad","Ma boule ! Mon record du monde… Il ne manquait presque rien !",()=>actEmote("bouleneige","goutte")],
       ["balafre","open","Dommage pour elle.",()=>actPose("balafre","happy")],
       ["filou","joy","Ouais ouais, bien vu chef !",()=>actTrick("filou","boing")],
@@ -429,7 +426,8 @@ const WATCH=[...[[136,238],[164,236],[238,236],[266,238]].map(([x,y])=>({x,y,pos
   ...[[230,418],[282,424],[334,416],[372,446],[206,466],[258,470],[312,468],[360,492]].map(([x,y])=>({x,y,poses:["back"],back:1}))].map((s,i)=>({id:"w"+i,...s}));
 // le record : tout le monde s'installe pour regarder et ne bouge plus (on ne dérange pas un record du monde)
 function watchAll(now){const sp=WATCH; // now : on arrive dans la clairière, chacun est déjà à sa place (personne ne traverse le chemin)
-  for(const f of foxes){if(f.wild||f.id==="bouleneige"||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
+  const bs=bandExtra().length?bandSeats():[];
+  for(const f of foxes){if(f.wild||f.id==="bouleneige"||BAND.includes(f.id)||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!bs.includes(s)&&!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
     f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}if(now){f.walk=null;place(f,to)}else goTo(f,to);f.until=Date.now()+9e8}}
 // la bande arrive : tout le monde sort pour défendre Boule-de-Neige
 function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","balafre","filou","radar"].includes(f.id)&&!f.inside).map(f=>f.id);
@@ -438,6 +436,24 @@ function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","bal
     // puis, la boule cassée, ils restent figés sur place, sous le choc, jusqu'à la fin de la bataille (shock, life.js)
     setTimeout(()=>{const g=sF(id);if(g&&!g.walk){g.pose="sit";g.expr=i%2?"surprise":"sad";draw(g);actEmote(id,i%2?"!":"goutte",2000)}},5200+i*120)});
   meGo(meBeside(bx,by+20),["up"],20000)}
+// la bande incognito : pendant le record, assise de dos au premier rang des spectateurs (places w8 à w10) ; on ne la voit jamais de
+// face avant le perron, on ne peut pas la toucher ; si elle arrive en cours de route, elle vient par le bas
+const BAND=["balafre","filou","radar"],bandSeats=()=>WATCH.slice(8,11);let bandMove=0,bandSeen=0;
+const bandIncog=()=>noelOn()&&gardenCleared()&&!(R.beat.balafre>0)&&!storyDone("balafre")&&!bandMove;
+const bandExtra=()=>bandIncog()||bandMove&&!(R.beat.balafre>0)?BAND:[];
+function bandSeat(){if(!bandIncog()){for(const id of BAND){const f=sF(id);if(f)f.el.style.pointerEvents=""}return}
+  BAND.forEach((id,i)=>{const sp=bandSeats()[i];let f=sF(id);
+    if(!f){f=makeFox(id,null);f.x=sp.x;f.y=bandSeen?H+40:sp.y;f.el.style.cssText+=";"+pc(f.x,f.y)}
+    f.el.style.pointerEvents="none";f.watch=1;f.until=Date.now()+9e8;
+    if(f.spot!==sp&&!(f.walk&&f.walk.to===sp)){if(bandSeen&&f.y>H)goTo(f,sp);else{f.walk=null;place(f,sp)}}
+    if(!f.walk&&f.pose!=="back"){f.pose="back";draw(f)}});bandSeen=1}
+setInterval(bandSeat,1500);setTimeout(bandSeat,300);
+// ils se lèvent, montent jusqu'au perron sans se retourner, et là, ils se retournent : le thème des méchants
+function bandUp(){bandMove=1;
+  BAND.forEach((id,i)=>{if(!R.res[id])R.res[id]={at:Date.now(),h:0,pet:""};const f=sF(id);if(!f)return;f.watch=0;f.fast=1;f.el.style.pointerEvents="";
+    setTimeout(()=>{goTo(f,{id:"bandp"+i,x:[214,170,258][i],y:[276,266,266][i],poses:["up"]});f.until=Date.now()+60000},i*220)});save();
+  setTimeout(()=>{bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){}
+    BAND.forEach(id=>{const f=sF(id);if(f&&!f.walk){f.pose="up";f.expr=id==="balafre"?"open":"joy";draw(f)}});actEmote("balafre","colere",2600);actEmote("filou","note");actEmote("radar","note")},3700)}
 // la bande attaque la boule : deux boules la fissurent, celle de Balafre la fend, puis une volée sur Boule-de-Neige
 function bandeAttack(){const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
   actThrow("filou",X(),{hurt:false,then:crackBall});setTimeout(()=>actThrow("radar",X(),{hurt:false,then:crackBall}),600);

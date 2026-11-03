@@ -150,7 +150,7 @@ function tick(){
     // sous le choc après l'arrivée de la bande de Balafre : ils ne bougent plus jusqu'à la fin de la bataille (noel.js)
     if(f.shock){if((R.beat.balafre||0)<2){f.until=now+5000;continue}f.shock=0}
     // la bande reste plantée devant la boule cassée jusqu'à la bataille (avant, elle repartait sur le perron au bout de 30 s)
-    if(["balafre","filou","radar"].includes(f.id)&&!f.wild&&noelOn()&&!storyDone("balafre")&&(R.beat.balafre===1||typeof bandeOn!=="undefined"&&bandeOn&&!(R.beat.balafre>0))){f.until=now+5000;continue}
+    if(["balafre","filou","radar"].includes(f.id)&&!f.wild&&noelOn()&&!storyDone("balafre")&&(R.beat.balafre===1||typeof bandeOn!=="undefined"&&bandeOn&&!(R.beat.balafre>0)||bandIncog())){f.until=now+5000;continue}
     if(f.spot&&!f.spot.via&&!f.inside&&inObst(f)&&!f.wild){const sp=choose(f);if(sp){goTo(f,sp);continue}} // assis là où la boule vient d'apparaître : il se pousse
     // et même si le jeu a été fermé entre l'arrivée de la bande et la bataille : tout le refuge reste sous le choc
     if(R.beat.balafre===1&&noelOn()&&!f.wild&&!["balafre","filou","radar","bouleneige"].includes(f.id)&&!storyDone("balafre")){
@@ -161,8 +161,8 @@ function tick(){
 }
 // remet la scène d'accord avec la sauvegarde (nouvel arrivant, groupe qui change)
 function syncFoxes(){
-  const want=presentIds();
-  for(const f of foxes.slice())if(!f.wild&&!f.walk&&!want.includes(f.id))removeFox(f);
+  const want=presentIds(),keep=typeof bandExtra==="function"?bandExtra():[]; // la bande incognito (noel.js) se place toute seule
+  for(const f of foxes.slice())if(!f.wild&&!f.walk&&!want.includes(f.id)&&!keep.includes(f.id))removeFox(f);
   const free=()=>SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj);
   for(const id of want)if(!foxes.some(f=>f.id===id)){const fs=free();makeFox(id,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}
 }
