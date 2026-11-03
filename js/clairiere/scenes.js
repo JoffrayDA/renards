@@ -52,6 +52,10 @@ function actGive(from,to,k,o={}){const P=v=>typeof v==="string"?(f=>f?{x:f.x,y:f
     if(!b.id){s.remove();const r=document.createElement("div");r.className="sring";r.style.cssText=pc(b.x,b.y);$("scene").appendChild(r);setTimeout(()=>r.remove(),900);try{MUSIC.sfx("splash")}catch(e){}return}
     try{MUSIC.sfx("pop")}catch(e){}s.style.cssText+=";"+pc(b.x,b.y-16);s.classList.add("held");setTimeout(()=>s.remove(),1700);
     if(o.happy!==false){actPose(b.id,"happy",b.id==="me"?"joy":undefined,5000);actEmote(b.id,"coeur",1600)}}}
+// se tourner vers un autre renard, sans bouger
+function actFace(id,to){const f=sF(id),t=sF(to);if(!f||!t||f.walk)return;f.el.classList.toggle("left",t.x<f.x)}
+// rentrer dans la maison (et y rester jusqu'à ce qu'une scène le fasse ressortir : actGo)
+function actIn(id){const f=sF(id);if(!f||f.inside)return;f.fast=1;goTo(f,"door");f.until=Date.now()+9e8}
 // aller se mettre à côté d'un autre renard, tourné vers lui
 function actNear(id,to,pose="sit"){const f=sF(id),t=sF(to);if(!f||!t||f===t)return;const s=f.x<t.x?-1:1,x=Math.max(26,Math.min(374,t.x+s*40)),y=Math.max(252,Math.min(H-24,t.y+6));
   if(f===meF){meGo({x,y,face:t.x},[pose],20000);return}
