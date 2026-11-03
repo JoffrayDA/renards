@@ -89,8 +89,8 @@ Object.assign(STORIES,{
     // 03/11/2026 (Joffray) : la bande regarde le record depuis le début, assise de dos au premier rang, incognito ; Petit Pois la
     // remarque, elle monte jusqu'au perron sans se retourner, se retourne là-haut (thème des méchants), et casse la boule
     {at:"grelot",goal:"Grelot a remarqué trois drôles de spectateurs, tout devant.",lines:()=>[
-      ["grelot","surprise",`Eh, dis-moi ${ME()}… c'est qui, les trois, tout devant ?`,()=>actEmote("grelot","?")],
-      ["me","surprise","Mais oui, tu as raison… Je ne les reconnais pas du tout !",()=>{actEmote("me","!");actPose("me","sit","surprise")}],
+      ["grelot","surprise",`Eh, dis-moi ${ME()}, c'est qui, les trois renards juste devant nous ?`,()=>actEmote("grelot","?")],
+      ["me","surprise","… Mais je ne sais pas, je ne les ai jamais vus ! Quoi ?!",()=>{actEmote("me","!");actPose("me","sit","surprise")}],
       ["grelot","open","Ils n'ont pas bougé une oreille. Même pas pour applaudir.",()=>actEmote("grelot","!")],
       ["me","surprise","Tiens… ils se lèvent.",()=>talkHold(700,bandUp,5000)],
       ["balafre","open","Belle boule.",()=>actEmote("balafre","colere")],
