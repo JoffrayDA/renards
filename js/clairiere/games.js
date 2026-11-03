@@ -35,7 +35,9 @@ const ITEM={
   twig:`<path d="M-18 6 L18 -6 M2 0 l6 -10 M-6 3 l-4 8" fill="none" stroke="#a9785a" stroke-width="4" stroke-linecap="round"/>`,
   // la clochette de Ramure (Noël)
   bell:`<path d="M0 -16 C-9 -16 -11 -8 -11 -1 V5 L-14 10 H14 L11 5 V-1 C11 -8 9 -16 0 -16Z" fill="#f6cc4e" ${O}/><circle cy="13" r="3.6" fill="#e0a52e" ${O}/><path d="M-6 -8 q1 -4 5 -5" fill="none" stroke="#fff6cf" stroke-width="3" stroke-linecap="round"/><path d="M0 -16 l-7 -6 q-2 5 3 6 M0 -16 l7 -6 q2 5 -3 6" fill="#e2445e" ${O}/>`,
-  leaf:`<path d="M-16 4 Q0 -18 16 -4 Q0 12 -16 4Z" fill="#b5d68f" ${O}/><path d="M-12 3 Q0 -2 12 -3" fill="none" stroke="#6f9a60" stroke-width="2"/>`
+  leaf:`<path d="M-16 4 Q0 -18 16 -4 Q0 12 -16 4Z" fill="#b5d68f" ${O}/><path d="M-12 3 Q0 -2 12 -3" fill="none" stroke="#6f9a60" stroke-width="2"/>`,
+  // le marteau de Copeau (Noël)
+  marteau:`<g transform="rotate(-30)"><rect x="-4" y="-6" width="8" height="30" rx="3" fill="#c99a6a" ${O}/><rect x="-16" y="-20" width="32" height="15" rx="4" fill="#9aa0aa" ${O}/></g>`
 };
 
 const JUNK=[["boot","Une vieille botte… Raté !","Vieille botte"],["algae","Des algues. Beurk.","Algues"],["twig","Une brindille. Bon.","Brindille"],["leaf","Une feuille toute mouillée.","Feuille mouillée"],["pebble","Un caillou. Pas de chance !","Caillou"]];
@@ -199,10 +201,11 @@ const GAMES={
     const sv=A.sv,P=[[88,150],[206,128],[322,166],[136,262],[272,284],[80,388],[214,402],[330,380]],tries=g.tries||3,
       gags=[["snail","Un escargot. Il n'a rien vu."],["cone","Une pomme de pin. Pas ça…"],["pebble","Un caillou tout lisse."],["leaf","Rien que des feuilles."]];
     let good=0,left=tries,st="look",gen=0;
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${Array.from({length:30},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="its"></g><g id="piles"></g>`;
+    // g.snow : les tas sont des tas de neige (Noël)
+    sv.innerHTML=g.snow?`<rect y="-320" width="400" height="800" fill="#e8f1f8"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${(i*89)%480}" r="${1.5+i%3}" fill="#fff"/>`).join("")}<g id="its"></g><g id="piles"></g>`:`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${Array.from({length:30},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="its"></g><g id="piles"></g>`;
     const its=sv.querySelector("#its"),box=sv.querySelector("#piles");
     const piles=P.map(([x,y],i)=>{const it=grp(its,"",{transform:`translate(${x} ${y})`,opacity:0});
-      const pile=grp(box,`<g class="pin"><g filter="url(#wobble)">${[[-26,4,"#f2a35c",-12],[0,-8,"#e8794e",8],[24,2,"#f6c065",-4],[-10,10,"#e98a5a",14],[14,12,"#f2a35c",-8],[0,0,"#f6c065",4]].map(([dx,dy,c,r])=>`<path d="M${dx-20} ${dy} Q${dx} ${dy-20} ${dx+20} ${dy} Q${dx} ${dy+8} ${dx-20} ${dy}Z" fill="${c}" transform="rotate(${r} ${dx} ${dy})" ${O}/>`).join("")}</g></g>`,{transform:`translate(${x} ${y})`,class:"pile"});
+      const pile=grp(box,`<g class="pin"><g filter="url(#wobble)">${[[-26,4,"#f2a35c",-12],[0,-8,"#e8794e",8],[24,2,"#f6c065",-4],[-10,10,"#e98a5a",14],[14,12,"#f2a35c",-8],[0,0,"#f6c065",4]].map(([dx,dy,c,r])=>`<path d="M${dx-20} ${dy} Q${dx} ${dy-20} ${dx+20} ${dy} Q${dx} ${dy+8} ${dx-20} ${dy}Z" fill="${g.snow?"#fff":c}" transform="rotate(${r} ${dx} ${dy})" ${O}/>`).join("")}</g></g>`,{transform:`translate(${x} ${y})`,class:"pile"});
       pile.onpointerdown=e=>{e.stopPropagation();pick(i)};return {pile,it,pin:pile.firstChild}});
     const shown=(i,k)=>{const p=piles[i];p.it.innerHTML=ITEM[k];p.it.setAttribute("opacity",1);replay(p.it,"popin")};
     // le bon tas frémit ; de temps en temps, une rafale fait bouger tous les tas
@@ -838,9 +841,9 @@ const GAMES={
   nails(g,A){
     const sv=A.sv,N=g.n||5,T=g.time||12;let st="play",left=T,ns=[];
     sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#d9b98c"/>${[0,1,2,3,4,5,6,7].map(i=>`<path d="M0 ${30+i*60} H400" stroke="#c49a68" stroke-width="3"/>`).join("")}
-      <g filter="url(#wobble)"><rect x="100" y="70" width="200" height="360" rx="14" fill="#b9814a" ${O}/>${[140,180,220,260].map(x=>`<path d="M${x} 74 V426" stroke="#9a6a3c" stroke-width="2.4"/>`).join("")}
-      ${[120,330].map(y=>`<rect x="92" y="${y}" width="96" height="34" rx="6" fill="#a9a2a0" ${O}/><path d="M100 ${y+8} l14 4 M130 ${y+22} l18 -6 M160 ${y+10} l12 6" stroke="#c9763c" stroke-width="2.4" opacity=".7"/>`).join("")}
-      <circle cx="270" cy="250" r="9" fill="#f2c45a" ${O}/><path d="M270 256 v14" stroke="${INK}" stroke-width="4" stroke-linecap="round"/></g>
+      <g filter="url(#wobble)"><rect x="100" y="70" width="200" height="360" rx="14" fill="${g.sled?"#d9584e":"#b9814a"}" ${O}/>${[140,180,220,260].map(x=>`<path d="M${x} 74 V426" stroke="${g.sled?"#b8443e":"#9a6a3c"}" stroke-width="2.4"/>`).join("")}
+      ${[120,330].map(y=>`<rect x="92" y="${y}" width="96" height="34" rx="6" fill="${g.sled?"#f2c75c":"#a9a2a0"}" ${O}/>${g.sled?"":`<path d="M100 ${y+8} l14 4 M130 ${y+22} l18 -6 M160 ${y+10} l12 6" stroke="#c9763c" stroke-width="2.4" opacity=".7"/>`}`).join("")}
+      ${g.sled?`<path d="M296 90 Q350 110 330 170 Q324 190 300 186" fill="none" stroke="#f2c75c" stroke-width="10" stroke-linecap="round"/>`:`<circle cx="270" cy="250" r="9" fill="#f2c45a" ${O}/><path d="M270 256 v14" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`}</g>
       <g id="nl"></g><g id="ham" opacity="0"><g transform="rotate(-30)"><rect x="-4" y="-2" width="8" height="46" rx="3" fill="#c99a6a" stroke="${INK}" stroke-width="2.4"/><rect x="-18" y="-14" width="36" height="16" rx="4" fill="#9aa0aa" stroke="${INK}" stroke-width="2.6"/></g></g>
       <rect x="40" y="456" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="458" width="316" height="8" rx="4" fill="#f2a35c"/>`;
     const box=sv.querySelector("#nl"),bar=sv.querySelector("#bar"),ham=sv.querySelector("#ham");

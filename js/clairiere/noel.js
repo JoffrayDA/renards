@@ -25,7 +25,7 @@ function sapinStage(){if(!noelOn()||!storyDone("grelot"))return null;const d=noe
   if(storyDone("paillette")||(R.beat.paillette||0)>=3)return "3";if(d>=15&&storyDone("ramure"))return "2";if(d>=8)return "1";return "0"}
 // l'étoile se pose à la fin de l'histoire de Barbe-Neige, ou plus tôt si on a ouvert les 24 cases du calendrier (Étoile dorée)
 const goldStar=()=>!!(bourse().noel||{}).etoile;
-const sapinStar=()=>storyDone("barbeneige")||(goldStar()&&sapinStage()==="3");
+const sapinStar=()=>storyDone("barbeneige")||!!R.noelStar||(goldStar()&&sapinStage()==="3");
 // les lanternes de gauche laissent la place au sapin dès qu'il a grandi (scene.js)
 function noelLampsL(){const s=sapinStage();return s&&s!=="0"?[[90,206]]:null}
 // pas d'objet de déco sur le sapin (deco.js)
@@ -58,7 +58,7 @@ Object.assign(STORIES,{
       ["ramure","surprise","Oh ! Pardon, je glissais sur la glace. Je m'appelle Ramure.",()=>{actTrick("ramure","roll");actEmote("ramure","goutte");actEmote("me","!")}],
       ["ramure","sad","Je tire le traîneau de Barbe-Neige. Je me suis perdu dans la tempête… et ma clochette est tombée.",()=>{actPose("ramure","sit","sad");actEmote("ramure","froid")}],
       ["me","joy","On va la retrouver !",()=>{actTrick("me","boing");actEmote("ramure","coeur");setTimeout(()=>{actGo("me",296,372);actGo("ramure",262,382)},900)}]]},
-    {at:"@leaves",game:{k:"search",item:"bell",say:"La clochette a roulé sous la neige. Elle tinte quand le vent souffle ! 3 essais.",win:"Gling ! La voilà !"},goal:"Cherche la clochette de Ramure sous la neige, près des feuilles.",lines:[
+    {at:"@leaves",game:{k:"search",snow:1,item:"bell",say:"La clochette a roulé sous la neige. Elle tinte quand le vent souffle ! 3 essais.",win:"Gling ! La voilà !"},goal:"Cherche la clochette de Ramure sous la neige, près des feuilles.",lines:[
       ["ramure","joy","Ma clochette ! Avec elle, Barbe-Neige m'entendra de très loin.",()=>{actGive("me","ramure","bell");setTimeout(()=>actTrick("ramure","salto"),1200)}],
       ["ramure","open","Je reste ici en attendant qu'il me retrouve. Ton sapin, on le voit de partout : c'est un bon repère.",()=>{actEmote("ramure","coeur");actPose("ramure","lie","joy")}]]},
     {at:"petitpois",goal:"Présente Ramure à Petit Pois.",lines:[
@@ -147,22 +147,37 @@ Object.assign(STORIES,{
       ["balafre","shy","On reste jusqu'à ce que la neige fonde. Pour garder la clairière… avec vous, cette fois.",()=>actEmote("balafre","coeur")],
       ["me","joy","Bienvenue au refuge. C'est ça, la magie de Noël."]]}
   ]},
-  barbeneige:{title:"La veille de Noël",souv:"l'étoile du sapin",cast:["grelot","ramure","paillette"],beats:[
-    {at:"ramure",goal:"Ramure entend quelque chose dans le ciel.",lines:[
-      ["ramure","surprise","Tu entends ? Des clochettes, là-haut… C'est le traîneau !",()=>{actPose("ramure","up","surprise");actEmote("ramure","!")}],
-      ["ramure","joy","Il a entendu la mienne. Il arrive !",()=>{actTrick("ramure","salto");setTimeout(()=>actGo("me",228,262),900)}]]},
-    {at:"@porch",arrive:"barbeneige",goal:"Accueille le traîneau devant la maison.",lines:[
-      ["barbeneige","joy","Bonsoir, bonsoir ! Je suis Barbe-Neige.",()=>{actTrick("barbeneige","boing");actEmote("barbeneige","coeur")}],
-      ["barbeneige","open","Ramure, te voilà ! Et quel sapin… Je n'en ai jamais vu d'aussi beau dans tout le Nord.",()=>{actNear("ramure","barbeneige","happy");actTrick("ramure","boing")}],
-      ["barbeneige","sad","Mais quelle tempête ! En atterrissant, toutes mes lettres se sont envolées.",()=>{actEmote("barbeneige","goutte");actPose("barbeneige","sit","sad")}]]},
-    {at:"barbeneige",game:{k:"catch",thing:"page",n:8,say:"Les lettres des renards s'envolent ! Attrape-les toutes.",win:"Toutes les lettres !"},goal:"Rattrape les lettres de Barbe-Neige.",lines:[
-      ["barbeneige","joy","Merci ! Chaque lettre, c'est le vœu d'un renard. Je ne pouvais pas en perdre une seule.",()=>{actGive("me","barbeneige","page");setTimeout(()=>actEmote("barbeneige","coeur"),1200)}],
-      ["barbeneige","open","Pour te remercier, voici l'étoile du sapin. Elle ne s'éteint jamais.",()=>actGive("barbeneige","me","eclat")]]},
-    {at:"grelot",gather:1,goal:"Pose l'étoile en haut du sapin, avec tout le monde.",lines:[
-      ["grelot","joy","Tout le monde est là ? Un… deux… trois !",()=>{actTrick("grelot","boing");actEmote("grelot","note")}],
-      ["petitpois","surprise","Elle brille ! Elle brille jusqu'au ciel !",()=>{actTrick("petitpois","salto");actEmote("petitpois","!")}],
-      ["barbeneige","joy","Joyeux Noël, la clairière.",()=>{actEmote("barbeneige","coeur");actTrick("ramure","toupie");actTrick("paillette","toupie")}],
-      ["me","joy","Joyeux Noël à tous !",()=>{actTrick("me","salto");actTrick("grelot","boing")}]]}
+  // refaite le 03/11/2026 (tournee.js) : le traîneau s'écrase, le marteau, Copeau répare, la tournée des maisons, l'énorme cadeau
+  barbeneige:{title:"La veille de Noël",souv:"l'étoile du sapin",cast:["grelot","ramure","paillette","copeau","balafre","filou","radar"],end:()=>bigGiftEnd(),beats:[
+    {at:"ramure",goal:"Ramure a entendu des clochettes dans le ciel.",showMs:2900,show:()=>{actPose("ramure","up","surprise");sceneSkyPass()},lines:[
+      ["ramure","surprise","Le traîneau ! Sans moi pour le tirer, il vole de travers !",()=>actEmote("ramure","!")],
+      ["radar","surprise","J'entends un boulon qui saute. Puis un autre. Puis plus rien… Ça vient par ici !",()=>actEmote("radar","goutte")],
+      ["me","surprise","Tout le monde, devant la maison, vite !",()=>actGo("me",150,300)]]},
+    {at:"@porch",goal:"Le traîneau tombe ! Cours devant la maison.",showMs:2300,show:()=>sceneCrash(),lines:[
+      ["barbeneige","surprise","Bonsoir, bonsoir… Barbe-Neige. Personne n'a rien vu.",()=>actEmote("barbeneige","goutte")],
+      ["ramure","sad","Patron ! C'est ma faute, je n'aurais jamais dû me perdre.",()=>actEmote("ramure","goutte")],
+      ["barbeneige","sad","Le patin est cassé net. Et il me reste toutes les maisons de la forêt à livrer avant minuit.",()=>actPose("barbeneige","sit","sad")],
+      ["petitpois","sad","Alors… il n'y aura pas de Noël ?",()=>actEmote("petitpois","goutte")],
+      ["me","joy","Si. On connaît quelqu'un qui répare tout. COPEAU !",()=>{actEmote("me","!");actArrive("copeau",SLP.x+96,SLP.y+18)}],
+      ["copeau","open","Un patin ? Deux minutes. Mais donne-moi un marteau : le mien a volé quand ça a fait boum.",()=>actEmote("copeau","?")]]},
+    {at:"copeau",game:{k:"search",snow:1,item:"marteau",say:"Le marteau de Copeau a volé dans la neige. Le bon tas frémit… 3 essais !",win:"Le marteau !"},goal:"Retrouve le marteau de Copeau dans la neige.",lines:[
+      ["copeau","joy","Le voilà. Maintenant, on tient le patin, et on ne bouge plus.",()=>actGive("me","copeau","marteau")]]},
+    {at:"copeau",game:{k:"nails",sled:1,n:6,time:14,say:"Six clous pour remettre le patin. Trois coups chacun, avant minuit !",win:"Tac, tac, tac ! Le patin tient !"},goal:"Répare le patin avec Copeau, avant minuit.",lines:[
+      ["copeau","joy","Plus solide que neuf. Il tiendrait une tonne de cadeaux.",()=>actTrick("copeau","boing")],
+      ["barbeneige","joy","Ramure, à ton poste ! Et toi, grimpe : il me faut quelqu'un pour tenir les rênes. Moi, j'ai les lunettes coincées dans la barbe.",()=>{actTrick("barbeneige","boing");actEmote("ramure","note")}]]},
+    {at:"barbeneige",game:{k:"tournee",n:7,win:"L'étoile brille en haut du sapin !"},goal:"Monte dans le traîneau : la tournée des maisons !",lines:()=>{R.noelStar=1;save();drawBg();drawGlow();return [
+      ["barbeneige","joy","Toutes livrées, et ton sapin a enfin son étoile. On la voit depuis le Nord !",()=>actEmote("barbeneige","coeur")],
+      ["ramure","open","Il reste une maison. Une seule…",()=>actEmote("ramure","note")],
+      ["barbeneige","joy","La tienne. Saute, file devant ta porte et ferme les yeux. Ramure ! On a une dernière chose à aller chercher.",()=>actGo("me",150,300)]]}},
+    {at:"@porch",gather:1,goal:"Barbe-Neige a dit : file devant ta porte et ferme les yeux !",showMs:4000,show:()=>sceneBigGift(),lines:[
+      ["petitpois","surprise","C'est… C'est PLUS GROS QUE LA MAISON !",()=>{actTrick("petitpois","salto");actEmote("petitpois","!")}],
+      ["ramure","joy","Je l'ai tiré tout seul depuis le Nord. Je tiens à ce que ce soit dit.",()=>actTrick("ramure","boing")],
+      ["barbeneige","open","Attends, une dernière lettre. Sans nom, juste une griffe : « Une couverture. Pas pour moi. Pour deux idiots qui ont froid. »",()=>actGive("barbeneige","balafre","coussin")],
+      ["balafre","shy","… Je ne sais pas qui a écrit ça.",()=>actPose("balafre","sit","shy")],
+      ["filou","joy","Ouais ouais, pas lui, chef !",()=>actTrick("filou","boing")],
+      ["radar","joy","J'ai entendu la griffe écrire. Trois nuits de suite.",()=>actEmote("balafre","colere")],
+      ["barbeneige","joy",`Et celui-là, ${ME()}, il est pour toi. Tu as livré tout le monde, et tu n'avais rien demandé.`,()=>actEmote("barbeneige","coeur")],
+      ["me","joy","Un… deux… trois !",()=>actTrick("me","salto")]]}
   ]}
 });
 
@@ -423,19 +438,26 @@ function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","bal
     setTimeout(()=>{const g=sF(id);if(g&&!g.walk){g.pose="sit";g.expr=i%2?"surprise":"sad";draw(g);actEmote(id,i%2?"!":"goutte",2000)}},5200+i*120)});
   meGo(meBeside(bx,by+20),["up"],20000)}
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
-const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null;
-function gardenSync(){const on=gardenCleared();$("scene").classList.toggle("cleared",on);
-  if(on){const away=()=>true;
-    for(let i=SPOTS.length-1;i>=0;i--)if(away(SPOTS[i])){if(SPOTS[i].obj||SPOTS[i].deco)delete SPOT[SPOTS[i].id];else gardenHid.push(SPOTS[i]);SPOTS.splice(i,1)}
+const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null,storedWas=false;
+// les objets et la déco restent rangés du record jusqu'au départ de la boule géante refaite (Joffray : « une fois que la boule est
+// partie, remets les objets comme ils étaient ») ; ils n'ont pas bougé de R.obj / R.deco, ils reviennent à leur place
+const gardenStored=()=>noelOn()&&(gardenCleared()||((R.recordGone||R.beat.balafre>0)&&!storyDone("balafre"))||bigOn());
+function gardenSync(){const on=gardenCleared(),st=gardenStored();$("scene").classList.toggle("cleared",on);$("scene").classList.toggle("stored",st);
+  if(st&&!storedWas){for(let i=SPOTS.length-1;i>=0;i--)if(SPOTS[i].obj||SPOTS[i].deco){delete SPOT[SPOTS[i].id];SPOTS.splice(i,1)}
+    for(const f of foxes)if(f.spot&&(f.spot.obj||f.spot.deco)&&!SPOTS.includes(f.spot)){const fs=SPOTS.filter(x=>!taken(x)&&!x.lamp&&!x.bowl);f.walk=null;place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}}
+  if(!st&&storedWas){addObjSpots();decoSpots();drawDeco();drawObjs()}
+  storedWas=st;
+  if(on&&!gardenWas){for(let i=SPOTS.length-1;i>=0;i--){gardenHid.push(SPOTS[i]);SPOTS.splice(i,1)}
     SPOTS.push(...WATCH);watchAll(1)}
-  else{for(let i=SPOTS.length-1;i>=0;i--)if(WATCH.includes(SPOTS[i]))SPOTS.splice(i,1);
-    for(const sp of gardenHid.splice(0))SPOTS.push(sp);addObjSpots();decoSpots();drawDeco();drawObjs();
+  else if(!on&&gardenWas){for(let i=SPOTS.length-1;i>=0;i--)if(WATCH.includes(SPOTS[i]))SPOTS.splice(i,1);
+    for(const sp of gardenHid.splice(0))SPOTS.push(sp);
     for(const f of foxes)if(f.watch){f.watch=0;f.until=0}}
   if(gardenWas!==null&&gardenWas!==on)drawBg();gardenWas=on;
   // Boule-de-Neige pousse sa boule, de dos
   const f=sF("bouleneige");if(on&&f){if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;place(f,{id:"record",x:BALL.x,y:BALL.y+10,z:BALL.y+20,poses:["back"]});f.until=Date.now()+9e8;f.el.classList.add("pushing");f.badge.classList.add("off")}
   else if(f&&f.el.classList.contains("pushing")){f.el.classList.remove("pushing","rolling","walking","f1");f.rollPose=null;f.badge.classList.remove("off");f.until=0;draw(f)} // il peut repartir
   drawBigBall()}
+setInterval(()=>{if(gardenStored()!==storedWas||gardenCleared()!==!!gardenWas)gardenSync()},20000); // la boule géante partie : les objets reviennent
 // la boule cassée par la bande, mais le dialogue pas fini (le jeu fermé entre-temps) : elle revient, et la scène se rejoue
 if(R.recordGone&&!(R.beat.balafre>0)){R.recordGone=0;save()}
 setTimeout(()=>drawHeap(),0); // le tas de neige, s'il reste
@@ -468,7 +490,7 @@ function breakBall(){if(!ballEl)return;const r=ballR(),x=BALL.x,y=BALL.y,u=$("sc
 let heapEl=null;
 // la boule géante refaite et le tas de neige sont des obstacles : les renards en font le tour (life.js)
 function noelObst(){const L=[];if(bigOn()&&noelOn()&&!recordWait())L.push({x:BALL.x,y:BALL.y-8,rx:74+16,ry:30});
-  if(heapEl&&R.heapAt)L.push({x:R.heapAt.x,y:R.heapAt.y-6,rx:R.heapAt.r*1.25+14,ry:24});return L}
+  if(heapEl&&R.heapAt)L.push({x:R.heapAt.x,y:R.heapAt.y-6,rx:R.heapAt.r*1.25+14,ry:24});return L.concat(sleighObst())}
 function drawHeap(grow){const h=R.heapAt,show=noelOn()&&R.recordGone&&!R.recordBig&&!!h;
   if(!show){if(heapEl){heapEl.remove();heapEl=null}return}
   if(!heapEl){heapEl=document.createElement("div");heapEl.className="sheap";$("actors").appendChild(heapEl)}

@@ -256,7 +256,7 @@ function shopSheet(tab){if(tab)shopTab=tab;
 const decoEls={};let hdHost=null,hdEls={};
 const dk=d=>DECO[d.k].w/100;
 function decoSpots(){for(let i=SPOTS.length-1;i>=0;i--)if(SPOTS[i].deco){delete SPOT[SPOTS[i].id];SPOTS.splice(i,1)}
-  if(typeof gardenCleared==="function"&&gardenCleared())return; // le jardin vidé pour le record de Boule-de-Neige
+  if(typeof gardenStored==="function"&&gardenStored())return; // le jardin rangé pour le record de Boule-de-Neige (noel.js)
   if(!(decoMode&&dWhere==="out"))for(const d of R.deco.out){const o=DECO[d.k];if(!o.seat)continue;const s=o.seat,sp={id:"dc"+d.u,x:d.x+(d.f?-s.dx:s.dx),y:d.y+s.dy,z:d.y+1,poses:s.poses,deco:d.k,fav:o.fav};
     SPOTS.push(sp);SPOT[sp.id]=sp;PLACE[sp.id]=s.dy<-4?`sur ${dThe(d.k)}`:`près ${dOf(d.k)}`} // pendant qu'on décore dehors, personne ne s'installe sur les objets
   // un renard dont l'endroit a disparu (objet rangé ou déplacé) va ailleurs
@@ -369,6 +369,7 @@ function drawDBar(){const ks=Object.keys(R.deco.inv).filter(k=>!!DECO[k].home===
   $("decobar").innerHTML=`<div class="dinv">${ks.length||os.length?os.map(k=>`<button class="dchip" data-dadd="o:${k}" type="button">${OBJS[k].svg()}</button>`).join("")+ks.map(k=>`<button class="dchip" data-dadd="${k}" type="button">${dSvg(k,"all")}<b>${R.deco.inv[k]}</b></button>`).join(""):`<span class="sub">Touche un objet pour le déplacer.</span>`}</div><button class="btn" data-dend="1" type="button">Terminé</button>`}
 // k : un objet à poser tout de suite ; w : "out" (la clairière) ou "home" (la maison), sinon celui de l'objet
 function decoStart(k,w){w=k?(DECO[k].home?"home":"out"):w||"out";
+  if(w==="out"&&typeof gardenStored==="function"&&gardenStored()){toast("Les objets sont rangés pour le record de Boule-de-Neige : ils reviendront après.");return}
   if(w==="home"&&!houseOpen()){toast("La maison n'est pas encore ouverte.");return}
   closeSheet();dWhere=w;
   if(w==="home"){if(!houseEl)enterHouse();houseEl.classList.add("decoing");houseEl.querySelectorAll(".hdfox").forEach(x=>x.remove())}
