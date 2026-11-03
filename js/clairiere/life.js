@@ -144,6 +144,9 @@ function tick(){
   const now=Date.now();storyWait();
   for(const f of foxes.slice()){
     if(f.walk){const t=Math.min(1,(now-f.walk.t0)/f.walk.dur);f.el.style.zIndex=Math.round(f.walk.from.y+(f.walk.goal.y-f.walk.from.y)*t);if(t>=1)arrive(f);continue}
+    // pendant un dialogue, personne ne change de place (Joffray : Grelot et Petit Pois partaient au milieu de la conversation) ;
+    // seules les scènes font bouger les renards (actGo, actIn…), et ceux qui marchaient finissent leur trajet
+    if(!$("talk").hidden){if(!f.inside)f.until=Math.max(f.until,now+4000);continue}
     // un renard attendu par l'histoire ressort même sous la pluie, puis ne bouge plus
     if(f.inside){if(isHidden(f.id))continue;if((!scn.rain||isTarget(f.id)||envWants(f.id))&&now>f.until){const sp=choose({...f,spot:null});if(sp&&sp!=="door"){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;goTo(f,sp);drawGlow()}}continue}
     if(now>f.until&&(isTarget(f.id)||envHold(f)||storyStay(f.id))){f.until=now+5000;continue}

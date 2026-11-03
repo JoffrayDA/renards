@@ -28,7 +28,8 @@ function meLine(id,expr){if(meF.walk||gameOn)return;
     meF.el.classList.remove("mesay");void meF.el.offsetWidth;meF.el.classList.add("mesay");return}
   const f=foxes.find(x=>x.id===id&&!x.wild);if(f){meF.face=f.x;meFace()}}
 // où aller quand il ne se passe rien : souvent près d'un renard, sinon un endroit libre (à l'abri sous la pluie)
-function meChoose(){// le record de Boule-de-Neige (noel.js) : elle s'assoit avec les spectateurs, de dos sous le rond, et ne bouge plus
+function meChoose(){if(!$("talk").hidden)return null; // pendant un dialogue, elle reste où elle est
+  // le record de Boule-de-Neige (noel.js) : elle s'assoit avec les spectateurs, de dos sous le rond, et ne bouge plus
   if(typeof gardenCleared==="function"&&gardenCleared()){meF.face=null;if(meF.spot&&WATCH.includes(meF.spot)){meF.until=Date.now()+6e4;return null}const bs=typeof bandExtra==="function"&&bandExtra().length?bandSeats():[]; // en bas, à côté de Petit Pois, jamais à la place de la bande
     return [WATCH[10],WATCH[8],...WATCH].find(s=>s.back&&!bs.includes(s)&&s!==WATCH[9]&&!taken(s))||null}
   const free=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco&&!s.via);

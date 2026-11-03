@@ -140,8 +140,8 @@ Object.assign(STORIES,{
       ["radar","open","Non. Ça suffit, chef. On en a marre de t'écouter tout le temps.",()=>{actFace("radar","balafre");actFace("filou","balafre");actEmote("radar","!");actPose("radar","up","open")}],
       ["filou","joy","Ouais ouais, bien vu ch… Euh, non ! Nous, on y va !",()=>{actTrick("filou","salto");setTimeout(()=>["filou","radar"].forEach((id,i)=>setTimeout(()=>actIn(id),i*250)),900)}], // ils rentrent au chaud, Balafre reste planté là
       ["balafre","surprise","Hé ! Revenez !",()=>actEmote("balafre","!")],
-      ["grelot","joy","Et toi, Balafre ? Il reste de la place pour un de plus, tu sais.",()=>actNear("grelot","balafre","up")],
-      ["me","joy","Reste. Juste le temps d'un chocolat chaud.",()=>actNear("me","balafre","up")],
+      ["grelot","joy","Et toi, Balafre ? Il reste de la place pour un de plus, tu sais.",()=>{actGo("grelot",290,296,"up");setTimeout(()=>actFace("grelot","balafre"),2400)}], // chacun sa place à côté de Balafre
+      ["me","joy","Reste. Juste le temps d'un chocolat chaud.",()=>meGo({x:242,y:302,face:336},["up"],20000)],
       ["balafre","shy","… Bon. D'accord. Mais on repart le 31 au soir. Pas plus tard !",()=>actIn("balafre")],
       ["petitpois","surprise",`Psst, ${ME()}… On ne lui a jamais demandé de rester aussi longtemps, si ?`,()=>actEmote("petitpois","?")],
       ["me","open","Non. Il s'est clairement imposé, là.",()=>actEmote("me","goutte")],
