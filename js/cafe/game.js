@@ -38,7 +38,7 @@ function spawn(){
   // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
   if(G.rng()<vipCh){vip=true;const pool=(G.noel?NOELF:HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:[...VIPS,...wildMet()]).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
   // en Petite Italie, les gens du quartier viennent souvent, mêlés aux habitués du premier café
-  if(!f){vip=false;const pool=(G.it?[...ITF_REG,...ITF_REG,...ITF_REG,...REG]:REG.slice(0,Math.min(REG.length,4+2*(G.day-1)))).filter(x=>!here.has(x.id));f=pick(pool)}
+  if(!f){vip=false;const pool=(G.it?[...ITF_REG,...ITF_REG,...ITF_REG,...(S.it.nonno?[FOX.nonno]:[]),...REG]:REG.slice(0,Math.min(REG.length,4+2*(G.day-1)))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1)*(G.boost.patience?1.3:1);
   const costume=HW&&!G.noel&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé
