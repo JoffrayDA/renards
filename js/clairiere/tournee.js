@@ -121,55 +121,6 @@ GAMES.skate=function(g,A){const sv=A.sv,N=g.n||3,CY=-EXT+H/2+10,RX=172,RY=Math.m
       if(got>=N){st="won";A.win(g.win||"Gling ! La clochette !");return}A.cheer(got===N-1?"ENCORE UNE !":"ATTRAPÉE !");A.say(`${got} sur ${N} ! Elle repart encore plus vite…`);placeBell()}});
   reset()};
 
-/* ---------- le jeu de Paillette : décorer le sapin ---------- */
-// à la place d'« attrape les boules » (trop proche du jeu de Grelot) : les boules sortent du sac de Paillette et roulent dans la neige ;
-// on en attrape une du doigt et on la pose sur un crochet doré du sapin ; lâchée à côté elle se casse, partie hors de l'écran elle est
-// perdue ; 3 ratés et on recommence ; tous les crochets garnis avant la fin du chrono
-GAMES.decor=function(g,A){const sv=A.sv,N=g.n||7,TOP=-EXT+110,BASE=424,GY=442,COLS=["#e2445e","#5aa0dc","#f2c45a","#9a6ad6","#5fae6c","#f08a5c","#e2445e"];
-  let st,hooks,balls,held=null,miss,spawnT,made,t=0;
-  const tiers=4,th=(BASE-TOP)/tiers;
-  sv.innerHTML=`<rect y="${-EXT}" width="400" height="${H}" fill="#dfe9f4"/>${Array.from({length:34},(_,i)=>`<circle cx="${(i*137)%400}" cy="${-EXT+(i*89)%H}" r="${1.4+i%3}" fill="#fff"/>`).join("")}
-    <path d="M0 ${GY-10} Q100 ${GY-24} 200 ${GY-14} Q300 ${GY-26} 400 ${GY-10} V480 H0Z" fill="#f8fbff" stroke="${INK}" stroke-width="2.4"/>
-    <rect x="190" y="${BASE-6}" width="20" height="22" rx="3" fill="#8a5a3a" stroke="${INK}" stroke-width="2.6"/>
-    ${Array.from({length:tiers},(_,i)=>{const yb=BASE-i*th*.92,top=yb-th*1.35,w=150-i*30;return `<path d="M200 ${top.toFixed(0)} L${200-w} ${yb.toFixed(0)} H${200+w}Z" fill="#2f6a4c" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M200 ${top.toFixed(0)} L${200-w*.5} ${(yb-th*.62).toFixed(0)} H${200+w*.5}Z" fill="#3d7d5a"/><path d="M${200-w+6} ${(yb-4).toFixed(0)} Q200 ${(yb+8).toFixed(0)} ${200+w-6} ${(yb-4).toFixed(0)}" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`}).join("")}
-    <g transform="translate(46 ${GY-6})"><path d="M-30 4 Q-34 -26 -14 -34 Q0 -40 14 -34 Q34 -26 30 4Z" fill="#c9a0ec" stroke="${INK}" stroke-width="2.6"/><path d="M-14 -34 Q0 -26 14 -34" fill="none" stroke="${INK}" stroke-width="2"/><path d="M-6 -36 q6 -8 12 0" fill="none" stroke="#f2c45a" stroke-width="3"/>${[[-14,-14],[6,-20],[16,-6]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="#fff6c0"/>`).join("")}</g>
-    <g id="dcH"></g><g id="dcB"></g><g id="dcF"></g>`;
-  const $$=q=>sv.querySelector(q),gH=$$("#dcH"),gB=$$("#dcB"),gF=$$("#dcF");
-  // les crochets : répartis sur les étages, jamais trop près l'un de l'autre
-  const hookPos=()=>{const L=[];const want=[[0,-.55],[0,.5],[1,-.6],[1,.15],[1,.65],[2,-.4],[2,.45],[3,0],[2,0]];
-    for(const [i,u] of want){const yb=BASE-i*th*.92,w=150-i*30;L.push({x:200+u*w*.78,y:yb-th*.28})}return L.slice(0,N)};
-  const ballSVG=c=>`<rect x="-3.4" y="-17" width="6.8" height="5" rx="1.4" fill="#f2c45a" stroke="${INK}" stroke-width="1.6"/><circle r="13" fill="${c}" stroke="${INK}" stroke-width="2.4"/><path d="M-6 -5 q2 -4 6 -5" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".85"/>`;
-  const drawHooks=()=>{gH.innerHTML=hooks.map((h,i)=>h.c?`<g transform="translate(${h.x.toFixed(0)} ${h.y.toFixed(0)})"><path d="M0 -26 v8" stroke="${INK}" stroke-width="1.6"/>${ballSVG(h.c)}</g>`
-      :`<g transform="translate(${h.x.toFixed(0)} ${h.y.toFixed(0)})"><circle r="15" fill="#fff6c0" opacity=".35" class="dchk"/><path d="M0 -26 v6 q0 4 -4 4" fill="none" stroke="#f2c45a" stroke-width="3" stroke-linecap="round"/><circle r="6" fill="none" stroke="#f2c45a" stroke-width="2.4" stroke-dasharray="3 3"/></g>`).join("")};
-  const reset=()=>{st="play";hooks=hookPos().map(h=>({...h,c:null}));balls.forEach(b=>b.el.remove());balls=[];held=null;miss=0;made=0;spawnT=.3;drawHooks();clk.reset();
-    A.say(g.say||"Les boules roulent hors du sac ! Attrape-les du doigt et accroche-les aux crochets dorés du sapin.")};
-  balls=[];
-  const clk=A.clock(g.time||28,()=>{st="lost";A.say("Trop tard ! Le sapin n'est pas fini… On recommence !");A.later(reset,1500)});
-  const lose=(b,t)=>{b.el.remove();b.dead=1;miss++;A.sfx("bad");try{navigator.vibrate&&navigator.vibrate(50)}catch(e){}
-    if(miss>=3){st="lost";A.sfx("lose");A.say("Trois boules perdues… Paillette rouvre son sac. On recommence !");A.later(reset,1600);return}A.say(`${t} Encore ${3-miss} raté${3-miss>1?"s":""} permis.`)};
-  const broken=(x,y)=>{const e=grp(gF,[0,1,2,3,4].map(i=>`<path d="M0 0 l${(Math.cos(i*1.3)*14).toFixed(0)} ${(Math.sin(i*1.3)*10-6).toFixed(0)}" stroke="#cfe0f2" stroke-width="3" stroke-linecap="round"/>`).join(""),{transform:`translate(${x.toFixed(0)} ${y.toFixed(0)})`});e.animate([{opacity:1},{opacity:0}],{duration:700}).onfinish=()=>e.remove()};
-  // le doigt : poser sur une boule l'attrape, la boule suit, la lever la pose (sur un crochet libre, sinon elle se casse)
-  const ptOf=e=>svPt(sv,e);sv.style.touchAction="none";
-  sv.addEventListener("pointerdown",e=>{if(st!=="play")return;const p=ptOf(e);const b=balls.filter(b=>!b.dead).sort((a,c)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(c.x-p.x,c.y-p.y))[0];
-    if(b&&Math.hypot(b.x-p.x,b.y-p.y)<40){held=b;b.held=1;A.sfx("tap")}});
-  sv.addEventListener("pointermove",e=>{if(!held)return;const p=ptOf(e);held.x=p.x;held.y=p.y-10});
-  const drop=()=>{if(!held)return;const b=held;held=null;b.held=0;if(st!=="play")return;
-    const h=hooks.filter(h=>!h.c).sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y))[0];
-    if(h&&Math.hypot(h.x-b.x,h.y-b.y)<34){h.c=b.c;b.el.remove();b.dead=1;made++;drawHooks();A.sfx("good",made);A.sfx("pop");
-      if(made>=N){st="won";gH.querySelectorAll("circle").forEach(c=>c.setAttribute("opacity",1));A.win(g.win||"Le sapin est tout décoré !");return}
-      if(made===Math.ceil(N/2))A.cheer("CONTINUE !");A.say(`${made} sur ${N} !`)}
-    else{broken(b.x,b.y);lose(b,"Oups, elle est tombée à côté et s'est cassée !")}};
-  for(const k of ["pointerup","pointercancel","pointerleave"])sv.addEventListener(k,drop);
-  A.loop(dt=>{t+=dt;if(st!=="play")return;
-    // une nouvelle boule sort du sac quand il en manque sur la neige
-    spawnT-=dt;const free=balls.filter(b=>!b.dead).length,need=N-made;
-    if(spawnT<=0&&free<Math.min(2,need)){spawnT=1.1;const c=COLS[(made+free+miss)%COLS.length];const b={x:70,y:GY-14,vx:44+made*7+Math.random()*16,c,el:grp(gB,ballSVG(c))};balls.push(b);A.sfx("rustle")}
-    for(const b of balls){if(b.dead)continue;if(!b.held){b.x+=b.vx*dt;b.y=GY-14;if(b.x>420){lose(b,"Une boule a roulé trop loin !");continue}}
-      b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)}) rotate(${b.held?0:(b.x*3%360).toFixed(0)})`)}
-    balls=balls.filter(b=>!b.dead);
-    gH.querySelectorAll(".dchk").forEach((c,i)=>c.setAttribute("opacity",(.25+.25*Math.sin(t*5+i)).toFixed(2)))});
-  reset()};
-
 /* ---------- la boule à neige : l'énorme cadeau ---------- */
 // la clairière en tout petit, sous verre (big : avec les renards et la neige qui tombe)
 function globeArt(big){const fl=big?Array.from({length:22},(_,i)=>{const x=-58+(i*37)%116,d=3+i%4;return `<circle cx="${x}" r="${1.4+i%3*.6}" fill="#fff"><animate attributeName="cy" from="-112" to="-30" dur="${d}s" begin="-${(i*.7).toFixed(1)}s" repeatCount="indefinite"/></circle>`}).join(""):[[-30,-90],[8,-104],[32,-78],[-14,-64],[22,-54]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="#fff"/>`).join("");
