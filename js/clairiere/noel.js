@@ -35,10 +35,10 @@ function noelNo(){const s=sapinStage();return s?[[60,272,s==="0"?24:44]]:[]}
 Object.assign(STORIES,{
   grelot:{title:"La graine du Nord",souv:"le grelot d'argent",beats:[
     {at:"petitpois",goal:"Petit Pois a entendu un drôle de bruit dans la neige.",lines:[
-      ["petitpois","surprise","Tu entends ? Gling… gling… Ça vient de la forêt !",()=>{actEmote("petitpois","!");actPose("petitpois","up","surprise")}],
+      ["petitpois","surprise","Tu entends ? Gling… gling… Ça vient de la forêt !",()=>{try{MUSIC.sfx("gling")}catch(e){}actEmote("petitpois","!");actPose("petitpois","up","surprise")}],
       ["me","open","On dirait un grelot. Allons voir près des lanternes.",()=>{actEmote("me","note");setTimeout(()=>actGo("me",100,300),800)}]]},
-    {at:"@lampL",arrive:"grelot",goal:"Va voir qui fait gling-gling, près des lanternes.",lines:[
-      ["grelot","joy","Bonjour ! Moi, c'est Grelot. Je viens du Grand Nord, là où il neige toute l'année.",()=>{actTrick("grelot","boing");actEmote("grelot","note")}],
+    {at:"@lampL",arrive:"grelot",show:()=>{try{MUSIC.sfx("gling")}catch(e){}},showMs:600,goal:"Va voir qui fait gling-gling, près des lanternes.",lines:[
+      ["grelot","joy","Bonjour ! Moi, c'est Grelot. Je viens du Grand Nord, là où il neige toute l'année.",()=>{try{MUSIC.sfx("gling")}catch(e){}actTrick("grelot","boing");actEmote("grelot","note")}],
       ["grelot","sad","Chez moi, chaque clairière plante son sapin de Noël le 1er décembre. Mais moi, je n'ai pas de clairière…",()=>{actPose("grelot","sit","sad");actEmote("grelot","goutte")}],
       ["grelot","shy","J'ai apporté une graine. Je peux la planter ici ?",()=>actEmote("grelot","?")],
       ["me","joy","Bien sûr ! Juste là, au pied des lanternes.",()=>{actEmote("me","coeur");actTrick("grelot","salto")}]]},
@@ -203,10 +203,11 @@ Object.assign(STORIES,{
     {at:"@porch",goal:"Barbe-Neige a dit : file devant ta porte et ferme les yeux !",showMs:5600,show:()=>sceneBigGift(),lines:[
       ["petitpois","surprise","C'est… C'est le plus gros cadeau que j'aie jamais vu !",()=>{actTrick("petitpois","salto");actEmote("petitpois","!")}],
       ["ramure","joy","Je l'ai tiré tout seul depuis le Nord. Je tiens à ce que ce soit dit.",()=>actTrick("ramure","boing")],
-      ["barbeneige","open","Attends, une dernière lettre. Sans nom, juste une griffe : « Une couverture. Pas pour moi. Pour deux idiots qui ont froid. »",()=>actGive("barbeneige","balafre","coussin")],
-      ["balafre","shy","… Je ne sais pas qui a écrit ça.",()=>actPose("balafre","sit","shy")],
-      ["filou","joy","Ouais ouais, pas lui, chef !",()=>actTrick("filou","boing")],
-      ["radar","joy","J'ai entendu la griffe écrire. Trois nuits de suite.",()=>actEmote("balafre","colere")],
+      ["barbeneige","open","Attends, j'ai reçu une lettre sans nom, signée d'un coup de griffe. Elle dit : « Une couverture. Pas pour moi. Pour mes deux copains qui ont froid. »",()=>actEmote("barbeneige","note")],
+      ["barbeneige","joy","Alors voilà : une couverture, pour Filou et Radar.",()=>{actGive("barbeneige","filou","couverture");setTimeout(()=>{actNear("radar","filou","happy");actEmote("filou","coeur");actEmote("radar","coeur")},900)}],
+      ["balafre","shy","… C'est pas moi qui l'ai écrite, cette lettre.",()=>actPose("balafre","sit","shy")],
+      ["radar","joy","Si, chef. J'ai entendu ta griffe gratter le papier. Trois nuits de suite.",()=>actEmote("balafre","colere")],
+      ["filou","shy","… Merci, chef.",()=>actEmote("balafre","coeur")],
       ["barbeneige","joy",`Et celui-là, ${ME()}, il est pour toi. Tu as livré tout le monde, et tu n'avais rien demandé.`,()=>actEmote("barbeneige","coeur")],
       ["me","joy","Un… deux… trois !",()=>actTrick("me","salto")]]}
   ]}
@@ -607,7 +608,6 @@ function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;
 // jamais avant la fin de sa propre histoire ; et ils ne reviennent pas (Joffray : « personne ne reste, c'est des renards sauvages »)
 const noelAway=id=>{if(!FOX[id])return false;
   if(NOEL_WILD.includes(id)&&INC[id]){if(!storyDone("balafre"))return false;return noelOn()?storyDone("adieux"):true}
-  if((id==="barbeneige"||id==="ramure")&&R.bnAway===today())return true; // repartis après le cadeau, ils reviennent demain (tournee.js)
   return FOX[id].event==="noel"&&!noelOn()};
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
 if(!noelOn()&&[...NOEL_WILD,"miette","pataud","frisette"].some(id=>R.res[id])){for(const id of [...NOEL_WILD,"miette","pataud","frisette"])delete R.res[id];save()}

@@ -302,6 +302,8 @@ const MUSIC=(()=>{
     // le traîneau qui va mal : grelots secoués n'importe comment, deux boulons qui sautent (clonk), un ressort, le vent ; réparé : en rythme
     if(k==="sleighbad")sleighBad(GREL[grelK]);
     else if(k==="sleighok"){for(let i=0;i<12;i++)shake(i*.2,3000,i%2?.04:.06,4,.05)}
+    // le petit grelot de Grelot (Noël) : quelques secousses légères, les grelots B
+    else if(k==="gling"){[0,.32,.5,.9].forEach((a,i)=>shake(a,3400+i*120,.045,3,.04))}
     else if(/^grel[ABC]$/.test(k)){for(let i=0;i<8;i++)shake(i*.22,3000,i%2?.04:.06,4,.05,GREL[k[4]])}
     else if(/^bad[ABC]$/.test(k))sleighBad(GREL[k[3]]);
     // sonné, façon dessin animé : des petits oiseaux qui gazouillent en tournant, et un tintement de clochettes

@@ -180,12 +180,4 @@ function sceneBigGift(){slOv={b:5,mode:null};setTimeout(()=>{try{MUSIC.sfx("slei
   setTimeout(ringAround,2600)}
 // la fin : la boule à neige sortie, le traîneau se range derrière la maison, tout le monde fait la fête
 function bigGiftEnd(){bigGiftReward();if(bgEl){bgEl.remove();bgEl=null}
-  setTimeout(()=>openBigGift(()=>{slOv=null;sleighSync();["petitpois","grelot","paillette","ramure","barbeneige","copeau","balafre","filou","radar"].forEach((id,i)=>setTimeout(()=>{actTrick(id,["salto","toupie","boing"][i%3]);actEmote(id,"coeur",1800)},i*140));drawBg();drawGlow();
-    setTimeout(bnLeave,2600)}),900)}
-// puis Barbe-Neige et Ramure s'en vont (Joffray) : le traîneau repart dans le ciel, ils reviennent demain (R.bnAway, noelAway)
-function bnLeave(){if(gameOn||!$("talk").hidden){setTimeout(bnLeave,1500);return}
-  talk([["barbeneige","open","Bon ! Il se fait tard, et un traîneau, ça se range avant l'aube. Ramure ?",()=>actEmote("barbeneige","note")],
-    ["ramure","joy","On revient demain ! Gardez-nous du chocolat chaud.",()=>actTrick("ramure","boing")]],()=>{
-    R.bnAway=today();save();
-    for(const id of ["barbeneige","ramure"]){const f=sF(id);if(f){snowPoof(f.x,f.y,30);f.el.style.display="none";f.badge.style.display="none"}}
-    try{MUSIC.sfx("sleighok")}catch(e){}sleighFly([[SLP.x,SLP.y-20,-10],[300,180,-14],[520,40,-8]],2600,{ram:1,ease:"ease-in",then:()=>syncFoxes()})})}
+  setTimeout(()=>openBigGift(()=>{slOv=null;sleighSync();["petitpois","grelot","paillette","ramure","barbeneige","copeau","balafre","filou","radar"].forEach((id,i)=>setTimeout(()=>{actTrick(id,["salto","toupie","boing"][i%3]);actEmote(id,"coeur",1800)},i*140));drawBg();drawGlow()}),900)}
