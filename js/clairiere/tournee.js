@@ -9,7 +9,11 @@ function sleighArt(o={}){const fox=(id,x,y,w,op)=>`<g transform="translate(${x} 
     ${o.ram?`<path d="M36 -44 Q70 -34 104 -28" fill="none" stroke="#8a5a3a" stroke-width="3"/>${fox("ramure",128,-2,84,{pose:"walk",frame:1})}`:""}
     <path d="${run}" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="${run}" fill="none" stroke="#f2c75c" stroke-width="3.4" stroke-linecap="round"/>
     <path d="M-42 -4 V-18 M-8 -4 V-18 M26 -4 V-18" stroke="${INK}" stroke-width="3"/>
-    <g stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"><rect x="-58" y="-100" width="24" height="24" rx="3" fill="#7fb86a"/><rect x="-38" y="-92" width="20" height="18" rx="3" fill="#f6a5b4"/></g>
+    <g stroke="${INK}" stroke-width="2.6" stroke-linejoin="round">${/* la hotte de Barbe-Neige, pleine à craquer (Joffray : pas deux carrés) */""}
+      <rect x="-50" y="-112" width="16" height="14" rx="2" fill="#7cb8e0" transform="rotate(-14 -42 -105)"/><rect x="-30" y="-110" width="14" height="13" rx="2" fill="#f2c45a" transform="rotate(12 -23 -103)"/><path d="M-40 -118 l2 9 M-26 -116 l-1 9" stroke="#e2445e" stroke-width="3"/>
+      <path d="M-62 -42 Q-74 -70 -60 -94 Q-52 -106 -40 -104 Q-26 -108 -16 -96 Q-4 -76 -12 -42Z" fill="#9a4a3a"/>
+      <path d="M-58 -94 Q-38 -86 -18 -96" fill="none" stroke="#f2c45a" stroke-width="3.4"/><path d="M-36 -90 q-8 10 -4 18 M-36 -90 q8 9 6 17" fill="none" stroke="#f2c45a" stroke-width="2.6"/></g>
+    <path d="M-60 -60 Q-62 -78 -54 -88" fill="none" stroke="#c46a52" stroke-width="3" stroke-linecap="round"/><path d="M-50 -66 l3 3 M-26 -70 l3 3 M-44 -54 l3 3" stroke="#7a3428" stroke-width="2" stroke-linecap="round"/>
     ${o.empty?"":fox("barbeneige",4,-30,58)}${o.me?fox("roussette",-26,-30,50):""}
     <path d="M-60 -18 V-66 Q-60 -76 -50 -72 L-40 -42 H22 Q32 -42 38 -56 Q44 -70 56 -64 Q60 -42 48 -26 Q42 -18 30 -18Z" fill="#d9584e" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M-56 -28 H40" stroke="#f2c75c" stroke-width="4"/>${[-44,-16,12].map(x=>`<circle cx="${x}" cy="-35" r="3" fill="#f2c75c"/>`).join("")}<circle cx="54" cy="-58" r="3.6" fill="#f2c75c" stroke="${INK}" stroke-width="1.6"/></svg>`}
