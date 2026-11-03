@@ -88,13 +88,13 @@ Object.assign(STORIES,{
       R.recordBig=1;R.recordBigAt=R.recordBigAt||Date.now();save();drawBigBall();if(n)setTimeout(()=>toast("Filou et Radar t'ont laissé une photo chacun : de nouveaux indices dans l'album !"),2600)},beats:[
     // 03/11/2026 (Joffray) : la bande regarde le record depuis le début, assise de dos au premier rang, incognito ; Petit Pois la
     // remarque, elle monte jusqu'au perron sans se retourner, se retourne là-haut (thème des méchants), et casse la boule
-    {at:"petitpois",goal:"Petit Pois a remarqué trois drôles de spectateurs, tout devant.",lines:()=>[
-      ["petitpois","surprise",`Eh, dis-moi ${ME()}… c'est qui, les trois, tout devant ?`,()=>actEmote("petitpois","?")],
+    {at:"grelot",goal:"Grelot a remarqué trois drôles de spectateurs, tout devant.",lines:()=>[
+      ["grelot","surprise",`Eh, dis-moi ${ME()}… c'est qui, les trois, tout devant ?`,()=>actEmote("grelot","?")],
       ["me","open","Je ne sais pas du tout, je ne les ai jamais vus. Ils sont là depuis le début du record…",()=>actEmote("me","?")],
-      ["petitpois","open","Ils n'ont pas bougé une oreille. Même pas pour applaudir.",()=>actEmote("petitpois","!")],
+      ["grelot","open","Ils n'ont pas bougé une oreille. Même pas pour applaudir.",()=>actEmote("grelot","!")],
       ["me","surprise","Tiens… ils se lèvent.",()=>talkHold(700,bandUp,5000)],
       ["balafre","open","Belle boule.",()=>actEmote("balafre","colere")],
-      ["me","surprise","Oh ! Attention, Boule-de-Neige !!!",()=>{actEmote("me","!");talkHold(1100,()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");defendAll(BALL.x,BALL.y);bandeAttack()},4300)}],
+      ["me","surprise","Oh ! Attention, Boule-de-Neige !!!",()=>{actEmote("me","!");talkHold(1100,()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");bandeAttack();setTimeout(()=>defendAll(BALL.x,BALL.y),2100)},4600)}],
       ["bouleneige","sad","Ma boule ! Mon record du monde… Il ne manquait presque rien !",()=>actEmote("bouleneige","goutte")],
       ["balafre","open","Dommage pour elle.",()=>actPose("balafre","happy")],
       ["filou","joy","Ouais ouais, bien vu chef !",()=>actTrick("filou","boing")],
@@ -427,8 +427,8 @@ const WATCH=[...[[136,238],[164,236],[238,236],[266,238]].map(([x,y])=>({x,y,pos
 // le record : tout le monde s'installe pour regarder et ne bouge plus (on ne dérange pas un record du monde)
 function watchAll(now){const sp=WATCH; // now : on arrive dans la clairière, chacun est déjà à sa place (personne ne traverse le chemin)
   const bs=bandExtra().length?bandSeats():[];
-  // Petit Pois regarde depuis la rangée du bas, juste derrière la bande (Joffray : en bas, pas sur le perron)
-  const pp=sF("petitpois");if(pp&&!pp.watch&&!pp.inside&&!isHidden("petitpois")&&!foxes.some(o=>o!==pp&&o.spot===WATCH[9])){pp.watch=1;if(now){pp.walk=null;place(pp,WATCH[9])}else goTo(pp,WATCH[9]);pp.until=Date.now()+9e8}
+  // Grelot regarde depuis la rangée du bas, juste derrière la bande, avec Roussette (c'est lui qui la remarque)
+  const pp=sF("grelot");if(pp&&!pp.watch&&!pp.inside&&!isHidden("grelot")&&!foxes.some(o=>o!==pp&&o.spot===WATCH[9])){pp.watch=1;if(now){pp.walk=null;place(pp,WATCH[9])}else goTo(pp,WATCH[9]);pp.until=Date.now()+9e8}
   for(const f of foxes){if(f.wild||f.id==="bouleneige"||BAND.includes(f.id)||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!bs.includes(s)&&s!==WATCH[9]&&s!==WATCH[10]&&!(bandMove&&WATCH.indexOf(s)<4)&&!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
     f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}if(now){f.walk=null;place(f,to)}else goTo(f,to);f.until=Date.now()+9e8}}
 // la bande arrive : tout le monde sort pour défendre Boule-de-Neige
@@ -451,12 +451,9 @@ function bandSeat(){if(!bandIncog()){for(const id of BAND){const f=sF(id);if(f)f
     if(!f.walk&&f.pose!=="back"){f.pose="back";draw(f)}});bandSeen=1}
 setInterval(bandSeat,1500);setTimeout(bandSeat,300);
 // ils se lèvent, montent jusqu'au perron sans se retourner, et là, ils se retournent : le thème des méchants
-// (Joffray : les marches du perron, « le meilleur spot ») ; ceux qui regardaient depuis le perron descendent en courant rejoindre les autres
-const BANDP=[{id:"bandp0",x:214,y:276,poses:["up"]},{id:"bandp1",x:170,y:266,poses:["up"]},{id:"bandp2",x:258,y:266,poses:["up"]}];
+// (Joffray : Balafre devant les marches, Filou et Radar de chaque côté du rond) ; personne d'autre ne bouge avant que la boule soit cassée
+const BANDP=[{id:"bandp0",x:214,y:268,poses:["up"]},{id:"bandp1",x:103,y:310,poses:["up"]},{id:"bandp2",x:367,y:308,poses:["up"]}]; // les places dessinées par Joffray
 function bandUp(){bandMove=1;
-  const down=[[150,500],[110,486],[362,500],[60,500]].map(([x,y])=>({x,y:Math.min(H-26,y)}));let k=0;
-  for(const f of foxes)if(!BAND.includes(f.id)&&!f.wild&&f.spot&&WATCH.slice(0,4).includes(f.spot)){const d=down[k++%down.length];f.fast=1;
-    setTimeout(()=>{goTo(f,{id:"down-"+f.id,x:d.x+(k>4?20:0),y:d.y,poses:["sit"]});f.until=Date.now()+60000;f.watch=1},k*120)}
   BAND.forEach((id,i)=>{if(!R.res[id])R.res[id]={at:Date.now(),h:0,pet:""};const f=sF(id);if(!f)return;f.watch=0;f.fast=1;f.el.style.pointerEvents="";
     setTimeout(()=>{goTo(f,BANDP[i]);f.until=Date.now()+60000},300+i*220)});save();
   setTimeout(()=>{bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){}
