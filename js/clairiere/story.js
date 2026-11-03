@@ -514,6 +514,8 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
   if(b.lamps){scn.lamps={L:true,R:true};drawGlow()}
   if(b.gather)gather();
   if(b.at==="*")(R.who[c.id]=R.who[c.id]||{})[c.n]=at;
+  // un renard tout en bas serait caché sous la bulle de dialogue (Grelot, chapitre de Ramure) : il remonte un peu avant de parler
+  {const tf=at.startsWith("@")?null:sF(at);if(tf&&!tf.walk&&!tf.inside&&tf.y>H-130){tf.fast=1;actGo(at,Math.max(60,Math.min(340,tf.x)),H-160,"sit")}}
   hotEl.hidden=true;meStory(at); // Roussette y va (roussette.js)
   syncFoxes();
   const go=()=>talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
