@@ -103,7 +103,7 @@ GAMES.skate=function(g,A){const sv=A.sv,N=g.n||3,CY=-EXT+H/2+10,RX=172,RY=Math.m
     while(holes.length<2){const q=rnd(50);if(Math.hypot(q.x-p.x,q.y-p.y)>110&&holes.every(h=>Math.hypot(h.x-q.x,h.y-q.y)>120))holes.push({...q,r:24})}
     gH.innerHTML=holes.map(h=>`<ellipse cx="${h.x.toFixed(0)}" cy="${h.y.toFixed(0)}" rx="${h.r+6}" ry="${(h.r+6)*.7}" fill="#fff" stroke="${INK}" stroke-width="2.4"/><ellipse cx="${h.x.toFixed(0)}" cy="${(h.y+1).toFixed(0)}" rx="${h.r}" ry="${h.r*.66}" fill="#2f5f86" stroke="${INK}" stroke-width="2"/><path d="M${(h.x-10).toFixed(0)} ${(h.y-3).toFixed(0)} q6 -4 12 0" stroke="#7fb6dc" stroke-width="2" fill="none"/>`).join("");
     placeBell();clk.reset();A.say(g.say||"La clochette glisse sur la glace ! Guide Ramure du doigt pour l'attraper. Attention aux trous !")};
-  const clk=A.clock(g.time||22,()=>{st="lost";A.say(`Trop tard ! ${got} sur ${N}… On recommence !`);A.later(reset,1500)});
+  const clk=A.clock(g.time||19,()=>{st="lost";A.say(`Trop tard ! ${got} sur ${N}… On recommence !`);A.later(reset,1500)});
   drag(A,(pt,d)=>{down=d;tx=pt.x;ty=pt.y});
   A.loop(dt=>{t+=dt;if(st!=="play"&&st!=="splash")return;
     if(st==="splash"){splash-=dt;if(splash<=0){p=start();v={x:0,y:0};st="play"}}
