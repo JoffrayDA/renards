@@ -144,7 +144,9 @@ function sceneCrash(){sleighFly([[470,20,18],[350,190,24],[SLP.x+20,SLP.y-4,30]]
     foxDrop("barbeneige",SLP.x+96,SLP.y-18,"sit","ko");bnKO(1);
     setTimeout(()=>actNear("ramure","barbeneige","up"),250)}})}
 // Barbe-Neige K.O. : retourné, des étoiles qui tournent (avec 0, il se remet sur ses pattes)
-function bnKO(on){const f=sF("barbeneige");if(!f)return;f.el.classList.toggle("upside",!!on);f.badge.style.visibility=on?"hidden":"";f.el.querySelector(".kostars")?.remove();
+let bnDizzy=null;
+function bnKO(on){clearInterval(bnDizzy);bnDizzy=null;if(on){const tw=()=>{try{MUSIC.sfx("dizzy")}catch(e){}};setTimeout(tw,500);bnDizzy=setInterval(tw,1500)} // les petits oiseaux tant qu'il est sonné
+  const f=sF("barbeneige");if(!f)return;f.el.classList.toggle("upside",!!on);f.badge.style.visibility=on?"hidden":"";f.el.querySelector(".kostars")?.remove();
   if(on){const s=document.createElement("div");s.className="kostars";s.innerHTML=`<svg viewBox="-30 -12 60 24" aria-hidden="true">${[0,1,2].map(i=>`<path style="animation-delay:-${i*.4}s" d="M0 -5 l1.4 3.4 3.6 .4 -2.7 2.4 .8 3.6 -3.1 -1.9 -3.1 1.9 .8 -3.6 -2.7 -2.4 3.6 -.4z" fill="#ffe680" stroke="${INK}" stroke-width="1"/>`).join("")}</svg>`;f.el.appendChild(s)}
   else{f.pose="sit";f.expr="joy";draw(f)}}
 // le retour : le traîneau passe avec Ramure, lâche l'énorme cadeau au milieu de la clairière et repart ; Barbe-Neige et Ramure sautent
