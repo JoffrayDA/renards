@@ -16,6 +16,7 @@ const MUSIC=(()=>{
     return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),sfx:(k,n)=>H.sfx&&H.sfx(k,n),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
   }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
+  const MUSIC_GREL="A"; // le grelot choisi (sfx, plus bas)
   const hz=m=>440*Math.pow(2,(m-69)/12);
   function init(){
     if(C)return;
@@ -283,18 +284,26 @@ const MUSIC=(()=>{
     else if(k==="hohoho1"){[0,.34,.68].forEach((a,i)=>{const t0=t+a,f0=i===2?118:128,src=osc("sawtooth",f0,t0,t0+.34);src.frequency.setValueAtTime(f0,t0);src.frequency.exponentialRampToValueAtTime(f0*.82,t0+.3);
         const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.55,t0+.03);g.gain.setValueAtTime(.5,t0+(i===2?.24:.16));g.gain.linearRampToValueAtTime(0,t0+(i===2?.34:.24));
         [[430,6,1],[780,7,.5],[2400,8,.12]].forEach(([fr,q,v])=>{const bp=filt("bandpass",fr,q),gv=C.createGain();gv.gain.value=v;src.connect(bp);bp.connect(gv);gv.connect(g)});o(g,.25)})}
-    // un vrai grelot (Joffray : « tu sais ce que c'est qu'un grelot ? ») : une petite boule de métal, des partiels aigus qui ne
-    // tombent pas juste (son métallique), qui s'éteignent vite, avec le petit cliquetis de la bille ; on le secoue par salves de 3 à 6 coups
-    const grelot=(at,f,v)=>{[[1,1],[1.49,.6],[2.11,.42],[2.76,.28],[3.41,.16]].forEach(([r,a])=>{const g=gain(t+at,.002,v*a,.12+Math.random()*.1),x=osc("sine",f*r*(1+(Math.random()-.5)*.01),t+at,t+at+.3);x.connect(g);o(g,.35)});nz(5200,1.6,.02,v*.5,at)};
-    const shake=(at,f,v,n,spread=.05)=>{for(let i=0;i<n;i++)grelot(at+i*spread/n+Math.random()*.01,f*(1+(Math.random()-.5)*.08),v*(.6+Math.random()*.4))};
-    // le traîneau qui va mal : grelots secoués n'importe comment (rythme cassé, des salves qui tremblent et retombent), deux boulons
-    // qui sautent (clonk), un ressort qui fait boing, et le vent
-    if(k==="sleighbad"){let a=0;for(let i=0;i<16;i++){shake(a,2200+Math.random()*1300,.05,3+Math.floor(Math.random()*4),.04+Math.random()*.08);a+=.08+Math.random()*.22}
+    // le grelot (Joffray trouvait les premiers « bizarres ») : trois façons, à comparer sur tools/noel-musique.html ; GREL dit laquelle sert
+    // A : un petit bruit qui fait sonner des résonateurs étroits (le métal qui vibre)
+    // B : modulation de fréquence (le timbre « cloche » des synthés)
+    // C : un bruit très aigu et très court, comme le grelot du Jingle Bells du Café
+    const grelA=(at,f,v)=>{const src=noiseSrc(t+at,t+at+.03),eg=gain(t+at,.001,1,.02);src.connect(eg);
+        [[1,1],[1.42,.8],[1.83,.6],[2.37,.45],[2.9,.3]].forEach(([r,a])=>{const bp=filt("bandpass",f*r,38),g=gain(t+at,.001,v*a*9,.18+Math.random()*.08);eg.connect(bp);bp.connect(g);o(g,.3)})};
+    const grelB=(at,f,v)=>{const car=osc("sine",f,t+at,t+at+.3),mod=osc("sine",f*1.41,t+at,t+at+.3),mg=C.createGain();mg.gain.setValueAtTime(f*2.2,t+at);mg.gain.exponentialRampToValueAtTime(f*.1,t+at+.2);
+        mod.connect(mg);mg.connect(car.frequency);const g=gain(t+at,.002,v*.8,.16);car.connect(g);o(g,.3)};
+    const grelC=(at,f,v)=>{nz(7600,1.1,.06,v*1.4,at);nz(10500,1.4,.035,v,at+.006)};
+    const GREL={A:grelA,B:grelB,C:grelC};let grelK=MUSIC_GREL;
+    const shake=(at,f,v,n,spread=.05,g=GREL[grelK])=>{for(let i=0;i<n;i++)g(at+i*spread/n+Math.random()*.01,f*(1+(Math.random()-.5)*.06),v*(.6+Math.random()*.4))};
+    const sleighBad=g=>{let a=0;for(let i=0;i<16;i++){shake(a,2600+Math.random()*1400,.05,3+Math.floor(Math.random()*4),.04+Math.random()*.08,g);a+=.08+Math.random()*.22}
       [.7,1.6].forEach((a,i)=>{tone("square",900+i*300,650,.05,.04,a);tone("sine",2400+i*300,1600,.09,.05,a)});
-      {const a=1.15,x=osc("sine",180,t+a,t+a+.5);x.frequency.setValueAtTime(180,t+a);[.08,.16,.24,.32,.4].forEach((d,j)=>x.frequency.linearRampToValueAtTime(j%2?160:420-j*40,t+a+d));const g=gain(t+a,.01,.07,.45);x.connect(g);o(g,.2)}
-      nz(300,1.2,2.6,.05,0,1100)}
-    // le traîneau réparé : les grelots secoués bien en rythme
-    else if(k==="sleighok"){for(let i=0;i<12;i++)shake(i*.2,2600,i%2?.04:.06,4,.05)}
+      {const a=1.15,x=osc("sine",180,t+a,t+a+.5);x.frequency.setValueAtTime(180,t+a);[.08,.16,.24,.32,.4].forEach((d,j)=>x.frequency.linearRampToValueAtTime(j%2?160:420-j*40,t+a+d));const gg=gain(t+a,.01,.07,.45);x.connect(gg);o(gg,.2)}
+      nz(300,1.2,2.6,.05,0,1100)};
+    // le traîneau qui va mal : grelots secoués n'importe comment, deux boulons qui sautent (clonk), un ressort, le vent ; réparé : en rythme
+    if(k==="sleighbad")sleighBad(GREL[grelK]);
+    else if(k==="sleighok"){for(let i=0;i<12;i++)shake(i*.2,3000,i%2?.04:.06,4,.05)}
+    else if(/^grel[ABC]$/.test(k)){for(let i=0;i<8;i++)shake(i*.22,3000,i%2?.04:.06,4,.05,GREL[k[4]])}
+    else if(/^bad[ABC]$/.test(k))sleighBad(GREL[k[3]]);
     // sonné, façon dessin animé : des petits oiseaux qui gazouillent en tournant, et un tintement de clochettes
     else if(k==="dizzy"){[0,.18,.36,.54].forEach((a,i)=>{const f1=i%2?2900:2300,x=osc("sine",f1,t+a,t+a+.16);x.frequency.setValueAtTime(f1,t+a);x.frequency.linearRampToValueAtTime(f1*1.35,t+a+.06);x.frequency.linearRampToValueAtTime(f1*.95,t+a+.13);
         const g=gain(t+a,.005,.07,.13);x.connect(g);o(g,.35)});[88,91,95].forEach((m,i)=>bell(m,.045,.1+i*.22,.35))}
