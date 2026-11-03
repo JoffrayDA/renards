@@ -279,6 +279,10 @@ const MUSIC=(()=>{
         [-7,7].forEach(dt=>{const v=osc("sawtooth",f0,t0,t0+d+.1,dt);v.frequency.setValueAtTime(f0,t0);v.frequency.linearRampToValueAtTime(f0*1.06,t0+d*.3);v.frequency.linearRampToValueAtTime(f0*.94,t0+d);vg.connect(v.frequency);
           [[480,7,1],[820,9,.55],[2700,10,.1]].forEach(([fr,q,amp])=>{const bp=filt("bandpass",fr,q),ga=C.createGain();ga.gain.value=amp;v.connect(bp);bp.connect(ga);ga.connect(g)})});
         const ch=osc("sine",f0,t0,t0+d+.1),cg=C.createGain();cg.gain.value=.35;ch.frequency.setValueAtTime(f0,t0);ch.frequency.linearRampToValueAtTime(f0*.94,t0+d);ch.connect(cg);cg.connect(g);o(g,.3)})}
+    // l'ancienne voix (la première, « malade »), gardée pour comparer sur tools/noel-musique.html
+    else if(k==="hohoho1"){[0,.34,.68].forEach((a,i)=>{const t0=t+a,f0=i===2?118:128,src=osc("sawtooth",f0,t0,t0+.34);src.frequency.setValueAtTime(f0,t0);src.frequency.exponentialRampToValueAtTime(f0*.82,t0+.3);
+        const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.55,t0+.03);g.gain.setValueAtTime(.5,t0+(i===2?.24:.16));g.gain.linearRampToValueAtTime(0,t0+(i===2?.34:.24));
+        [[430,6,1],[780,7,.5],[2400,8,.12]].forEach(([fr,q,v])=>{const bp=filt("bandpass",fr,q),gv=C.createGain();gv.gain.value=v;src.connect(bp);bp.connect(gv);gv.connect(g)});o(g,.25)})}
     // sonné, façon dessin animé : des petits oiseaux qui gazouillent en tournant, et un tintement de clochettes
     else if(k==="dizzy"){[0,.18,.36,.54].forEach((a,i)=>{const f1=i%2?2900:2300,x=osc("sine",f1,t+a,t+a+.16);x.frequency.setValueAtTime(f1,t+a);x.frequency.linearRampToValueAtTime(f1*1.35,t+a+.06);x.frequency.linearRampToValueAtTime(f1*.95,t+a+.13);
         const g=gain(t+a,.005,.07,.13);x.connect(g);o(g,.35)});[88,91,95].forEach((m,i)=>bell(m,.045,.1+i*.22,.35))}
