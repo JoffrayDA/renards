@@ -1,8 +1,8 @@
 /* Kitsune Café : données du jeu (recettes, saisons, boutique, quêtes, difficulté). */
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
-// Halloween, la Nuit des citrouilles : du 17 octobre au 3 novembre (?halloween=1 ou =0 pour forcer, pour tester)
-const HW=(()=>{const q=new URLSearchParams(location.search).get("halloween");if(q)return q==="1";const d=new Date(),m=d.getMonth(),j=d.getDate();return(m===9&&j>=17)||(m===10&&j<=3)})();
+// Halloween, la Nuit des citrouilles : du 17 octobre au 2 novembre inclus (?halloween=1 ou =0 pour forcer, pour tester)
+const HW=(()=>{const q=new URLSearchParams(location.search).get("halloween");if(q)return q==="1";const d=new Date(),m=d.getMonth(),j=d.getDate();return(m===9&&j>=17)||(m===10&&j<=2)})();
 const REC={
   cafe:{name:"Café",pl:"cafés",price:5,cost:4.3,kind:"drink",time:2.4,stn:"Machine à café"},
   croissant:{name:"Croissant",pl:"croissants",price:4,cost:3.4,kind:"bake",time:5,batch:3},
