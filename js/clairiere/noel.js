@@ -427,7 +427,9 @@ const WATCH=[...[[136,238],[164,236],[238,236],[266,238]].map(([x,y])=>({x,y,pos
 // le record : tout le monde s'installe pour regarder et ne bouge plus (on ne dérange pas un record du monde)
 function watchAll(now){const sp=WATCH; // now : on arrive dans la clairière, chacun est déjà à sa place (personne ne traverse le chemin)
   const bs=bandExtra().length?bandSeats():[];
-  for(const f of foxes){if(f.wild||f.id==="bouleneige"||BAND.includes(f.id)||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!bs.includes(s)&&!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
+  // Petit Pois regarde depuis la rangée du bas, juste derrière la bande (Joffray : en bas, pas sur le perron)
+  const pp=sF("petitpois");if(pp&&!pp.watch&&!pp.inside&&!isHidden("petitpois")&&!foxes.some(o=>o!==pp&&o.spot===WATCH[9])){pp.watch=1;if(now){pp.walk=null;place(pp,WATCH[9])}else goTo(pp,WATCH[9]);pp.until=Date.now()+9e8}
+  for(const f of foxes){if(f.wild||f.id==="bouleneige"||BAND.includes(f.id)||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!bs.includes(s)&&s!==WATCH[9]&&s!==WATCH[10]&&!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
     f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}if(now){f.walk=null;place(f,to)}else goTo(f,to);f.until=Date.now()+9e8}}
 // la bande arrive : tout le monde sort pour défendre Boule-de-Neige
 function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","balafre","filou","radar"].includes(f.id)&&!f.inside).map(f=>f.id);
@@ -436,9 +438,9 @@ function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","bal
     // puis, la boule cassée, ils restent figés sur place, sous le choc, jusqu'à la fin de la bataille (shock, life.js)
     setTimeout(()=>{const g=sF(id);if(g&&!g.walk){g.pose="sit";g.expr=i%2?"surprise":"sad";draw(g);actEmote(id,i%2?"!":"goutte",2000)}},5200+i*120)});
   meGo(meBeside(bx,by+20),["up"],20000)}
-// la bande incognito : pendant le record, assise de dos au premier rang des spectateurs (places w8 à w10) ; on ne la voit jamais de
+// la bande incognito : pendant le record, assise de dos au premier rang des spectateurs, tout près de la boule (w4 à w6, Balafre au milieu) ; on ne la voit jamais de
 // face avant le perron, on ne peut pas la toucher ; si elle arrive en cours de route, elle vient par le bas
-const BAND=["balafre","filou","radar"],bandSeats=()=>WATCH.slice(8,11);let bandMove=0,bandSeen=0;
+const BAND=["balafre","filou","radar"],bandSeats=()=>[WATCH[5],WATCH[4],WATCH[6]];let bandMove=0,bandSeen=0;
 const bandIncog=()=>noelOn()&&gardenCleared()&&!(R.beat.balafre>0)&&!storyDone("balafre")&&!bandMove;
 const bandExtra=()=>bandIncog()||bandMove&&!(R.beat.balafre>0)?BAND:[];
 function bandSeat(){if(!bandIncog()){for(const id of BAND){const f=sF(id);if(f)f.el.style.pointerEvents=""}return}
