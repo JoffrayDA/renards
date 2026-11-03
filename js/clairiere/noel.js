@@ -566,6 +566,11 @@ function snowballTap(f){if(f.id!=="bouleneige"||!noelOn()||gameOn)return false;
     :[["bouleneige","joy",`${ME()} ! Une bataille de boules de neige ? Touche ceux qui sortent la tête… mais pas moi, je suis fait de neige !`],["me","joy","C'est parti !"]],
     ()=>playGame({k:"snowball",n:10},()=>{if(R.snowDay!==today()){R.snowDay=today();const b=bourse();b.sucres=(b.sucres||0)+3;putBourse(b);save();toast("Bataille gagnée ! +3 sucres d'orge")}else toast("Bien joué !")}));
   return true}
-const noelAway=id=>FOX[id]&&(FOX[id].event==="noel"||NOEL_WILD.includes(id)&&!!INC[id]&&!(STORIES[id]&&storyDone(id)))&&!noelOn(); // Filou et Radar restent une fois leur histoire finie (incos.js)
+// la bande repart le 31 décembre au soir (Joffray : Balafre l'avait dit, « pas plus tard ») ; jamais avant la fin de sa propre histoire ;
+// après Noël, Filou et Radar reviennent s'ils ont fini leur histoire à eux (incos.js), Balafre non
+const bandGone=()=>{const d=noelDay();return d>31||d===31&&hourNow()>=18};
+const noelAway=id=>{if(!FOX[id])return false;
+  if(NOEL_WILD.includes(id)&&INC[id]){if(!storyDone("balafre"))return false;return noelOn()?bandGone():id==="balafre"||!(STORIES[id]&&storyDone(id))}
+  return FOX[id].event==="noel"&&!noelOn()};
 // les frileux retournent dans la forêt après Noël : ils redeviennent des inconnus de la gamelle
 if(!noelOn()&&[...NOEL_WILD,"miette","pataud","frisette"].some(id=>R.res[id])){for(const id of [...NOEL_WILD,"miette","pataud","frisette"])delete R.res[id];save()}
