@@ -429,7 +429,7 @@ function watchAll(now){const sp=WATCH; // now : on arrive dans la clairière, ch
   const bs=bandExtra().length?bandSeats():[];
   // Petit Pois regarde depuis la rangée du bas, juste derrière la bande (Joffray : en bas, pas sur le perron)
   const pp=sF("petitpois");if(pp&&!pp.watch&&!pp.inside&&!isHidden("petitpois")&&!foxes.some(o=>o!==pp&&o.spot===WATCH[9])){pp.watch=1;if(now){pp.walk=null;place(pp,WATCH[9])}else goTo(pp,WATCH[9]);pp.until=Date.now()+9e8}
-  for(const f of foxes){if(f.wild||f.id==="bouleneige"||BAND.includes(f.id)||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!bs.includes(s)&&s!==WATCH[9]&&s!==WATCH[10]&&!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
+  for(const f of foxes){if(f.wild||f.id==="bouleneige"||BAND.includes(f.id)||isHidden(f.id)||f.watch)continue;const to=sp.find(s=>!bs.includes(s)&&s!==WATCH[9]&&s!==WATCH[10]&&!(bandMove&&WATCH.indexOf(s)<4)&&!foxes.some(o=>o!==f&&o.watch&&(o.spot===s||(o.walk&&o.walk.to===s))));if(!to)continue;
     f.watch=1;if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y}if(now){f.walk=null;place(f,to)}else goTo(f,to);f.until=Date.now()+9e8}}
 // la bande arrive : tout le monde sort pour défendre Boule-de-Neige
 function defendAll(bx,by){const ids=foxes.filter(f=>!f.wild&&!["bouleneige","balafre","filou","radar"].includes(f.id)&&!f.inside).map(f=>f.id);
@@ -451,11 +451,17 @@ function bandSeat(){if(!bandIncog()){for(const id of BAND){const f=sF(id);if(f)f
     if(!f.walk&&f.pose!=="back"){f.pose="back";draw(f)}});bandSeen=1}
 setInterval(bandSeat,1500);setTimeout(bandSeat,300);
 // ils se lèvent, montent jusqu'au perron sans se retourner, et là, ils se retournent : le thème des méchants
+// (Joffray : les marches du perron, « le meilleur spot ») ; ceux qui regardaient depuis le perron descendent en courant rejoindre les autres
+const BANDP=[{id:"bandp0",x:214,y:276,poses:["up"]},{id:"bandp1",x:170,y:266,poses:["up"]},{id:"bandp2",x:258,y:266,poses:["up"]}];
 function bandUp(){bandMove=1;
+  const down=[[150,500],[110,486],[362,500],[60,500]].map(([x,y])=>({x,y:Math.min(H-26,y)}));let k=0;
+  for(const f of foxes)if(!BAND.includes(f.id)&&!f.wild&&f.spot&&WATCH.slice(0,4).includes(f.spot)){const d=down[k++%down.length];f.fast=1;
+    setTimeout(()=>{goTo(f,{id:"down-"+f.id,x:d.x+(k>4?20:0),y:d.y,poses:["sit"]});f.until=Date.now()+60000;f.watch=1},k*120)}
   BAND.forEach((id,i)=>{if(!R.res[id])R.res[id]={at:Date.now(),h:0,pet:""};const f=sF(id);if(!f)return;f.watch=0;f.fast=1;f.el.style.pointerEvents="";
-    setTimeout(()=>{goTo(f,{id:"bandp"+i,x:[214,170,258][i],y:[276,266,266][i],poses:["up"]});f.until=Date.now()+60000},i*220)});save();
+    setTimeout(()=>{goTo(f,BANDP[i]);f.until=Date.now()+60000},300+i*220)});save();
   setTimeout(()=>{bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){}
-    BAND.forEach(id=>{const f=sF(id);if(f&&!f.walk){f.pose="up";f.expr=id==="balafre"?"open":"joy";draw(f)}});actEmote("balafre","colere",2600);actEmote("filou","note");actEmote("radar","note")},3700)}
+    // là-haut, ils se retournent (s'il en reste un en chemin, il y est déjà : les boules partent toujours des marches)
+    BAND.forEach((id,i)=>{const f=sF(id);if(!f)return;if(f.walk||f.spot!==BANDP[i]){f.walk=null;place(f,BANDP[i])}f.pose="up";f.expr=id==="balafre"?"open":"joy";draw(f)});actEmote("balafre","colere",2600);actEmote("filou","note");actEmote("radar","note")},3700)}
 // la bande attaque la boule : deux boules la fissurent, celle de Balafre la fend, puis une volée sur Boule-de-Neige
 function bandeAttack(){const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
   actThrow("filou",X(),{hurt:false,then:crackBall});setTimeout(()=>actThrow("radar",X(),{hurt:false,then:crackBall}),600);
@@ -519,6 +525,8 @@ function breakBall(){if(!ballEl)return;const r=ballR(),x=BALL.x,y=BALL.y,u=$("sc
 let heapEl=null;
 // la boule géante refaite et le tas de neige sont des obstacles : les renards en font le tour (life.js)
 function noelObst(){const L=[];if(bigOn()&&noelOn()&&!recordWait())L.push({x:BALL.x,y:BALL.y-8,rx:74+16,ry:30});
+  // la boule du record aussi (un renard de la bande la traversait en montant au perron)
+  if(recordWait()&&!R.recordGone&&ballEl){const r=ballR();if(r>0)L.push({x:BALL.x,y:BALL.y-6,rx:r+16,ry:Math.max(14,r*.42)})}
   if(heapEl&&R.heapAt)L.push({x:R.heapAt.x,y:R.heapAt.y-6,rx:R.heapAt.r*1.25+14,ry:24});return L.concat(sleighObst())}
 function drawHeap(grow){const h=R.heapAt,show=noelOn()&&R.recordGone&&!R.recordBig&&!!h;
   if(!show){if(heapEl){heapEl.remove();heapEl=null}return}

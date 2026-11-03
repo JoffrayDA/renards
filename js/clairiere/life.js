@@ -151,7 +151,7 @@ function tick(){
     if(f.shock){if((R.beat.balafre||0)<2){f.until=now+5000;continue}f.shock=0}
     // la bande reste plantée devant la boule cassée jusqu'à la bataille (avant, elle repartait sur le perron au bout de 30 s)
     if(["balafre","filou","radar"].includes(f.id)&&!f.wild&&noelOn()&&!storyDone("balafre")&&(R.beat.balafre===1||typeof bandeOn!=="undefined"&&bandeOn&&!(R.beat.balafre>0)||bandIncog())){f.until=now+5000;continue}
-    if(f.spot&&!f.spot.via&&!f.inside&&inObst(f)&&!f.wild){const sp=choose(f);if(sp){goTo(f,sp);continue}} // assis là où la boule vient d'apparaître : il se pousse
+    if(f.spot&&!f.spot.via&&!f.inside&&inObst(f)&&!f.wild&&f.id!=="bouleneige"){const sp=choose(f);if(sp){goTo(f,sp);continue}} // assis là où la boule vient d'apparaître : il se pousse
     // et même si le jeu a été fermé entre l'arrivée de la bande et la bataille : tout le refuge reste sous le choc
     if(R.beat.balafre===1&&noelOn()&&!f.wild&&!["balafre","filou","radar","bouleneige"].includes(f.id)&&!storyDone("balafre")){
       if(!f.walk&&f.expr!=="surprise"&&f.expr!=="sad"){f.pose="sit";f.expr=f.id.length%2?"surprise":"sad";draw(f)}f.until=now+5000;continue}
