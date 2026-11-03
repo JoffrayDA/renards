@@ -453,10 +453,11 @@ setInterval(bandSeat,1500);setTimeout(bandSeat,300);
 // ils se lèvent, montent jusqu'au perron sans se retourner, et là, ils se retournent : le thème des méchants
 // (Joffray : Balafre devant les marches, Filou et Radar de chaque côté du rond) ; personne d'autre ne bouge avant que la boule soit cassée
 const BANDP=[{id:"bandp0",x:214,y:268,poses:["up"]},{id:"bandp1",x:103,y:310,poses:["up"]},{id:"bandp2",x:367,y:308,poses:["up"]}]; // les places dessinées par Joffray
-function bandUp(){bandMove=1;
+function bandUp(){bandMove=1;bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){} // la musique dès qu'ils se lèvent (Joffray)
+
   BAND.forEach((id,i)=>{if(!R.res[id])R.res[id]={at:Date.now(),h:0,pet:""};const f=sF(id);if(!f)return;f.watch=0;f.fast=1;f.el.style.pointerEvents="";
     setTimeout(()=>{goTo(f,BANDP[i]);f.until=Date.now()+60000},300+i*220)});save();
-  setTimeout(()=>{bandeOn=1;foxes.forEach(f=>{try{setBadge(f)}catch(e){}});try{MUSIC.want("bande");MUSIC.jingle("bande")}catch(e){}
+  setTimeout(()=>{
     // là-haut, ils se retournent (s'il en reste un en chemin, il y est déjà : les boules partent toujours des marches)
     BAND.forEach((id,i)=>{const f=sF(id);if(!f)return;if(f.walk||f.spot!==BANDP[i]){f.walk=null;place(f,BANDP[i])}f.pose="up";f.expr=id==="balafre"?"open":"joy";draw(f)});actEmote("balafre","colere",2600);actEmote("filou","note");actEmote("radar","note")},3700)}
 // la bande attaque la boule : deux boules la fissurent, celle de Balafre la fend, puis une volée sur Boule-de-Neige
