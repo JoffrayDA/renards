@@ -30,8 +30,11 @@ function actThrow(from,to,o={}){const P=v=>typeof v==="string"?(f=>f?{x:f.x,y:f.
     if(b.id&&o.hurt!==false){actPose(b.id,"sit","surprise",4000);actEmote(b.id,"goutte",1400);const f=sF(b.id);if(f){f.el.classList.remove("ouch");void f.el.offsetWidth;f.el.classList.add("ouch")}}
     if(o.then)o.then()}}
 // la réplique reste un instant, puis la bulle s'efface le temps d'une scène, et la suite vient toute seule
-function talkHold(before,fn,after){const el=$("talk");el.style.pointerEvents="none";
-  setTimeout(()=>{el.style.visibility="hidden";try{fn()}catch(e){}setTimeout(()=>{el.style.visibility="";el.style.pointerEvents="";nextLine()},after)},before)}
+// la bulle reste là (transparente) et avale les touchers : sinon un toucher passait au travers et ouvrait le journal
+// (ligne d'objectif juste dessous), qui cachait la suite du dialogue
+let talkHeld=false;
+function talkHold(before,fn,after){const el=$("talk");talkHeld=true;
+  setTimeout(()=>{el.style.opacity="0";try{fn()}catch(e){}setTimeout(()=>{el.style.opacity="";talkHeld=false;nextLine()},after)},before)}
 // les petits objets qu'on se donne dans les histoires (les autres viennent de ITEM, games.js)
 const PROP={
   gland:`<g transform="scale(1.4)"><path d="M-10 -2 Q-10 16 0 18 Q10 16 10 -2Z" fill="#c98a5a" stroke="${INK}" stroke-width="2.2"/><path d="M-12 -1.5 Q0 -15 12 -1.5 Q0 3 -12 -1.5Z" fill="#8a5a3a" stroke="${INK}" stroke-width="2.2"/><path d="M0 -8 q2 -5 6 -6" fill="none" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/></g>`,

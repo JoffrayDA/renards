@@ -90,7 +90,7 @@ function nextLine(){const el=$("talk");
   try{meLine(id,expr)}catch(e){} // Roussette se tourne vers celui qui parle (roussette.js)
   if(typeof act==="function")try{act()}catch(e){} // les renards jouent la scène pendant la réplique (scenes.js)
 }
-$("talk").onclick=nextLine;
+$("talk").onclick=()=>{if(typeof talkHeld!=="undefined"&&talkHeld)return;nextLine()};
 const INTRO=[
   ["petitpois","joy",`${ME()} ! Te voilà ! J'ai gardé la maison toute la journée.`],
   ["petitpois","shy","Enfin… j'ai surtout dormi sous le porche."],
