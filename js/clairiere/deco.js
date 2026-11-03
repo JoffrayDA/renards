@@ -200,9 +200,9 @@ const DECO={
   traineau:{name:"Traîneau de Barbe-Neige",noel:1,w:120,h:96,fav:"yeti",seat:{dx:6,dy:-36,poses:["sit","happy","sleep"]},desc:"Le traîneau du vieux Barbe-Neige, avec ses cadeaux encore dedans. Il l'a laissé ici « pour l'année prochaine ».",
     art:L=>`${dSh(52,-3)}<path d="M-46 -4 H36 Q50 -4 48 -18 Q46 -26 38 -22" fill="none" stroke="${INK}" stroke-width="5.6" stroke-linecap="round"/><path d="M-46 -4 H36 Q50 -4 48 -18 Q46 -26 38 -22" fill="none" stroke="#f2c75c" stroke-width="2.6" stroke-linecap="round"/>
       <path d="M-32 -4 V-16 M-4 -4 V-16 M24 -4 V-16" stroke="${INK}" stroke-width="2.6"/>
-      <g ${L}${dWob}><rect x="-44" y="-90" width="20" height="20" rx="2" fill="#7fb86a"/><rect x="-26" y="-84" width="16" height="15" rx="2" fill="#f6a5b4"/>
+      <g ${L}${dWob}><rect x="-40" y="-104" width="13" height="11" rx="2" fill="#7cb8e0" transform="rotate(-14 -34 -98)"/><rect x="-24" y="-102" width="12" height="11" rx="2" fill="#f2c45a" transform="rotate(12 -18 -96)"/><path d="M-50 -46 Q-60 -70 -48 -88 Q-40 -98 -30 -96 Q-18 -100 -10 -90 Q0 -72 -6 -46Z" fill="#9a4a3a"/>
       <path d="M-46 -16 V-66 Q-46 -74 -38 -72 L-30 -40 H20 Q28 -40 32 -52 Q36 -64 46 -60 Q50 -40 40 -24 Q34 -16 24 -16Z" fill="#d9584e"/></g>
-      <path d="M-34 -90 V-70 M-44 -80 H-24 M-18 -84 V-69" stroke="#f2c75c" stroke-width="2.4"/><path d="M-44 -26 H30" stroke="#f2c75c" stroke-width="3.4"/><path d="M-40 -60 L-34 -40" stroke="#f08a7e" stroke-width="2" opacity=".8"/>
+      <path d="M-46 -88 Q-30 -81 -12 -90" fill="none" stroke="#f2c75c" stroke-width="3"/><path d="M-29 -85 q-6 8 -3 14 M-29 -85 q6 7 5 13" fill="none" stroke="#f2c75c" stroke-width="2.2"/><path d="M-44 -26 H30" stroke="#f2c75c" stroke-width="3.4"/><path d="M-40 -60 L-34 -40" stroke="#f08a7e" stroke-width="2" opacity=".8"/>
       ${[[-36,-33],[-12,-33],[12,-33]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6" fill="#f2c75c"/>`).join("")}<circle cx="44" cy="-56" r="3" fill="#f2c75c" ${L}/>`},
   guirlpin:{name:"Guirlande de pommes de pin",noel:1,home:1,wall:1,w:100,h:54,desc:"Des branches de sapin, des pommes de pin et deux nœuds rouges. Toute la maison sent la forêt.",
     art:L=>`<path d="M-44 -46 Q0 -6 44 -46" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="M-44 -46 Q0 -6 44 -46" fill="none" stroke="#5f9a5a" stroke-width="9.4" stroke-linecap="round"/>

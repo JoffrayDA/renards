@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Musiques de Noël</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#5b4250;--bg:#f6f1ea;--card:#fffaf2;--acc:#e0505a}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic",sans-serif;padding:16px}
+h1{font-family:"Mochiy Pop One",sans-serif;font-weight:400;font-size:22px;margin:8px 0 4px}
+p{margin:0 0 14px;line-height:1.45}
+.list{display:grid;gap:10px;max-width:520px}
+button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:2.4px solid var(--ink);border-radius:18px;padding:12px 14px;cursor:pointer}
+button b{display:block;font-size:16px}button span{font-size:13px;opacity:.8}
+button i{flex:none;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-style:normal;font-size:15px}
+button.on{background:#ffe9e4}
+.stop{justify-content:center;max-width:520px;margin-top:10px}
+</style></head><body>
+<h1>Musiques de Noël pour la Clairière</h1>
+<p>Touche une musique pour l'écouter. Elles tournent en boucle.</p>
+<div class="list">
+<button data-t="foretneige"><i>1</i><div><b>La forêt sous la neige</b><span>La musique de la Clairière, en boîte à musique et grelots. Calme. Originale.</span></div></button>
+<button data-t="doucenuit"><i>2</i><div><b>Douce nuit</b><span>Le chant de Noël le plus connu, tout doux, harpe et boîte à musique.</span></div></button>
+<button data-t="deck"><i>3</i><div><b>Deck the Halls</b><span>« Fa la la la la ». Joyeux, avec grelots de traîneau.</span></div></button>
+<button data-t="wewish"><i>4</i><div><b>We Wish You a Merry Christmas</b><span>Joyeux et sautillant, marimba et clochettes.</span></div></button>
+<button data-t="noel"><i>5</i><div><b>Jingle Bells (celle du Café)</b><span>Le refrain des Nuits de Noël du Café, pour comparer.</span></div></button>
+</div>
+<button class="stop" data-t="">Arrêter</button>
+<script src="../js/music.js"></script>
+<script>
+document.querySelectorAll("button[data-t]").forEach(b=>b.onclick=()=>{MUSIC.setOn(true);const t=b.dataset.t;
+  document.querySelectorAll("button[data-t]").forEach(x=>x.classList.toggle("on",x===b&&!!t));if(t)MUSIC.want(t);else MUSIC.stop()});
+</script>
+</body></html>
