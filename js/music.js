@@ -283,6 +283,15 @@ const MUSIC=(()=>{
     else if(k==="hohoho1"){[0,.34,.68].forEach((a,i)=>{const t0=t+a,f0=i===2?118:128,src=osc("sawtooth",f0,t0,t0+.34);src.frequency.setValueAtTime(f0,t0);src.frequency.exponentialRampToValueAtTime(f0*.82,t0+.3);
         const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.55,t0+.03);g.gain.setValueAtTime(.5,t0+(i===2?.24:.16));g.gain.linearRampToValueAtTime(0,t0+(i===2?.34:.24));
         [[430,6,1],[780,7,.5],[2400,8,.12]].forEach(([fr,q,v])=>{const bp=filt("bandpass",fr,q),gv=C.createGain();gv.gain.value=v;src.connect(bp);bp.connect(gv);gv.connect(g)});o(g,.25)})}
+    // le traîneau qui va mal (Joffray : des grelots « un peu le bordel ») : grelots irréguliers qui tremblent, boulons qui sautent
+    // (clonk métallique), un ressort qui fait boing, et le vent qui passe
+    else if(k==="sleighbad"){for(let i=0;i<26;i++){const a=i*.1+Math.random()*.08;nz(6200+Math.random()*1800,1.4,.05+Math.random()*.05,.03+Math.random()*.05,a)}
+      for(let i=0;i<9;i++){const a=.1+i*.27+Math.random()*.12,m=86+Math.floor(Math.random()*8)-i*.6;bell(m,.05+Math.random()*.04,a,.35);if(i%3===1)tone("sine",hz(m)*1.04,hz(m)*.9,.25,.03,a+.02)}
+      [.55,1.35,2.1].forEach((a,i)=>{tone("square",900+i*260,700+i*200,.05,.05,a);tone("sine",2600+i*300,1800,.08,.06,a);tone("sine",380,260,.12,.05,a+.04)});
+      {const a=1.7,x=osc("sine",180,t+a,t+a+.5);x.frequency.setValueAtTime(180,t+a);[.08,.16,.24,.32,.4].forEach((d,j)=>x.frequency.linearRampToValueAtTime(j%2?160:420-j*40,t+a+d));const g=gain(t+a,.01,.08,.45);x.connect(g);o(g,.2)}
+      nz(300,1.2,2.6,.06,0,1100)}
+    // le traîneau réparé : des grelots bien réguliers
+    else if(k==="sleighok"){for(let i=0;i<20;i++)nz(7000,1.4,.07,i%2?.04:.06,i*.12);[84,88,91,96].forEach((m,i)=>bell(m,.06,.2+i*.18,.6))}
     // sonné, façon dessin animé : des petits oiseaux qui gazouillent en tournant, et un tintement de clochettes
     else if(k==="dizzy"){[0,.18,.36,.54].forEach((a,i)=>{const f1=i%2?2900:2300,x=osc("sine",f1,t+a,t+a+.16);x.frequency.setValueAtTime(f1,t+a);x.frequency.linearRampToValueAtTime(f1*1.35,t+a+.06);x.frequency.linearRampToValueAtTime(f1*.95,t+a+.13);
         const g=gain(t+a,.005,.07,.13);x.connect(g);o(g,.35)});[88,91,95].forEach((m,i)=>bell(m,.045,.1+i*.22,.35))}
