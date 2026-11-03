@@ -131,14 +131,18 @@ const MUSIC=(()=>{
         [.5,1.5,2.5,3.5].forEach(x=>c.forEach(m=>I.pluck(m+12,t+x*B,.025,.25,2200)));
         melody((m,tt)=>I.marimba(m+12,tt,.15),this.mel,b,t,B)}},
     // les Nuits de Noël (js/cafe/noelnuits.js) : le refrain de Jingle Bells (domaine public), grelots de traîneau
-    noel:{name:"Nuits de Noël",bpm:118,beats:4,bars:8,
+    noel:{name:"Nuits de Noël",bpm:142,beats:4,bars:8,
       ch:[[48,52,55],[48,52,55],[48,52,55],[48,52,55],[53,57,60],[48,52,55],[50,55,59],[55,59,62]],
       mel:[[[64,1],[64,1],[64,2]],[[64,1],[64,1],[64,2]],[[64,1],[67,1],[60,1.5],[62,.5]],[[64,4]],
            [[65,1],[65,1],[65,1.5],[65,.5]],[[65,1],[64,1],[64,1],[64,.5],[64,.5]],[[64,1],[62,1],[62,1],[64,1]],[[62,2],[67,2]]],
       bar(b,t,B){const c=this.ch[b];
-        for(let i=0;i<8;i++)I.shaker(t+i*B/2,i%2?.03:.05);[0,2].forEach(x=>I.kick(t+x*B,.3));[1,3].forEach(x=>I.snare(t+x*B,.07));
-        [0,1,2,3].forEach(x=>I.pluck((x%2?c[2]:c[0])+12,t+x*B,.04,.4,2400));I.bass(c[0]-12,t,B*1.8,.18);I.bass(c[0]-5,t+2*B,B*1.8,.15);
-        melody((m,tt)=>I.box(m+12,tt,.16,1.2),this.mel,b,t,B)}},
+        // plus de punch pour le Café (Joffray, 03/11/2026) : grosse caisse à chaque temps, claps, basse qui rebondit, accords cuivrés
+        for(let i=0;i<8;i++)I.shaker(t+i*B/2,i%2?.035:.055);for(let i=0;i<4;i++)I.kick(t+i*B,.4);[1,3].forEach(x=>{I.snare(t+x*B,.1);I.clap(t+x*B,.05)});
+        for(let i=0;i<8;i++)I.openhat(t+i*B/2+B/4,.012);
+        [[0,0],[.5,12],[1,7],[1.5,12],[2,0],[2.5,12],[3,7],[3.5,12]].forEach(([x,o])=>I.bass(c[0]-12+o,t+x*B,B*.4,.2));
+        [.5,1.5,2.5,3.5].forEach(x=>I.stab(c.map(m=>m+12),t+x*B,.035));
+        if(b===7)[3,3.25,3.5,3.75].forEach((x,i)=>I.snare(t+x*B,.05+i*.02));
+        melody((m,tt,d)=>{I.box(m+12,tt,.15,1);I.brass(m+12,tt,Math.min(d*.9,.8),.045)},this.mel,b,t,B)}},
     // la bande de Balafre débarque (Noël, Clairière) : les méchants sont là, cuivres et basse qui sautille, mi mineur
     bande:{name:"La bande",bpm:150,beats:4,bars:8,
       ch:[[52,55,59],[52,55,59],[48,52,55],[47,51,54],[52,55,59],[52,55,59],[45,48,52],[47,51,54]],

@@ -510,8 +510,14 @@ function bandeAttack(){const bx=BALL.x,by=BALL.y,X=()=>({x:bx,y:by-ballR()});
   setTimeout(()=>{gardenSync();actPose("bouleneige","lie","sad",30000);actEmote("bouleneige","goutte");["filou","radar"].forEach(id=>actTrick(id,"boing"))},3900)}
 // la musique de la clairière : le thème de la bande, de son arrivée jusqu'à la fin des trois défis (music.js)
 let bandeOn=0;
-const clMusic=()=>noelOn()&&!storyDone("balafre")&&(bandeOn&&!(R.beat.balafre>0)||R.beat.balafre>=1&&R.beat.balafre<=3)?"bande":"foret";
-setInterval(()=>{try{if(!gameOn&&!document.querySelector(".bgift")&&["foret","bande",null].includes(MUSIC.current))MUSIC.want(clMusic())}catch(e){}},1500);
+// choix de Joffray (03/11/2026) : la forêt sous la neige du 1er décembre au 6 janvier, Douce nuit du 23 au 26, We Wish You a Merry
+// Christmas pendant l'histoire de Barbe-Neige ; le thème de la bande garde la priorité pendant la bataille de neige
+let bnMusic=0;
+function clMusic(){if(!noelOn())return "foret";
+  if(!storyDone("balafre")&&(bandeOn&&!(R.beat.balafre>0)||R.beat.balafre>=1&&R.beat.balafre<=3))return "bande";
+  if((bnMusic||R.beat.barbeneige>0)&&!storyDone("barbeneige"))return "wewish";
+  const d=noelDay();return d>=23&&d<=26?"doucenuit":"foretneige"}
+setInterval(()=>{try{if(!gameOn&&!document.querySelector(".bgift")&&["foret","bande","foretneige","doucenuit","wewish",null].includes(MUSIC.current))MUSIC.want(clMusic())}catch(e){}},1500);
 // le jardin vidé pour le record : objets et déco rangés le temps de rouler la boule
 const gardenCleared=()=>recordWait()&&!R.recordGone,gardenHid=[];let gardenWas=null,storedWas=false;
 // les objets et la déco restent rangés du record jusqu'au départ de la boule géante refaite (Joffray : « une fois que la boule est

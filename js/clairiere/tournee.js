@@ -98,7 +98,7 @@ DECO.globe={name:"La boule à neige de la clairière",noel:1,home:1,w:58,h:128,d
   art:L=>`${dSh(40)}${globeArt(0)}`};
 
 // on secoue l'énorme cadeau trois fois, il s'ouvre, la boule à neige sort
-function openBigGift(done){const o=document.createElement("div");o.className="bgift";try{MUSIC.want("noel")}catch(e){}
+function openBigGift(done){const o=document.createElement("div");o.className="bgift";
   o.innerHTML=`<div class="bgrays"></div><button class="bgbox" type="button" aria-label="Ouvrir le cadeau"><svg viewBox="-70 -90 140 170" aria-hidden="true"><g class="bglid"><rect x="-58" y="-36" width="116" height="22" rx="4" fill="#ef5c70" stroke="${INK}" stroke-width="3.4"/><path d="M0 -36 V-14" stroke="#f7d77a" stroke-width="16"/><path d="M0 -38 q-34 -32 -38 -4 q16 12 38 4 q34 -32 38 -4 q-16 12 -38 4" fill="#f7d77a" stroke="${INK}" stroke-width="3"/></g><rect x="-50" y="-14" width="100" height="84" rx="5" fill="#e2445e" stroke="${INK}" stroke-width="3.4"/><path d="M0 -14 V70" stroke="#f7d77a" stroke-width="16"/></svg></button>
     <div class="bgtxt"><b>Vas-y, ouvre !</b><span>Touche le cadeau.</span></div>`;
   $("scene").parentNode.appendChild(o);let n=0;const box=o.querySelector(".bgbox"),txt=o.querySelector(".bgtxt");
@@ -109,7 +109,7 @@ function openBigGift(done){const o=document.createElement("div");o.className="bg
     for(let i=0;i<40;i++){const c=document.createElement("i");c.className="bgconf";const a=Math.random()*6.28,r=120+Math.random()*260;c.style.background=["#ffe27a","#ef5c70","#9ec3ef","#8fca7a","#fff"][i%5];o.appendChild(c);c.animate([{transform:"translate(-50%,-50%)",opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*r}px),calc(-50% + ${Math.sin(a)*r+120}px)) rotate(${i*40}deg)`,opacity:0}],{duration:1500+i*20,easing:"cubic-bezier(.1,.7,.3,1)",fill:"forwards"})}
     setTimeout(()=>{const g=document.createElement("div");g.className="bgglobe";g.innerHTML=`<svg viewBox="-70 -128 140 132" aria-hidden="true">${globeArt(1)}</svg>`;o.insertBefore(g,txt);g.animate([{transform:"scale(.1) translateY(160px)",opacity:0},{transform:"scale(1.1)",opacity:1,offset:.75},{transform:"scale(1)",opacity:1}],{duration:900,easing:"ease-out"});
       txt.innerHTML=`<b>La boule à neige de la clairière</b><span>Ton refuge en tout petit, ton sapin, ton étoile. Il y neige toute l'année : pose-la dans ta maison.</span><div class="bgrew"><em>+10 clochettes</em><em>+500 pièces</em><em>+10 sucres d'orge</em></div><button class="btn" type="button">Joyeux Noël !</button>`;
-      txt.querySelector("button").onclick=()=>{o.remove();try{MUSIC.want("foret")}catch(e){}done()}},750)};
+      txt.querySelector("button").onclick=()=>{o.remove();try{MUSIC.want(clMusic())}catch(e){}done()}},750)};
   o.animate([{opacity:0},{opacity:1}],{duration:350})}
 function bigGiftReward(){if(R.bigGift)return;R.bigGift=1;R.deco.inv.globe=(R.deco.inv.globe||0)+1;addBells(10);const b=bourse();b.sucres=(b.sucres||0)+10;(b.gift=b.gift||{}).coins=(b.gift.coins||0)+500;putBourse(b);deliverGifts();save();renderHud()}
 
@@ -135,7 +135,7 @@ function snowPoof(x,y,r=60){const p=document.createElement("div");p.className="s
   const s=$("scene");s.animate([{transform:"translateY(0)"},{transform:"translateY(5px)"},{transform:"translateY(-4px)"},{transform:"translateY(2px)"},{transform:"translateY(0)"}],{duration:380});try{MUSIC.sfx("splash");navigator.vibrate&&navigator.vibrate(90)}catch(e){}}
 function foxDrop(id,x,y,pose,expr){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};save()}const f=sF(id)||makeFox(id,null);if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;f.el.style.display="";f.badge.style.display="";place(f,{id:"act-"+id,x,y,z:y,poses:[pose]});f.pose=pose;f.expr=expr;f.until=Date.now()+60000;draw(f)}
 // le traîneau passe, de travers : personne pour le tirer
-function sceneSkyPass(){sleighFly([[-90,150,-6],[60,110,8],[180,150,-10],[300,95,10],[490,140,-4]],2900)}
+function sceneSkyPass(){bnMusic=1;try{MUSIC.want(clMusic())}catch(e){}sleighFly([[-90,150,-6],[60,110,8],[180,150,-10],[300,95,10],[490,140,-4]],2900)}
 // il s'écrase devant la maison
 function sceneCrash(){sleighFly([[470,20,18],[350,190,24],[SLP.x+20,SLP.y-4,30]],1250,{ease:"ease-in",then:()=>{
     slOv={b:1,mode:"broken"};sleighSync();snowPoof(SLP.x,SLP.y-20,70);
