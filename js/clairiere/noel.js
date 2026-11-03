@@ -93,6 +93,7 @@ Object.assign(STORIES,{
       ["me","surprise","… Mais je ne sais pas, je ne les ai jamais vus !",()=>{actEmote("me","!");actPose("me","sit","surprise")}],
       ["grelot","surprise","Quoi ?!",()=>{actEmote("grelot","!");actPose("grelot","up","surprise");talkHold(900,bandUp,5000)}],
       ["balafre","open","Belle boule.",()=>actEmote("balafre","colere")],
+      ["bouleneige","shy","Oh… Merci !",()=>actEmote("bouleneige","coeur")],
       ["me","surprise","Oh ! Attention, Boule-de-Neige !!!",()=>{actEmote("me","!");talkHold(1100,()=>{actEmote("bouleneige","!");actPose("bouleneige","sit","surprise");bandeAttack();setTimeout(()=>defendAll(BALL.x,BALL.y),2100)},4600)}],
       ["bouleneige","sad","Ma boule ! Mon record du monde… Il ne manquait presque rien !",()=>actEmote("bouleneige","goutte")],
       ["balafre","open","Dommage pour elle.",()=>actPose("balafre","happy")],
