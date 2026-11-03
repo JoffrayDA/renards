@@ -269,10 +269,12 @@ const MUSIC=(()=>{
     else if(k==="swap"){nz(700,1.3,.2,.07,0,2600);tone("sine",520,780,.06,.04,.14)}
     else if(k==="whoosh"){nz(300,1.4,.9,.12,0,1400)}
     else if(k==="snowhit"){tone("sine",200,60,.14,.24);nz(600,.6,.16,.22);nz(2600,1.2,.07,.1,.01)} // une boule de neige qui touche : « pouf »
-    // « Oh oh oh ! » : une grosse voix grave (dent de scie filtrée sur les formants du « o »), trois fois
-    else if(k==="hohoho"){[0,.34,.68].forEach((a,i)=>{const t0=t+a,f0=i===2?118:128,src=osc("sawtooth",f0,t0,t0+.34);src.frequency.setValueAtTime(f0,t0);src.frequency.exponentialRampToValueAtTime(f0*.82,t0+.3);
-        const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.55,t0+.03);g.gain.setValueAtTime(.5,t0+(i===2?.24:.16));g.gain.linearRampToValueAtTime(0,t0+(i===2?.34:.24));
-        [[430,6,1],[780,7,.5],[2400,8,.12]].forEach(([fr,q,v])=>{const bp=filt("bandpass",fr,q),gv=C.createGain();gv.gain.value=v;src.connect(bp);bp.connect(gv);gv.connect(g)});o(g,.25)})}
+    // « Ho ! Ho ! Ho ! » façon dessin animé (la voix synthétisée faisait malade, Joffray) : trois notes de tuba qui rebondissent,
+    // la dernière plus longue, et des grelots de traîneau
+    else if(k==="hohoho"){[[48,0,.16],[48,.26,.16],[43,.52,.42]].forEach(([m,a,d])=>{const f=hz(m),t0=t+a,lp=filt("lowpass",500,3);lp.frequency.setValueAtTime(380,t0);lp.frequency.linearRampToValueAtTime(1100,t0+.04);lp.frequency.exponentialRampToValueAtTime(520,t0+d);
+        const g=C.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.42,t0+.02);g.gain.setValueAtTime(.36,t0+d*.7);g.gain.linearRampToValueAtTime(0,t0+d+.05);
+        [-6,6].forEach(dt=>osc("sawtooth",f,t0,t0+d+.1,dt).connect(lp));const sb=osc("sine",f/2,t0,t0+d+.1),sg=C.createGain();sg.gain.value=.5;sb.connect(sg);sg.connect(g);lp.connect(g);o(g,.18)});
+      for(let i=0;i<10;i++)nz(6500,1.2,.06,.05,i*.09);[84,88,91].forEach((m,i)=>bell(m,.06,.55+i*.12,.5))}
     // sonné, façon dessin animé : des petits oiseaux qui gazouillent en tournant, et un tintement de clochettes
     else if(k==="dizzy"){[0,.18,.36,.54].forEach((a,i)=>{const f1=i%2?2900:2300,x=osc("sine",f1,t+a,t+a+.16);x.frequency.setValueAtTime(f1,t+a);x.frequency.linearRampToValueAtTime(f1*1.35,t+a+.06);x.frequency.linearRampToValueAtTime(f1*.95,t+a+.13);
         const g=gain(t+a,.005,.07,.13);x.connect(g);o(g,.35)});[88,91,95].forEach((m,i)=>bell(m,.045,.1+i*.22,.35))}

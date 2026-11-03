@@ -135,7 +135,9 @@ function snowPoof(x,y,r=60){const p=document.createElement("div");p.className="s
   const s=$("scene");s.animate([{transform:"translateY(0)"},{transform:"translateY(5px)"},{transform:"translateY(-4px)"},{transform:"translateY(2px)"},{transform:"translateY(0)"}],{duration:380});try{MUSIC.sfx("splash");navigator.vibrate&&navigator.vibrate(90)}catch(e){}}
 function foxDrop(id,x,y,pose,expr){if(!R.res[id]){R.res[id]={at:Date.now(),h:0,pet:""};save()}const f=sF(id)||makeFox(id,null);if(f.inside){f.inside=false;f.el.classList.remove("inside")}f.walk=null;f.el.style.display="";f.badge.style.display="";place(f,{id:"act-"+id,x,y,z:y,poses:[pose]});f.pose=pose;f.expr=expr;f.until=Date.now()+60000;draw(f)}
 // le traîneau passe, de travers : personne pour le tirer
-function sceneSkyPass(){bnMusic=1;try{MUSIC.want(clMusic())}catch(e){}setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}},700);sleighFly([[-90,150,-6],[60,110,8],[180,150,-10],[300,95,10],[490,140,-4]],2900)}
+// « Oh oh oh ! » écrit dans le ciel, au passage du traîneau
+function skyHo(x,y){const e=document.createElement("div");e.className="skyho";e.textContent="Oh oh oh !";e.style.cssText=pc(x,y);$("scene").appendChild(e);setTimeout(()=>e.remove(),1900)}
+function sceneSkyPass(){bnMusic=1;try{MUSIC.want(clMusic())}catch(e){}setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}skyHo(170,90)},700);sleighFly([[-90,150,-6],[60,110,8],[180,150,-10],[300,95,10],[490,140,-4]],2900)}
 // il s'écrase devant la maison
 function sceneCrash(){sleighFly([[470,20,18],[350,190,24],[SLP.x+20,SLP.y-4,30]],1250,{ease:"ease-in",then:()=>{
     slOv={b:1,mode:"broken"};sleighSync();snowPoof(SLP.x,SLP.y-20,70);
@@ -165,7 +167,7 @@ function ringAround(){const cx=BG.x,cy=BG.y-8,rx=150,ry=64,now=Date.now();
     f.fast=1;goTo(f,{id:"ring"+i,x,y,poses:["sit"]});f.until=now+60000;setTimeout(()=>{if(!f.walk)f.el.classList.toggle("left",cx<f.x)},3200)};
   front.forEach((id,i)=>put(id,Math.PI*(.12+.76*(front.length>1?i/(front.length-1):.5)),i));
   back.forEach((id,i)=>put(id,Math.PI*(1.08+.84*(back.length>1?i/(back.length-1):.5)),10+i))}
-function sceneBigGift(){slOv={b:5,mode:null};setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}},500);
+function sceneBigGift(){slOv={b:5,mode:null};setTimeout(()=>{try{MUSIC.sfx("hohoho")}catch(e){}skyHo(BG.x,70)},500);
   sleighFly([[-120,110,-8],[BG.x,96,2],[520,70,-6]],3000,{ram:1});
   setTimeout(()=>{const e=document.createElement("div");e.className="sleighfx";e.style.cssText=`width:${118/W*100}%;z-index:906;left:0;top:0`;e.innerHTML=giftBox();$("actors").appendChild(e);
     e.animate([{left:`${BG.x/W*100}%`,top:`${110/H*100}%`,transform:"translate(-50%,-96%) rotate(-10deg)"},{left:`${BG.x/W*100}%`,top:`${BG.y/H*100}%`,transform:"translate(-50%,-96%) rotate(0)"}],{duration:620,easing:"cubic-bezier(.5,0,1,.6)"}).onfinish=()=>{e.remove();drawBigGift();snowPoof(BG.x,BG.y,70);foxes.filter(f=>!f.wild).slice(0,8).forEach((f,i)=>setTimeout(()=>actEmote(f.id,"!",1500),i*60))}},1450);
