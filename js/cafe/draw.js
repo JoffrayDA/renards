@@ -311,50 +311,33 @@ function counterSVG(){
   const g=(id,a,b,o1,o2)=>`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}" stop-opacity="${o1}"/><stop offset="1" stop-color="${b}" stop-opacity="${o2}"/></linearGradient>`;
   return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${g("kTop2","#ffffff","#3d2a35",.3,.15)}${g("kPanel2","#3d2a35","#ffffff",.12,.12)}<linearGradient id="kJar2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8f4fb"/><stop offset="1" stop-color="#b9d8ea"/></linearGradient></defs><g filter="url(#wobble)">${s}</g></svg>`;
 }
-// Le sol du café devant le comptoir (Joffray, 04/11/2026 : « agrandir l'écran du café ») : sur un téléphone haut, la salle
-// s'allonge vers le bas pour remplir l'écran. La salle garde sa taille et sa place (calques en haut, --ex en dessous) ;
-// le sol (#floor) est dessiné à la même échelle, F unités de haut sur 600 de large.
-function floorSVG(F){
-  const night=SEA==="hiver"||HWV(),it=SEA==="italie",f=n=>n.toFixed(1);
-  let s="";
-  if(it){ // carrelage de terre cuite
-    s+=`<rect x="-10" y="0" width="620" height="${f(F+10)}" fill="#d98d68"/>`;
-    for(let y=0,r=0;y<F;y+=34,r++)for(let x=-34,c=0;x<620;x+=34,c++)s+=`<rect x="${x+2}" y="${y+2}" width="30" height="30" rx="4" fill="${(r+c)%2?"#efb38e":"#e6a07a"}"/>`;
-  }else{ // parquet
-    s+=`<rect x="-10" y="0" width="620" height="${f(F+10)}" fill="#dcae84"/>`;
-    for(let y=0,r=0;y<F;y+=20,r++){s+=`<path d="M-10 ${y+20} H610" stroke="#b9875f" stroke-width="2"/>`;for(let x=(r%3)*46-40;x<620;x+=138)s+=`<path d="M${x} ${y} V${y+20}" stroke="#b9875f" stroke-width="2"/>`;
-      if(r%2)s+=`<rect x="-10" y="${y}" width="620" height="20" fill="#fff" opacity=".07"/>`}
-  }
-  // l'ombre du comptoir
-  s+=`<rect x="-10" y="0" width="620" height="22" fill="url(#flSh)"/>`;
-  // le tapis
-  if(F>=46){const cy=Math.min(F*.55,22+F*.4),ry=Math.min(F*.3,46);
-    s+=it?`<ellipse cx="300" cy="${f(cy)}" rx="150" ry="${f(ry)}" fill="#9fd8c4" ${BO}/><ellipse cx="300" cy="${f(cy)}" rx="128" ry="${f(ry*.72)}" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="8 7"/><ellipse cx="300" cy="${f(cy)}" rx="70" ry="${f(ry*.38)}" fill="#fdf0d6" ${BO}/>`
-      :`<rect x="130" y="${f(cy-ry)}" width="340" height="${f(ry*2)}" rx="${f(Math.min(ry,26))}" fill="${HWV()?"#c9a8ec":"#f6b8c6"}" ${BO}/><rect x="146" y="${f(cy-ry+10)}" width="308" height="${f(ry*2-20)}" rx="${f(Math.min(ry,20))}" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="9 7"/>`
-        +[-1,1].map(d=>`<path d="M${300+d*60} ${f(cy-ry*.35)} l${d*-14} ${f(ry*.35)} l${d*14} ${f(ry*.35)} l${d*14} ${f(-ry*.35)}Z" fill="#fff" opacity=".6"/>`).join("")+`<circle cx="300" cy="${f(cy)}" r="${f(Math.min(ry*.3,12))}" fill="#fff" opacity=".6"/>`}
-  // aux coins : plantes, et selon le moment une citrouille ou des cadeaux
-  if(F>=70){const y=F-8;s+=it?`${potSVG(84,y,1.1)}<circle cx="78" cy="${f(y-40)}" r="4" fill="#ffe36a" stroke="${INK}" stroke-width="1.4"/><circle cx="94" cy="${f(y-34)}" r="4" fill="#ffe36a" stroke="${INK}" stroke-width="1.4"/>`:potSVG(84,y,1.1);
-    s+=HWV()&&typeof jack==="function"?jack(516,y,1.1):XNV()||(typeof xmasDay==="function"&&xmasDay())?`<rect x="490" y="${f(y-26)}" width="30" height="26" rx="3" fill="#e0505a" ${BO}/><path d="M505 ${f(y-26)} V${f(y)} M490 ${f(y-14)} H520" stroke="#ffe680" stroke-width="4"/><rect x="522" y="${f(y-18)}" width="22" height="18" rx="3" fill="#7fb48a" ${BO}/><path d="M533 ${f(y-18)} V${f(y)}" stroke="#fff" stroke-width="3"/>`:potSVG(516,y,1.1)}
-  if(night)s+=`<rect x="-10" y="0" width="620" height="${f(F+10)}" fill="#2a1d3a" opacity=".22"/>`;
-  return `<svg class="full" viewBox="0 0 600 ${f(F)}" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><defs><linearGradient id="flSh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d2a35" stop-opacity=".28"/><stop offset="1" stop-color="#3d2a35" stop-opacity="0"/></linearGradient></defs><g filter="url(#wobble)">${s}</g></svg>`;
-}
-let EXS=-1;
+// La salle remplit l'écran du téléphone (Joffray, 04/11/2026 : « agrandir l'écran pour voir mieux ») : la place libre sous la
+// cuisine sert à zoomer la salle (plus haute, un peu coupée sur les côtés), et les renards, leurs bulles et le compagnon
+// grossissent d'autant (--z), sans se chevaucher (--cap, selon le nombre de places au comptoir). Pas plus serré que ZMIN :
+// au-delà, les côtés (étagères) disparaîtraient ; le reste de la place agrandit le plateau et les tuiles de la cuisine (--kg).
+const ZMIN=1.1;
+let FITK="";
 function fitScene(force){
-  const sc=$("scene"),app=document.querySelector(".app");if(!sc||!app)return;
-  const cw=sc.clientWidth,h0=cw/(matchMedia("(max-width:520px)").matches?1.4:1.6),cur=Math.max(0,EXS);
+  const sc=$("scene"),app=document.querySelector(".app"),kit=$("kitchen");if(!sc||!app||!kit)return;
+  // on ne recalcule que si la forme de la cuisine change (nombre de rangées et de tuiles), la largeur ou le nombre de places
+  if(typeof spotsN!=="function")return; // appelé avant que game.js soit chargé
+  const rows=kit.querySelectorAll(".krow").length,key=[innerWidth,innerHeight,rows,kit.querySelectorAll(".kb").length,spotsN()].join();
+  if(key===FITK&&!force)return;FITK=key;
+  sc.style.aspectRatio="";sc.style.height="";app.style.setProperty("--kg","0px");
+  const cw=sc.clientWidth,phone=matchMedia("(max-width:520px)").matches,h0=cw/(phone?1.4:1.6);
   // l'espace libre sous la page, en gardant la place de deux lignes de conseil (sans compter le conseil affiché : la salle
-  // ne doit pas sauter quand il change), au plus les trois quarts de la salle
-  let ex=Math.floor(innerHeight-(app.offsetTop+app.offsetHeight-cur)+$("hint").offsetHeight-42);
-  ex=ex<28?0:Math.min(ex,Math.round(h0*.75));
-  if(ex===EXS&&!force)return;EXS=ex;
-  sc.style.setProperty("--ex",ex+"px");sc.style.aspectRatio=ex?"auto":"";sc.style.height=ex?(h0+ex).toFixed(1)+"px":"";
-  $("floor").innerHTML=ex?floorSVG(ex/Math.max(cw/600,h0/375)):"";
+  // ne doit pas sauter quand il change)
+  const free=Math.floor(innerHeight-(app.offsetTop+app.offsetHeight)+$("hint").offsetHeight-42);
+  const ex=!phone||free<16?0:Math.min(free,Math.round(cw/ZMIN-h0)),kg=phone&&rows?Math.max(0,Math.min(34,Math.floor((free-ex)/(rows+.3)))):0;
+  sc.style.setProperty("--z",((h0+ex)/h0).toFixed(3));sc.style.setProperty("--cap",{2:"34%",3:"29%",4:"25%"}[spotsN()]||"25%");
+  if(ex){sc.style.aspectRatio="auto";sc.style.height=(h0+ex).toFixed(1)+"px"}
+  app.style.setProperty("--kg",kg+"px");
 }
 addEventListener("resize",()=>fitScene());
 function renderDecor(){
   $("bgl").innerHTML=bgSVG();$("counter").innerHTML=counterSVG();fitScene(1);
   // le compagnon : assis pendant le service, endormi quand le café est fermé
-  $("helper").innerHTML=OWN().serveur?`<div class="buddy" style="position:absolute;left:3%;bottom:30%;width:11%"><div>${foxSVG({...FOX[buddy()],scale:1},{pose:G&&G.run?"sit":"sleep"})}</div></div>`:"";
+  $("helper").innerHTML=OWN().serveur?`<div class="buddy" style="position:absolute;left:3%;bottom:30%;width:calc(11% * var(--z,1))"><div>${foxSVG({...FOX[buddy()],scale:1},{pose:G&&G.run?"sit":"sleep"})}</div></div>`:"";
 }
 // petit saut de joie du compagnon (combo, service)
 function buddyHop(){const b=document.querySelector("#helper .buddy>div");if(!b)return;b.classList.remove("hop");void b.offsetWidth;b.classList.add("hop")

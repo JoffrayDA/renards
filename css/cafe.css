@@ -36,10 +36,7 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .chips .pill{font-size:12px;padding:1px 10px;box-shadow:0 2px 0 rgba(91,66,80,.15)}
 
 .scene{position:relative;width:100%;aspect-ratio:16/10;border-radius:24px;overflow:hidden;border:3px solid #fff;box-shadow:0 0 0 2px var(--line),0 12px 26px rgba(91,66,80,.16);background:#fbe6d6;user-select:none;-webkit-user-select:none}
-.scene>div{position:absolute;inset:0 0 var(--ex,0px) 0}
-.scene>#floor{inset:auto 0 0 0;height:var(--ex,0px);pointer-events:none}
-.scene>#closed{bottom:0}
-.scene>.chips{bottom:calc(8px + var(--ex,0px))}
+.scene>div{position:absolute;inset:0}
 .scene svg.full{position:absolute;inset:0;width:100%;height:100%}
 #counter,#bgl{pointer-events:none}
 .notes{position:absolute;left:86%;top:11%;font-family:var(--display);color:var(--ink);font-size:clamp(10px,2vw,16px);animation:note 2.4s ease-in-out infinite;pointer-events:none}
@@ -79,7 +76,7 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .bub.vipb{border-color:var(--gold-d);background:#fff8e2}.bub.vipb::after{background:#fff8e2;border-color:var(--gold-d)}
 .vip{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:var(--display);font-size:9px;font-style:normal;border-radius:99px;padding:0 6px;border:2px solid var(--gold-d);white-space:nowrap}
 .oi-row{display:flex;gap:2px;justify-content:center}
-.oi{width:clamp(18px,4.3vw,30px);position:relative;display:block}
+.oi{width:calc(clamp(18px,4.3vw,30px) * var(--z,1));position:relative;display:block}
 .oi svg{display:block;width:100%}
 .oi.done{opacity:.28}
 .pb{height:5px;border-radius:9px;background:#f1e5d8;overflow:hidden;position:relative;z-index:1}
@@ -258,7 +255,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .nst2{color:var(--gold-d);font-size:13px;letter-spacing:1px}.nst2 em{color:#d8ccd4;font-style:normal}
 /* téléphone avec les options (lait, chantilly) : le plateau tient en largeur, sans le mot « Plateau » */
 @media (max-width:520px){.tray:has(.tps){gap:5px;padding:6px 8px}.tray:has(.tps) .tl{display:none}.tray:has(.tps) .ts{min-width:30px}.tps{gap:4px;flex:none}.tp{padding:3px 4px 2px}.tp svg{width:24px;height:24px}.tp em{font-size:9.5px}}
-@media (max-width:520px){.scene{aspect-ratio:7/5}.ki{width:46px;height:46px}.kb{padding:8px 3px 8px}.cust{width:23%}.ts{width:40px}.tray small{display:none}.pill.day{padding:3px 9px}}
+@media (max-width:520px){.scene{aspect-ratio:7/5}.ki{width:calc(46px + var(--kg,0px)*.6);height:calc(46px + var(--kg,0px)*.6)}.kb{padding:calc(8px + var(--kg,0px)*.2) 3px}.ts{width:calc(40px + var(--kg,0px)*.3)}.cust{width:min(calc(23% * var(--z,1)),var(--cap,23%))}.cust.q{width:calc(12% * var(--z,1))}.tray small{display:none}.pill.day{padding:3px 9px}}
 /* la queue de Luciole est une vraie petite lumière (js/foxart.js) */
 .lumi{animation:lumi 1.8s ease-in-out infinite}
 @keyframes lumi{50%{transform:scale(1.18);opacity:.8}}
