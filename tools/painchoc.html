@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pain au chocolat</title>
+<style>
+body{margin:0;padding:16px;background:#f6ece4;color:#5b4250;font:14px system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}p{margin:0 0 12px;opacity:.8}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+.c{background:#fffaf5;border:2px solid #ead9cf;border-radius:14px;padding:10px;text-align:center;width:150px}
+.c b{display:block;margin-top:4px}.c span{font-size:12px;opacity:.7}
+.big{width:120px;height:120px}.mid{width:48px;height:48px}.sm{width:30px;height:30px}
+.sizes{display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-top:6px}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter></svg>
+<h1>Le pain au chocolat de Paris</h1>
+<p>Trois versions, en grand puis à la taille de la tuile et de la bulle du client. La A est dans le jeu ; dis-moi si tu préfères une autre lettre.</p>
+<div class="row" id="out"></div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const K=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`,K2=`stroke="${INK}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
+const KB=`stroke="${INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+const V={
+  // A : gonflé, vu de trois quarts : dessus doré et brillant, flanc feuilleté, bout roulé en spirale avec les deux barres de chocolat
+  A:`<path d="M4 28 V20 Q4 13 11 12 Q20 10.4 28 12 Q32 12.8 32.4 17 L32.4 29 Q32 32 28.5 32 H8 Q4 32 4 28Z" fill="#d98a3a" ${KB}/>
+     <path d="M6.6 17.6 Q7.4 14.4 11.4 14 Q20 12.6 27.6 14 Q30.4 14.6 30.6 17.4 Q19 15.8 6.6 17.6Z" fill="#f2b862"/>
+     <path d="M10 14.6 Q14 13.6 17 13.6" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".85"/>
+     <path d="M5 21.6 Q18 20 31.6 21.6 M5 25.2 Q18 23.6 31.6 25.2 M5 28.8 Q18 27.2 31.6 28.8" stroke="#a65a1e" stroke-width="1.4" fill="none"/>
+     <path d="M5 23.4 Q18 21.8 31.6 23.4 M5 27 Q18 25.4 31.6 27" stroke="#eba85a" stroke-width="1.2" fill="none"/>
+     <ellipse cx="33.2" cy="22" rx="4.6" ry="9.6" fill="#f3cf8e" ${KB}/>
+     <path d="M33.2 13.6 Q36.6 14.4 36.6 22 Q36.6 29 33.4 30 Q30.4 29 30.4 22 Q30.4 17 33.2 16.8 Q35 17.2 35 22 Q35 26.6 33.2 27.2" stroke="#c98a45" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+     <ellipse cx="33.2" cy="19.6" rx="2.2" ry="1.7" fill="#4a2a1c"/><ellipse cx="33.2" cy="24.6" rx="2.2" ry="1.7" fill="#4a2a1c"/>`,
+  // B : le classique des dessins : un coussin doré et feuilleté, le chocolat qui dépasse et coule un peu aux deux bouts
+  B:`<path d="M4.4 18 Q3 18 3 19.6 V22.4 Q3 24 4.4 24 H9 V18Z M35.6 18 Q37 18 37 19.6 V22.4 Q37 24 35.6 24 H31 V18Z" fill="#4a2a1c" ${KB}/>
+     <path d="M36 24 q.6 2.6 -.6 3.6" stroke="#4a2a1c" stroke-width="2" fill="none" stroke-linecap="round"/>
+     <path d="M7 14 Q7 10.6 11 10.6 H29 Q33 10.6 33 14 V28 Q33 31.4 29 31.4 H11 Q7 31.4 7 28Z" fill="#d98a3a" ${KB}/>
+     <path d="M8.6 15.6 Q20 13 31.4 15.6 Q31 12.4 28.6 12.4 H11.4 Q9 12.4 8.6 15.6Z" fill="#f2b862"/>
+     <path d="M11 13.4 H17" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>
+     <path d="M8 19.6 Q20 17.6 32 19.6 M8 24 Q20 22 32 24 M8 28.2 Q20 26.4 32 28.2" stroke="#a65a1e" stroke-width="1.5" fill="none"/>
+     <path d="M8 21.8 Q20 19.8 32 21.8 M8 26.2 Q20 24.2 32 26.2" stroke="#eba85a" stroke-width="1.3" fill="none"/>`,
+  // C : croqué : la pâte feuilletée dorée, et dans la morsure, les deux barres de chocolat fondant
+  C:`<path d="M5 28 V19 Q5 12.6 12 12 H28 Q35 12.6 35 19 V21 Q32.4 20 31.4 22 Q29 21.4 28.6 24 Q30 26 29 28 Q32 28.4 32.8 31.6 Q31.4 32 30 32 H9 Q5 32 5 28Z" fill="#d98a3a" ${KB}/>
+     <path d="M7.6 17.6 Q8.4 14.6 12.4 14.4 H27 Q31 14.6 32 17.6 Q20 16 7.6 17.6Z" fill="#f2b862"/>
+     <path d="M11 15 H17" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>
+     <path d="M6 22.4 Q16 21 26.6 22.4 M6 26.4 Q16 25 26.6 26.4" stroke="#a65a1e" stroke-width="1.4" fill="none"/>
+     <path d="M35 21 Q32.4 20 31.4 22 Q29 21.4 28.6 24 Q30 26 29 28 Q32 28.4 32.8 31.6 L35 28Z" fill="#f6dba6" ${KB}/>
+     <ellipse cx="31.8" cy="23.6" rx="1.8" ry="1.3" fill="#4a2a1c"/><ellipse cx="32.6" cy="27.2" rx="1.8" ry="1.3" fill="#4a2a1c"/>
+     <path d="M29.4 22.6 q1 1.2 2.2 .4 M30 26.4 q1 1.2 2.2 .4" stroke="#c98a45" stroke-width="1" fill="none"/>`
+};
+const NAMES={A:["A · Trois quarts","doré, le bout roulé en spirale avec le chocolat"],B:["B · Le classique","le chocolat dépasse et coule aux deux bouts"],C:["C · Croqué","le chocolat fondant dans la morsure"]};
+const sv=(k,c)=>`<svg class="${c}" viewBox="0 0 40 40"><g filter="url(#wobble)">${V[k]}</g></svg>`;
+document.getElementById("out").innerHTML=Object.keys(V).map(k=>`<div class="c">${sv(k,"big")}<b>${NAMES[k][0]}</b><span>${NAMES[k][1]}</span><div class="sizes">${sv(k,"mid")}${sv(k,"sm")}</div></div>`).join("");
+</script></body></html>
