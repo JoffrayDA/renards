@@ -180,6 +180,38 @@ const MUSIC=(()=>{
         I.bass((b%2?c[2]-12:c[0]-12),t,B*.8,.26);[1,2].forEach(x=>I.accord(c.map(m=>m+12),t+x*B,B*.4,.035));
         I.shaker(t,.03);[1,2].forEach(x=>I.shaker(t+x*B,.018));
         melody((m,tt,d)=>{I.accord([m],tt,d*.92,.05);I.accord([m+12],tt,d*.85,.012)},this.mel,b,t,B)}},
+    // autres propositions pour la carte de Paris (tools/paris-musique.html ; la musette en la mineur « fait Halloween », Joffray), toutes en majeur :
+    // une valse de Montmartre, claire et dansante (fa majeur)…
+    montmartre:{name:"Valse de Montmartre",bpm:176,beats:3,bars:16,
+      ch:[[53,57,60],[53,57,60],[48,52,55,58],[48,52,55,58],[48,52,55,58],[48,52,55,58],[53,57,60],[53,57,60],
+          [58,62,65],[58,62,65],[53,57,60],[50,53,57],[55,58,62],[48,52,55,58],[53,57,60],[53,57,60]],
+      mel:[[[72,1],[77,1],[81,1]],[[81,1.5],[79,.5],[77,1]],[[76,1],[79,1],[84,1]],[[82,2],[79,1]],
+           [[79,1],[81,.5],[79,.5],[76,1]],[[72,1],[76,1],[79,1]],[[77,1],[76,1],[77,1]],[[81,2],[null,1]],
+           [[82,1],[81,1],[82,1]],[[86,1.5],[84,.5],[82,1]],[[81,1],[79,1],[81,1]],[[84,2],[81,1]],
+           [[79,1],[81,.5],[82,.5],[84,1]],[[86,1],[84,1],[79,1]],[[77,1],[81,1],[84,1]],[[89,2],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        I.bass((b%2?c[2]-12:c[0]-12),t,B*.8,.24);[1,2].forEach(x=>I.accord(c.map(m=>m+12),t+x*B,B*.38,.03));
+        [1,2].forEach(x=>I.pluck(c[0]+24,t+x*B,.03,.3,3000));I.shaker(t,.028);
+        melody((m,tt,d)=>{I.accord([m],tt,d*.9,.045);I.box(m+12,tt,.03,.6)},this.mel,b,t,B)}},
+    // … une promenade sur les quais, petit swing de guitare manouche et sifflet (sol majeur)…
+    quais:{name:"Promenade sur les quais",bpm:112,beats:4,bars:8,
+      ch:[[55,59,62,66],[52,55,59,62],[57,60,64,67],[50,54,57,60],[55,59,62,66],[52,55,59,62],[57,60,64,67],[50,54,57,60]],
+      mel:[[[74,1],[79,.5],[78,.5],[79,1],[83,1]],[[81,1.5],[79,.5],[76,2]],[[72,1],[76,.5],[79,.5],[81,1],[79,1]],[[78,3],[null,1]],
+           [[74,1],[79,.5],[81,.5],[83,1],[86,1]],[[84,1],[83,.5],[81,.5],[79,2]],[[76,1],[79,1],[81,1],[78,1]],[[79,3],[null,1]]],
+      bar(b,t,B){const c=this.ch[b],sw=x=>x%1?x+.16:x;
+        [0,1,2,3].forEach(x=>{I.bass(c[x%2?2:0]-12,t+x*B,B*.7,.2);c.forEach((m,i)=>I.pluck(m+12,t+x*B+i*.008,x%2?.04:.03,.18,2400))});
+        for(let i=0;i<8;i++)I.shaker(t+sw(i/2)*B,i%2?.015:.025);
+        melody((m,tt,d)=>I.flute(m,tt,d*.95,.07,.015),this.mel,b,t,B)}},
+    // … et « Bonjour Paris », une chanson qui sautille : piano, accordéon en réponse (ré majeur)
+    bonjour:{name:"Bonjour Paris",bpm:132,beats:4,bars:8,
+      ch:[[50,54,57],[55,59,62],[57,61,64],[50,54,57],[55,59,62],[50,54,57],[52,55,59],[57,61,64,67]],
+      mel:[[[78,1],[81,1],[78,1],[74,1]],[[76,1],[79,1],[83,2]],[[81,1],[79,1],[76,1],[73,1]],[[74,3],[null,1]],
+           [[79,1],[83,1],[86,1],[83,1]],[[81,1],[78,1],[74,2]],[[76,1],[79,1],[78,1],[76,1]],[[73,1],[76,1],[81,2]]],
+      bar(b,t,B){const c=this.ch[b];
+        I.bass(c[0]-12,t,B*.8,.22);I.bass(c[2]-12,t+2*B,B*.8,.18);[1,3].forEach(x=>c.forEach(m=>I.keys(m+12,t+x*B,.05,.5)));
+        [1,3].forEach(x=>I.clap(t+x*B,.03));for(let i=0;i<4;i++)I.shaker(t+i*B,.022);
+        melody((m,tt,d)=>I.keys(m+12,tt,.1,Math.max(.4,d*1.1)),this.mel,b,t,B);
+        if(b%2)I.accord([c[2]+12,c[0]+24],t+3.5*B,B*.45,.03)}},
     // … et un galop endiablé pour le service (fa majeur), au même entrain que la tarentelle
     galop:{name:"Galop du Café Kitsune",bpm:300,beats:4,bars:8,
       ch:[[53,57,60],[48,52,55,58],[53,57,60],[53,57,60],[46,50,53],[53,57,60],[48,52,55,58],[53,57,60]],
