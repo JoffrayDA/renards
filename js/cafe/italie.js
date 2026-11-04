@@ -55,9 +55,9 @@ WORLDS.italie={id:"italie",name:"Petite Italie",cafe:"Caffè Kitsune",short:"Caf
     +`<button class="mnext" style="${pc(200,52)}" data-act="monde1" type="button" aria-label="Retour au premier café"></button>`
     +(typeof paOpen==="function"&&paOpen()?`<button class="mnext" style="${pc(L.cafe.x+128,L.cafe.u+34)}" data-act="paris" type="button" aria-label="Paris"></button>`:""),
   arrive:()=>{if(!S.it.intro)lorenzoIntro();else itStory()},
+  scenes:done=>itScenes(done),
   news:(d,st,prev,news)=>{
-    if(st&&!prev&&IT_PAGES[d])news.push(itRow(pageSVG,"Lorenzo a retrouvé une page du carnet !","Une page du carnet de Nonno t'attend sur la carte du quartier.","background:#fbf3dc"));
-    if(st&&!prev&&d===IT_LAST&&!S.it.nonno)news.push(itRow(foxSVG(FOX.nonno,{sil:1}),"Quelqu'un descend des collines…","Retourne sur la carte du quartier pour l'accueillir.","background:#fbf3dc"))}};
+    if(st&&!prev&&IT_PAGES[d])news.push(itRow(pageSVG,"Une page du carnet de Nonno !","Tu peux la relire dans le carnet : touche Lorenzo sur la carte.","background:#fbf3dc"))}};
 
 /* ---------- la carte du quartier : noms et dessins (mêmes clés, prix et cuissons) ---------- */
 VAR.italie={cafe:["Espresso","espressos"],croissant:["Cornetto","cornetti"],the:["Granita citron","granite citron"],cookie:["Cannoli","cannoli"],
@@ -340,12 +340,14 @@ const itPageLines=d=>IT_PAGES[d].lines.map(l=>l[0]==="page"?["page","",IT_PAGES[
 const itPending=()=>Object.keys(IT_PAGES).map(Number).find(d=>S.it.stars[d]&&!(S.it.read||{})[d]);
 const itNonnoDue=()=>!S.it.nonno&&!!S.it.stars[IT_LAST];
 // en revenant sur la carte : la page retrouvée, puis Nonno au jour 20 ; sinon le bonus du jour
-function itStory(){
+function itScenes(done){
   const d=itPending();
-  if(d){itTalk(itPageLines(d),()=>{S.it.read=S.it.read||{};S.it.read[d]=1;save();renderMapIt();itStory()});return}
-  if(itNonnoDue()){itTalk(IT_NONNO,()=>{S.it.nonno=1;save();renderMapIt();toast("Nonno viendra maintenant au Caffè.")});return}
-  dailyBonus();
+  if(d){itTalk(itPageLines(d),()=>{S.it.read=S.it.read||{};S.it.read[d]=1;save();itScenes(done)});return}
+  if(itNonnoDue()){itTalk(IT_NONNO,()=>{S.it.nonno=1;save();toast("Nonno viendra maintenant au Caffè.");done()});return}
+  done();
 }
+// sur la carte : une scène restée en attente (partie d'avant ce changement), puis le bonus du jour
+function itStory(){itScenes(()=>{renderMapIt();dailyBonus()})}
 function itCarnet(){
   const rd=S.it.read||{},rows=Object.keys(IT_PAGES).map(Number).map(d=>rd[d]
     ?`<div data-itpage="${d}" style="cursor:pointer">${itRow(pageSVG,`Page du jour ${d}`,`<i>« ${IT_PAGES[d].q} »</i>`,"background:#fbf3dc")}</div>`
@@ -399,13 +401,16 @@ function endIt(){
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<N&&d+1<=V.day;
-  openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${Q.name} · jour ${d}</b><br>${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
+  // la scène gagnée se joue tout de suite, avant l'écran de résultats (Joffray, 04/11/2026 : plusieurs journées d'affilée
+  // laissaient une pile de scènes sur la carte, sans qu'on comprenne d'où elles venaient)
+  const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${Q.name} · jour ${d}</b><br>${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div></div>
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
   ${bl?itRow(bellSVG,`+${bl} clochette${bl>1?"s":""}`,"Les clochettes achètent les beaux objets de la boutique du jour, à la Clairière."):""}
   ${news.join("")}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
-  <div class="col">${canNext?`<button class="btn big wide" data-itday="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-itplay="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`,true);
+  <div class="col">${canNext?`<button class="btn big wide" data-itday="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-itplay="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
+  Q.scenes(()=>openSheet(sheet,true));
 }

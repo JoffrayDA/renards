@@ -237,11 +237,13 @@ function anatoleIntro(){
     ["anatole","open","Les jours de défi, Firmin annonce son score. Fais mieux que lui, et il en fera une tête !"]],
     ()=>{if(!S.pa.intro){S.pa.intro=1;save();dailyBonus()}});
 }
-function paStory(){
+// à la fin d'une journée, la scène gagnée se joue tout de suite (avant l'écran de résultats) ; sur la carte, celles restées en attente
+function paScenes(done){
   const d=Object.keys(PA_SCENES).map(Number).find(paSceneDue);
-  if(d){itTalk(PA_SCENES[d],()=>{S.pa.read[d]=1;if(d===20&&!S.pa.peace){S.pa.peace=1;toast("Firmin viendra maintenant au café.")}save();renderMapIt();paStory()});return}
-  dailyBonus();
+  if(d){itTalk(PA_SCENES[d],()=>{S.pa.read[d]=1;if(d===20&&!S.pa.peace){S.pa.peace=1;toast("Firmin viendra maintenant au café.")}save();paScenes(done)});return}
+  done();
 }
+function paStory(){paScenes(()=>{renderMapIt();dailyBonus()})}
 function paCarnet(){
   const rows=Object.keys(PA_SCENES).map(Number).map(d=>S.pa.read[d]
     ?`<div data-pascene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[PA_SCENES[d][0][0]],{pose:"happy"}),PA_DUEL[d]?(d===20?"La finale":`Défi du jour ${d}`):`Jour ${d}`,PA_SCENES[d][0][2],"background:#fbf3dc")}</div>`
@@ -277,11 +279,12 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Kitsune",short:"Café",sv:()=>
     +`<button class="mguest${S.pa.peace?" ok":""}" style="${pc(L.cafe.x+142,L.cafe.u-36)}" data-act="finale" type="button" aria-label="Firmin">${foxSVG(FOX.firmin,{pose:S.pa.peace?"happy":"sit"})}<em>Firmin</em></button>`
     +`<button class="mnext" style="${pc(200,52)}" data-act="italie" type="button" aria-label="Retour en Petite Italie"></button>`,
   arrive:()=>{if(!S.pa.intro)anatoleIntro();else paStory()},
+  scenes:done=>paScenes(done),
   news:(d,st,prev,news,e)=>{
     if(PA_DUEL[d]&&st){const f=duelScore(d);
-      if(e>=f&&!S.pa.duel[d]){S.pa.duel[d]=1;S.coins+=40;news.push(itRow(foxSVG(FOX.firmin,{pose:"sit"}),d===20?"Tu as gagné la finale !":"Tu as battu Firmin !",`${e} pièces contre ${f}. +40 pièces, et une scène t'attend sur la carte du quartier.`,"background:#fde8ec"))}
+      if(e>=f&&!S.pa.duel[d]){S.pa.duel[d]=1;S.coins+=40;news.push(itRow(foxSVG(FOX.firmin,{pose:"sit"}),d===20?"Tu as gagné la finale !":"Tu as battu Firmin !",`${e} pièces contre ${f}. +40 pièces !`,"background:#fde8ec"))}
       else if(!S.pa.duel[d])news.push(itRow(foxSVG(FOX.firmin,{pose:"happy"}),"Firmin a gagné ce défi…",`Il a fait ${f} pièces, toi ${e}. Rejoue cette journée pour le battre.`,"background:#fde8ec"))}
-    else if(st&&!prev&&PA_SCENES[d])news.push(itRow(foxSVG(FOX.anatole,{pose:"happy"}),"Anatole a quelque chose à te raconter","Une scène t'attend sur la carte du quartier.","background:#fbf3dc"))}
+}
 };
 // le monde affiché au chargement (le dernier visité, s'il est ouvert)
 WORLD=WORLDS[S.world]&&WORLDS[S.world].isOpen()?S.world:"";
