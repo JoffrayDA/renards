@@ -7,15 +7,17 @@ const tipMult=()=>1+[0,.25,.4][lv("guirlande")]+(OWN().disque?.1:0)+(OWN().lante
 const batchOf=k=>REC[k].batch*(OWN().four2?2:1);
 let uid=0;
 function newDay(d){
-  // en Petite Italie (italie.js), d est la journée du quartier : rythme d'un jour de référence du premier monde, graine et objectif à elle
-  const it=WORLD==="italie"&&IT_DAYS[d-1];
-  const cfg=it?itCfg(d):cfgOf(d),st={};SEA=it?"italie":chapOf(d).sea;
+  // dans un quartier (italie.js, paris.js), d est la journée du quartier : rythme d'un jour de référence du premier monde, graine et objectif à elle
+  const it=WORLD&&WD().days[d-1];
+  const cfg=it?itCfg(d):cfgOf(d),st={};SEA=it?WORLD:chapOf(d).sea;
   const bo={};for(const id of boostSel)if(S.boost[id]>0){S.boost[id]--;bo[id]=1}boostSel.clear();
   for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d)&&!(it&&k==="smoothie"))st[k]=Array.from({length:k==="cafe"?1+lv("double"):OWN().machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?S.it.stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p])),cone:""};
-  $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?(d%2?"tarantella":"polka"):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
+  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?WD().sv().stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p])),cone:""};
+  // à Paris, les jours de défi : le score de Firmin, à battre (paris.js)
+  if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
+  $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
 function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0))))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
@@ -28,19 +30,19 @@ function genOrder(){
   const n=m===1?1:m===2?(r<.6?1:2):(r<.42?1:r<.78?2:3);
   // une fois sur trois environ, l'article demande une option gagnée (café crème, chantilly)
   return Array.from({length:n},()=>{const r=un[Math.floor(G.rng()*un.length)],op=Object.keys(OPTS).find(o=>OPTS[o].for.includes(r)&&optOn(o)),roll=G.rng();
-    // un gelato de la Petite Italie : les trois parfums dans un ordre tiré au sort
-    const g=r==="smoothie"&&gelOn()?"pfl".split("").map(x=>[G.rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(""):undefined;
+    // un gelato de la Petite Italie (ou une boîte de macarons à Paris) : les trois parfums dans un ordre tiré au sort
+    const g=r==="smoothie"&&gelOn()?Object.keys(gelT()).map(x=>[G.rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(""):undefined;
     return{r,g,o:op&&roll<.35?op:undefined,done:0}});
 }
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
   const here=new Set(G.cust.map(c=>c.fox));
-  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[]),...(S.noelKeep?[FOX.guimauve]:[]),...(S.it&&S.it.guest?[FOX.donnalimone]:[])];
+  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[]),...(S.noelKeep?[FOX.guimauve]:[]),...(S.it&&S.it.guest?[FOX.donnalimone]:[]),...(S.pa&&S.pa.guest?[FOX.celeste]:[])];
   let f,vip=false;
   // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
   if(G.rng()<vipCh){vip=true;const pool=(G.noel?NOELF:HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:[...VIPS,...wildMet()]).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
-  // en Petite Italie, les gens du quartier viennent souvent, mêlés aux habitués du premier café
-  if(!f){vip=false;const pool=(G.it?[...ITF_REG,...ITF_REG,...ITF_REG,...(S.it.nonno?[FOX.nonno]:[]),...REG]:REG.slice(0,Math.min(REG.length,4+2*(G.day-1)))).filter(x=>!here.has(x.id));f=pick(pool)}
+  // dans un quartier, les gens du quartier viennent souvent, mêlés aux habitués du premier café
+  if(!f){vip=false;const pool=(G.it?[...WD().reg(),...REG]:REG.slice(0,Math.min(REG.length,4+2*(G.day-1)))).filter(x=>!here.has(x.id));f=pick(pool)}
   // les VIP paient ×3 mais n'attendent que moitié moins longtemps
   const pat=G.cfg.pat*patMult()*(vip?.5:1)*(G.boost.patience?1.3:1);
   const costume=HW&&!G.noel&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé

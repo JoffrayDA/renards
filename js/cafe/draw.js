@@ -72,9 +72,10 @@ const OPTV={
   chantilly:`<path d="M12 13 Q10 7 15 6.5 Q15 1.5 20 2.5 Q25 1.5 25 6.5 Q30 7 28 13Z" fill="#fffaf2" ${K}/><path d="M15 9 q5 -3 10 0" fill="none" stroke="#e8dcd6" stroke-width="1.6" stroke-linecap="round"/><circle cx="20" cy="1.6" r="2.6" fill="#e2546e" stroke="${INK}" stroke-width="1.6"/>`
 };
 const OPTPOS={gateau:"translate(1 7)",choco:"translate(0 0)",cafe:"translate(0 0)"};
-// un cornet de gelato et ses boules, de bas en haut (g peut être incomplet : le cornet en cours au comptoir à glaces)
-const gelSVG=g=>`<path d="M12.5 26 L20 39.5 L27.5 26Z" fill="#f2c27a" ${K}/><path d="M14.6 30 H25.4 M16.8 34 H23.2" stroke="#c98a45" stroke-width="1.4"/>`+
-  g.split("").map((x,i)=>`<circle cx="20" cy="${[22.5,14.5,7.2][i]}" r="${[8.6,8,7.2][i]}" fill="${GEL[x].c}" ${K}/><circle cx="${[16.5,16.8,17.4][i]}" cy="${[20.2,12.2,5.2][i]}" r="1.4" fill="#fff"/>`).join("");
+// un cornet de gelato et ses boules, de bas en haut (g peut être incomplet : le cornet en cours au comptoir à glaces) ;
+// à Paris, une boîte de macarons, de gauche à droite (WORLDS.paris.gelSVG)
+const gelSVG=g=>WORLD&&WD().gelSVG?WD().gelSVG(g):`<path d="M12.5 26 L20 39.5 L27.5 26Z" fill="#f2c27a" ${K}/><path d="M14.6 30 H25.4 M16.8 34 H23.2" stroke="#c98a45" stroke-width="1.4"/>`+
+  g.split("").map((x,i)=>`<circle cx="20" cy="${[22.5,14.5,7.2][i]}" r="${[8.6,8,7.2][i]}" fill="${gelT()[x].c}" ${K}/><circle cx="${[16.5,16.8,17.4][i]}" cy="${[20.2,12.2,5.2][i]}" r="1.4" fill="#fff"/>`).join("");
 const icon=(k,sea=SEA)=>{if(k.includes("~"))return `<svg viewBox="0 0 40 40" aria-hidden="true">${gelSVG(k.split("~")[1])}</svg>`;const [b,o]=k.split("+");return `<svg viewBox="0 0 40 40" aria-hidden="true">${iconIn(b,sea)}${o?`<g transform="${OPTPOS[b]||""}">${OPTV[o]}</g>`:""}</svg>`};
 const candySVG=`<svg viewBox="0 0 26 26" aria-hidden="true"><path d="M7 13 L1.5 7.5 L2.5 18.5Z M19 13 L24.5 7.5 L23.5 18.5Z" fill="#b48ae0" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="13" cy="13" r="7.2" fill="#f2a35c" stroke="${INK}" stroke-width="1.8"/><path d="M8.6 10.4 q3.4 6.4 8.8 6.2" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".75"/></svg>`;
 const coinSVG=`<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="#f7d77a" stroke="${INK}" stroke-width="1.8"/><circle cx="13" cy="13" r="8.4" fill="none" stroke="#e8b84a" stroke-width="1.3"/><path d="M6.6 9.6 a7.4 7.4 0 0 1 4 -3.6" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".8"/><path d="M13 12.6 c-2.6 0 -4.4 2.2 -4.4 3.9 c0 1.5 1.3 2.1 2.4 1.8 c.8 -.2 1.3 -.5 2 -.5 s1.2 .3 2 .5 c1.1 .3 2.4 -.3 2.4 -1.8 c0 -1.7 -1.8 -3.9 -4.4 -3.9Z" fill="#c98a1e"/><ellipse cx="8.4" cy="11.4" rx="1.5" ry="1.8" fill="#c98a1e" transform="rotate(-20 8.4 11.4)"/><ellipse cx="11.3" cy="8.7" rx="1.5" ry="1.9" fill="#c98a1e" transform="rotate(-6 11.3 8.7)"/><ellipse cx="14.7" cy="8.7" rx="1.5" ry="1.9" fill="#c98a1e" transform="rotate(6 14.7 8.7)"/><ellipse cx="17.6" cy="11.4" rx="1.5" ry="1.8" fill="#c98a1e" transform="rotate(20 17.6 11.4)"/></svg>`;
@@ -103,7 +104,7 @@ const SCAPE={
     fields:["#eef3fa","#dfe8f4","#f6f9fd"],hedge:"#9fb2c8",path:"#c9d6e6",fence:"#fbfdff",fx:"neige",night:1}
 };
 function outsideSVG(sea){
-  if(sea==="italie")return outsideIt(); // la Petite Italie (italie.js)
+  if(WORLDS[sea])return WORLDS[sea].outside(); // un quartier de la Ville (italie.js, paris.js)
   if(HWV())return outsideOld(sea);
   const P=SCAPE[sea],R=rng(11),f=n=>n.toFixed(1),l=(w=2.4)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`,fx=[];
   const g=(id,a,b,x2=0,y2=1)=>`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;

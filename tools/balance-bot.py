@@ -14,6 +14,7 @@ Usage     : python tools/balance-bot.py [jours...]   (par défaut : une sélecti
             python tools/balance-bot.py --nuits          (propose la table NIGHTS des Nuits d'Halloween)
             python tools/balance-bot.py --noel           (propose la table NOEL_NIGHTS des 24 Nuits de Noël)
             python tools/balance-bot.py --italie         (propose la table IT_DAYS des 20 journées de la Petite Italie)
+            python tools/balance-bot.py --paris          (propose la table PA_DAYS des 20 journées de Paris ; --paris --economie aussi)
 
 Une journée tire ses commandes avec une graine propre au jour : le même jour se rejoue à l'identique,
 donc une seule partie par vitesse suffit pour le calibrage.
@@ -29,9 +30,9 @@ RUNS = 4
 # Une journée jouée par le bot : renvoie [recette, objectif, servis, clients, fâchés].
 BOT = """(args) => {
   const [day, own, react, seed, world] = args;
-  WORLD = world || ""; if (WORLD) { S.it.own = own; S.it.stars = {}; } else S.own = own;
+  WORLD = world || ""; if (WORLD) { WORLDS[WORLD].sv().own = own; WORLDS[WORLD].sv().stars = {}; } else S.own = own;
   S.coins = 0; S.guest = {}; S.stars = {}; window.toast = () => {};
-  closeSheet(); newDay(day); if (seed != null) G.rng = rng((WORLD ? IT_DAYS[day - 1].base : day) * 7919 + seed + 1);
+  closeSheet(); newDay(day); if (seed != null) G.rng = rng((WORLD ? WORLDS[WORLD].days[day - 1].base : day) * 7919 + seed + 1);
   const cfg = G.cfg; let t = 0, next = 0, res = null;
   const origEnd = endDay;
   endDay = () => { res = [G.earned, cfg.goal, G.served, cfg.c, G.lost, G.gain]; G = null; };
@@ -103,7 +104,9 @@ CALIB = "--calibrer" in sys.argv
 ECO = "--economie" in sys.argv
 NUITS = "--nuits" in sys.argv
 NOEL = "--noel" in sys.argv
-ITALIE = "--italie" in sys.argv
+PARIS = "--paris" in sys.argv
+ITALIE = "--italie" in sys.argv or PARIS
+WN = "paris" if PARIS else "italie"   # le quartier calibré (--italie ou --paris : même règle, mêmes recettes et même kit)
 PERFECT = 0.25   # réaction du bot « parfait » : ★★★ demande environ 94 % de son score
 STAR3 = 1.8
 GOOD, PASS = 0.8, 1.08   # le bon joueur doit toujours réussir (★), avec un peu de marge
@@ -117,16 +120,16 @@ with sync_playwright() as p:
     page.goto(PAGE)
     page.wait_for_timeout(500)
     KIT = [tuple(x) for x in page.evaluate("() => KIT")]
-    IT_KIT = [tuple(x) for x in page.evaluate("() => IT_KIT")]
+    IT_KIT = [tuple(x) for x in page.evaluate(f"() => WORLDS.{WN}.kit")]
     if ITALIE and ECO:
         # Petite Italie, --italie --economie : comme --economie, sur les 20 journées du quartier, avec l'équipement à racheter
         # (prix ×IT_PRICE arrondis à la dizaine, comme upPrice dans data.js) et le coffre au rythme du jour de référence
         cost = page.evaluate("() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map(l => Math.round(l.c * IT_PRICE / 10) * 10)]))")
-        bases = page.evaluate("() => IT_DAYS.map(x => x.base)")
+        bases = page.evaluate(f"() => WORLDS.{WN}.days.map(x => x.base)")
         coins, low, total = 1500, 1500, 0   # ce qui reste en moyenne du premier café (--economie : environ 1 850 au jour 40)
-        s3 = page.evaluate("() => IT_S3")
+        s3 = page.evaluate(f"() => WORLDS.{WN}.s3")
         for d in range(1, len(bases) + 1):
-            e, g, *_, gain = page.evaluate(BOT, [d, own_it(d), GOOD, None, "italie"])
+            e, g, *_, gain = page.evaluate(BOT, [d, own_it(d), GOOD, None, WN])
             c3 = s3[d - 1]; st = 3 if e >= g * c3 else 2 if e >= g * (1 + (c3 - 1) / 2) else 1 if e >= g else 0
             chest = round(8.5 * st + (15 + 2 * bases[d - 1] if st == 3 else 0))
             buy = [(k, n) for k, n, kd in IT_KIT if kd == d]
@@ -140,21 +143,21 @@ with sync_playwright() as p:
     if ITALIE:
         # Petite Italie : même règle que --calibrer, sur les 20 journées du quartier (rythme d'un jour de référence,
         # recettes et équipement du quartier)
-        bases = page.evaluate("() => IT_DAYS.map(x => x.base)")
+        bases = page.evaluate(f"() => WORLDS.{WN}.days.map(x => x.base)")
         ids = list(range(1, len(bases) + 1))
-        runs = [[(page.evaluate(BOT, [d, own_it(d), PERFECT, k, "italie"])[0], k) for k in range(SEEDS_TRIED)] for d in ids]
+        runs = [[(page.evaluate(BOT, [d, own_it(d), PERFECT, k, WN])[0], k) for k in range(SEEDS_TRIED)] for d in ids]
         med = [sorted(x for x, _ in r)[len(r) // 2] for r in runs]
         smooth = [sum(med[max(0, i - 2):i + 3]) / len(med[max(0, i - 2):i + 3]) for i in range(len(med))]
         for i in range(1, len(smooth)):
             smooth[i] = max(smooth[i], smooth[i - 1])
         out = []
         for d, r, t in zip(ids, runs, smooth):
-            good = {k: page.evaluate(BOT, [d, own_it(d), GOOD, k, "italie"])[0] for _, k in r}
+            good = {k: page.evaluate(BOT, [d, own_it(d), GOOD, k, WN])[0] for _, k in r}
             goal = lambda x: round(min(x[0] / STAR3, good[x[1]] / PASS))
             e, k = min(r, key=lambda x: abs(goal(x) - t / STAR3) + .25 * abs(x[0] - t) / STAR3)
             out.append(f"{{base:{bases[d - 1]},seed:{k},goal:{goal((e, k))}}}")
             print(f"jour {d:>2} (rythme du jour {bases[d - 1]}) : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {good[k]}, objectif {goal((e, k))}", file=sys.stderr, flush=True)
-        print("const IT_DAYS=[" + ",".join(out) + "];")
+        print(f"const {'PA' if PARIS else 'IT'}_DAYS=[" + ",".join(out) + "];")
         browser.close(); sys.exit()
     if CALIB:
         # Pour chaque jour, on joue plusieurs graines en « parfait ». On lisse la médiane des scores en une courbe

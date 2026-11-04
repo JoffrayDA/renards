@@ -31,6 +31,8 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .gbar>i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,var(--gold),#f7a96a);transition:width .25s}
 .tick{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:13px;color:#d9c7b8;line-height:1;text-shadow:0 0 2px #fff}
 .tick.on{color:var(--gold-d)}
+/* Paris, jour de défi : le score de Firmin sur la barre d'objectif (un petit pain au chocolat, grisé tant qu'il n'est pas battu) */
+.tick.duel{width:20px;height:20px;top:-4px;transform:translate(-50%,-50%);background:#fff;border:2px solid #f2b8c4;border-radius:50%;padding:1px;filter:grayscale(.7)}.tick.duel.on{filter:none;border-color:var(--coral)}.tick.duel svg{display:block;width:100%;height:100%}
 .goal b{font-variant-numeric:tabular-nums;font-size:12.5px;white-space:nowrap}
 .scene>.chips{inset:auto;left:8px;bottom:8px;z-index:5;display:flex;gap:6px;pointer-events:none}
 .chips .pill{font-size:12px;padding:1px 10px;box-shadow:0 2px 0 rgba(91,66,80,.15)}

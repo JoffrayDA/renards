@@ -1,7 +1,7 @@
 /* Musique du Kitsune Café, partagée par les trois pages. Tout est synthétisé (Web Audio) : aucun fichier, aucune licence.
    Chaque page dit quel morceau elle veut (MUSIC.want) ; il démarre au premier toucher (règle des navigateurs).
    Un bouton [data-sound] coupe ou remet le son, choix mémorisé dans localStorage « renards-son ».
-   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza et tarantella (Petite Italie), lofi (en réserve). */
+   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza, tarantella et polka (Petite Italie), musette et galop (Paris), lofi (en réserve). */
 const MUSIC=(()=>{
   // Un jeu ouvert dans l'accueil (iframe) n'a pas son propre son : il pilote la musique de l'accueil, qui a déjà eu
   // son toucher de départ et continue de jouer d'une page à l'autre. Le bouton maison referme le jeu.
@@ -168,6 +168,28 @@ const MUSIC=(()=>{
         [1,3].forEach(x=>{I.accord(c.map(m=>m+12),t+x*B,B*.5,.03);I.clap(t+x*B,.04)});for(let i=0;i<4;i++)I.shaker(t+i*B,.03);
         if(b===7)[2,2.5,3,3.5].forEach((x,i)=>I.snare(t+x*B,.05+i*.02));
         melody((m,tt,d)=>{I.mando(m,tt,d*.9,.07);I.box(m+12,tt,.05,.5)},this.mel,b,t,B)}},
+    // Paris (js/cafe/paris.js), mélodies originales : une valse musette à l'accordéon sur la carte (la mineur)…
+    musette:{name:"Valse musette",bpm:168,beats:3,bars:16,
+      ch:[[57,60,64],[57,60,64],[50,53,57],[50,53,57],[52,56,59,62],[52,56,59,62],[57,60,64],[57,61,64,67],
+          [50,53,57],[50,53,57],[57,60,64],[57,60,64],[47,51,54,57],[52,56,59,62],[57,60,64],[57,60,64]],
+      mel:[[[76,1],[75,.5],[76,.5],[81,1]],[[79,1.5],[77,.5],[76,1]],[[77,1],[76,.5],[77,.5],[81,1]],[[74,2],[null,1]],
+           [[71,1],[74,1],[77,1]],[[80,1.5],[79,.5],[77,1]],[[76,1],[72,1],[69,1]],[[76,2],[null,1]],
+           [[77,1],[79,.5],[81,.5],[82,1]],[[81,1.5],[79,.5],[77,1]],[[76,1],[77,.5],[79,.5],[81,1]],[[84,2],[81,1]],
+           [[78,1],[81,1],[83,1]],[[80,1],[83,.5],[81,.5],[80,1]],[[81,1],[76,1],[72,1]],[[69,2],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        I.bass((b%2?c[2]-12:c[0]-12),t,B*.8,.26);[1,2].forEach(x=>I.accord(c.map(m=>m+12),t+x*B,B*.4,.035));
+        I.shaker(t,.03);[1,2].forEach(x=>I.shaker(t+x*B,.018));
+        melody((m,tt,d)=>{I.accord([m],tt,d*.92,.05);I.accord([m+12],tt,d*.85,.012)},this.mel,b,t,B)}},
+    // … et un galop endiablé pour le service (fa majeur), au même entrain que la tarentelle
+    galop:{name:"Galop du Café Kitsune",bpm:300,beats:4,bars:8,
+      ch:[[53,57,60],[48,52,55,58],[53,57,60],[53,57,60],[46,50,53],[53,57,60],[48,52,55,58],[53,57,60]],
+      mel:[[[72,1],[77,1],[81,1],[77,1]],[[79,1],[76,1],[72,2]],[[72,1],[77,1],[81,1],[84,1]],[[86,1],[84,1],[81,2]],
+           [[82,1],[81,1],[79,1],[77,1]],[[81,1],[79,1],[77,1],[76,1]],[[74,1],[76,1],[79,1],[82,1]],[[77,3],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        I.bass(c[0]-12,t,B*.8,.24);I.bass(c[2]-12,t+2*B,B*.8,.2);[0,2].forEach(x=>I.kick(t+x*B,.34));
+        [1,3].forEach(x=>{I.accord(c.map(m=>m+12),t+x*B,B*.45,.03);I.snare(t+x*B,.05)});for(let i=0;i<4;i++)I.hat(t+i*B,.025);
+        if(b===7)[2,2.5,3,3.5].forEach((x,i)=>I.snare(t+x*B,.05+i*.02));
+        melody((m,tt,d)=>{I.accord([m],tt,d*.85,.045);I.box(m+12,tt,.04,.4)},this.mel,b,t,B)}},
     // le service : punchy et funky, pour garder le rythme
     service:{name:"Coup de feu",bpm:132,beats:4,bars:8,
       ch:[[53,57,60],[57,60,64],[58,62,65],[60,64,67],[53,57,60],[57,60,64],[58,62,65],[60,64,67]],

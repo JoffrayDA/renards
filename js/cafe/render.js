@@ -6,7 +6,7 @@ function renderHud(){
   if(HW)$("hwbtn").innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${WORLD?itStarSum():starSum()}</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,cu=G.night||G.noel?[1,1.35,1.7]:cuts(G.day),mx=g*cu[2],e=G.earned;
-  $("hud").innerHTML=`<span class="pill day">${G.noel?`Noël ${G.noel}`:G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${cu.map(m=>`<span class="tick${e>=Math.ceil(g*m)?" on":""}" style="left:${m/cu[2]*100}%">★</span>`).join("")}</div><b>${e}/${g}</b></div>`;
+  $("hud").innerHTML=`<span class="pill day">${G.noel?`Noël ${G.noel}`:G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${cu.map(m=>`<span class="tick${e>=Math.ceil(g*m)?" on":""}" style="left:${m/cu[2]*100}%">★</span>`).join("")}${G.duel?`<span class="tick duel${e>=G.duel?" on":""}" style="left:${Math.min(100,G.duel/mx*100)}%" title="Firmin : ${G.duel}">${icon("croissant","paris")}</span>`:""}</div><b>${e}/${g}</b></div>`;
   $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait"||c.state==="walkin"||c.state==="queue").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW&&!G.noel?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
 }
 function render(){
@@ -32,9 +32,9 @@ function render(){
   }
   [...box.children].forEach(e=>{if(!keep.has(e))e.remove()});
   renderKitchen();renderTray();updateBars();
-  // gelato : on explique le comptoir à glaces aux trois premières commandes (S.it.gtip)
-  if(G.it&&(S.it.gtip||0)<3){const c=G.cust.find(c=>c.state==="wait"&&!c.gt&&c.order.some(o=>o.g));
-    if(c){c.gt=1;S.it.gtip=(S.it.gtip||0)+1;const g=c.order.find(o=>o.g).g;hint(`Gelato : touche les bacs <b>dans l'ordre, de bas en haut</b> (${gelName(g)}). Raté ? Touche le cornet.`)}}
+  // gelato (ou macarons à Paris) : on explique le comptoir aux trois premières commandes (gtip du quartier)
+  if(G.it&&(WD().sv().gtip||0)<3){const c=G.cust.find(c=>c.state==="wait"&&!c.gt&&c.order.some(o=>o.g));
+    if(c){c.gt=1;const V=WD().sv();V.gtip=(V.gtip||0)+1;const g=c.order.find(o=>o.g).g;hint(WD().gelHint(g))}}
 }
 function renderTray(){
   const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;
@@ -64,8 +64,8 @@ function renderKitchen(){
     pa+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span>`,`data-pa="${k}" aria-label="${REC[k].name} : ${n} en vitrine"`,n?"":"empty",
       `<span class="badge${n?"":" zero"}">${n}</span>${on&&n&&o.state==="idle"?`<button class="kbake" data-bake="${k}" type="button" aria-label="En cuire ${batchOf(k)} de plus">${icon("four")}</button>`:""}`);
   }
-  // la Petite Italie : le comptoir à glaces, une rangée à lui (le cornet en cours, puis un bac par parfum)
-  const cn=on?G.cone:"",gr=gel?`<div class="krow gelrow"><button class="gcone${cn?" on":""}" type="button" data-cone aria-label="${cn?"Jeter le cornet":"Cornet vide"}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${gelSVG(cn)}</svg>${cn?`<span class="gx">${icon("bin")}</span>`:""}</button>${Object.keys(GEL).map(x=>`<button class="kb gtub" type="button" data-gel="${x}" aria-label="Une boule ${GEL[x].n}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 20 H33 L30 35 H10Z" fill="#dfeef6" ${K}/><path d="M7 20 Q8 9 20 10 Q32 9 33 20Z" fill="${GEL[x].c}" ${K}/><circle cx="15" cy="15" r="1.6" fill="#fff"/></svg><span class="kn">${GEL[x].n}</span></button>`).join("")}</div>`:"";
+  // un quartier : le comptoir à glaces de la Petite Italie (le cornet en cours, puis un bac par parfum), ou la boîte de macarons de Paris
+  const cn=on?G.cone:"",gr=gel?`<div class="krow gelrow"><button class="gcone${cn?" on":""}" type="button" data-cone aria-label="${cn?`Jeter ${WD().cone||"le cornet"}`:"Vide"}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${gelSVG(cn)}</svg>${cn?`<span class="gx">${icon("bin")}</span>`:""}</button>${Object.keys(gelT()).map(x=>`<button class="kb gtub" type="button" data-gel="${x}" aria-label="${WD().tubLabel||"Une boule"} ${gelT()[x].n}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${WD().tubSVG?WD().tubSVG(x):`<path d="M7 20 H33 L30 35 H10Z" fill="#dfeef6" ${K}/><path d="M7 20 Q8 9 20 10 Q32 9 33 20Z" fill="${gelT()[x].c}" ${K}/><circle cx="15" cy="15" r="1.6" fill="#fff"/>`}</svg><span class="kn">${gelT()[x].n}</span></button>`).join("")}</div>`:"";
   const h=`<div class="krow">${dr}</div>${gr}<div class="krow">${pa}</div>`;
   if($("kitchen")._h!==h){$("kitchen").classList.toggle("gel",!!gel);$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars()}
 }

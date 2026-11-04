@@ -25,7 +25,7 @@ function onTap(el,fn){el.addEventListener("pointerdown",e=>{if(e.button)return;f
 onTap($("custs"),e=>{const b=e.target.closest("[data-cust]");if(!b||!G||!G.run)return;const c=G.cust.find(x=>x.id==b.dataset.cust);if(c)deliver(c,b)});
 onTap($("kitchen"),e=>{const b=e.target.closest("button");if(!b||!G||!G.run)return;
   if(b.dataset.gel){scoop(b.dataset.gel,b);return}
-  if(b.dataset.cone!==undefined){if(G.cone){G.cone="";dirty=true}else hint("Touche les bacs de gelato <b>dans l'ordre de la commande</b>, de bas en haut.");return}
+  if(b.dataset.cone!==undefined){if(G.cone){G.cone="";dirty=true}else hint(WD().coneHint);return}
   if(b.dataset.st)tapStation(b.dataset.st,b);else if(b.dataset.bake)bake(b.dataset.bake);
   else if(b.dataset.oven!==undefined){if(G.oven.state==="ready")unload();else if(G.oven.state==="idle")hint("Touche une <b>pâtisserie</b> pour lancer une fournée.")}
   else if(b.dataset.pa){const k=b.dataset.pa;if(G.vit[k])fromVit(k,b);else if(G.oven.state==="idle")bake(k);else{shake(b);hint(G.oven.state==="ready"?"<b>Touche le four</b> pour sortir la fournée d'abord.":"Le four est occupé : attends la fin de la cuisson.")}}});
@@ -40,7 +40,7 @@ $("open-menu").onclick=openMap;
 function onAct(a){
   if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="noel"){const yr=new Date().getFullYear();if(S.noelIntro!==yr){S.noelIntro=yr;save();noelIntro(noelSheet)}else noelSheet()}else if(a==="noelintro"){closeSheet();noelIntro(noelSheet)}else if(a==="costumes")costumesSheet();else if(a==="hwintro"){closeSheet();hwIntro(hwSheet)}else if(a==="quests")questsSheet();
   else if(a==="map")openMap();
-  else if(a==="italie")goWorld("italie");else if(a==="monde1")goWorld("");else if(a==="lorenzo")itCarnet();else if(a==="lorenzointro")lorenzoIntro();else if(a==="nonno")nonnoSheet();
+  else if(a==="italie")goWorld("italie");else if(a==="paris")goWorld("paris");else if(a==="anatole")paCarnet();else if(a==="anatoleintro")anatoleIntro();else if(a==="finale")paFinaleSheet();else if(a==="monde1")goWorld("");else if(a==="lorenzo")itCarnet();else if(a==="lorenzointro")lorenzoIntro();else if(a==="nonno")nonnoSheet();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
 }

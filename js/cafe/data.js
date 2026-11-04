@@ -1,10 +1,14 @@
 /* Kitsune Café : données du jeu (recettes, saisons, boutique, quêtes, difficulté). */
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
-// Les mondes du Café (03/11/2026) : "" = le premier (4 saisons, 40 journées), "italie" = la Petite Italie (js/cafe/italie.js, 20 journées).
-// Chaque monde a ses journées, ses étoiles et son équipement (S.it pour l'Italie) ; les pièces, les quêtes, les bonus et le style sont communs.
+// Les mondes du Café (03/11/2026) : "" = le premier (4 saisons, 40 journées), puis les quartiers de la Ville, 20 journées chacun :
+// "italie" = la Petite Italie (js/cafe/italie.js, S.it), "paris" = Paris (js/cafe/paris.js, S.pa, 04/11/2026).
+// Chaque quartier a ses journées, ses étoiles et son équipement ; les pièces, les quêtes, les bonus et le style sont communs.
+// WORLDS[id] décrit un quartier (sa sauvegarde sv(), ses journées, ses noms…) : le code commun passe par WD().
 let WORLD="";
-const OWN=()=>WORLD?S.it.own:S.own;
+const WORLDS={};
+const WD=()=>WORLDS[WORLD];
+const OWN=()=>WORLD?WD().sv().own:S.own;
 // journée où une recette ou une option se gagne, dans le monde affiché (0 = dès le départ)
 const IT_DAY={the:2,cookie:4,choco:6,smoothie:9,chantilly:11,gateau:13,lait:0};
 const recDay=k=>WORLD?IT_DAY[k]||0:(REC[k]||OPTS[k]).day||0;
@@ -26,15 +30,18 @@ const OPTS={
   chantilly:{name:"Chantilly",for:["choco","gateau"],price:3,cost:1.8,day:13,desc:"Touche « Chantilly » pour en mettre sur un chocolat chaud ou une part de gâteau du plateau."}
 };
 // en Petite Italie, le lait devient la mousse (cappuccino) et la chantilly la panna
-for(const o in OPTS){const x=OPTS[o];x.nm=x.name;Object.defineProperty(x,"name",{get:()=>WORLD?{lait:"Mousse",chantilly:"Panna"}[o]:x.nm})}
+// à Paris, le lait fait le café crème (« Crème »)
+for(const o in OPTS){const x=OPTS[o];x.nm=x.name;Object.defineProperty(x,"name",{get:()=>WORLD?WD().opt[o]:x.nm})}
 // Petite Italie : le gelato se compose (Joffray, 04/11/2026) : trois boules, une de chaque parfum, dans l'ordre demandé (de bas en haut).
 // Un gelato s'écrit "smoothie~pfl" (p pistacchio, f fragola, l limone) ; pas de station, un comptoir à glaces (renderKitchen, scoop).
+// À Paris, c'est la boîte de trois macarons, de gauche à droite (WORLDS.paris.gel, même article "smoothie~fvc").
 const GEL={p:{n:"Pistacchio",c:"#b6dc8a"},f:{n:"Fragola",c:"#f9b8c6"},l:{n:"Limone",c:"#fde98a"}};
-const gelOn=()=>WORLD==="italie";
+const gelT=()=>WORLD&&WD().gel||GEL;
+const gelOn=()=>!!(WORLD&&WD().gel);
 const itemKey=o=>o.r+(o.g?"~"+o.g:"")+(o.o?"+"+o.o:"");
 const baseOf=k=>k.split("+")[0].split("~")[0];
-const gelName=g=>g.split("").map(x=>GEL[x].n.toLowerCase()).join(" › ");
-const itemName=k=>{if(k.includes("~"))return `${REC.smoothie.name} ${gelName(k.split("~")[1])}`;const [r,o]=k.split("+");if(WORLD&&o)return o==="lait"&&r==="cafe"?"Cappuccino":`${REC[r].name} panna`;return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
+const gelName=g=>g.split("").map(x=>gelT()[x].n.toLowerCase()).join(" › ");
+const itemName=k=>{if(k.includes("~"))return `${REC.smoothie.name} ${gelName(k.split("~")[1])}`;const [r,o]=k.split("+");if(WORLD&&o)return WD().optItem(r,o);return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
 const itemPrice=k=>{const [r0,o]=k.split("+"),r=baseOf(r0);return REC[r].price+(o?OPTS[o].price:0)};
 const itemCost=k=>{const [r0,o]=k.split("+"),r=baseOf(r0);return REC[r].cost+(o?OPTS[o].cost:0)};
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
@@ -48,7 +55,7 @@ const VAR={
   halloween:{cookie:["Cookie fantôme","cookies fantômes"],smoothie:["Potion de sorcière","potions de sorcière"],gateau:["Gâteau citrouille","parts de gâteau citrouille"]}
 };
 // pendant une Nuit de Noël, la carte de Noël passe avant tout (noelnuits.js)
-const vName=(k,sea=SEA)=>(typeof G!=="undefined"&&G&&G.noel&&VAR.noel&&VAR.noel[k])||(HW&&sea!=="italie"&&VAR.halloween[k])||(VAR[sea]||{})[k]||[REC[k].nm,REC[k].npl];
+const vName=(k,sea=SEA)=>(typeof G!=="undefined"&&G&&G.noel&&VAR.noel&&VAR.noel[k])||(HW&&!WORLDS[sea]&&VAR.halloween[k])||(VAR[sea]||{})[k]||[REC[k].nm,REC[k].npl];
 for(const k in REC){const r=REC[k];r.nm=r.name;r.npl=r.pl;Object.defineProperty(r,"name",{get:()=>vName(k)[0]});Object.defineProperty(r,"pl",{get:()=>vName(k)[1]})}
 /* La carte : 4 saisons de 10 journées. Une porte demande un total d'étoiles, et un invité d'honneur rejoint le café quand toute la saison est en ★★★. */
 // 03/11/2026, Joffray : saisons décalées de deux (Noisette en Automne, Zaza au Printemps, Flocon en Hiver, Comète la légendaire au jour 40, on finit par l'Été).
@@ -82,13 +89,13 @@ const UPG={
   ]
 };
 const lv=id=>+OWN()[id]||0;
-// paliers d'étoiles (multiplicateurs de l'objectif) : ★, ★★, ★★★ ; la Petite Italie a son ★★★ à elle par journée (IT_S3, italie.js)
-function cuts(d){const s=WORLD&&typeof IT_S3!=="undefined"&&IT_S3[d-1]||1.7;return[1,1+(s-1)/2,s]}
-// en Petite Italie, l'équipement se rachète (moins cher : 20 journées pour tout racheter), et les achats des dernières saisons arrivent plus tôt
+// paliers d'étoiles (multiplicateurs de l'objectif) : ★, ★★, ★★★ ; chaque quartier a son ★★★ à lui par journée (IT_S3, PA_S3)
+function cuts(d){const s=WORLD&&WD().s3[d-1]||1.7;return[1,1+(s-1)/2,s]}
+// dans un quartier, l'équipement se rachète (moins cher : 20 journées pour tout racheter), et les achats des dernières saisons arrivent plus tôt
 const IT_FROM={21:8,31:12};
 const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ : 10 360 pièces pour le kit, inabordable ; python tools/balance-bot.py --italie --economie)
 const upPrice=nx=>WORLD?Math.round(nx.c*IT_PRICE/10)*10:nx.c;
-const upLocked=nx=>!!nx.from&&(WORLD?S.it.day<IT_FROM[nx.from]:S.day<nx.from);
+const upLocked=nx=>!!nx.from&&(WORLD?WD().sv().day<IT_FROM[nx.from]:S.day<nx.from);
 // Bonus à usage unique (S.boost[id] = nombre en réserve) : on les choisit avant une journée, ils ne servent qu'une fois.
 const BOOSTS=[
   {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",c:90,ic:"the"},
@@ -168,9 +175,9 @@ const KIT=[["plantes",1,4],["comptoir1",1,6],["double",1,6],["guirlande",1,8],["
 const EQUIP=.02;
 // seulement tant que le jour n'est pas réussi : rejouer un jour avec plus d'équipement doit être plus facile, pas plus dur
 // (la copine de Joffray, niveau 19, ne pouvait plus faire ★★★ au jour 1 : il fallait 70 pièces, le bot parfait en fait 71)
-function equipBonus(d,fresh=!(((WORLD?S.it.stars:S.stars)||{})[d]>0)){
+function equipBonus(d,fresh=!(((WORLD?WD().sv().stars:S.stars)||{})[d]>0)){
   if(!fresh)return 0;
-  const kit=WORLD?IT_KIT:KIT;
+  const kit=WORLD?WD().kit:KIT;
   let n=0;for(const u of ALLUP){const k=Math.max(0,...kit.filter(x=>x[0]===u.id&&x[2]<=d).map(x=>x[1]));n+=Math.max(0,lv(u.id)-k)}
   return Math.min(.12,EQUIP*n);
 }

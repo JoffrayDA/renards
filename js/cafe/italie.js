@@ -35,11 +35,29 @@ if(!S.it.px){let back=0;for(const id in S.it.own){const u=ALLUP.find(x=>x.id===i
   S.it.px=1;if(back>0){S.coins+=back;setTimeout(()=>toast(`Petite Italie : l'équipement est moins cher, +${back} pièces remboursées`),1200)}save()}
 if(new URLSearchParams(location.search).get("italie")==="1"){S.itOpen=1;save()} // pour tester sans avoir fini le jour 40
 const itOpen=()=>S.day>LASTDAY||!!S.itOpen;
-const itStarSum=()=>Object.values(S.it.stars).reduce((a,b)=>a+b,0);
-const itCur=()=>Math.min(S.it.day,IT_LAST);
-function itCfg(d){const N=IT_DAYS[d-1];return{...cfgOf(N.base),goal:Math.round(N.goal*(1+equipBonus(d)))}}
-const seaNow=()=>WORLD==="italie"?"italie":chapOf(curDay()).sea;
-WORLD=S.world==="italie"&&itOpen()?"italie":"";
+// fonctions communes à tous les quartiers (Petite Italie, Paris) : elles lisent le quartier affiché, WD()
+const itStarSum=()=>Object.values(WD().sv().stars).reduce((a,b)=>a+b,0);
+const itLast=()=>WD().days.length;
+const itCur=()=>Math.min(WD().sv().day,itLast());
+function itCfg(d){const N=WD().days[d-1];return{...cfgOf(N.base),goal:Math.round(N.goal*(1+equipBonus(d)))}}
+const seaNow=()=>WORLD||chapOf(curDay()).sea;
+
+WORLDS.italie={id:"italie",name:"Petite Italie",cafe:"Caffè Kitsune",short:"Caffè",sv:()=>S.it,days:IT_DAYS,s3:IT_S3,kit:IT_KIT,
+  opt:{lait:"Mousse",chantilly:"Panna"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Cappuccino":`${REC[r].name} panna`,optWord:"la panna",
+  gel:GEL,cone:"le cornet",coneHint:"Touche les bacs de gelato <b>dans l'ordre de la commande</b>, de bas en haut.",gelHint:g=>`Gelato : touche les bacs <b>dans l'ordre, de bas en haut</b> (${gelName(g)}). Raté ? Touche le cornet.`,
+  gelNew:"Dès la prochaine journée, un comptoir à glaces : chaque client veut ses trois parfums dans son ordre à lui. Touche les bacs de bas en haut.",
+  optNew:"Touche « Panna », au bout du plateau, pour en mettre sur une cioccolata ou un tiramisù.",
+  guest:"donnalimone",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",reg:()=>[...ITF_REG,...ITF_REG,...ITF_REG,...(S.it.nonno?[FOX.nonno]:[])],
+  music:d=>d%2?"tarantella":"polka",mapMusic:"piazza",isOpen:()=>itOpen(),lockMsg:"Réussis le jour 40 pour ouvrir la Petite Italie.",
+  layout:()=>itLayout(),mapSVG:L=>itMapSVG(L),outside:()=>outsideIt(),
+  mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.lor.x,L.lor.u)}" data-act="lorenzo" type="button" aria-label="Lorenzo">${foxSVG(FOX.lorenzo,{pose:"happy"})}<em>Lorenzo</em></button>`
+    +(S.it.nonno?`<button class="mguest ok" style="${pc(L.cafe.x>200?L.cafe.x-110:L.cafe.x+110,L.cafe.u-30)}" data-act="nonno" type="button" aria-label="Nonno">${foxSVG(FOX.nonno,{pose:"sit"})}<em>Nonno</em></button>`:"")
+    +`<button class="mnext" style="${pc(200,52)}" data-act="monde1" type="button" aria-label="Retour au premier café"></button>`
+    +(typeof paOpen==="function"&&paOpen()?`<button class="mnext" style="${pc(L.cafe.x+128,L.cafe.u+34)}" data-act="paris" type="button" aria-label="Paris"></button>`:""),
+  arrive:()=>{if(!S.it.intro)lorenzoIntro();else itStory()},
+  news:(d,st,prev,news)=>{
+    if(st&&!prev&&IT_PAGES[d])news.push(itRow(pageSVG,"Lorenzo a retrouvé une page du carnet !","Une page du carnet de Nonno t'attend sur la carte du quartier.","background:#fbf3dc"));
+    if(st&&!prev&&d===IT_LAST&&!S.it.nonno)news.push(itRow(foxSVG(FOX.nonno,{sil:1}),"Quelqu'un descend des collines…","Retourne sur la carte du quartier pour l'accueillir.","background:#fbf3dc"))}};
 
 /* ---------- la carte du quartier : noms et dessins (mêmes clés, prix et cuissons) ---------- */
 VAR.italie={cafe:["Espresso","espressos"],croissant:["Cornetto","cornetti"],the:["Granita citron","granite citron"],cookie:["Cannoli","cannoli"],
@@ -222,38 +240,39 @@ function itMapSVG(L){
   at(52,2170,(x,y)=>itCypress(x,y,.85));at(76,2160,(x,y)=>itCypress(x,y,.75));at(356,2180,(x,y)=>itCypress(x,y,.8));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=itArchSVG(200,Y(60))+itCafeSVG(cafe.x,Y(cafe.u));
+  // le panneau vers Paris, à droite du Caffè, une fois le quartier fini (paris.js)
+  if(typeof paOpen==="function"&&paOpen()){const px=cafe.x+128,py=Y(cafe.u+20);s+=`<rect x="${px-4}" y="${py-6}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${px-44} ${py-30} H${px+34} L${px+46} ${py-18} L${px+34} ${py-6} H${px-44}Z" fill="#fffaf2" ${BO}/><text x="${px}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">Paris</text>`}
   return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
 }
+const WLAY={};
 function renderMapIt(){
-  const L=ITL||(ITL=itLayout()),{P,H}=L,pc=(x,u)=>`left:${x/ITW*100}%;top:${(H-u)/H*100}%`,cur=itCur();
-  let h=itMapSVG(L);
-  for(let d=1;d<=IT_LAST;d++){
-    const p=P[d],st=S.it.stars[d]||0,op=d<=S.it.day,rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d);
+  const Q=WD(),V=Q.sv(),L=WLAY[WORLD]||(WLAY[WORLD]=Q.layout()),{P,H}=L,pc=(x,u)=>`left:${x/ITW*100}%;top:${(H-u)/H*100}%`,cur=itCur(),N=itLast();
+  let h=Q.mapSVG(L);
+  for(let d=1;d<=N;d++){
+    const p=P[d],st=V.stars[d]||0,op=d<=V.day,rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d);
     const cls=!op?"lock":d===cur&&!st?"cur":st===3?"gold":"done";
-    const badge=rk&&!S.it.own[rk]?`<span class="nb">${icon(rk,"italie")}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
+    const badge=rk&&!V.own[rk]?`<span class="nb">${icon(rk,WORLD)}</span>`:Q.duel&&Q.duel[d]&&op&&!(V.duel||{})[d]?`<span class="nb">${icon("croissant",WORLD)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
     h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-itday="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
   }
-  const ok=S.it.guest,dl=FOX.donnalimone;
-  h+=`<button class="mguest${ok?" ok":""}" style="${pc(L.guest.x,L.guest.u)}" data-itguest type="button" aria-label="Invitée d'honneur">${foxSVG(dl,{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?dl.name:`${itStarSum()}/60 ★`}</em></button>`;
-  h+=`<button class="mguest ok" style="${pc(L.lor.x,L.lor.u)}" data-act="lorenzo" type="button" aria-label="Lorenzo">${foxSVG(FOX.lorenzo,{pose:"happy"})}<em>Lorenzo</em></button>`;
-  if(S.it.nonno)h+=`<button class="mguest ok" style="${pc(L.cafe.x>200?L.cafe.x-110:L.cafe.x+110,L.cafe.u-30)}" data-act="nonno" type="button" aria-label="Nonno">${foxSVG(FOX.nonno,{pose:"sit"})}<em>Nonno</em></button>`;
-  h+=`<button class="mnext" style="${pc(200,52)}" data-act="monde1" type="button" aria-label="Retour au premier café"></button>`;
+  const ok=V.guest,dl=FOX[Q.guest];
+  h+=`<button class="mguest${ok?" ok":""}" style="${pc(L.guest.x,L.guest.u)}" data-itguest type="button" aria-label="Invitée d'honneur">${foxSVG(dl,{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?dl.name:`${itStarSum()}/${N*3} ★`}</em></button>`;
+  h+=Q.mapExtra(L,pc);
   h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG({...FOX.roussette,acc:styleOf("acc").id||undefined},{pose:"happy"})}</div>`;
   const w=$("mwrap");w.style.aspectRatio=`${ITW}/${H}`;w.innerHTML=h;
-  $("mchap").textContent=`Petite Italie · ${itStarSum()} / 60 ★`;$("mstars").textContent=`★ ${itStarSum()}`;
+  $("mchap").textContent=`${Q.name} · ${itStarSum()} / ${N*3} ★`;$("mstars").textContent=`★ ${itStarSum()}`;
 }
 function openMapIt(){
-  MUSIC.want("piazza");
-  closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";document.querySelector(".mtt b").textContent="Caffè Kitsune";
-  if(!G||!G.run){if(SEA!=="italie"){SEA="italie";renderDecor();dirty=true}}
+  const Q=WD();MUSIC.want(Q.mapMusic);
+  closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";document.querySelector(".mtt b").textContent=Q.cafe;
+  if(!G||!G.run){if(SEA!==WORLD){SEA=WORLD;renderDecor();dirty=true}}
   renderMapIt();renderHud();
   const n=document.querySelector(".node.cur")||document.querySelector(`.node[data-itday="${itCur()}"]`),sc=$("mscroll");
   sc.scrollTop=n.offsetTop-sc.clientHeight*.55;
-  if(!S.it.intro)lorenzoIntro();else itStory();
+  Q.arrive();
 }
-// changer de monde : depuis le panneau en haut de la carte du premier café, ou l'arche en bas de la Petite Italie
+// changer de monde : depuis le panneau en haut d'une carte, ou l'arche en bas d'un quartier
 function goWorld(w){
-  if(w==="italie"&&!itOpen()){toast("Réussis le jour 40 pour ouvrir la Petite Italie.");return}
+  if(w&&!WORLDS[w].isOpen()){toast(WORLDS[w].lockMsg);return}
   WORLD=w;S.world=w;fillQuests();save();SEA=seaNow();renderDecor();dirty=true;openMap();
 }
 
@@ -340,46 +359,47 @@ function nonnoSheet(){itTalk(IT_NONNO,itCarnet)}
 
 /* ---------- les feuilles ---------- */
 function itDaySheet(d){
-  if(d>S.it.day){toast("Réussis la journée précédente pour ouvrir celle-ci.");return}
-  const c=itCfg(d),g=c.goal,st=S.it.stars[d]||0,rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d&&k!=="lait"),rw=[];
-  if(rk&&!S.it.own[rk])rw.push(itRow(icon(rk,"italie"),`${OPTS[rk]?"Option":"Recette"} à gagner : ${OPTS[rk]?{chantilly:"la panna"}[rk]:VAR.italie[rk][0]}`,"Réussis cette journée pour l'ajouter à la carte du Caffè.","background:#e3f2d6"));
+  const Q=WD(),V=Q.sv(),N=itLast();
+  if(d>V.day){toast("Réussis la journée précédente pour ouvrir celle-ci.");return}
+  const c=itCfg(d),g=c.goal,st=V.stars[d]||0,rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d&&k!=="lait"),rw=[];
+  if(rk&&!V.own[rk])rw.push(itRow(icon(rk,WORLD),`${OPTS[rk]?"Option":"Recette"} à gagner : ${OPTS[rk]?Q.optWord:VAR[WORLD][rk][0]}`,`Réussis cette journée pour l'ajouter à la carte du ${Q.short}.`,"background:#e3f2d6"));
+  if(Q.duel&&Q.duel[d])rw.push(Q.duelRow(d,g));
   if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que la moitié des pièces. Les nouvelles étoiles restent payées par le coffre."));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★","Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
-  if(d===IT_LAST){const f=FOX.donnalimone,ok=S.it.guest;rw.push(itRow(foxSVG(f,{sil:!ok}),ok?`Invitée d'honneur : ${f.name}`:"Invitée d'honneur mystère",ok?"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.":`Obtiens ★★★ sur les 20 journées du quartier pour l'inviter (${itStarSum()} / 60 ★).`,"background:#fbf0cc"))}
-  const menu=Object.keys(REC).filter(k=>onMenu(k,d)).map(k=>VAR.italie[k][0]);
-  openSheet(`<h2>Jour ${d} · Petite Italie</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
-  <p class="sub">${c.c} clients attendus, jusqu'à ${c.max} articles par commande. Patience : ${Math.round(c.pat*patMult())} s.${S.it.best[d]?` Record : <b>${S.it.best[d]} pièces</b>.`:""}</p>
+  if(d===N){const f=FOX[Q.guest],ok=V.guest;rw.push(itRow(foxSVG(f,{sil:!ok}),ok?`Invitée d'honneur : ${f.name}`:"Invitée d'honneur mystère",ok?Q.guestBio:`Obtiens ★★★ sur les ${N} journées du quartier pour l'inviter (${itStarSum()} / ${N*3} ★).`,"background:#fbf0cc"))}
+  const menu=Object.keys(REC).filter(k=>onMenu(k,d)).map(k=>VAR[WORLD][k][0]);
+  openSheet(`<h2>Jour ${d} · ${Q.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
+  <p class="sub">${c.c} clients attendus, jusqu'à ${c.max} articles par commande. Patience : ${Math.round(c.pat*patMult())} s.${V.best[d]?` Record : <b>${V.best[d]} pièces</b>.`:""}</p>
   <p class="sub" style="margin-bottom:6px">À la carte : ${menu.join(", ")}.</p>
   <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*cuts(d)[1])}</span><span><em>★★★</em>${Math.ceil(g*cuts(d)[2])}</span></div>
   ${equipBonus(d)?`<p class="sub" style="margin:6px 0 0;font-size:12.5px">Objectif relevé de <b>${Math.round(equipBonus(d)*100)} %</b> : ton équipement dépasse celui prévu pour ce jour.</p>`:""}
   ${rw.join("")}
   ${boostHTML(()=>itDaySheet(d))}
-  <div class="col" style="margin-top:10px"><button class="btn big wide" data-itplay="${d}" type="button">Ouvrir le Caffè</button></div>`);
+  <div class="col" style="margin-top:10px"><button class="btn big wide" data-itplay="${d}" type="button">Ouvrir le ${Q.short}</button></div>`);
 }
-function itGuestSheet(){const f=FOX.donnalimone,ok=S.it.guest;
-  openSheet(`<h2>${ok?f.name:"Invitée mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invitée d'honneur : elle vient dans tous les cafés, paie le triple, mais elle est pressée.`:`La légende du quartier. Obtiens ★★★ sur les 20 journées de la Petite Italie pour l'inviter. Pour l'instant : <b>${itStarSum()} / 60 ★</b>.`}</p>`)}
+function itGuestSheet(){const Q=WD(),f=FOX[Q.guest],ok=Q.sv().guest,N=itLast();
+  openSheet(`<h2>${ok?f.name:"Invitée mystère"}</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:ok?"happy":"sit",sil:!ok})}</div><p class="sub" style="text-align:center">${ok?`${f.bio} Invitée d'honneur : elle vient dans tous les cafés, paie le triple, mais elle est pressée.`:`La légende du quartier. Obtiens ★★★ sur les ${N} journées du quartier (${Q.name}) pour l'inviter. Pour l'instant : <b>${itStarSum()} / ${N*3} ★</b>.`}</p>`)}
 
 /* ---------- fin d'une journée du quartier ---------- */
 function endIt(){
-  const d=G.day,[,c2,c3]=cuts(d),g=G.cfg.goal,e=G.earned,st=e>=Math.ceil(g*c3)?3:e>=Math.ceil(g*c2)?2:e>=g?1:0,prev=S.it.stars[d]||0,base=IT_DAYS[d-1].base;
+  const Q=WD(),V=Q.sv(),N=itLast(),d=G.day,[,c2,c3]=cuts(d),g=G.cfg.goal,e=G.earned,st=e>=Math.ceil(g*c3)?3:e>=Math.ceil(g*c2)?2:e>=g?1:0,prev=V.stars[d]||0,base=Q.days[d-1].base;
   G.run=0;
   if(!G.lost&&st)qEvent("perfect");if(st===3)qEvent("stars3");
   if(st){const m=noelEvent("star");if(m)setTimeout(()=>toast(m),1200)}
-  S.it.stars[d]=Math.max(prev,st);S.it.best[d]=Math.max(S.it.best[d]||0,e);
+  V.stars[d]=Math.max(prev,st);V.best[d]=Math.max(V.best[d]||0,e);
   const news=[];
   let chest=0;if(st>prev){chest=rnd(5,12)*(st-prev)+(st===3?15+2*base:0);S.coins+=chest}
   const bl=st>prev?st-prev+(st===3?2:0):0;if(bl)addBells(bl);
-  if(st&&d===S.it.day)S.it.day++; // S.it.day passe à 21 quand le quartier est fini (itCur le borne à 20)
+  if(st&&d===V.day)V.day++; // V.day passe à 21 quand le quartier est fini (itCur le borne à 20)
   const rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d&&k!=="lait");
-  if(st&&rk&&!S.it.own[rk]){S.it.own[rk]=1;news.push(itRow(icon(rk,"italie"),`Nouvelle ${OPTS[rk]?"option":"recette"} : ${OPTS[rk]?"la panna":VAR.italie[rk][0]}`,OPTS[rk]?"Touche « Panna », au bout du plateau, pour en mettre sur une cioccolata ou un tiramisù.":rk==="smoothie"?"Dès la prochaine journée, un comptoir à glaces : chaque client veut ses trois parfums dans son ordre à lui. Touche les bacs de bas en haut.":"Elle arrive sur la carte du Caffè dès la prochaine journée.","background:#e3f2d6"))}
-  if(st&&!prev&&IT_PAGES[d])news.push(itRow(pageSVG,"Lorenzo a retrouvé une page du carnet !","Une page du carnet de Nonno t'attend sur la carte du quartier.","background:#fbf3dc"));
-  if(st&&!prev&&d===IT_LAST&&!S.it.nonno)news.push(itRow(foxSVG(FOX.nonno,{sil:1}),"Quelqu'un descend des collines…","Retourne sur la carte du quartier pour l'accueillir.","background:#fbf3dc"));
-  if(itStarSum()>=IT_LAST*3&&!S.it.guest){S.it.guest=1;news.push(itRow(foxSVG(FOX.donnalimone,{pose:"happy"}),"Donna Limone rejoint tes cafés !","Toute la Petite Italie en ★★★ : la légende du quartier vient désormais en invitée d'honneur, dans tous tes cafés.","background:#fbf0cc"))}
+  if(st&&rk&&!V.own[rk]){V.own[rk]=1;news.push(itRow(icon(rk,WORLD),`Nouvelle ${OPTS[rk]?"option":"recette"} : ${OPTS[rk]?Q.optWord:VAR[WORLD][rk][0]}`,OPTS[rk]?Q.optNew:rk==="smoothie"?Q.gelNew:`Elle arrive sur la carte du ${Q.short} dès la prochaine journée.`,"background:#e3f2d6"))}
+  Q.news(d,st,prev,news,e);
+  if(itStarSum()>=N*3&&!V.guest){V.guest=1;const f=FOX[Q.guest];news.push(itRow(foxSVG(f,{pose:"happy"}),`${f.name} rejoint tes cafés !`,`Tout le quartier (${Q.name}) en ★★★ : sa légende vient désormais en invitée d'honneur, dans tous tes cafés.`,"background:#fbf0cc"))}
   const bRow=buddyRow(),qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
-  const canNext=st&&d<IT_LAST&&d+1<=S.it.day;
-  openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>Petite Italie · jour ${d}</b><br>${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
+  const canNext=st&&d<N&&d+1<=V.day;
+  openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${Q.name} · jour ${d}</b><br>${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div></div>
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
   ${bl?itRow(bellSVG,`+${bl} clochette${bl>1?"s":""}`,"Les clochettes achètent les beaux objets de la boutique du jour, à la Clairière."):""}
