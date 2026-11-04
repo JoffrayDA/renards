@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+:root{--ink:#5b4250;--cream:#fffaf5;--line:#ead9cf}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#f6ece4;color:var(--ink);font:500 14px "Zen Maru Gothic",system-ui,sans-serif}
+h1,h2,.ttl{font-family:"Mochiy Pop One",sans-serif;font-weight:400}
+h1{font-size:20px;margin:0 0 4px}
+.intro{margin:0 0 16px;max-width:760px;opacity:.85}
+.wrap{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.col{width:360px;max-width:100%}
+.col>h2{font-size:15px;margin:0 0 8px}
+.phone{background:#fdf6ee;border:3px solid var(--ink);border-radius:26px;overflow:hidden;box-shadow:0 6px 0 #e3cfc2}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--cream);border-bottom:2px solid var(--line)}
+.back{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:900}
+.bar .ttl{font-size:16px;line-height:1.1}
+.bar small{display:block;font-size:11px;opacity:.7;font-family:"Zen Maru Gothic"}
+.pill{margin-left:auto;padding:4px 10px;border-radius:99px;background:#ffe7a8;border:2px solid #f0cf72;font-weight:900;font-size:13px}
+.pill+.pill{margin-left:0;background:#fff;border-color:var(--line)}
+.map svg{display:block;width:100%;height:auto}
+.btns{display:flex;gap:8px;padding:10px;background:var(--cream);border-top:2px solid var(--line)}
+.btns span{flex:1;text-align:center;padding:9px 0;border-radius:99px;border:2px solid var(--line);background:#fff;font-weight:900}
+.room{position:relative;margin:10px;border:3px solid var(--ink);border-radius:18px;overflow:hidden;aspect-ratio:7/5}
+.room>svg{position:absolute;inset:0;width:100%;height:100%}
+.cu{position:absolute;bottom:22%;width:24%;transform:translateX(-50%)}
+.cu svg{display:block;width:100%}
+.bub{position:absolute;left:50%;bottom:86%;transform:translateX(-50%);background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:2px 5px;display:flex;gap:1px}
+.bub svg{width:30px;height:28px}
+.pat{position:absolute;left:18%;right:18%;bottom:-8px;height:6px;border-radius:9px;background:#eee;border:1.5px solid var(--ink);overflow:hidden}
+.pat i{display:block;height:100%;background:#8fd18a}
+.clients{position:absolute;left:8px;bottom:8px;background:#fff;border:2px solid var(--line);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:900}
+.duel{position:absolute;right:8px;top:8px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:2px 8px;font-size:11px;font-weight:900;display:flex;gap:6px;align-items:center}
+.duel em{font-style:normal;color:#c0485a}
+.tray{display:flex;gap:6px;align-items:center;margin:0 10px;padding:8px;background:#fff;border:2px solid var(--line);border-radius:16px}
+.slot{width:46px;height:46px;border-radius:12px;border:2px dashed #e6d3c4;background:#fbf3ea;display:grid;place-items:center}
+.slot.f{border:2px solid var(--ink);background:#fff}
+.slot svg{width:38px}
+.opt{margin-left:auto;display:flex;gap:6px}
+.opt span{width:50px;height:50px;border-radius:50%;background:#e9f3fb;border:2px solid #b9d6ee;display:grid;place-items:center;font-size:10px;font-weight:900;text-align:center;line-height:1}
+.opt svg{width:26px;display:block;margin:0 auto}
+.tiles{display:grid;gap:8px;margin:8px 10px 0}
+.tiles:last-child{margin-bottom:12px}
+.t3{grid-template-columns:1fr 1fr 1fr}.t4{grid-template-columns:repeat(4,1fr)}
+.tile{position:relative;background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px 2px 6px;text-align:center;font-weight:900;font-size:11.5px;box-shadow:0 3px 0 #ecdcd0}
+.tile svg{width:42px;height:38px;display:block;margin:0 auto 2px}
+.tile .bar2{height:6px;margin:4px 12px 0;border-radius:9px;background:#f0e4da;overflow:hidden}
+.tile .bar2 i{display:block;height:100%;background:#f3b06a}
+.tile .n{position:absolute;top:-8px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;display:grid;place-items:center}
+.tile.box{border:2px dashed #e6c3cf;background:#fff6f8}
+.card{background:var(--cream);border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 6px}
+.card p{margin:4px 0}
+.card ul{margin:4px 0;padding-left:18px}
+.rec{display:grid;grid-template-columns:44px 1fr;gap:4px 8px;align-items:center}
+.rec svg{width:42px;height:38px}
+.rec b{display:block}
+.rec span{font-size:12px;opacity:.75}
+.choice{display:flex;gap:10px;margin:6px 0}
+.choice div{flex:1;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px;text-align:center;font-weight:900}
+.choice svg{width:60px;height:56px;display:block;margin:0 auto}
+.foxes{display:flex;flex-wrap:wrap;gap:8px}
+.fx{width:150px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px;text-align:center}
+.fx svg{width:96px;display:block;margin:0 auto}
+.fx b{display:block}.fx span{font-size:11.5px;opacity:.75;display:block}
+.tag{display:inline-block;font-size:10px;font-weight:900;padding:0 6px;border-radius:6px;background:#f3e6dc;margin-bottom:2px}
+.tag.l{background:#ffd36a}.tag.r{background:#f6c3c9}
+@media (max-width:420px){body{padding:10px}.col{width:100%}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+<h1>Monde 2 · Paris (maquette)</h1>
+<p class="intro">Deuxième quartier de la Ville, à comparer avec la Petite Italie. Rien n'est jouable : c'est pour valider la carte, la salle, la carte des recettes et l'histoire (le grand concours du pain au chocolat).</p>
+<div class="wrap">
+  <div class="col"><h2>La carte</h2><div class="phone map" id="map"></div></div>
+  <div class="col"><h2>Une journée (jour 5, un jour de défi)</h2><div class="phone" id="day"></div></div>
+  <div class="col" id="info"></div>
+</div>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const K=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`,K2=`stroke="${INK}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
+/* ---------- les recettes de Paris (mêmes clés que le Café : prix, cuisson et équilibrage identiques) ---------- */
+const MAC={f:["Framboise","#f49ab0"],v:["Violette","#b99ad8"],c:["Caramel","#eab765"]};
+const macaron=(x,y,c,k=1)=>`<ellipse cx="${x}" cy="${y-4*k}" rx="${9*k}" ry="${4.6*k}" fill="${c}" ${K2}/><rect x="${x-8*k}" y="${y-2*k}" width="${16*k}" height="${3.6*k}" rx="${1.6*k}" fill="#fff8ec" ${K2}/><ellipse cx="${x}" cy="${y+4.4*k}" rx="${9*k}" ry="${4.6*k}" fill="${c}" ${K2}/><ellipse cx="${x-3*k}" cy="${y-6*k}" rx="${2.4*k}" ry="${1*k}" fill="#fff" opacity=".7"/>`;
+const glass=(liq,top)=>`<path d="M11 8 H29 L27 35 H13Z" fill="#eef7fb" ${K}/><path d="M12.2 15 H27.8 L26.6 33.5 H13.4Z" fill="${liq}"/>${top||""}<rect x="15" y="17" width="6" height="6" rx="1.5" fill="#fff" opacity=".75" transform="rotate(-12 18 20)"/><rect x="21" y="23" width="5.5" height="5.5" rx="1.5" fill="#fff" opacity=".7" transform="rotate(10 23 25)"/><path d="M11 8 H29 L27 35 H13Z" fill="none" ${K}/>`;
+const IC={
+  petitnoir:`<ellipse cx="20" cy="31" rx="14" ry="3.4" fill="#fff" ${K}/><path d="M29 19 Q35 19 34 23 Q33 27 28 26" fill="none" ${K}/><path d="M10 16 H30 Q30 30 20 30 Q10 30 10 16Z" fill="#fff" ${K}/><ellipse cx="20" cy="16" rx="10" ry="2.6" fill="#4a2a1c" ${K}/><path d="M17 10 q-2 -3 0 -6 M23 10 q-2 -3 0 -6" fill="none" stroke="#c9b3a8" stroke-width="1.8" stroke-linecap="round"/><path d="M33 33 h3" ${K}/><rect x="31" y="27" width="5" height="4" rx="1" fill="#fff" ${K2}/>`,
+  creme:`<ellipse cx="20" cy="32" rx="16" ry="3.6" fill="#fff" ${K}/><path d="M31 17 Q38 17 37 22 Q36 27 30 26" fill="none" ${K}/><path d="M5 14 H32 Q32 31 18.5 31 Q5 31 5 14Z" fill="#fff" ${K}/><path d="M6 20 H31" stroke="#5b8ac0" stroke-width="2.2"/><ellipse cx="18.5" cy="14" rx="13.5" ry="3.2" fill="#e9c9a0" ${K}/><path d="M13 13.6 q5.5 -2.4 11 0" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+  pac:`<rect x="5" y="12" width="30" height="18" rx="6" fill="#eaa85a" ${K}/><path d="M9 14 Q20 10 31 14" fill="none" stroke="#f7cd8a" stroke-width="2.4" stroke-linecap="round"/><path d="M8 20 H32 M8 25 H32" stroke="#c98140" stroke-width="1.6"/><rect x="2.6" y="16.5" width="6" height="4.6" rx="2" fill="#5a3324" ${K2}/><rect x="31.4" y="16.5" width="6" height="4.6" rx="2" fill="#5a3324" ${K2}/><rect x="3" y="22.6" width="5.4" height="4.2" rx="2" fill="#5a3324" ${K2}/><rect x="31.6" y="22.6" width="5.4" height="4.2" rx="2" fill="#5a3324" ${K2}/>`,
+  madeleine:`<path d="M5 25 Q6 9 20 8 Q34 9 35 25 Q31 31 20 31 Q9 31 5 25Z" fill="#f2c27a" ${K}/><path d="M20 30 V11 M13 29 Q12 18 16 11 M27 29 Q28 18 24 11 M8 26 Q8 19 12 14 M32 26 Q32 19 28 14" fill="none" stroke="#d99a4a" stroke-width="1.6" stroke-linecap="round"/><path d="M12 9.5 Q16 8 18 8.4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/>`,
+  eclair:`<rect x="4" y="15" width="32" height="14" rx="7" fill="#eab06e" ${K}/><path d="M6 19 Q6 13 12 13 H28 Q34 13 34 19 Q34 21 32 21 H8 Q6 21 6 19Z" fill="#6b3f2a" ${K}/><path d="M11 15.4 H22" stroke="#a87458" stroke-width="1.8" stroke-linecap="round"/><path d="M8 25 Q20 27 32 25" stroke="#c98a45" stroke-width="1.4" fill="none"/>`,
+  diabolo:glass("#8fd8a0",`<path d="M24 2 L21 26" ${K} stroke="#f47f9a"/><circle cx="28" cy="9" r="4" fill="#bfe6a8" ${K2}/><path d="M28 5.5 V12.5" stroke="#8cc47a" stroke-width="1.1"/>`),
+  grenadine:glass("#f2707e",`<path d="M24 2 L21 26" ${K} stroke="#7fc4e0"/><circle cx="28" cy="9" r="4" fill="#ffe36a" ${K2}/><path d="M28 5.5 V12.5" stroke="#f2c94a" stroke-width="1.1"/>`),
+  liegeois:`<path d="M12 12 H28 L26.5 35 H13.5Z" fill="#eef7fb" ${K}/><path d="M12.6 21 H27.4 L26.5 34 H13.5Z" fill="#8a5a3a"/><path d="M12.8 18 H27.2 L27 21 H13Z" fill="#c99a70"/><path d="M12 12 H28 L26.5 35 H13.5Z" fill="none" ${K}/><path d="M26 14 L31 3" ${K}/><ellipse cx="31.4" cy="2.6" rx="2" ry="1.2" fill="#fff" ${K2}/>`,
+  four:`<rect x="5" y="7" width="30" height="26" rx="6" fill="#9fb9d8" ${K}/><rect x="10" y="13" width="20" height="13" rx="3" fill="#fff3e2" ${K}/><circle cx="16" cy="19" r="1.4" fill="${INK}"/><circle cx="24" cy="19" r="1.4" fill="${INK}"/><path d="M18 22 q2 2 4 0" fill="none" stroke="${INK}" stroke-width="1.4"/><circle cx="12" cy="29.5" r="1.4" fill="${INK}"/><circle cx="28" cy="29.5" r="1.4" fill="${INK}"/>`,
+  lait:`<path d="M12 10 H26 L28 16 V32 Q28 34 26 34 H12 Q10 34 10 32 V16Z" fill="#fff" ${K}/><path d="M12 10 L10 6 H24 L26 10" fill="#fff" ${K}/><path d="M28 18 Q34 18 33 24 Q32 28 28 28" fill="none" ${K}/><path d="M11 22 H27" stroke="#5b8ac0" stroke-width="2"/>`,
+  chantilly:`<path d="M10 30 Q6 24 12 22 Q8 16 15 14 Q14 7 21 7 Q28 7 26 14 Q33 15 29 22 Q35 24 30 30Z" fill="#fffaf0" ${K}/><path d="M15 20 q5 -3 10 0 M14 26 q6 -3 12 0" stroke="#e6d3c4" stroke-width="1.6" fill="none"/>`,
+  boite:`<path d="M3 15 H37 V31 Q37 34 34 34 H6 Q3 34 3 31Z" fill="#fff" ${K}/><path d="M3 15 L7 9 H33 L37 15" fill="#cfe3f1" ${K}/>${macaron(11,24,MAC.f[1],.82)}${macaron(20,24,MAC.v[1],.82)}${macaron(29,24,MAC.c[1],.82)}`,
+};
+IC.liegeois=IC.liegeois.replace(`<path d="M12 12 H28`,`<path d="M11 12 Q12 4 20 5 Q28 4 29 12Z" fill="#fffaf0" ${K}/><path d="M12 12 H28`);
+const box=(o,done=3)=>`<path d="M2 14 H38 V31 Q38 34 35 34 H5 Q2 34 2 31Z" fill="#fff" ${K}/>${o.split("").map((m,i)=>i<done?macaron(10+i*10,24,MAC[m][1],.8):`<circle cx="${10+i*10}" cy="24" r="4.4" fill="none" stroke="#e6c3cf" stroke-width="1.4" stroke-dasharray="2 2"/>`).join("")}`;
+const ic=(k,w=40,h=38)=>`<svg viewBox="0 0 40 38" width="${w}" height="${h}" aria-hidden="true"><g filter="url(#wobble)">${IC[k]||k}</g></svg>`;
+const RECS=[["cafe","petitnoir","Petit noir","Le café serré du comptoir. Avec l'option Lait : un café crème."],["croissant","pac","Pain au chocolat","Le vrai, avec ses deux barres de chocolat. Le croissant reste celui des 40 premiers niveaux."],["the","diabolo","Diabolo","Sirop, limonade et glaçons. Menthe ou grenadine : voir plus bas."],["cookie","madeleine","Madeleine","Petite, dorée, en coquille (fournées de 4)."],["choco","liegeois","Café liégeois","Café glacé dans un grand verre : avec l'option Chantilly, le chapeau de crème. Remplace le chocolat chaud."],["smoothie","boite","Boîte de macarons","La spécialité : trois macarons dans l'ordre du client (comme le gelato)."],["gateau","eclair","Éclair","Le plus cher de la carte, au chocolat. Avec l'option Chantilly : éclair à la chantilly."]];
+
+/* ---------- les renards du quartier (accessoires existants ; on les affinera ensuite) ---------- */
+const LOC=[
+  {id:"pa1",name:"Anatole",rar:"commun",acc:"garconb",scale:.84,c:{b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"},bio:"Le garçon de café. Il t'accueille et t'accompagne tout le long, comme Lorenzo."},
+  {id:"pa2",name:"Margot",rar:"commun",acc:"beret",c:{b:"#d9a0b8",ch:"#fff6fa",e:"#9a6078",s:"#8a5068",t:"#fff6fa"},bio:"Peintre à Montmartre. Elle paie parfois avec un petit croquis."},
+  {id:"pa3",name:"Firmin",rar:"discret",acc:"tablier",c:{b:"#c7a07a",ch:"#fff8ee",e:"#7a5a3c",s:"#6a4c32",t:"#fff8ee"},bio:"Le boulanger d'en face. « Le meilleur pain au chocolat de Paris, c'est le mien. » Le rival."},
+  {id:"pa4",name:"Léon",rar:"discret",acc:"lunettes",c:{b:"#8a8f9e",ch:"#f2f2f6",e:"#5a5e6a",s:"#4c505a",t:"#f2f2f6"},bio:"Bouquiniste sur les quais. Lit en attendant sa commande, et oublie de la boire."},
+  {id:"pa5",name:"Céleste",rar:"legend",acc:"couronneor",c:{b:"#f4ead8",ch:"#ffffff",e:"#c9a86a",s:"#b8965a",t:"#ffffff"},bio:"La Diva de l'Opéra. Jurée de la finale du concours, puis invitée d'honneur."}
+];
+const fx=(f,o)=>foxArt(f,o||{});
+const inner=svg=>svg.replace(/^<svg[^>]*>|<\/svg>$/g,"");
+
+/* ---------- la carte ---------- */
+function mapSVG(){
+  const W=400,H=1240;
+  const P=[[200,1150],[116,1108],[112,1046],[204,1010],[296,972],[300,912],[300,776],[206,744],[116,708],[104,642],[186,606],[262,566],[226,512],[300,476],[306,412],[226,380],[290,330],[214,286],[134,256],[200,214]];
+  let d="",s="";
+  d+=`<pattern id="cob" width="44" height="30" patternUnits="userSpaceOnUse"><rect width="44" height="30" fill="#eee5da"/><g fill="none" stroke="#ddd0c0" stroke-width="2"><rect x="2" y="2" width="18" height="11" rx="5"/><rect x="24" y="2" width="18" height="11" rx="5"/><rect x="-9" y="17" width="18" height="11" rx="5"/><rect x="13" y="17" width="18" height="11" rx="5"/><rect x="35" y="17" width="18" height="11" rx="5"/></g></pattern>`;
+  d+=`<linearGradient id="seine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d6e6"/><stop offset="1" stop-color="#7fb8d2"/></linearGradient>`;
+  s+=`<rect width="${W}" height="${H}" fill="url(#cob)"/>`;
+  // les pelouses : le Champ-de-Mars sous la tour, la butte Montmartre
+  s+=`<path d="M250 760 Q330 742 410 756 V560 Q340 548 268 572Z" fill="#c4e0a4" ${K}/><path d="M-10 486 Q20 330 120 300 Q190 290 222 330 Q252 380 250 470 Q170 500 -10 486Z" fill="#b9d99a" ${K}/>`;
+  // la Seine en travers, ses quais de pierre
+  s+=`<path d="M-10 808 Q100 798 200 806 T410 802 V818 H-10Z" fill="#e3d6c2" ${K}/><path d="M-10 818 Q100 812 200 820 T410 816 V880 Q300 890 200 882 T-10 886Z" fill="url(#seine)" ${K}/><path d="M-10 886 Q100 880 200 884 T410 880 V898 H-10Z" fill="#e3d6c2" ${K}/>`;
+  s+=[[230,834],[360,872],[40,872],[300,846]].map(([x,y])=>`<path d="M${x} ${y} q8 -4 16 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`).join("");
+  // un immeuble haussmannien : pierre crème, toit en zinc avec lucarnes, balcons en fer forgé, boutique en bas
+  const haus=(x,y,w,h,shop="#c0485a")=>{let g=`<path d="M${x-3} ${y} L${x+7} ${y-22} H${x+w-7} L${x+w+3} ${y}Z" fill="#a9b6c6" ${K}/>`;
+    for(let i=0;i<Math.floor((w-10)/22);i++)g+=`<rect x="${x+12+i*22}" y="${y-17}" width="9" height="11" rx="4" fill="#e6eef6" ${K2}/>`;
+    g+=`<rect x="${x+w-18}" y="${y-30}" width="8" height="10" fill="#d98a6a" ${K2}/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f6e8d0" ${K}/>`;
+    for(let i=0;i<Math.floor((w-6)/22);i++){const wx=x+8+i*22;for(let j=0;j<Math.floor((h-26)/26);j++){const wy=y+8+j*26;g+=`<rect x="${wx}" y="${wy}" width="11" height="17" rx="2" fill="#bcd8ea" ${K2}/>`;if(j===0)g+=`<path d="M${wx-2} ${wy+12} H${wx+13} M${wx+1} ${wy+12} V${wy+17} M${wx+5.5} ${wy+12} V${wy+17} M${wx+10} ${wy+12} V${wy+17}" stroke="${INK}" stroke-width="1.3"/>`}}
+    g+=`<path d="M${x} ${y+h-22} H${x+w}" stroke="${INK}" stroke-width="2"/><rect x="${x+4}" y="${y+h-18}" width="${w-8}" height="18" fill="${shop}" opacity=".85" ${K2}/>`;
+    for(let i=0;i<Math.floor((w-8)/10);i++)g+=`<path d="M${x+4+i*10} ${y+h-22} h5 v6 h-5Z" fill="#fff"/>`;return g};
+  const tree=(x,y,k=1)=>`<rect x="${x-3*k}" y="${y-10*k}" width="${6*k}" height="${12*k}" fill="#a8825a" ${K2}/><circle cx="${x}" cy="${y-22*k}" r="${15*k}" fill="#8cc47a" ${K}/><circle cx="${x-6*k}" cy="${y-27*k}" r="${4*k}" fill="#a6d690"/>`;
+  const lamp=(x,y)=>`<path d="M${x} ${y} V${y-36}" stroke="${INK}" stroke-width="3"/><path d="M${x-6} ${y} h12" ${K}/><path d="M${x-6} ${y-36} H${x+6} L${x+4} ${y-48} H${x-4}Z" fill="#ffe9a8" ${K2}/><path d="M${x-3} ${y-48} L${x} ${y-53} L${x+3} ${y-48}" fill="${INK}"/><circle cx="${x}" cy="${y-42}" r="13" fill="#ffe9a8" opacity=".35"/>`;
+  const metro=(x,y)=>`<rect x="${x-18}" y="${y-8}" width="36" height="10" rx="2" fill="#5b4250"/><path d="M${x-15} ${y} V${y-30} Q${x-15} ${y-42} ${x} ${y-44} Q${x+15} ${y-42} ${x+15} ${y-30} V${y}" fill="none" stroke="#3f7a5a" stroke-width="4" stroke-linecap="round"/><ellipse cx="${x-15}" cy="${y-33}" rx="3.4" ry="5" fill="#f2944a" ${K2}/><ellipse cx="${x+15}" cy="${y-33}" rx="3.4" ry="5" fill="#f2944a" ${K2}/><rect x="${x-14}" y="${y-41}" width="28" height="8" rx="2" fill="#f4ecd0" ${K2}/><text x="${x}" y="${y-35}" text-anchor="middle" font-size="5.6" font-weight="900" fill="#3f7a5a">MÉTRO</text>`;
+  const morris=(x,y)=>`<rect x="${x-11}" y="${y-44}" width="22" height="44" fill="#4f8a6a" ${K}/><rect x="${x-8}" y="${y-38}" width="7" height="12" fill="#f49ab0" ${K2}/><rect x="${x+1}" y="${y-36}" width="7" height="10" fill="#ffe08a" ${K2}/><rect x="${x-6}" y="${y-22}" width="12" height="12" fill="#bfe1f0" ${K2}/><path d="M${x-14} ${y-44} H${x+14} Q${x+10} ${y-58} ${x} ${y-60} Q${x-10} ${y-58} ${x-14} ${y-44}Z" fill="#4f8a6a" ${K}/><circle cx="${x}" cy="${y-62}" r="3" fill="#4f8a6a" ${K2}/>`;
+  const table=(x,y)=>`<path d="M${x} ${y} V${y-14}" ${K}/><ellipse cx="${x}" cy="${y-15}" rx="11" ry="3.6" fill="#fff" ${K}/><ellipse cx="${x}" cy="${y}" rx="6" ry="1.8" fill="${INK}"/>`+[-17,17].map(o=>`<path d="M${x+o-6} ${y} V${y-10} M${x+o+6} ${y} V${y-10}" stroke="#b07a46" stroke-width="2.4"/><rect x="${x+o-7}" y="${y-12}" width="14" height="5" rx="2" fill="#d9a46a" ${K2}/><path d="M${x+o+(o<0?-7:7)} ${y-10} V${y-24} Q${x+o} ${y-28} ${x+o-(o<0?-7:7)} ${y-24}" fill="none" stroke="#b07a46" stroke-width="2.6"/>`).join("");
+  const bouq=(x,y)=>`<rect x="${x}" y="${y-12}" width="34" height="12" fill="#3f7a5a" ${K2}/><path d="M${x} ${y-12} L${x+4} ${y-24} H${x+30} L${x+34} ${y-12}" fill="#4f8a6a" ${K2}/>`+[0,1,2,3,4].map(i=>`<rect x="${x+3+i*6}" y="${y-11}" width="5" height="7" fill="${["#f49ab0","#ffe08a","#bfe1f0","#fff","#b99ad8"][i]}" stroke="${INK}" stroke-width="1"/>`).join("");
+  const easel=(x,y,c)=>`<path d="M${x-8} ${y} L${x} ${y-30} L${x+8} ${y} M${x} ${y-30} V${y}" stroke="#a8825a" stroke-width="2.4" stroke-linecap="round"/><rect x="${x-10}" y="${y-30}" width="20" height="16" fill="#fff" ${K2}/><path d="M${x-8} ${y-18} Q${x-2} ${y-26} ${x+2} ${y-22} T${x+8} ${y-20}" stroke="${c}" stroke-width="2.4" fill="none"/><circle cx="${x+4}" cy="${y-26}" r="2.4" fill="#ffd36a"/>`;
+  // Notre-Dame sur son île
+  const notreDame=(x,y)=>`<ellipse cx="${x}" cy="${y+18}" rx="84" ry="18" fill="#e9dcc6" ${K}/>`+tree(x-62,y+20,.55)+tree(x+66,y+20,.55)
+    +`<path d="M${x+40} ${y-30} L${x+44} ${y-74} L${x+48} ${y-30}Z" fill="#a9b6c6" ${K2}/><rect x="${x+18}" y="${y-30}" width="56" height="34" fill="#e8dcc8" ${K}/><path d="M${x+16} ${y-30} L${x+46} ${y-44} L${x+76} ${y-30}Z" fill="#a9b6c6" ${K2}/>`
+    +`<rect x="${x-34}" y="${y-70}" width="22" height="74" fill="#efe4d0" ${K}/><rect x="${x+12}" y="${y-70}" width="22" height="74" fill="#efe4d0" ${K}/><rect x="${x-12}" y="${y-52}" width="24" height="56" fill="#efe4d0" ${K}/>`
+    +`<path d="M${x-36} ${y-70} H${x+36}" stroke="${INK}" stroke-width="2.4"/>`+[[-29,-62],[-19,-62],[17,-62],[27,-62]].map(([a,b])=>`<path d="M${x+a-2} ${y+b+14} V${y+b} Q${x+a} ${y+b-4} ${x+a+2} ${y+b} V${y+b+14}" fill="#8a7a8a" stroke="${INK}" stroke-width="1.2"/>`).join("")
+    +`<circle cx="${x}" cy="${y-36}" r="9" fill="#9fc0e8" ${K2}/>${[0,45,90,135].map(a=>`<path d="M${x} ${y-45} V${y-27}" stroke="#f49ab0" stroke-width="1.6" transform="rotate(${a} ${x} ${y-36})"/>`).join("")}<circle cx="${x}" cy="${y-36}" r="2.6" fill="#ffe08a" stroke="${INK}" stroke-width="1"/>`
+    +[-23,0,23].map(o=>`<path d="M${x+o-6} ${y+4} V${y-8} Q${x+o} ${y-16} ${x+o+6} ${y-8} V${y+4}Z" fill="#a8664a" ${K2}/>`).join("")+`<path d="M${x-34} ${y-22} H${x+34}" stroke="#d8c8b0" stroke-width="2"/>`;
+  // la tour Eiffel sur le Champ-de-Mars
+  const eiffel=(x,y,h)=>{const k=h/220;return `<path d="M${x-42*k} ${y} Q${x-18*k} ${y-70*k} ${x-10*k} ${y-150*k} L${x-4*k} ${y-200*k} L${x} ${y-220*k} L${x+4*k} ${y-200*k} L${x+10*k} ${y-150*k} Q${x+18*k} ${y-70*k} ${x+42*k} ${y} H${x+26*k} Q${x} ${y-56*k} ${x-26*k} ${y}Z" fill="#b48a66" ${K}/>`
+    +`<path d="M${x-30*k} ${y-60*k} L${x+12*k} ${y-130*k} M${x+30*k} ${y-60*k} L${x-12*k} ${y-130*k} M${x-9*k} ${y-150*k} L${x+5*k} ${y-195*k} M${x+9*k} ${y-150*k} L${x-5*k} ${y-195*k}" stroke="#8a6448" stroke-width="1.4"/>`
+    +`<rect x="${x-30*k}" y="${y-66*k}" width="${60*k}" height="${8*k}" rx="2" fill="#c99a76" ${K2}/><rect x="${x-13*k}" y="${y-152*k}" width="${26*k}" height="${7*k}" rx="2" fill="#c99a76" ${K2}/><path d="M${x} ${y-220*k} V${y-232*k}" ${K2}/><path d="M${x} ${y-232*k} l7 3 -7 3Z" fill="#c0485a"/>`};
+  // le Sacré-Cœur en haut de la butte
+  const sacre=(x,y)=>`<rect x="${x-44}" y="${y-28}" width="88" height="28" fill="#fbf7ee" ${K}/>`+[-30,-10,10,30].map(o=>`<path d="M${x+o-5} ${y} V${y-12} Q${x+o} ${y-18} ${x+o+5} ${y-12} V${y}" fill="#d8d0c4" ${K2}/>`).join("")
+    +[-34,34].map(o=>`<rect x="${x+o-7}" y="${y-44}" width="14" height="16" fill="#fbf7ee" ${K2}/><path d="M${x+o-8} ${y-44} Q${x+o} ${y-60} ${x+o+8} ${y-44}Z" fill="#fbf7ee" ${K2}/>`).join("")
+    +`<rect x="${x-16}" y="${y-58}" width="32" height="30" fill="#fbf7ee" ${K}/><path d="M${x-18} ${y-58} Q${x-18} ${y-92} ${x} ${y-96} Q${x+18} ${y-92} ${x+18} ${y-58}Z" fill="#fbf7ee" ${K}/><rect x="${x-3}" y="${y-106}" width="6" height="10" fill="#fbf7ee" ${K2}/><path d="M${x} ${y-106} V${y-114} M${x-3} ${y-111} H${x+3}" stroke="${INK}" stroke-width="1.8"/>`+[-10,0,10].map(o=>`<rect x="${x+o-2}" y="${y-52}" width="4" height="12" rx="2" fill="#bcd8ea" stroke="${INK}" stroke-width="1"/>`).join("");
+  const stairs=(x,y)=>Array.from({length:7},(_,i)=>`<rect x="${x+i*4}" y="${y-i*12}" width="26" height="12" fill="#e9dfd2" ${K2}/>`).join("")+`<path d="M${x-4} ${y+6} L${x+24} ${y-80}" stroke="${INK}" stroke-width="2"/>`;
+  const peniche=(x,y)=>`<path d="M${x-36} ${y} H${x+40} L${x+32} ${y+12} H${x-30}Z" fill="#c0485a" ${K}/><rect x="${x-24}" y="${y-12}" width="40" height="12" rx="3" fill="#fff4dc" ${K}/><rect x="${x-18}" y="${y-9}" width="7" height="6" rx="1.5" fill="#bcd8ea" stroke="${INK}" stroke-width="1"/><rect x="${x-6}" y="${y-9}" width="7" height="6" rx="1.5" fill="#bcd8ea" stroke="${INK}" stroke-width="1"/><circle cx="${x+24}" cy="${y-4}" r="3.2" fill="#f47f9a" ${K2}/><circle cx="${x+30}" cy="${y-5}" r="3" fill="#ffd36a" ${K2}/>`;
+  let deco="";
+  // la rue du bas : immeubles, métro, colonne Morris, terrasse, platanes
+  deco+=haus(0,1076,62,104,"#c0485a")+haus(330,1100,74,96,"#5f7fb0")+haus(320,960,84,84,"#3f7a5a")+haus(0,930,58,70,"#d98a6a");
+  deco+=metro(150,1206)+morris(46,1060)+table(256,1110)+table(248,1062)+tree(380,1240,.9)+tree(22,1224,.8)+lamp(64,1200)+lamp(222,946);
+  // les quais : bouquinistes et platanes, la péniche, Notre-Dame sur l'île, le pont
+  deco+=bouq(20,928)+bouq(64,928)+bouq(160,800)+tree(118,936,.7)+tree(370,800,.7);
+  deco+=peniche(214,866)+notreDame(110,846);
+  // le Champ-de-Mars
+  deco+=eiffel(334,746,190)+tree(380,770,.6)+tree(22,712,.7)+tree(40,620,.6)+table(200,680)+lamp(70,760);
+  // Montmartre
+  deco+=sacre(110,368)+stairs(150,476)+easel(56,452,"#8fbf5a")+easel(196,446,"#9fc0e8")+easel(88,496,"#f49ab0")+tree(24,400,.6)+tree(222,350,.55);
+  // à droite de la butte : un bout de rue en pente
+  deco+=haus(340,500,64,74,"#d98a6a")+haus(352,330,52,70,"#c0485a");
+  s+=deco;
+  // le chemin des journées
+  let path=`M200 1240 L${P[0][0]} ${P[0][1]}`;for(let i=1;i<P.length;i++){const [a,b]=P[i-1],[c,e]=P[i];path+=` Q${a} ${(b+e)/2} ${(a+c)/2} ${(b+e)/2} T${c} ${e}`}path+=` L200 176`;
+  s+=`<path d="${path}" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><path d="${path}" fill="none" stroke="#fdf1df" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/><path d="${path}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
+  // le pont sur la Seine, là où passe le chemin
+  s+=`<path d="M262 800 H338 V888 H262Z" fill="#efe4d0" ${K}/>`+[818,850].map(y=>`<path d="M266 ${y+30} Q300 ${y} 334 ${y+30}" fill="#a9d6e6" ${K2}/>`).join("")+`<path d="M262 800 V888 M338 800 V888" stroke="${INK}" stroke-width="3"/>`+[808,828,848,868].map(y=>`<circle cx="262" cy="${y}" r="3" fill="#f6e8d0" ${K2}/><circle cx="338" cy="${y}" r="3" fill="#f6e8d0" ${K2}/>`).join("")+`<path d="M276 800 V888" stroke="#fdf1df" stroke-width="0"/>`;
+  s+=`<path d="M276 802 V886 M324 802 V886" stroke="#ead2bb" stroke-width="2" stroke-dasharray="3 6"/>`;
+  // l'entrée (depuis le premier café) en bas
+  s+=`<path d="M140 1244 V1224 Q200 1188 260 1224 V1244" fill="none" stroke="${INK}" stroke-width="16" stroke-linecap="round"/><path d="M140 1244 V1224 Q200 1188 260 1224 V1244" fill="none" stroke="#a9b6c6" stroke-width="10" stroke-linecap="round"/><rect x="156" y="1206" width="88" height="22" rx="8" fill="#fff" ${K}/><text x="200" y="1222" text-anchor="middle" font-family="Mochiy Pop One" font-size="12" fill="${INK}">Paris</text>`;
+  // en haut : le Café Kitsune au coin de la rue, et la boulangerie de Firmin en face
+  s+=`<path d="M86 54 L98 30 H302 L314 54Z" fill="#a9b6c6" ${K}/>`+[0,1,2,3,4,5,6].map(i=>`<rect x="${114+i*26}" y="35" width="10" height="13" rx="4" fill="#e6eef6" ${K2}/>`).join("");
+  s+=`<rect x="90" y="54" width="220" height="110" fill="#f6e8d0" ${K}/>`+[0,1,2,3,4,5,6,7].map(i=>`<rect x="${102+i*26}" y="62" width="12" height="20" rx="2" fill="#bcd8ea" ${K2}/><path d="M${100+i*26} ${76} H${116+i*26}" stroke="${INK}" stroke-width="1.3"/>`).join("");
+  s+=`<rect x="90" y="96" width="220" height="68" fill="#2f5a48" ${K}/><rect x="106" y="112" width="70" height="48" rx="4" fill="#bcd8ea" ${K2}/><rect x="224" y="112" width="70" height="48" rx="4" fill="#bcd8ea" ${K2}/><rect x="184" y="112" width="32" height="52" rx="4" fill="#a8664a" ${K}/><circle cx="210" cy="140" r="2" fill="#ffd36a"/>`;
+  s+=`<rect x="120" y="86" width="160" height="20" rx="4" fill="#2f5a48" ${K}/><text x="200" y="101" text-anchor="middle" font-family="Mochiy Pop One" font-size="12" fill="#f2cf6a">Café Kitsune</text>`;
+  let aw=`<path d="M98 110 H302 L310 128 H90Z" fill="#fff" ${K}/>`;for(let i=0;i<10;i++)aw+=`<path d="M${99+i*20.6} 110 h10 l2 18 h-10Z" fill="#c0485a"/>`;aw+=`<path d="M90 128 ${Array.from({length:10},()=>"q11 8 22 0").join(" ")}" fill="#c0485a" ${K}/><path d="M98 110 H302 L310 128 H90Z" fill="none" ${K}/>`;s+=aw;
+  s+=table(120,196)+table(280,196);
+  s+=`<rect x="326" y="96" width="78" height="80" fill="#5f7fb0" ${K}/><path d="M322 96 H408" stroke="${INK}" stroke-width="3"/><rect x="332" y="104" width="66" height="14" rx="3" fill="#fff4dc" ${K2}/><text x="365" y="114.5" text-anchor="middle" font-size="8.4" font-weight="900" fill="#5f7fb0">BOULANGERIE</text><rect x="334" y="126" width="40" height="34" rx="3" fill="#fff4dc" ${K2}/>${[[344,148],[358,150],[350,138]].map(([a,b])=>`<g transform="translate(${a-10} ${b-8}) scale(.5)">${IC.pac}</g>`).join("")}<rect x="380" y="126" width="18" height="50" rx="3" fill="#a8664a" ${K2}/>`;
+  s+=`<rect x="0" y="80" width="76" height="96" fill="#f6e8d0" ${K}/><path d="M-3 80 L6 60 H70 L79 80Z" fill="#a9b6c6" ${K}/>`+[0,1,2].map(i=>`<rect x="${10+i*22}" y="92" width="11" height="17" rx="2" fill="#bcd8ea" ${K2}/><rect x="${8+i*22}" y="109" width="15" height="5" rx="2" fill="#c98a5a" ${K2}/><circle cx="${12+i*22}" cy="108" r="2.4" fill="#f47f9a"/><circle cx="${18+i*22}" cy="107" r="2.4" fill="#ffd36a"/>`).join("")+`<rect x="4" y="150" width="68" height="26" fill="#d98a6a" opacity=".85" ${K2}/>`;
+  // les journées : 1-5 dans la rue, 6 sur le quai, 7-12 au Champ-de-Mars, 13-18 à Montmartre, 19-20 devant le café ; un défi de Firmin aux jours 5, 10, 15, la finale au 20
+  const st=[3,3,2,3,0],cur=5,DUEL=[5,10,15,20];
+  P.forEach(([x,y],i)=>{const n=i+1,op=n<=cur,du=DUEL.includes(n);
+    s+=`<circle cx="${x}" cy="${y}" r="23" fill="${op?(du?"#f6c3c9":"#ffd86a"):"#efe3d6"}" ${K} stroke-width="3"/><text x="${x}" y="${y+7}" text-anchor="middle" font-family="Mochiy Pop One" font-size="18" fill="${op?INK:"#b8a69a"}">${n}</text>`;
+    if(du)s+=`<g transform="translate(${x+14} ${y-30})"><circle r="9" fill="#fff" ${K2}/><g transform="translate(-7 -6.6) scale(.36)">${IC.pac}</g></g>`;
+    if(st[i])s+=[-14,0,14].map((o,j)=>`<path d="M${x+o} ${y+21} l2.4 5 5.4 .8 -3.9 3.7 .9 5.4 -4.8 -2.6 -4.8 2.6 .9 -5.4 -3.9 -3.7 5.4 -.8Z" fill="${j<st[i]?"#ffd36a":"#efe3d6"}" stroke="${INK}" stroke-width="1.3"/>`).join("");
+    if(n===cur)s+=`<g transform="translate(${x-96} ${y-50}) scale(.36)">${inner(fx(FOX.roussette))}</g><g transform="translate(${x-62} ${y-52}) scale(.36)">${inner(fx(LOC[0]))}</g>`});
+  // la Diva, silhouette, près de la finale ; Firmin devant sa boulangerie
+  s+=`<g transform="translate(26 196) scale(.48)">${inner(fx(LOC[4],{sil:1}))}</g><rect x="30" y="250" width="56" height="16" rx="6" fill="#fff" ${K} stroke-width="1.6"/><text x="58" y="262" text-anchor="middle" font-size="10" font-weight="900" fill="${INK}">???</text>`;
+  s+=`<g transform="translate(330 168) scale(.42)">${inner(fx(LOC[2],{pose:"sit"}))}</g>`;
+  return `<svg viewBox="0 0 ${W} ${H}" aria-label="Carte de Paris"><defs>${d}</defs><g filter="url(#wobble)">${s}</g></svg>`;
+}
+document.getElementById("map").innerHTML=`<div class="bar"><span class="back">‹</span><div class="ttl">Paris<small>La Ville · ★ 11 / 60</small></div><span class="pill">★ 186</span><span class="pill">2 140</span></div>${mapSVG()}<div class="btns"><span>Boutique</span><span>Quêtes</span><span>Carnet</span></div>`;
+
+/* ---------- la journée ---------- */
+function roomSVG(){
+  let s="";
+  s+=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8d4f0"/><stop offset="1" stop-color="#f3e6f0"/></linearGradient></defs>`;
+  s+=`<rect x="0" y="0" width="420" height="200" fill="url(#sky)"/><circle cx="90" cy="40" r="14" fill="#fff4c4"/>`;
+  // la tour Eiffel au loin, entre les toits
+  s+=`<path d="M300 140 Q310 110 313 70 L316 40 L318 30 L320 40 L323 70 Q326 110 336 140Z" fill="#c9a888" stroke="${INK}" stroke-width="1.6"/><path d="M306 116 H330 M312 76 H324" stroke="${INK}" stroke-width="1.6"/>`;
+  // les immeubles d'en face : pierre crème, toits de zinc, balcons
+  const fac=(x,w,top)=>{let g=`<path d="M${x-2} ${top} L${x+6} ${top-16} H${x+w-6} L${x+w+2} ${top}Z" fill="#a9b6c6" stroke="${INK}" stroke-width="2"/>`;for(let i=0;i<Math.floor(w/28);i++)g+=`<rect x="${x+10+i*28}" y="${top-12}" width="8" height="9" rx="3" fill="#e6eef6" stroke="${INK}" stroke-width="1.4"/>`;
+    g+=`<rect x="${x}" y="${top}" width="${w}" height="${200-top}" fill="#f6e8d0" stroke="${INK}" stroke-width="2"/>`;
+    for(let i=0;i<Math.floor(w/28);i++)for(let j=0;j<2;j++){const wx=x+9+i*28,wy=top+10+j*34;g+=`<rect x="${wx}" y="${wy}" width="12" height="20" rx="2" fill="#9fc0d8" stroke="${INK}" stroke-width="1.6"/><path d="M${wx-3} ${wy+14} H${wx+15} M${wx} ${wy+14} V${wy+20} M${wx+6} ${wy+14} V${wy+20} M${wx+12} ${wy+14} V${wy+20}" stroke="${INK}" stroke-width="1.3"/>`}return g};
+  s+=fac(-10,130,104)+fac(120,110,118)+fac(340,90,110);
+  s+=[[262,150],[284,154]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="16" fill="#8cc47a" stroke="${INK}" stroke-width="1.8"/>`).join("");
+  // le store rouge et blanc, et la guirlande
+  s+=`<rect x="0" y="0" width="420" height="16" fill="#fff"/>`;for(let i=0;i<14;i++)s+=`<path d="M${i*30} 0 h15 v16 h-15Z" fill="#c0485a"/>`;s+=`<path d="M0 16 ${Array.from({length:14},()=>"q7.5 9 15 0 q7.5 9 15 0").join(" ")}" fill="#c0485a" stroke="${INK}" stroke-width="2.2"/>`;
+  s+=`<path d="M0 34 Q105 52 210 34 T420 34" fill="none" stroke="${INK}" stroke-width="1.4"/>`+Array.from({length:13},(_,i)=>{const x=16+i*32,y=34+Math.abs(Math.sin(x/420*2*Math.PI))*12+4;return `<circle cx="${x}" cy="${y}" r="4" fill="${["#ffe9a8","#f6c3c9","#bfe1f0"][i%3]}" stroke="${INK}" stroke-width="1.4"/>`}).join("");
+  s+=[0,140,280,412].map(x=>`<rect x="${x-6}" y="16" width="14" height="190" fill="#2f5a48" stroke="${INK}" stroke-width="2.4"/>`).join("");
+  // le mur à miroir, le comptoir en zinc
+  s+=`<rect x="0" y="198" width="420" height="102" fill="#f2e2cc"/><path d="M0 198 H420" stroke="${INK}" stroke-width="2.4"/>`;
+  s+=[[18,214],[350,214]].map(([x,y])=>`<rect x="${x}" y="${y+22}" width="52" height="5" rx="2" fill="#a8664a" stroke="${INK}" stroke-width="1.8"/><path d="M${x+6} ${y+22} V${y+6} Q${x+10} ${y} ${x+14} ${y+6} V${y+22}Z" fill="#8fd8a0" stroke="${INK}" stroke-width="1.8"/><path d="M${x+20} ${y+22} V${y+6} Q${x+24} ${y} ${x+28} ${y+6} V${y+22}Z" fill="#f2707e" stroke="${INK}" stroke-width="1.8"/><rect x="${x+33}" y="${y+8}" width="14" height="14" rx="3" fill="#fff" stroke="${INK}" stroke-width="1.8"/>${macaron(x+40,y+15,"#b99ad8",.55)}`).join("");
+  s+=`<rect x="-4" y="226" width="428" height="14" rx="4" fill="#cfd6de" stroke="${INK}" stroke-width="2.6"/><path d="M30 231 H120 M220 233 H300" stroke="#eef2f6" stroke-width="2" stroke-linecap="round"/><rect x="0" y="240" width="420" height="62" fill="#8a5a44" stroke="${INK}" stroke-width="2.4"/>`+[0,1,2,3,4,5].map(i=>`<rect x="${10+i*70}" y="250" width="56" height="42" rx="6" fill="#9c6a52" stroke="${INK}" stroke-width="2"/>`).join("");
+  return `<svg viewBox="0 0 420 300" preserveAspectRatio="xMidYMid slice"><g filter="url(#wobble)">${s}</g></svg>`;
+}
+const cu=(f,left,items,p)=>`<div class="cu" style="left:${left}%"><span class="bub">${items.map(k=>ic(k,30,28)).join("")}</span>${fx(f)}<span class="pat"><i style="width:${p}%"></i></span></div>`;
+document.getElementById("day").innerHTML=`<div class="bar"><span class="back">‹</span><div class="ttl">Jour 5 · défi<small>Objectif 209 · Firmin a fait 300</small></div><span class="pill">★ 0</span><span class="pill">96</span></div>
+<div class="room">${roomSVG()}
+  ${cu(LOC[1],20,["pac","creme"],82)}${cu(LOC[3],50,[box("fvc")],60)}${cu(FOX.petitpois,80,["diabolo","eclair"],34)}
+  <span class="clients">Clients 9</span><span class="duel">Toi 142 <em>Firmin 300</em></span></div>
+<div class="tray"><span class="slot f">${ic("pac",38,36)}</span><span class="slot f">${ic("petitnoir",38,36)}</span><span class="slot"></span>
+  <div class="opt"><span>${ic("lait",26,24)}Crème</span><span>${ic("chantilly",26,24)}Chantilly</span></div></div>
+<div class="tiles t3"><div class="tile">${ic("petitnoir")}Petit noir<div class="bar2"><i style="width:60%"></i></div></div><div class="tile">${ic("diabolo")}Diabolo<div class="bar2"><i style="width:100%;background:#8fd18a"></i></div></div><div class="tile">${ic("liegeois")}Café liégeois<div class="bar2"><i style="width:25%"></i></div></div></div>
+<div class="tiles t4"><div class="tile box">${ic(box("fv",1))}La boîte</div>${Object.keys(MAC).map(m=>`<div class="tile">${ic(macaron(20,20,MAC[m][1],1.5))}${MAC[m][0]}</div>`).join("")}</div>
+<div class="tiles t4"><div class="tile">${ic("four")}Four<div class="bar2"><i style="width:35%"></i></div></div><div class="tile"><span class="n">2</span>${ic("pac")}Pain au choc.</div><div class="tile"><span class="n">4</span>${ic("madeleine")}Madeleine</div><div class="tile"><span class="n">0</span>${ic("eclair")}Éclair</div></div>`;
+
+/* ---------- les fiches ---------- */
+document.getElementById("info").innerHTML=`
+<div class="card"><h2>La carte de Paris</h2><p>Mêmes prix et mêmes cuissons que le Café : seuls le nom et le dessin changent.</p>
+<div class="rec">${RECS.map(([k,i,n,d])=>`${ic(i,42,38)}<div><b>${n}</b><span>${d}</span></div>`).join("")}${ic("creme",42,38)}<div><b>Café crème</b><span>Petit noir + Lait.</span></div></div></div>
+<div class="card"><h2>Diabolo : menthe ou grenadine ?</h2><p>Le diabolo est servi d'une seule couleur toute la journée. Lequel ?</p>
+<div class="choice"><div>${ic("diabolo",60,56)}Menthe<br><span style="font-weight:500;font-size:12px;opacity:.75">Vert : ne ressemble à rien d'autre à la carte.</span></div><div>${ic("grenadine",60,56)}Grenadine<br><span style="font-weight:500;font-size:12px;opacity:.75">Rouge : plus proche de la framboise des macarons.</span></div></div></div>
+<div class="card"><h2>La boîte de macarons</h2><p>Le client veut trois macarons dans son ordre, de gauche à droite : framboise, violette, caramel. On touche les tuiles dans l'ordre, la boîte se remplit ; toucher la boîte la vide. Comme le gelato, mais à plat, avec d'autres couleurs.</p><div style="display:flex;gap:8px;justify-content:center">${["fvc","cfv","vcf"].map(o=>ic(box(o),60,56)).join("")}</div></div>
+<div class="card"><h2>Les renards du quartier</h2>
+<div class="foxes">${LOC.map(f=>`<div class="fx">${fx(f)}<span class="tag${f.rar==="legend"?" l":f.id==="pa3"?" r":""}">${f.id==="pa3"?"le rival":{commun:"commun",discret:"discret",legend:"légendaire"}[f.rar]}</span><b>${f.name}</b><span>${f.bio}</span></div>`).join("")}</div></div>
+<div class="card"><h2>L'histoire : le grand concours</h2><ul>
+<li><b>À l'arrivée</b>, Anatole t'accueille : le Café Kitsune vient d'ouvrir juste en face de la boulangerie de Firmin, qui jure faire le meilleur pain au chocolat de Paris.</li>
+<li><b>Les jours de défi</b> (5, 10, 15, en rose sur la carte) : Firmin annonce son score, affiché en haut pendant la journée. Le battre en plus de l'objectif donne une scène et un petit cadeau ; perdre ne bloque rien.</li>
+<li><b>Entre deux défis</b>, quelques scènes : Firmin vient espionner en lunettes noires, Margot peint la vitrine, Léon raconte le concours d'autrefois, un client de passage réclame « une chocolatine ! ».</li>
+<li><b>La finale, au jour 20</b> : Céleste, la Diva de l'Opéra, goûte les deux pains au chocolat. Tu gagnes, Firmin te serre la patte, et les deux boutiques font la paix (il vient ensuite comme client).</li>
+</ul></div>
+<div class="card"><h2>Comment ça marche</h2><ul>
+<li><b>On y entre</b> depuis la carte de la Petite Italie (panneau en haut), une fois son jour 20 réussi.</li>
+<li><b>20 journées</b>, comme l'Italie : rythme repris d'un jour de référence du premier café, objectifs calculés par le bot, ★★★ atteignable tout équipé sans bonus.</li>
+<li><b>Un nouveau café</b>, sa boutique à racheter (même règle de prix que l'Italie). Pièces, clochettes, quêtes et style restent communs.</li>
+<li><b>La carte</b> : un seul paysage, chaque lieu une fois : la rue avec le métro et la colonne Morris, les quais et les bouquinistes, Notre-Dame sur son île, le pont, la péniche, la tour Eiffel au Champ-de-Mars, Montmartre, le Sacré-Cœur et les peintres, puis le Café Kitsune face à la boulangerie.</li>
+</ul></div>`;
+</script>
+</body>
+</html>
