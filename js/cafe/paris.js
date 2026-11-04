@@ -112,33 +112,139 @@ function paLayout(){
   const top=P[PA_DAYS.length].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
   return {P,way,H,guest:{x:322,u:P[PA_DAYS.length].u+14},ana:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},seine:(P[5].u+P[6].u)/2};
 }
-const paHaus=(x,y,w,h,shop="#c0485a")=>{let g=shadow(x+w/2,y+h,w*.55)+`<path d="M${x-3} ${y} L${x+7} ${y-22} H${x+w-7} L${x+w+3} ${y}Z" fill="#a9b6c6" ${BO}/>`;
-  for(let i=0;i<Math.floor((w-10)/22);i++)g+=`<rect x="${x+12+i*22}" y="${y-17}" width="9" height="11" rx="4" fill="#e6eef6" ${K2}/>`;
-  g+=`<rect x="${x+w-18}" y="${y-30}" width="8" height="10" fill="#d98a6a" ${K2}/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f6e8d0" ${BO}/>`;
-  for(let i=0;i<Math.floor((w-6)/22);i++){const wx=x+8+i*22;for(let j=0;j<Math.floor((h-26)/26);j++){const wy=y+8+j*26;g+=`<rect x="${wx}" y="${wy}" width="11" height="17" rx="2" fill="#bcd8ea" ${K2}/>`;if(j===0)g+=`<path d="M${wx-2} ${wy+12} H${wx+13} M${wx+1} ${wy+12} V${wy+17} M${wx+5.5} ${wy+12} V${wy+17} M${wx+10} ${wy+12} V${wy+17}" stroke="${INK}" stroke-width="1.3"/>`}}
-  g+=`<path d="M${x} ${y+h-22} H${x+w}" stroke="${INK}" stroke-width="2"/><rect x="${x+4}" y="${y+h-18}" width="${w-8}" height="18" fill="${shop}" opacity=".85" ${K2}/>`;
-  for(let i=0;i<Math.floor((w-8)/10);i++)g+=`<path d="M${x+4+i*10} ${y+h-22} h5 v6 h-5Z" fill="#fff"/>`;return g};
-const paTree=(x,y,k=1)=>shadow(x,y,14*k)+`<rect x="${x-3*k}" y="${y-10*k}" width="${6*k}" height="${12*k}" fill="#a8825a" ${K2}/><circle cx="${x}" cy="${y-22*k}" r="${15*k}" fill="#8cc47a" ${K}/><circle cx="${x-6*k}" cy="${y-27*k}" r="${4*k}" fill="#a6d690"/>`;
-const paLamp=(x,y)=>shadow(x,y,8)+`<path d="M${x} ${y} V${y-36}" stroke="${INK}" stroke-width="3"/><path d="M${x-6} ${y} h12" ${K}/><path d="M${x-6} ${y-36} H${x+6} L${x+4} ${y-48} H${x-4}Z" fill="#ffe9a8" ${K2}/><path d="M${x-3} ${y-48} L${x} ${y-53} L${x+3} ${y-48}" fill="${INK}"/>`;
-const paMetro=(x,y)=>`<rect x="${x-18}" y="${y-8}" width="36" height="10" rx="2" fill="#5b4250"/><path d="M${x-15} ${y} V${y-30} Q${x-15} ${y-42} ${x} ${y-44} Q${x+15} ${y-42} ${x+15} ${y-30} V${y}" fill="none" stroke="#3f7a5a" stroke-width="4" stroke-linecap="round"/><ellipse cx="${x-15}" cy="${y-33}" rx="3.4" ry="5" fill="#f2944a" ${K2}/><ellipse cx="${x+15}" cy="${y-33}" rx="3.4" ry="5" fill="#f2944a" ${K2}/><rect x="${x-14}" y="${y-41}" width="28" height="8" rx="2" fill="#f4ecd0" ${K2}/><text x="${x}" y="${y-35}" text-anchor="middle" font-size="5.6" font-weight="900" fill="#3f7a5a">MÉTRO</text>`;
-const paMorris=(x,y)=>shadow(x,y,14)+`<rect x="${x-11}" y="${y-44}" width="22" height="44" fill="#4f8a6a" ${K}/><rect x="${x-8}" y="${y-38}" width="7" height="12" fill="#f49ab0" ${K2}/><rect x="${x+1}" y="${y-36}" width="7" height="10" fill="#ffe08a" ${K2}/><rect x="${x-6}" y="${y-22}" width="12" height="12" fill="#bfe1f0" ${K2}/><path d="M${x-14} ${y-44} H${x+14} Q${x+10} ${y-58} ${x} ${y-60} Q${x-10} ${y-58} ${x-14} ${y-44}Z" fill="#4f8a6a" ${K}/><circle cx="${x}" cy="${y-62}" r="3" fill="#4f8a6a" ${K2}/>`;
-const paTable=(x,y)=>shadow(x,y,26)+`<path d="M${x} ${y} V${y-14}" ${K}/><ellipse cx="${x}" cy="${y-15}" rx="11" ry="3.6" fill="#fff" ${K}/>`+[-17,17].map(o=>`<path d="M${x+o-6} ${y} V${y-10} M${x+o+6} ${y} V${y-10}" stroke="#b07a46" stroke-width="2.4"/><rect x="${x+o-7}" y="${y-12}" width="14" height="5" rx="2" fill="#d9a46a" ${K2}/><path d="M${x+o+(o<0?-7:7)} ${y-10} V${y-24} Q${x+o} ${y-28} ${x+o-(o<0?-7:7)} ${y-24}" fill="none" stroke="#b07a46" stroke-width="2.6"/>`).join("");
-const paBouq=(x,y)=>`<rect x="${x}" y="${y-12}" width="34" height="12" fill="#3f7a5a" ${K2}/><path d="M${x} ${y-12} L${x+4} ${y-24} H${x+30} L${x+34} ${y-12}" fill="#4f8a6a" ${K2}/>`+[0,1,2,3,4].map(i=>`<rect x="${x+3+i*6}" y="${y-11}" width="5" height="7" fill="${["#f49ab0","#ffe08a","#bfe1f0","#fff","#b99ad8"][i]}" stroke="${INK}" stroke-width="1"/>`).join("");
-const paEasel=(x,y,c)=>shadow(x,y,10)+`<path d="M${x-8} ${y} L${x} ${y-30} L${x+8} ${y} M${x} ${y-30} V${y}" stroke="#a8825a" stroke-width="2.4" stroke-linecap="round"/><rect x="${x-10}" y="${y-30}" width="20" height="16" fill="#fff" ${K2}/><path d="M${x-8} ${y-18} Q${x-2} ${y-26} ${x+2} ${y-22} T${x+8} ${y-20}" stroke="${c}" stroke-width="2.4" fill="none"/><circle cx="${x+4}" cy="${y-26}" r="2.4" fill="#ffd36a"/>`;
-const paBench=(x,y)=>shadow(x,y,24)+`<path d="M${x-20} ${y} v-10 M${x+20} ${y} v-10" stroke="${INK}" stroke-width="2.4"/><rect x="${x-24}" y="${y-13}" width="48" height="5" rx="2" fill="#4f8a6a" ${K}/><rect x="${x-24}" y="${y-24}" width="48" height="6" rx="2" fill="#4f8a6a" ${K}/>`;
-const paNotreDame=(x,y)=>`<ellipse cx="${x}" cy="${y+16}" rx="86" ry="18" fill="#e9dcc6" ${BO}/>`+paTree(x-64,y+20,.55)+paTree(x+68,y+20,.55)
-  +`<path d="M${x+40} ${y-30} L${x+44} ${y-74} L${x+48} ${y-30}Z" fill="#a9b6c6" ${K2}/><rect x="${x+18}" y="${y-30}" width="56" height="34" fill="#e8dcc8" ${K}/><path d="M${x+16} ${y-30} L${x+46} ${y-44} L${x+76} ${y-30}Z" fill="#a9b6c6" ${K2}/>`
-  +`<rect x="${x-34}" y="${y-70}" width="22" height="74" fill="#efe4d0" ${K}/><rect x="${x+12}" y="${y-70}" width="22" height="74" fill="#efe4d0" ${K}/><rect x="${x-12}" y="${y-52}" width="24" height="56" fill="#efe4d0" ${K}/>`
-  +`<path d="M${x-36} ${y-70} H${x+36}" stroke="${INK}" stroke-width="2.4"/>`+[[-29,-62],[-19,-62],[17,-62],[27,-62]].map(([a,b])=>`<path d="M${x+a-2} ${y+b+14} V${y+b} Q${x+a} ${y+b-4} ${x+a+2} ${y+b} V${y+b+14}" fill="#8a7a8a" stroke="${INK}" stroke-width="1.2"/>`).join("")
-  +`<circle cx="${x}" cy="${y-36}" r="9" fill="#9fc0e8" ${K2}/>${[0,45,90,135].map(a=>`<path d="M${x} ${y-45} V${y-27}" stroke="#f49ab0" stroke-width="1.6" transform="rotate(${a} ${x} ${y-36})"/>`).join("")}<circle cx="${x}" cy="${y-36}" r="2.6" fill="#ffe08a" stroke="${INK}" stroke-width="1"/>`
-  +[-23,0,23].map(o=>`<path d="M${x+o-6} ${y+4} V${y-8} Q${x+o} ${y-16} ${x+o+6} ${y-8} V${y+4}Z" fill="#a8664a" ${K2}/>`).join("")+`<path d="M${x-34} ${y-22} H${x+34}" stroke="#d8c8b0" stroke-width="2"/>`;
-const paEiffel=(x,y,h)=>{const k=h/220;return shadow(x,y,46*k)+`<path d="M${x-42*k} ${y} Q${x-18*k} ${y-70*k} ${x-10*k} ${y-150*k} L${x-4*k} ${y-200*k} L${x} ${y-220*k} L${x+4*k} ${y-200*k} L${x+10*k} ${y-150*k} Q${x+18*k} ${y-70*k} ${x+42*k} ${y} H${x+26*k} Q${x} ${y-56*k} ${x-26*k} ${y}Z" fill="#b48a66" ${BO}/>`
-  +`<path d="M${x-30*k} ${y-60*k} L${x+12*k} ${y-130*k} M${x+30*k} ${y-60*k} L${x-12*k} ${y-130*k} M${x-9*k} ${y-150*k} L${x+5*k} ${y-195*k} M${x+9*k} ${y-150*k} L${x-5*k} ${y-195*k}" stroke="#8a6448" stroke-width="1.6"/>`
-  +`<rect x="${x-30*k}" y="${y-66*k}" width="${60*k}" height="${8*k}" rx="2" fill="#c99a76" ${K2}/><rect x="${x-13*k}" y="${y-152*k}" width="${26*k}" height="${7*k}" rx="2" fill="#c99a76" ${K2}/><path d="M${x} ${y-220*k} V${y-234*k}" ${K2}/><path d="M${x} ${y-234*k} l8 3 -8 3Z" fill="#c0485a"/>`};
-const paSacre=(x,y,k=1)=>{const X=a=>x+a*k,Yy=b=>y+b*k;return shadow(x,y,52*k)+`<rect x="${X(-44)}" y="${Yy(-28)}" width="${88*k}" height="${28*k}" fill="#fbf7ee" ${K}/>`+[-30,-10,10,30].map(o=>`<path d="M${X(o-5)} ${y} V${Yy(-12)} Q${X(o)} ${Yy(-18)} ${X(o+5)} ${Yy(-12)} V${y}" fill="#d8d0c4" ${K2}/>`).join("")
-  +[-34,34].map(o=>`<rect x="${X(o-7)}" y="${Yy(-44)}" width="${14*k}" height="${16*k}" fill="#fbf7ee" ${K2}/><path d="M${X(o-8)} ${Yy(-44)} Q${X(o)} ${Yy(-60)} ${X(o+8)} ${Yy(-44)}Z" fill="#fbf7ee" ${K2}/>`).join("")
-  +`<rect x="${X(-16)}" y="${Yy(-58)}" width="${32*k}" height="${30*k}" fill="#fbf7ee" ${K}/><path d="M${X(-18)} ${Yy(-58)} Q${X(-18)} ${Yy(-92)} ${x} ${Yy(-96)} Q${X(18)} ${Yy(-92)} ${X(18)} ${Yy(-58)}Z" fill="#fbf7ee" ${K}/><rect x="${X(-3)}" y="${Yy(-106)}" width="${6*k}" height="${10*k}" fill="#fbf7ee" ${K2}/><path d="M${x} ${Yy(-106)} V${Yy(-114)} M${X(-3)} ${Yy(-111)} H${X(3)}" stroke="${INK}" stroke-width="1.8"/>`+[-10,0,10].map(o=>`<rect x="${X(o-2)}" y="${Yy(-52)}" width="${4*k}" height="${12*k}" rx="2" fill="#bcd8ea" stroke="${INK}" stroke-width="1"/>`).join("")};
-const paStairs=(x,y)=>Array.from({length:7},(_,i)=>`<rect x="${x+i*4}" y="${y-i*12}" width="26" height="12" fill="#e9dfd2" ${K2}/>`).join("")+`<path d="M${x-4} ${y+6} L${x+24} ${y-80}" stroke="${INK}" stroke-width="2"/>`;
+/* les dessins de la carte, refaits le 04/11/2026 (Joffray : « la map est ignoble » à côté de la Clairière) : dégradés, volumes,
+   ombres douces, détails ; chaque monument une seule fois. Les dégradés sont dans les defs de paMapSVG (ids "pa-…"). */
+const PA_DEFS=`<linearGradient id="pa-stone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fbf3e2"/><stop offset=".6" stop-color="#f1e4cb"/><stop offset="1" stop-color="#dccbac"/></linearGradient>
+  <linearGradient id="pa-stoneV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf3e2"/><stop offset="1" stop-color="#e2d3b6"/></linearGradient>
+  <linearGradient id="pa-zinc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9c6d6"/><stop offset="1" stop-color="#8c9cb0"/></linearGradient>
+  <linearGradient id="pa-iron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d0a27a"/><stop offset=".45" stop-color="#b4855c"/><stop offset="1" stop-color="#8a6242"/></linearGradient>
+  <pattern id="pa-lattice" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 0 L7 7 M7 0 L0 7" stroke="#6e4d33" stroke-width=".9" opacity=".55"/></pattern>
+  <radialGradient id="pa-white" cx=".32" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#f6f2ea"/><stop offset="1" stop-color="#ddd5c6"/></radialGradient>
+  <linearGradient id="pa-whiteV" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#f3eee4"/><stop offset="1" stop-color="#ddd4c4"/></linearGradient>
+  <radialGradient id="pa-leaf" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#b6dc8e"/><stop offset=".7" stop-color="#86c070"/><stop offset="1" stop-color="#6aa65c"/></radialGradient>
+  <radialGradient id="pa-leaf2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#a6d48c"/><stop offset="1" stop-color="#5f9a5a"/></radialGradient>
+  <linearGradient id="pa-grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe8ac"/><stop offset="1" stop-color="#a9d48a"/></linearGradient>
+  <linearGradient id="pa-hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe09a"/><stop offset=".6" stop-color="#a5d184"/><stop offset="1" stop-color="#93c47a"/></linearGradient>
+  <linearGradient id="pa-water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b6e0ee"/><stop offset=".5" stop-color="#8cc8de"/><stop offset="1" stop-color="#6fb2cc"/></linearGradient>
+  <linearGradient id="pa-quai" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#efe5d2"/><stop offset="1" stop-color="#d4c4a6"/></linearGradient>
+  <linearGradient id="pa-pit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3a44"/><stop offset="1" stop-color="#2a1f26"/></linearGradient>
+  <radialGradient id="pa-glow"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".45" stop-color="#ffd27a" stop-opacity=".45"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="pa-rose" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe08a"/><stop offset=".35" stop-color="#f49ab0"/><stop offset=".75" stop-color="#7fa6dc"/><stop offset="1" stop-color="#5a6fae"/></radialGradient>`;
+const BO2=`stroke="${INK}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
+// un arbre : tronc, feuillage en boules dégradées, un reflet
+const paTree=(x,y,k=1,g="pa-leaf")=>shadow(x,y,16*k)+`<path d="M${x-3*k} ${y} Q${x-2*k} ${y-12*k} ${x-1*k} ${y-18*k} H${x+2*k} Q${x+3*k} ${y-10*k} ${x+4*k} ${y}Z" fill="#9a6e4a" ${BO2}/>`
+  +blob([[x-9*k,y-24*k,10*k],[x+8*k,y-25*k,10*k],[x,y-33*k,12*k]],`url(#${g})`)+`<circle cx="${x-5*k}" cy="${y-38*k}" r="${3.4*k}" fill="#fff" opacity=".35"/>`;
+// le lampadaire parisien : fût vert sombre, lanterne à quatre vitres, une lueur
+const paLamp=(x,y)=>shadow(x,y,8)+`<circle cx="${x}" cy="${y-44}" r="16" fill="url(#pa-glow)"/><path d="M${x-5} ${y} h10 l-2 -6 h-6Z" fill="#3f5a4a" ${BO2}/><path d="M${x} ${y-6} V${y-36}" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M${x} ${y-6} V${y-36}" stroke="#4f6e5a" stroke-width="2"/>`
+  +`<path d="M${x-6} ${y-36} H${x+6} L${x+4.5} ${y-49} H${x-4.5}Z" fill="#ffe9a8" ${BO2}/><path d="M${x} ${y-36} V${y-49}" stroke="${INK}" stroke-width="1"/><path d="M${x-5.5} ${y-49} L${x} ${y-55} L${x+5.5} ${y-49}Z" fill="#3f5a4a" ${BO2}/>`;
+// l'immeuble haussmannien : pierre de taille, toit de zinc et lucarnes, balcons filants en fer forgé, boutique et son store
+const paHaus=(x,y,w,h,shop="#c0485a")=>{let g=shadow(x+w/2,y+h,w*.55)+`<path d="M${x-3} ${y} L${x+7} ${y-24} H${x+w-7} L${x+w+3} ${y}Z" fill="url(#pa-zinc)" ${BO}/>`;
+  for(let i=0;i<Math.floor((w-10)/22);i++)g+=`<path d="M${x+11+i*22} ${y-6} V${y-16} Q${x+15.5+i*22} ${y-21} ${x+20+i*22} ${y-16} V${y-6}Z" fill="#e6eef6" ${BO2}/>`;
+  g+=`<rect x="${x+w-18}" y="${y-34}" width="9" height="12" fill="#d98a6a" ${BO2}/><rect x="${x+w-19}" y="${y-36}" width="11" height="3" fill="#b86a4e" ${BO2}/>`;
+  g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#pa-stone)" ${BO}/>`;
+  const rows=Math.floor((h-26)/24);
+  for(let j=0;j<rows;j++){const wy=y+7+j*24;g+=`<path d="M${x} ${wy-2} H${x+w}" stroke="#e2d2b2" stroke-width="1.2"/>`;
+    for(let i=0;i<Math.floor((w-6)/20);i++){const wx=x+6+i*20;g+=`<rect x="${wx}" y="${wy}" width="11" height="16" rx="1.5" fill="#a8cce4" ${BO2}/><path d="M${wx+5.5} ${wy} V${wy+16} M${wx} ${wy+7} H${wx+11}" stroke="#e8f2f8" stroke-width="1"/>`}
+    if(j===0||j===2)g+=`<path d="M${x+2} ${wy+12} H${x+w-2}" stroke="${INK}" stroke-width="2"/>`+Array.from({length:Math.floor((w-4)/4)},(_,i)=>`<path d="M${x+3+i*4} ${wy+12} V${wy+16}" stroke="${INK}" stroke-width="1"/>`).join("")}
+  g+=`<rect x="${x}" y="${y+h-22}" width="${w}" height="22" fill="${shop}" ${BO}/><rect x="${x+5}" y="${y+h-14}" width="${w-10}" height="14" fill="#fdf3dc" ${BO2}/>`;
+  g+=`<path d="M${x-2} ${y+h-22} H${x+w+2} L${x+w-1} ${y+h-15} H${x+1}Z" fill="#fff" ${BO2}/>`+Array.from({length:Math.floor(w/8)},(_,i)=>`<path d="M${x+1+i*8} ${y+h-22} h4 l-.6 7 h-4Z" fill="${shop}"/>`).join("");
+  return g};
+// la bouche de métro façon Guimard : rambarde verte en fer forgé, deux tiges recourbées qui portent des lampes orange, le panneau en arc
+const paMetro=(x,y)=>{const st=(d)=>`<path d="${d}" fill="none" stroke="${INK}" stroke-width="5.4" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#4f8a6a" stroke-width="3" stroke-linecap="round"/>`;
+  return shadow(x,y+2,34)+`<path d="M${x-22} ${y} L${x-18} ${y-10} H${x+18} L${x+22} ${y}Z" fill="url(#pa-pit)" ${BO2}/>`+[0,1,2].map(i=>`<path d="M${x-19+i*1.4} ${y-7+i*3} H${x+19-i*1.4}" stroke="#6a5a64" stroke-width="1"/>`).join("")
+    +st(`M${x-24} ${y} V${y-9} Q${x-24} ${y-13} ${x-19} ${y-13} H${x+19} Q${x+24} ${y-13} ${x+24} ${y-9} V${y}`)
+    +[-16,-8,0,8,16].map(o=>`<path d="M${x+o} ${y-13} q-2.4 4 0 7 q2.4 3 0 6" fill="none" stroke="#4f8a6a" stroke-width="1.6"/>`).join("")
+    +st(`M${x-22} ${y-10} Q${x-26} ${y-40} ${x-18} ${y-56} Q${x-12} ${y-64} ${x-6} ${y-60}`)+st(`M${x+22} ${y-10} Q${x+26} ${y-40} ${x+18} ${y-56} Q${x+12} ${y-64} ${x+6} ${y-60}`)
+    +[[-6,-60],[6,-60]].map(([a,b])=>`<circle cx="${x+a}" cy="${y+b+3}" r="13" fill="url(#pa-glow)"/><ellipse cx="${x+a}" cy="${y+b+3}" rx="4" ry="5.6" fill="#f5953e" ${BO2}/><ellipse cx="${x+a-1.2}" cy="${y+b+1}" rx="1.2" ry="2" fill="#ffd9a0"/>`).join("")
+    +`<path d="M${x-24} ${y-33} Q${x} ${y-45} ${x+24} ${y-33} L${x+23} ${y-25} Q${x} ${y-36} ${x-23} ${y-25}Z" fill="#f4ecd0" ${BO2}/><path id="pa-mt" d="M${x-21} ${y-28.4} Q${x} ${y-39.6} ${x+21} ${y-28.4}" fill="none"/><text font-size="4.3" font-weight="900" fill="#3f7a5a"><textPath href="#pa-mt" startOffset="50%" text-anchor="middle">MÉTROPOLITAIN</textPath></text>`};
+// la colonne Morris : cylindre vert ombré, affiches, coupole et son petit dôme
+const paMorris=(x,y)=>shadow(x,y,16)+`<rect x="${x-12}" y="${y-48}" width="24" height="48" fill="#4f8a6a" ${BO}/><rect x="${x+4}" y="${y-48}" width="8" height="48" fill="#3c6e54"/>`
+  +`<rect x="${x-9}" y="${y-42}" width="8" height="13" fill="#f49ab0" ${BO2}/><rect x="${x}" y="${y-40}" width="8" height="11" fill="#ffe08a" ${BO2}/><rect x="${x-7}" y="${y-25}" width="13" height="13" fill="#bfe1f0" ${BO2}/><path d="M${x-5} ${y-20} h8 M${x-5} ${y-17} h6" stroke="#5f7fb0" stroke-width="1"/>`
+  +`<path d="M${x-15} ${y-48} H${x+15} Q${x+11} ${y-62} ${x} ${y-64} Q${x-11} ${y-62} ${x-15} ${y-48}Z" fill="#4f8a6a" ${BO}/><path d="M${x-9} ${y-52} Q${x-5} ${y-60} ${x} ${y-61}" stroke="#7fb89a" stroke-width="1.6" fill="none"/><circle cx="${x}" cy="${y-66}" r="3" fill="#4f8a6a" ${BO2}/>`;
+// la terrasse : guéridon rond et chaises bistrot en rotin
+const paTable=(x,y)=>shadow(x,y,28)+`<path d="M${x} ${y} V${y-15}" ${BO2}/><ellipse cx="${x}" cy="${y-16}" rx="12" ry="4" fill="#fff" ${BO2}/><ellipse cx="${x}" cy="${y}" rx="6" ry="1.8" fill="${INK}"/>`
+  +[-18,18].map(o=>`<path d="M${x+o-6} ${y} V${y-11} M${x+o+6} ${y} V${y-11}" stroke="#a8703e" stroke-width="2.6"/><rect x="${x+o-8}" y="${y-13}" width="16" height="5" rx="2" fill="#d9a46a" ${BO2}/><path d="M${x+o-5} ${y-11} h10" stroke="#f2c894" stroke-width="1"/><path d="M${x+o+(o<0?-8:8)} ${y-11} V${y-25} Q${x+o} ${y-30} ${x+o-(o<0?-8:8)} ${y-25}" fill="none" stroke="${INK}" stroke-width="4.2"/><path d="M${x+o+(o<0?-8:8)} ${y-11} V${y-25} Q${x+o} ${y-30} ${x+o-(o<0?-8:8)} ${y-25}" fill="none" stroke="#c48a52" stroke-width="2.4"/>`).join("")
+  +`<rect x="${x-4}" y="${y-22}" width="5" height="6" rx="1.4" fill="#fff" ${BO2}/><circle cx="${x+4}" cy="${y-19}" r="2.6" fill="#f2707e" stroke="${INK}" stroke-width="1"/>`;
+const paBouq=(x,y)=>shadow(x+17,y,22)+`<rect x="${x}" y="${y-13}" width="34" height="13" fill="#3f7a5a" ${BO2}/><path d="M${x-2} ${y-13} L${x+3} ${y-27} H${x+31} L${x+36} ${y-13}" fill="#4f8a6a" ${BO2}/><path d="M${x+5} ${y-24} H${x+29}" stroke="#7fb89a" stroke-width="1.2"/>`
+  +[0,1,2,3,4].map(i=>`<rect x="${x+3+i*6}" y="${y-12}" width="5" height="8" rx=".8" fill="${["#f49ab0","#ffe08a","#bfe1f0","#fff","#b99ad8"][i]}" stroke="${INK}" stroke-width="1"/>`).join("");
+const paEasel=(x,y,c)=>shadow(x,y,11)+`<path d="M${x-9} ${y} L${x} ${y-32} L${x+9} ${y} M${x} ${y-32} V${y}" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M${x-9} ${y} L${x} ${y-32} L${x+9} ${y} M${x} ${y-32} V${y}" stroke="#c49a6a" stroke-width="2" stroke-linecap="round"/>`
+  +`<rect x="${x-11}" y="${y-33}" width="22" height="17" fill="#fffaf0" ${BO2}/><rect x="${x-9}" y="${y-31}" width="18" height="13" fill="#bfe1f0"/><path d="M${x-9} ${y-22} Q${x-3} ${y-29} ${x+2} ${y-24} T${x+9} ${y-23} V${y-18} H${x-9}Z" fill="${c}"/><circle cx="${x+5}" cy="${y-27}" r="2.2" fill="#ffd36a"/>`;
+const paBench=(x,y)=>shadow(x,y,26)+`<path d="M${x-21} ${y} v-11 M${x+21} ${y} v-11" stroke="${INK}" stroke-width="2.6"/><rect x="${x-25}" y="${y-14}" width="50" height="5" rx="2" fill="#4f8a6a" ${BO2}/><rect x="${x-25}" y="${y-25}" width="50" height="7" rx="2.5" fill="#4f8a6a" ${BO2}/><path d="M${x-22} ${y-23} h44" stroke="#7fb89a" stroke-width="1.2"/>`;
+// Notre-Dame sur l'île de la Cité : quais de pierre, arbres, la façade (deux tours, galerie, rosace, portails), la nef et la flèche
+const paNotreDame=(x,y)=>{let g=`<path d="M${x-96} ${y+8} Q${x-98} ${y-6} ${x-80} ${y-8} H${x+86} Q${x+104} ${y-6} ${x+100} ${y+8} Q${x+96} ${y+24} ${x+70} ${y+26} H${x-70} Q${x-94} ${y+24} ${x-96} ${y+8}Z" fill="url(#pa-quai)" ${BO}/>`
+  +`<path d="M${x-90} ${y+14} Q${x} ${y+22} ${x+94} ${y+14}" stroke="#c8b694" stroke-width="1.4" fill="none"/>`+[-70,-40,-10,20,50,80].map(o=>`<path d="M${x+o} ${y+16} v8" stroke="#c8b694" stroke-width="1.2"/>`).join("");
+  g+=paTree(x-74,y+2,.62,"pa-leaf2")+paTree(x+80,y+2,.62,"pa-leaf2");
+  // la nef, derrière la façade, qui file vers l'est (à droite), et la flèche à la croisée
+  g+=`<path d="M${x+20} ${y-52} L${x+64} ${y-48} L${x+64} ${y-2} H${x+20}Z" fill="url(#pa-stone)" ${BO}/><path d="M${x+18} ${y-52} L${x+42} ${y-70} L${x+66} ${y-48}Z" fill="url(#pa-zinc)" ${BO}/>`
+    +[28,40,52].map(o=>`<path d="M${x+o} ${y-4} V${y-28} Q${x+o+4} ${y-34} ${x+o+8} ${y-28} V${y-4}" fill="#8aa0c4" ${BO2}/>`).join("")
+    +[24,60].map(o=>`<path d="M${x+o} ${y-2} L${x+o+6} ${y-40}" stroke="${INK}" stroke-width="2.4"/>`).join("")
+    +`<path d="M${x+42} ${y-70} L${x+39} ${y-78} L${x+42} ${y-126} L${x+45} ${y-78}Z" fill="url(#pa-zinc)" ${BO2}/><path d="M${x+42} ${y-126} V${y-134} M${x+39.5} ${y-131} H${x+44.5}" stroke="${INK}" stroke-width="1.8"/>`
+    +[-90,-100,-110].map(b=>`<path d="M${x+40} ${y+b} h4" stroke="${INK}" stroke-width="1"/>`).join("");
+  // la façade : tours, partie centrale, ombre à droite
+  const T=(a)=>`<rect x="${x+a}" y="${y-104}" width="30" height="104" fill="url(#pa-stone)" ${BO}/>`
+    +`<path d="M${x+a-2} ${y-104} H${x+a+32}" stroke="${INK}" stroke-width="3"/>`+[0,1,2,3,4,5].map(i=>`<rect x="${x+a+1+i*5}" y="${y-109}" width="3" height="5" fill="url(#pa-stoneV)" stroke="${INK}" stroke-width="1"/>`).join("")
+    +[6,17].map(o=>`<path d="M${x+a+o} ${y-64} V${y-90} Q${x+a+o+3.5} ${y-97} ${x+a+o+7} ${y-90} V${y-64}Z" fill="#6f6478" ${BO2}/>`+[0,1,2,3].map(i=>`<path d="M${x+a+o+1} ${y-86+i*5.5} h5" stroke="#9a8fa6" stroke-width="1"/>`).join("")).join("");
+  g+=`<rect x="${x-18}" y="${y-74}" width="36" height="74" fill="url(#pa-stoneV)" ${BO}/>`+T(-48)+T(18);
+  // la galerie des chimères, la rosace, la galerie des rois, les trois portails
+  g+=`<path d="M${x-48} ${y-60} H${x+48}" stroke="${INK}" stroke-width="2"/>`+Array.from({length:16},(_,i)=>`<path d="M${x-46+i*6} ${y-60} v-6 q2 -3 4 0 v6" fill="#d9ccb2" stroke="${INK}" stroke-width=".9"/>`).join("");
+  g+=`<circle cx="${x}" cy="${y-42}" r="13" fill="url(#pa-rose)" ${BO}/>`+Array.from({length:12},(_,i)=>`<path d="M${x} ${y-42} L${x+Math.cos(i*Math.PI/6)*12} ${y-42+Math.sin(i*Math.PI/6)*12}" stroke="${INK}" stroke-width="1"/>`).join("")+`<circle cx="${x}" cy="${y-42}" r="5" fill="#ffe08a" stroke="${INK}" stroke-width="1.2"/><circle cx="${x}" cy="${y-42}" r="9" fill="none" stroke="${INK}" stroke-width=".9"/>`;
+  g+=`<path d="M${x-48} ${y-24} H${x+48}" stroke="#cdbf9e" stroke-width="5"/><path d="M${x-48} ${y-26.5} H${x+48} M${x-48} ${y-21.5} H${x+48}" stroke="${INK}" stroke-width="1.2"/>`+Array.from({length:22},(_,i)=>`<circle cx="${x-46+i*4.4}" cy="${y-24}" r="1.2" fill="#8a7a6a"/>`).join("");
+  g+=[[-33,10,17],[0,13,21],[33,10,17]].map(([o,w,h])=>`<path d="M${x+o-w} ${y} V${y-h*.55} Q${x+o-w} ${y-h} ${x+o} ${y-h-3} Q${x+o+w} ${y-h} ${x+o+w} ${y-h*.55} V${y}Z" fill="#e2d3b6" ${BO2}/><path d="M${x+o-w+3} ${y} V${y-h*.5} Q${x+o-w+3} ${y-h+4} ${x+o} ${y-h} Q${x+o+w-3} ${y-h+4} ${x+o+w-3} ${y-h*.5} V${y}Z" fill="#8a5a4a" ${BO2}/><path d="M${x+o} ${y} V${y-h*.5}" stroke="#5e3a30" stroke-width="1.2"/>`).join("");
+  g+=`<rect x="${x+8}" y="${y-74}" width="10" height="74" fill="#000" opacity=".06"/><rect x="${x+38}" y="${y-104}" width="10" height="104" fill="#000" opacity=".07"/>`;
+  return g};
+// la tour Eiffel : quatre pieds en arc, treillis de fer, deux étages et leurs rambardes, le sommet et son phare
+const paEiffel=(x,y,h)=>{const k=h/300,X=a=>(x+a*k).toFixed(1),Y=b=>(y-b*k).toFixed(1);
+  const out=`M${X(-74)} ${Y(0)} C${X(-60)} ${Y(40)} ${X(-40)} ${Y(78)} ${X(-34)} ${Y(96)} L${X(-30)} ${Y(104)} C${X(-26)} ${Y(126)} ${X(-20)} ${Y(140)} ${X(-17)} ${Y(158)} L${X(-14)} ${Y(164)} L${X(-4)} ${Y(262)} L${X(0)} ${Y(282)} L${X(4)} ${Y(262)} L${X(14)} ${Y(164)} L${X(17)} ${Y(158)} C${X(20)} ${Y(140)} ${X(26)} ${Y(126)} ${X(30)} ${Y(104)} L${X(34)} ${Y(96)} C${X(40)} ${Y(78)} ${X(60)} ${Y(40)} ${X(74)} ${Y(0)} H${X(48)} C${X(40)} ${Y(30)} ${X(24)} ${Y(58)} ${X(0)} ${Y(60)} C${X(-24)} ${Y(58)} ${X(-40)} ${Y(30)} ${X(-48)} ${Y(0)}Z`;
+  const id="pa-eif";
+  let g=`<ellipse cx="${x}" cy="${y+2}" rx="${82*k}" ry="${12*k}" fill="rgba(91,66,80,.14)"/>`+`<clipPath id="${id}"><path d="${out}"/></clipPath><path d="${out}" fill="url(#pa-iron)"/>`
+    +`<g clip-path="url(#${id})"><rect x="${X(-80)}" y="${Y(290)}" width="${160*k}" height="${290*k}" fill="url(#pa-lattice)"/><path d="M${X(-60)} ${Y(4)} C${X(-46)} ${Y(44)} ${X(-34)} ${Y(80)} ${X(-28)} ${Y(100)}" stroke="#e8c49a" stroke-width="${3*k}" fill="none" opacity=".7"/></g><path d="${out}" fill="none" ${BO}/>`;
+  // l'arc entre les pieds, souligné
+  g+=`<path d="M${X(-48)} ${Y(0)} C${X(-40)} ${Y(30)} ${X(-24)} ${Y(58)} ${X(0)} ${Y(60)} C${X(24)} ${Y(58)} ${X(40)} ${Y(30)} ${X(48)} ${Y(0)}" fill="none" stroke="#7a5638" stroke-width="${2.4*k}"/>`;
+  // premier étage, deuxième étage, avec leurs rambardes
+  const deck=(a,b,hh)=>`<rect x="${X(-a)}" y="${Y(b+hh)}" width="${2*a*k}" height="${hh*k}" rx="1.5" fill="#c99a72" ${BO2}/>`+Array.from({length:Math.floor(a/4)},(_,i)=>`<path d="M${X(-a+4+i*8)} ${Y(b+hh)} v${-5*k}" stroke="${INK}" stroke-width="1"/>`).join("")+`<path d="M${X(-a)} ${Y(b+hh+5)} H${X(a)}" stroke="${INK}" stroke-width="1.4"/>`;
+  g+=deck(38,96,10)+deck(19,158,8);
+  // le sommet, le phare, le drapeau
+  g+=`<rect x="${X(-6)}" y="${Y(270)}" width="${12*k}" height="${9*k}" rx="1.5" fill="#c99a72" ${BO2}/><path d="M${x} ${Y(270)} V${Y(300)}" stroke="${INK}" stroke-width="2"/><circle cx="${x}" cy="${Y(292)}" r="${10*k}" fill="url(#pa-glow)"/><circle cx="${x}" cy="${Y(292)}" r="${2.4*k}" fill="#ffe9a8" stroke="${INK}" stroke-width="1"/><path d="M${x} ${Y(300)} l${9*k} ${3*k} l${-9*k} ${3*k}Z" fill="#e2546e" stroke="${INK}" stroke-width="1"/>`;
+  return g};
+// le Sacré-Cœur, tout blanc en haut de la butte : marches, porche à trois arches, dômes en ogive à côtes, campanile derrière
+const paSacre=(x,y,k=1)=>{const X=a=>(x+a*k).toFixed(1),Y=b=>(y+b*k).toFixed(1);
+  const dome=(cx,base,w,hh,lant)=>`<path d="M${X(cx-w)} ${Y(base)} Q${X(cx-w)} ${Y(base-hh*.75)} ${X(cx)} ${Y(base-hh)} Q${X(cx+w)} ${Y(base-hh*.75)} ${X(cx+w)} ${Y(base)}Z" fill="url(#pa-white)" ${BO}/>`
+    +[-.5,0,.5].map(f=>`<path d="M${X(cx+w*f*1.15)} ${Y(base)} Q${X(cx+w*f*.8)} ${Y(base-hh*.7)} ${X(cx)} ${Y(base-hh)}" fill="none" stroke="#d8cfbf" stroke-width="1.2"/>`).join("")
+    +`<rect x="${X(cx-lant*.5)}" y="${Y(base-hh-lant*1.4)}" width="${lant*k}" height="${lant*1.4*k}" fill="url(#pa-whiteV)" ${BO2}/><path d="M${X(cx-lant*.7)} ${Y(base-hh-lant*1.4)} Q${X(cx)} ${Y(base-hh-lant*2.4)} ${X(cx+lant*.7)} ${Y(base-hh-lant*1.4)}Z" fill="url(#pa-white)" ${BO2}/><path d="M${X(cx)} ${Y(base-hh-lant*2.4)} v${-4*k} M${X(cx-1.6)} ${Y(base-hh-lant*2.4-2.4)} h${3.2*k}" stroke="${INK}" stroke-width="1.6"/>`;
+  let g=shadow(x,y+4,62*k);
+  // le campanile, derrière à droite
+  g+=`<rect x="${X(34)}" y="${Y(-118)}" width="${16*k}" height="${80*k}" fill="url(#pa-whiteV)" ${BO}/><path d="M${X(37)} ${Y(-104)} v${10*k} q${2.5*k} ${-4*k} ${5*k} 0 v${-10*k}" fill="#bcd8ea" stroke="${INK}" stroke-width="1"/>`+dome(42,-118,9,16,4);
+  // marches, corps, porche
+  g+=Array.from({length:4},(_,i)=>`<rect x="${X(-56+i*4)}" y="${Y(-4-i*4)}" width="${(112-i*8)*k}" height="${4.4*k}" fill="#efe8dc" stroke="${INK}" stroke-width="1.4"/>`).join("");
+  g+=`<rect x="${X(-46)}" y="${Y(-52)}" width="${92*k}" height="${36*k}" fill="url(#pa-whiteV)" ${BO}/>`+[-28,0,28].map(o=>`<path d="M${X(o-8)} ${Y(-16)} V${Y(-30)} Q${X(o-8)} ${Y(-40)} ${X(o)} ${Y(-41)} Q${X(o+8)} ${Y(-40)} ${X(o+8)} ${Y(-30)} V${Y(-16)}Z" fill="#c9bfae" ${BO2}/><path d="M${X(o-5)} ${Y(-16)} V${Y(-29)} Q${X(o)} ${Y(-36)} ${X(o+5)} ${Y(-29)} V${Y(-16)}Z" fill="#7a6a72"/>`).join("")
+    +`<path d="M${X(-48)} ${Y(-52)} H${X(48)}" stroke="${INK}" stroke-width="2.6"/>`+[-36,-12,12,36].map(o=>`<path d="M${X(o)} ${Y(-44)} v${6*k}" stroke="#d8cfbf" stroke-width="1.2"/>`).join("");
+  // les petits dômes des coins et du porche, le tambour à fenêtres, le grand dôme
+  g+=dome(-40,-52,9,18,3.6)+dome(40,-52,9,18,3.6);
+  g+=`<rect x="${X(-21)}" y="${Y(-80)}" width="${42*k}" height="${28*k}" fill="url(#pa-whiteV)" ${BO}/>`+[-14,-5,4,13].map(o=>`<path d="M${X(o-2.4)} ${Y(-56)} v${-14*k} q${2.4*k} ${-4*k} ${4.8*k} 0 v${14*k}Z" fill="#a8cce4" stroke="${INK}" stroke-width="1.1"/>`).join("")+`<path d="M${X(-23)} ${Y(-80)} H${X(23)}" stroke="${INK}" stroke-width="2.2"/>`;
+  g+=dome(0,-80,22,46,6);
+  g+=`<rect x="${X(26)}" y="${Y(-52)}" width="${20*k}" height="${36*k}" fill="#000" opacity=".05"/>`;
+  return g};
+// un escalier de Montmartre, avec sa rampe et ses lampadaires
+const paStairs=(x,y)=>Array.from({length:8},(_,i)=>`<rect x="${x+i*3.6}" y="${y-i*11}" width="28" height="11" fill="${i%2?"#efe6d8":"#e6dccb"}" stroke="${INK}" stroke-width="1.6"/>`).join("")+`<path d="M${x-4} ${y+8} L${x+24} ${y-84}" stroke="${INK}" stroke-width="2.4"/><path d="M${x+33} ${y+8} L${x+60} ${y-84}" stroke="${INK}" stroke-width="2.4"/>`;
+// le moulin de la butte, ailes en croix
+const paMill=(x,y)=>shadow(x,y,20)+`<path d="M${x-14} ${y} L${x-11} ${y-34} H${x+11} L${x+14} ${y}Z" fill="#e8d6b8" ${BO}/><path d="M${x-14} ${y-34} L${x} ${y-50} L${x+14} ${y-34}Z" fill="#c0485a" ${BO}/><rect x="${x-4}" y="${y-14}" width="8" height="14" rx="3" fill="#8a5a4a" ${BO2}/>`
+  +`<g transform="translate(${x} ${y-36})"><g><animateTransform attributeName="transform" type="rotate" values="0;360" dur="18s" repeatCount="indefinite"/>${[0,90,180,270].map(a=>`<g transform="rotate(${a})"><rect x="-3" y="-30" width="6" height="26" fill="#fff8ec" stroke="${INK}" stroke-width="1.6"/><path d="M-3 -24 h6 M-3 -18 h6 M-3 -12 h6 M0 -30 V-4" stroke="#c9b8a0" stroke-width=".9"/></g>`).join("")}</g><circle r="3" fill="#8a5a4a" stroke="${INK}" stroke-width="1.6"/></g>`;
+// la fontaine Wallace : fonte vert sombre, quatre colonnes, petite coupole, un filet d'eau
+const paWallace=(x,y)=>shadow(x,y,14)+`<rect x="${x-11}" y="${y-8}" width="22" height="8" rx="2" fill="#3f6a52" ${BO2}/>`+[-7,-2.4,2.4,7].map(o=>`<path d="M${x+o} ${y-8} V${y-30}" stroke="${INK}" stroke-width="3.4"/><path d="M${x+o} ${y-8} V${y-30}" stroke="#4f8a6a" stroke-width="1.6"/>`).join("")
+  +`<path d="M${x} ${y-30} V${y-9}" stroke="#bfe6f4" stroke-width="1.4"/><rect x="${x-11}" y="${y-34}" width="22" height="5" rx="1.5" fill="#3f6a52" ${BO2}/><path d="M${x-10} ${y-34} Q${x} ${y-48} ${x+10} ${y-34}Z" fill="#4f8a6a" ${BO2}/><circle cx="${x}" cy="${y-49}" r="2.2" fill="#4f8a6a" stroke="${INK}" stroke-width="1.2"/><path d="M${x-5} ${y-39} Q${x-2} ${y-43} ${x+1} ${y-43}" stroke="#8cc4a6" stroke-width="1.2" fill="none"/>`;
+// la charrette du fleuriste, son parasol rayé
+const paFlowers=(x,y)=>shadow(x,y,26)+`<circle cx="${x-14}" cy="${y-5}" r="5.4" fill="#8a5a4a" ${BO2}/><circle cx="${x+14}" cy="${y-5}" r="5.4" fill="#8a5a4a" ${BO2}/><rect x="${x-22}" y="${y-20}" width="44" height="12" rx="2" fill="#c98a5a" ${BO2}/><path d="M${x-20} ${y-14} h40" stroke="#e8b07a" stroke-width="1.2"/>`
+  +[[-14,"#f47f9a"],[-3,"#ffd36a"],[8,"#b99ad8"],[17,"#f49ab0"]].map(([o,c])=>`<path d="M${x+o-4} ${y-20} L${x+o-3} ${y-27} H${x+o+3} L${x+o+4} ${y-20}" fill="#7fa6c8" stroke="${INK}" stroke-width="1.2"/>`+[[-2,-30],[2,-31],[0,-34]].map(([a,b])=>`<circle cx="${x+o+a}" cy="${y+b}" r="2.6" fill="${c}" stroke="${INK}" stroke-width="1"/>`).join("")).join("")
+  +`<path d="M${x+22} ${y-20} V${y-50}" stroke="${INK}" stroke-width="2"/><path d="M${x+2} ${y-46} Q${x+22} ${y-60} ${x+42} ${y-46}Z" fill="#fff" ${BO2}/><path d="M${x+12} ${y-50} Q${x+22} ${y-58} ${x+22} ${y-57} L${x+22} ${y-46}Z M${x+32} ${y-50} Q${x+22} ${y-58} ${x+22} ${y-57}" fill="#f47f9a"/>`;
+// le manège : chapiteau rayé, mât, deux chevaux de bois qui montent et descendent
+const paCarousel=(x,y)=>shadow(x,y,40)+`<ellipse cx="${x}" cy="${y-6}" rx="38" ry="9" fill="#f6e8d0" ${BO}/><path d="M${x-38} ${y-6} V${y} Q${x} ${y+10} ${x+38} ${y} V${y-6}" fill="#e2c9a2" ${BO2}/>`
+  +[-24,0,24].map(o=>`<path d="M${x+o} ${y-8} V${y-50}" stroke="${INK}" stroke-width="3.6"/><path d="M${x+o} ${y-8} V${y-50}" stroke="#f2c94c" stroke-width="1.8"/>`).join("")
+  +[[-24,0],[24,1.2]].map(([o,d])=>`<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="1.8s" begin="${d}s" repeatCount="indefinite"/><path d="M${x+o-9} ${y-22} Q${x+o-8} ${y-30} ${x+o} ${y-29} H${x+o+5} L${x+o+9} ${y-36} L${x+o+11} ${y-32} L${x+o+8} ${y-27} Q${x+o+9} ${y-20} ${x+o+3} ${y-20} H${x+o-6}Z" fill="#fff8ec" ${BO2}/><path d="M${x+o-5} ${y-20} v6 M${x+o+3} ${y-20} v6" stroke="${INK}" stroke-width="1.6"/><path d="M${x+o+5} ${y-34} q-3 -2 -6 1" stroke="#f47f9a" stroke-width="2" fill="none"/></g>`).join("")
+  +`<path d="M${x-44} ${y-50} L${x} ${y-80} L${x+44} ${y-50}Z" fill="#fff" ${BO}/>`+[-1,1].map(sd=>`<path d="M${x} ${y-80} L${x+sd*44} ${y-50} L${x+sd*30} ${y-50}Z M${x} ${y-80} L${x+sd*14} ${y-50} L${x+sd*2} ${y-50}Z" fill="#e2546e"/>`).join("")
+  +`<path d="M${x-44} ${y-50} L${x} ${y-80} L${x+44} ${y-50}Z" fill="none" ${BO}/><path d="M${x-44} ${y-50} ${Array.from({length:8},()=>"q5.5 6 11 0").join(" ")}" fill="#fff" ${BO2}/><path d="M${x} ${y-80} V${y-90}" stroke="${INK}" stroke-width="2"/><path d="M${x} ${y-90} l8 3 l-8 3Z" fill="#7fb4d8" stroke="${INK}" stroke-width="1"/>`;
+// une petite maison de la butte, volets colorés
+const paCottage=(x,y,c="#7fb4d8")=>shadow(x,y,18)+`<rect x="${x-16}" y="${y-24}" width="32" height="24" fill="#f6e8d0" ${BO}/><path d="M${x-19} ${y-23} L${x} ${y-38} L${x+19} ${y-23}Z" fill="#d9774e" ${BO}/>`
+  +`<rect x="${x-10}" y="${y-18}" width="7" height="8" fill="#bcd8ea" ${BO2}/><rect x="${x-14}" y="${y-18}" width="3.4" height="8" fill="${c}" stroke="${INK}" stroke-width="1"/><rect x="${x-3}" y="${y-18}" width="3.4" height="8" fill="${c}" stroke="${INK}" stroke-width="1"/><rect x="${x+4}" y="${y-13}" width="7" height="13" rx="2" fill="#8a5a4a" ${BO2}/><circle cx="${x+13}" cy="${y-3}" r="3" fill="#f47f9a" stroke="${INK}" stroke-width="1"/>`;
 const paPeniche=(x,y)=>`<path d="M${x-36} ${y} H${x+40} L${x+32} ${y+12} H${x-30}Z" fill="#c0485a" ${K}/><rect x="${x-24}" y="${y-12}" width="40" height="12" rx="3" fill="#fff4dc" ${K}/><rect x="${x-18}" y="${y-9}" width="7" height="6" rx="1.5" fill="#bcd8ea" stroke="${INK}" stroke-width="1"/><rect x="${x-6}" y="${y-9}" width="7" height="6" rx="1.5" fill="#bcd8ea" stroke="${INK}" stroke-width="1"/><circle cx="${x+24}" cy="${y-4}" r="3.2" fill="#f47f9a" ${K2}/><circle cx="${x+30}" cy="${y-5}" r="3" fill="#ffd36a" ${K2}/>`;
 function paCafeSVG(x,y){
   let s=shadow(x,y+4,104)+`<path d="M${x-114} ${y-110} L${x-102} ${y-134} H${x+102} L${x+114} ${y-110}Z" fill="#a9b6c6" ${BO}/>`+[0,1,2,3,4,5,6].map(i=>`<rect x="${x-86+i*26}" y="${y-129}" width="10" height="13" rx="4" fill="#e6eef6" ${K2}/>`).join("");
@@ -154,46 +260,58 @@ const paBakery=(x,y)=>shadow(x,y,46)+`<rect x="${x-39}" y="${y-80}" width="78" h
 function paArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#a9b6c6" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Paris</text>`}
 function paMapSVG(L){
   const {P,way,H,cafe}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
-  const defs=`<pattern id="pa-pave" width="44" height="30" patternUnits="userSpaceOnUse"><rect width="44" height="30" fill="#eee5da"/><g fill="none" stroke="#ddd0c0" stroke-width="2"><rect x="2" y="2" width="18" height="11" rx="5"/><rect x="24" y="2" width="18" height="11" rx="5"/><rect x="-9" y="17" width="18" height="11" rx="5"/><rect x="13" y="17" width="18" height="11" rx="5"/><rect x="35" y="17" width="18" height="11" rx="5"/></g></pattern>
-    <linearGradient id="pa-seine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d6e6"/><stop offset="1" stop-color="#7fb8d2"/></linearGradient>
-    <linearGradient id="pa-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7c3c8"/><stop offset=".6" stop-color="#fbe0d0"/><stop offset="1" stop-color="#fdf0e2"/></linearGradient>`;
-  let s=`<rect width="400" height="${H}" fill="url(#pa-pave)"/>`;
-  // le ciel du soir et les toits de Paris, derrière le café
-  s+=`<rect x="0" y="0" width="400" height="${hz}" fill="url(#pa-sky)"/><circle cx="320" cy="${hz-150}" r="18" fill="#fff4c8" ${BO}/>`;
-  s+=[[0,60],[52,74],[96,56],[150,80],[206,62],[262,76],[316,58],[360,72]].map(([x,h],i)=>`<path d="M${x} ${hz} V${hz-h} L${x+8} ${hz-h-14} H${x+40} L${x+48} ${hz-h} V${hz}Z" fill="#c9cfd9" stroke="${INK}" stroke-width="2"/>`+(i%2?`<rect x="${x+30}" y="${hz-h-26}" width="6" height="12" fill="#d98a6a" stroke="${INK}" stroke-width="1.6"/>`:"")).join("");
-  s+=`<path d="M0 ${hz} H400" stroke="${INK}" stroke-width="2"/>`;
-  // les pelouses : le Champ-de-Mars, la butte Montmartre
   const u7=P[7].u,u12=P[12].u,u13=P[13].u,u18=P[18].u;
-  s+=`<path d="M236 ${Y(u7+30)} Q320 ${Y(u7+10)} 410 ${Y(u7+24)} V${Y(u12-10)} Q330 ${Y(u12)} 250 ${Y(u12-30)}Z" fill="#c4e0a4" ${BO}/>`;
-  s+=`<path d="M-10 ${Y(u13+10)} Q10 ${Y(u18-60)} 110 ${Y(u18-40)} Q190 ${Y(u18-60)} 200 ${Y(u18-220)} Q200 ${Y(u13+80)} 170 ${Y(u13+20)} Q90 ${Y(u13-20)} -10 ${Y(u13+10)}Z" fill="#b9d99a" ${BO}/>`;
-  // la Seine en travers, ses quais
+  const defs=PA_DEFS+`<pattern id="pa-pave" width="44" height="30" patternUnits="userSpaceOnUse"><g fill="none" stroke="#dccfbd" stroke-width="2"><rect x="2" y="2" width="18" height="11" rx="5"/><rect x="24" y="2" width="18" height="11" rx="5"/><rect x="-9" y="17" width="18" height="11" rx="5"/><rect x="13" y="17" width="18" height="11" rx="5"/><rect x="35" y="17" width="18" height="11" rx="5"/></g></pattern>
+    <linearGradient id="pa-gnd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}"><stop offset="0" stop-color="#efe3d0"/><stop offset=".5" stop-color="#f2e8da"/><stop offset="1" stop-color="#ece2d4"/></linearGradient>
+    <linearGradient id="pa-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4b9c4"/><stop offset=".55" stop-color="#fad8cc"/><stop offset="1" stop-color="#fdeee0"/></linearGradient>
+    <radialGradient id="pa-sun"><stop offset="0" stop-color="#fff2b8" stop-opacity=".9"/><stop offset="1" stop-color="#fff2b8" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pa-vig" cx=".5" cy=".5" r=".75"><stop offset=".7" stop-color="#5b4250" stop-opacity="0"/><stop offset="1" stop-color="#5b4250" stop-opacity=".12"/></radialGradient>`;
+  let s=`<rect width="400" height="${H}" fill="url(#pa-gnd)"/><rect width="400" height="${H}" fill="url(#pa-pave)" opacity=".8"/>`;
+  // le ciel du soir et les toits de Paris derrière le café, la tour Eiffel au loin n'y est pas : elle est sur la carte
+  s+=`<rect x="0" y="0" width="400" height="${hz}" fill="url(#pa-sky)"/><circle cx="320" cy="${hz-150}" r="70" fill="url(#pa-sun)"/><circle cx="320" cy="${hz-150}" r="18" fill="#fff4c8" ${BO}/>`;
+  s+=[[0,64],[48,80],[92,58],[146,84],[204,66],[258,82],[314,60],[356,76]].map(([x,h],i)=>`<path d="M${x} ${hz} V${hz-h} L${x+8} ${hz-h-15} H${x+42} L${x+50} ${hz-h} V${hz}Z" fill="${i%2?"#d6dbe6":"#cbd2df"}" stroke="${INK}" stroke-width="1.8"/>`+[0,1].map(j=>`<rect x="${x+12+j*16}" y="${hz-h-11}" width="7" height="7" rx="2.5" fill="#f2f5fa" stroke="${INK}" stroke-width="1.2"/>`).join("")+(i%2?`<rect x="${x+36}" y="${hz-h-26}" width="6" height="12" fill="#d98a6a" stroke="${INK}" stroke-width="1.4"/>`:"")).join("");
+  s+=`<g><animateTransform attributeName="transform" type="translate" values="-60 0;460 -10" dur="26s" repeatCount="indefinite"/>${[[0,hz-180],[14,hz-188],[26,hz-178]].map(([x,y])=>`<path d="M${x-6} ${y} q3 -4 6 0 q3 -4 6 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join("")}</g>`;
+  s+=`<path d="M0 ${hz} H400" stroke="${INK}" stroke-width="2"/>`;
+  // le Champ-de-Mars : une grande pelouse bordée d'allées
+  s+=`<path d="M232 ${Y(u7+40)} Q318 ${Y(u7+16)} 410 ${Y(u7+30)} V${Y(u12-4)} Q326 ${Y(u12+8)} 246 ${Y(u12-26)}Z" fill="url(#pa-grass)" ${BO}/><path d="M248 ${Y(u7+56)} Q320 ${Y(u7+34)} 404 ${Y(u7+46)}" stroke="#bfdc9c" stroke-width="3" fill="none"/>`;
+  // la butte Montmartre : une colline arrondie, plus claire au sommet
+  s+=`<path d="M-10 ${Y(u13+6)} Q-4 ${Y(u18-20)} 96 ${Y(u18-24)} Q190 ${Y(u18-40)} 206 ${Y(u18-200)} Q214 ${Y(u13+90)} 176 ${Y(u13+24)} Q96 ${Y(u13-24)} -10 ${Y(u13+6)}Z" fill="url(#pa-hill)" ${BO}/>`;
+  s+=[[30,u13+60],[150,u13+180],[60,u18-70],[170,u13+260],[22,u13+190]].map(([x,u])=>`<path d="M${x} ${Y(u)} l3 -6 l3 6 M${x+40} ${Y(u)+10} l3 -6 l3 6" fill="none" stroke="#8cc070" stroke-width="2" stroke-linecap="round"/>`).join("");
+  // la Seine, ses quais de pierre, des reflets
   const sy=Y(L.seine),bx=pathX(way,L.seine);
-  s+=`<path d="M-10 ${sy-44} Q100 ${sy-52} 200 ${sy-44} T410 ${sy-48} V${sy-32} H-10Z" fill="#e3d6c2" ${BO}/><path d="M-10 ${sy-32} Q100 ${sy-38} 200 ${sy-30} T410 ${sy-34} V${sy+30} Q300 ${sy+40} 200 ${sy+32} T-10 ${sy+36}Z" fill="url(#pa-seine)" ${BO}/><path d="M-10 ${sy+36} Q100 ${sy+30} 200 ${sy+34} T410 ${sy+30} V${sy+48} H-10Z" fill="#e3d6c2" ${BO}/>`;
-  s+=[[230,-14],[360,22],[40,20]].map(([x,o])=>`<path d="M${x} ${sy+o} q8 -4 16 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`).join("");
-  s+=paNotreDame(112,sy+6);
-  s+=`<g><animateTransform attributeName="transform" type="translate" values="0 0;-26 0;0 0" dur="16s" repeatCount="indefinite"/>${paPeniche(bx<200?280:366,sy+14)}</g>`;
+  s+=`<path d="M-10 ${sy-48} Q100 ${sy-56} 200 ${sy-48} T410 ${sy-52} V${sy-34} H-10Z" fill="url(#pa-quai)" ${BO}/><path d="M-10 ${sy-34} Q100 ${sy-40} 200 ${sy-32} T410 ${sy-36} V${sy+32} Q300 ${sy+42} 200 ${sy+34} T-10 ${sy+38}Z" fill="url(#pa-water)" ${BO}/><path d="M-10 ${sy+38} Q100 ${sy+32} 200 ${sy+36} T410 ${sy+32} V${sy+52} H-10Z" fill="url(#pa-quai)" ${BO}/>`;
+  s+=[[-10,sy-42],[-10,sy+45]].map(([x,y])=>`<path d="M${x} ${y} H410" stroke="#cdbb9a" stroke-width="1.2" stroke-dasharray="14 6"/>`).join("");
+  s+=`<g><animate attributeName="opacity" values=".9;.4;.9" dur="4s" repeatCount="indefinite"/>${[[230,-12],[360,22],[30,22],[300,6],[160,-18]].map(([x,o])=>`<path d="M${x} ${sy+o} q8 -4 16 0 q8 4 16 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`).join("")}</g>`;
+  s+=paNotreDame(110,sy+4);
+  s+=`<g><animateTransform attributeName="transform" type="translate" values="0 0;-26 0;0 0" dur="16s" repeatCount="indefinite"/>${paPeniche(bx<200?280:366,sy+16)}</g>`;
   // le chemin et la part déjà faite
   const pts=way.map(p=>[p.x,Y(p.u)]),d=smooth(pts);
   s+=`<path d="${d}" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#fdf1df" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   const k=way.findIndex(p=>p.d===itCur());if(k>0)s+=`<path d="${smooth(pts.slice(0,k+1))}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
-  // le pont sur la Seine, là où passe le chemin
-  s+=`<path d="M${bx-36} ${sy-34} H${bx+36} V${sy+34} H${bx-36}Z" fill="#efe4d0" ${BO}/>`+`<path d="M${bx-34} ${sy+34} Q${bx} ${sy+4} ${bx+34} ${sy+34}Z" fill="#a9d6e6" ${K2}/>`+`<path d="M${bx-36} ${sy-34} V${sy+34} M${bx+36} ${sy-34} V${sy+34}" stroke="${INK}" stroke-width="3"/>`+[-26,-8,10,28].map(o=>`<circle cx="${bx-36}" cy="${sy+o}" r="3" fill="#f6e8d0" ${K2}/><circle cx="${bx+36}" cy="${sy+o}" r="3" fill="#f6e8d0" ${K2}/>`).join("");
+  // le pont de pierre : tablier, balustrade, deux arches sur l'eau, un lampadaire à chaque bout
+  s+=`<path d="M${bx-38} ${sy-40} H${bx+38} V${sy+40} H${bx-38}Z" fill="url(#pa-stoneV)" ${BO}/><path d="M${bx-30} ${sy-40} V${sy+40} M${bx+30} ${sy-40} V${sy+40}" stroke="#d8c8a8" stroke-width="2"/>`
+    +[-1,1].map(sd=>`<path d="M${bx+sd*38} ${sy-40} V${sy+40}" stroke="${INK}" stroke-width="4"/>`+Array.from({length:9},(_,i)=>`<rect x="${bx+sd*38-2.4}" y="${sy-37+i*9}" width="4.8" height="5" rx="1.6" fill="#f6eedf" stroke="${INK}" stroke-width="1.1"/>`).join("")).join("")
+    +[-1,1].map(sd=>`<path d="M${bx+sd*44} ${sy+2} Q${bx+sd*62} ${sy-16} ${bx+sd*80} ${sy+2}" fill="none" stroke="#e9dcc4" stroke-width="5"/>`).join("");
   // ce qui est posé, chaque chose une fois
   const it=[];const at=(x,u,f)=>it.push({x,u,f});
   // la rue : immeubles des deux côtés, métro, colonne Morris, terrasse, lampadaires, platanes
-  [[0,150,62,96,"#c0485a"],[338,180,66,90,"#5f7fb0"],[0,370,58,80,"#d98a6a"],[340,420,64,84,"#3f7a5a"],[0,520,56,60,"#5f7fb0"]].forEach(([x,u,w,h,c])=>at(x+w/2,u,(cx,y)=>paHaus(x,y-h,w,h,c)));
-  at(300,280,paMetro);at(280,430,paMorris);at(250,190,paLamp);at(170,560,paLamp);at(296,520,paTable);at(40,250,(x,y)=>paTree(x,y,.9));at(370,330,(x,y)=>paTree(x,y,.8));
-  // les quais : bouquinistes
-  at(36,L.seine-56,(x,y)=>paBouq(x-17,y));at(84,L.seine-56,(x,y)=>paBouq(x-17,y));at(132,L.seine-56,(x,y)=>paBouq(x-17,y));at(380,L.seine-60,(x,y)=>paTree(x,y,.7));
-  // le Champ-de-Mars : la tour, des platanes, un banc
-  at(322,u7+80,(x,y)=>paEiffel(x,y,330));at(30,u7+60,(x,y)=>paTree(x,y,.7));at(380,u7+40,(x,y)=>paTree(x,y,.6));at(36,u12-140,(x,y)=>paTree(x,y,.75));at(230,u12-170,paBench);at(54,u12+10,paLamp);
-  // Montmartre : le Sacré-Cœur, les escaliers, les chevalets
-  at(100,u13+250,(x,y)=>paSacre(x,y,1.3));at(150,u13+90,(x,y)=>paStairs(x,y));at(48,u13+120,(x,y)=>paEasel(x,y,"#8fbf5a"));at(178,u13+330,(x,y)=>paEasel(x,y,"#9fc0e8"));at(60,u18-30,(x,y)=>paEasel(x,y,"#f49ab0"));
-  at(370,u13+160,(x,y)=>paTree(x,y,.7));at(372,u18-40,(x,y)=>paTree(x,y,.65));
-  // devant le café : la boulangerie de Firmin, en face
-  at(340,cafe.u+20,paBakery);at(40,cafe.u-40,(x,y)=>paTree(x,y,.8));
+  [[0,150,62,100,"#c0485a"],[338,180,66,92,"#5f7fb0"],[0,370,58,84,"#d98a6a"],[340,420,64,88,"#3f7a5a"],[0,520,56,64,"#5f7fb0"]].forEach(([x,u,w,h,c])=>at(x+w/2,u,(cx,y)=>paHaus(x,y-h,w,h,c)));
+  at(300,282,paMetro);at(286,440,paMorris);at(252,190,paLamp);at(168,566,paLamp);at(300,522,paTable);at(40,248,(x,y)=>paTree(x,y,.95));at(372,330,(x,y)=>paTree(x,y,.85));
+  // les quais : bouquinistes, un platane
+  at(36,L.seine-60,(x,y)=>paBouq(x-17,y));at(84,L.seine-60,(x,y)=>paBouq(x-17,y));at(132,L.seine-60,(x,y)=>paBouq(x-17,y));at(380,L.seine-64,(x,y)=>paTree(x,y,.75));
+  // le Champ-de-Mars : la tour, des platanes, un banc, un lampadaire
+  at(320,u7+70,(x,y)=>paEiffel(x,y,360));at(30,u7+60,(x,y)=>paTree(x,y,.8));at(384,u7+24,(x,y)=>paTree(x,y,.6));at(36,u12-140,(x,y)=>paTree(x,y,.8));at(232,u12-176,paBench);at(54,u12+6,paLamp);
+  // Montmartre : le Sacré-Cœur, les escaliers, le moulin, deux maisons, les chevalets
+  at(96,u13+246,(x,y)=>paSacre(x,y,1.1));at(112,u13+92,(x,y)=>paStairs(x,y));at(48,u13+116,(x,y)=>paEasel(x,y,"#8fbf5a"));at(180,u13+330,(x,y)=>paEasel(x,y,"#9fc0e8"));at(64,u18-34,(x,y)=>paEasel(x,y,"#f49ab0"));
+  at(150,u18-96,paMill);at(36,u13+20,(x,y)=>paCottage(x,y,"#7fb4d8"));at(150,u13+184,(x,y)=>paCottage(x,y,"#f2a2b0"));
+  at(370,u13+150,(x,y)=>paTree(x,y,.75));at(372,u18-44,(x,y)=>paTree(x,y,.7));at(30,u18-120,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
+  // devant le café : la boulangerie de Firmin, en face ; un platane
+  at(340,cafe.u+20,paBakery);at(40,cafe.u-40,(x,y)=>paTree(x,y,.85));
+  // entre la butte et le café : la fontaine Wallace, le fleuriste ; entre la tour et la butte : le manège
+  at(290,u18+60,paWallace);at(66,u18+238,paFlowers);at(358,u12+6,paCarousel);at(250,u18+150,(x,y)=>paTree(x,y,.8,"pa-leaf2"));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=paArchSVG(200,Y(60))+paCafeSVG(cafe.x,Y(cafe.u));
+  s+=`<rect width="400" height="${H}" fill="url(#pa-vig)" pointer-events="none"/>`;
   return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
 }
 
