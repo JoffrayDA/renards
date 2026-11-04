@@ -23,12 +23,9 @@ const ITF_REG=ITF.filter(f=>f.rar==="commun");
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde (le jour 1 du quartier se joue déjà comme le jour 15), graine et objectif par --italie
 const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:13,goal:151},{base:17,seed:12,goal:168},{base:18,seed:8,goal:185},{base:19,seed:3,goal:209},{base:20,seed:3,goal:218},{base:21,seed:0,goal:219},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:7,goal:304},{base:25,seed:0,goal:319},{base:26,seed:10,goal:337},{base:27,seed:3,goal:357},{base:28,seed:13,goal:383},{base:30,seed:15,goal:414},{base:32,seed:7,goal:433},{base:34,seed:9,goal:450},{base:36,seed:1,goal:459},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
-// ★★★ de chaque journée, en multiple de l'objectif (04/11/2026, Joffray : tout équipé, il n'avait pas ★★★ au jour 6 ;
-// « je ne veux pas que les gens aient à payer des bonus pour avoir 3 étoiles s'ils font tout parfaitement »).
-// Mesuré avec tout l'équipement, sans bonus : 82 % du score du bot sans faute à 0,8 s par action (Joffray, en jouant
-// « quasi parfaitement », faisait 363 au jour 6, environ 84 % du bot), entre 1,25 et 1,7 fois l'objectif, et jamais plus
-// que 97 % du bot. ★★ est à mi-chemin. L'objectif ★ ne change pas.
-const IT_S3=[1.39,1.53,1.7,1.7,1.66,1.62,1.7,1.64,1.29,1.46,1.36,1.48,1.25,1.29,1.25,1.25,1.25,1.26,1.17,1.25];
+// ★★★ de chaque journée, en multiple de l'objectif (cuts dans data.js). Baissé le 04/11/2026 puis remis à 1,7 partout le même jour :
+// Joffray croyait avoir tout l'équipement, il lui manquait la déco. Le mécanisme reste pour régler une journée à part si besoin.
+const IT_S3=Array(20).fill(1.7);
 const IT_LAST=IT_DAYS.length;
 // équipement prévu pour chaque journée du quartier (calibrage, et objectif relevé au-delà, comme KIT)
 const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["serveur",1,8],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];
