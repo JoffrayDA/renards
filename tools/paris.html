@@ -114,7 +114,8 @@ const RECS=[["cafe","petitnoir","Petit noir","Le café serré du comptoir. Avec 
 /* ---------- les renards du quartier (accessoires dans js/foxart.js, planche tools/parisiens.html) ---------- */
 const LOC=[
   {id:"pa1",name:"Anatole",rar:"commun",acc:"garconb",scale:.84,c:{b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"},bio:"Le garçon de café. Il t'accueille et t'accompagne tout le long, comme Lorenzo."},
-  {id:"pa2",name:"Margot",rar:"commun",acc:"peintre",c:{b:"#d9a0b8",ch:"#fff6fa",e:"#9a6078",s:"#8a5068",t:"#fff6fa"},bio:"Peintre à Montmartre. Elle paie parfois avec un petit croquis."},
+  {id:"pa2",name:"Musette",rar:"commun",acc:"accordeon",c:{b:"#9ec3e0",ch:"#f6fbff",e:"#5a7a9a",s:"#4c6a8a",t:"#f6fbff"},bio:"L'accordéoniste en marinière. Elle joue sur les marches de Montmartre."},
+  {id:"pa6",name:"Bobine",rar:"commun",acc:"photographe",c:{b:"#e6c08a",ch:"#fffaf0",e:"#a07a4a",s:"#8a6a3e",t:"#fffaf0"},bio:"Le photographe à casquette de gavroche. Il prend tout le quartier en photo, clients compris."},
   {id:"pa3",name:"Firmin",rar:"discret",acc:"boulanger",c:{b:"#c7a07a",ch:"#fff8ee",e:"#7a5a3c",s:"#6a4c32",t:"#fff8ee"},bio:"Le boulanger d'en face. « Le meilleur pain au chocolat de Paris, c'est le mien. » Le rival."},
   {id:"pa4",name:"Léon",rar:"discret",acc:"bouquiniste",c:{b:"#8a8f9e",ch:"#f2f2f6",e:"#5a5e6a",s:"#4c505a",t:"#f2f2f6"},bio:"Bouquiniste sur les quais. Lit en attendant sa commande, et oublie de la boire."},
   {id:"pa5",name:"Céleste",rar:"legend",acc:"diva",c:{b:"#f4ead8",ch:"#ffffff",e:"#c9a86a",s:"#b8965a",t:"#ffffff"},bio:"La Diva de l'Opéra. Jurée de la finale du concours, puis invitée d'honneur."}
@@ -205,8 +206,8 @@ function mapSVG(){
     if(st[i])s+=[-14,0,14].map((o,j)=>`<path d="M${x+o} ${y+21} l2.4 5 5.4 .8 -3.9 3.7 .9 5.4 -4.8 -2.6 -4.8 2.6 .9 -5.4 -3.9 -3.7 5.4 -.8Z" fill="${j<st[i]?"#ffd36a":"#efe3d6"}" stroke="${INK}" stroke-width="1.3"/>`).join("");
     if(n===cur)s+=`<g transform="translate(${x-96} ${y-50}) scale(.36)">${inner(fx(FOX.roussette))}</g><g transform="translate(${x-62} ${y-52}) scale(.36)">${inner(fx(LOC[0]))}</g>`});
   // la Diva, silhouette, près de la finale ; Firmin devant sa boulangerie
-  s+=`<g transform="translate(26 196) scale(.48)">${inner(fx(LOC[4],{sil:1}))}</g><rect x="30" y="250" width="56" height="16" rx="6" fill="#fff" ${K} stroke-width="1.6"/><text x="58" y="262" text-anchor="middle" font-size="10" font-weight="900" fill="${INK}">???</text>`;
-  s+=`<g transform="translate(330 168) scale(.42)">${inner(fx(LOC[2],{pose:"sit"}))}</g>`;
+  s+=`<g transform="translate(26 196) scale(.48)">${inner(fx(LOC[5],{sil:1}))}</g><rect x="30" y="250" width="56" height="16" rx="6" fill="#fff" ${K} stroke-width="1.6"/><text x="58" y="262" text-anchor="middle" font-size="10" font-weight="900" fill="${INK}">???</text>`;
+  s+=`<g transform="translate(330 168) scale(.42)">${inner(fx(LOC[3],{pose:"sit"}))}</g>`;
   return `<svg viewBox="0 0 ${W} ${H}" aria-label="Carte de Paris"><defs>${d}</defs><g filter="url(#wobble)">${s}</g></svg>`;
 }
 document.getElementById("map").innerHTML=`<div class="bar"><span class="back">‹</span><div class="ttl">Paris<small>La Ville · ★ 11 / 60</small></div><span class="pill">★ 186</span><span class="pill">2 140</span></div>${mapSVG()}<div class="btns"><span>Boutique</span><span>Quêtes</span><span>Carnet</span></div>`;
@@ -237,7 +238,7 @@ function roomSVG(){
 const cu=(f,left,items,p)=>`<div class="cu" style="left:${left}%"><span class="bub">${items.map(k=>ic(k,30,28)).join("")}</span>${fx(f)}<span class="pat"><i style="width:${p}%"></i></span></div>`;
 document.getElementById("day").innerHTML=`<div class="bar"><span class="back">‹</span><div class="ttl">Jour 5 · défi<small>Objectif 209 · Firmin a fait 300</small></div><span class="pill">★ 0</span><span class="pill">96</span></div>
 <div class="room">${roomSVG()}
-  ${cu(LOC[1],20,["pac","creme"],82)}${cu(LOC[3],50,[box("fvc")],60)}${cu(FOX.petitpois,80,["grenadine","eclair"],34)}
+  ${cu(LOC[1],20,["pac","creme"],82)}${cu(LOC[4],50,[box("fvc")],60)}${cu(LOC[2],80,["grenadine","eclair"],34)}
   <span class="clients">Clients 9</span><span class="duel">Toi 142 <em>Firmin 300</em></span></div>
 <div class="tray"><span class="slot f">${ic("pac",38,36)}</span><span class="slot f">${ic("petitnoir",38,36)}</span><span class="slot"></span>
   <div class="opt"><span>${ic("lait",26,24)}Crème</span><span>${ic("chantilly",26,24)}Chantilly</span></div></div>
@@ -255,14 +256,14 @@ document.getElementById("info").innerHTML=`
 <div class="card"><h2>L'histoire : le grand concours</h2><ul>
 <li><b>À l'arrivée</b>, Anatole t'accueille : le Café Kitsune vient d'ouvrir juste en face de la boulangerie de Firmin, qui jure faire le meilleur pain au chocolat de Paris.</li>
 <li><b>Les jours de défi</b> (5, 10, 15, en rose sur la carte) : Firmin annonce son score, affiché en haut pendant la journée. Le battre en plus de l'objectif donne une scène et un petit cadeau ; perdre ne bloque rien.</li>
-<li><b>Entre deux défis</b>, quelques scènes : Firmin vient espionner en lunettes noires, Margot peint la vitrine, Léon raconte le concours d'autrefois, un client de passage réclame « une chocolatine ! ».</li>
+<li><b>Entre deux défis</b>, quelques scènes : Firmin vient espionner en lunettes noires, Bobine photographie la vitrine, Musette joue devant la porte, Léon raconte le concours d'autrefois, un client de passage réclame « une chocolatine ! ».</li>
 <li><b>La finale, au jour 20</b> : Céleste, la Diva de l'Opéra, goûte les deux pains au chocolat. Tu gagnes, Firmin te serre la patte, et les deux boutiques font la paix (il vient ensuite comme client).</li>
 </ul></div>
 <div class="card"><h2>Comment ça marche</h2><ul>
 <li><b>On y entre</b> depuis la carte de la Petite Italie (panneau en haut), une fois son jour 20 réussi.</li>
 <li><b>20 journées</b>, comme l'Italie : rythme repris d'un jour de référence du premier café, objectifs calculés par le bot, ★★★ atteignable tout équipé sans bonus.</li>
 <li><b>Un nouveau café</b>, sa boutique à racheter (même règle de prix que l'Italie). Pièces, clochettes, quêtes et style restent communs.</li>
-<li><b>La carte</b> : un seul paysage, chaque lieu une fois : la rue avec le métro et la colonne Morris, les quais et les bouquinistes, Notre-Dame sur son île, le pont, la péniche, la tour Eiffel au Champ-de-Mars, Montmartre, le Sacré-Cœur et les peintres, puis le Café Kitsune face à la boulangerie.</li>
+<li><b>La carte</b> : un seul paysage, chaque lieu une fois : la rue avec le métro et la colonne Morris, les quais et les bouquinistes, Notre-Dame sur son île, le pont, la péniche, la tour Eiffel au Champ-de-Mars, Montmartre, le Sacré-Cœur et les chevalets, puis le Café Kitsune face à la boulangerie.</li>
 </ul></div>`;
 </script>
 </body>
