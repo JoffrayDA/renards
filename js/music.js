@@ -141,6 +141,33 @@ const MUSIC=(()=>{
         for(let i=0;i<6;i++){I.shaker(t+i*B,i%3?.022:.045);if(i%3===0)I.hat(t+i*B,.03)}
         if(b===7)[3,4,5].forEach((x,i)=>I.snare(t+x*B,.05+i*.025));
         melody((m,tt,d)=>{I.mando(m,tt,d*.9,.06);if(d>.3)I.accord([m],tt,d*.8,.012)},this.mel,b,t,B)}},
+    // autres propositions pour la Petite Italie (tools/italie-musique.html), originales : barcarolle de gondole (6/8, ré mineur)…
+    barcarola:{name:"Barcarolle du canal",bpm:200,beats:6,bars:8,
+      ch:[[50,53,57],[50,53,57],[45,49,52,55],[50,53,57],[43,46,50],[50,53,57],[45,49,52,55],[50,53,57]],
+      mel:[[[69,3],[74,2],[72,1]],[[69,2],[65,1],[67,2],[69,1]],[[73,3],[76,2],[73,1]],[[74,6]],
+           [[70,3],[74,2],[79,1]],[[77,2],[74,1],[69,3]],[[76,2],[73,1],[71,2],[73,1]],[[74,4],[null,2]]],
+      bar(b,t,B){const c=this.ch[b],r=c[0];
+        [r,r+7,r+12,c[1]+12,r+12,r+7].forEach((m,i)=>I.harp(m,t+i*B,.07));I.bass(r-12,t,B*5,.18);I.pad(c.map(m=>m+12),t,B*6,.018);
+        melody((m,tt,d)=>{I.accord([m],tt,d*.92,.04);I.mando(m+12,tt,.1,.02)},this.mel,b,t,B)}},
+    // … un petit swing de scooter (do majeur), contrebasse qui marche, balais…
+    vespa:{name:"Swing en Vespa",bpm:120,beats:4,bars:8,
+      ch:[[48,52,55],[45,49,52,55],[50,53,57],[43,47,50,53],[48,52,55],[45,49,52,55],[50,53,57],[43,47,50,53]],
+      mel:[[[76,1],[79,.5],[76,.5],[72,1],[76,1]],[[73,1.5],[76,.5],[81,2]],[[77,1],[81,.5],[77,.5],[74,1],[77,1]],[[79,3],[null,1]],
+           [[84,1],[83,.5],[81,.5],[79,1],[76,1]],[[81,1],[79,.5],[76,.5],[73,2]],[[74,1],[77,1],[81,1],[79,1]],[[77,1],[74,1],[71,1],[67,1]]],
+      bar(b,t,B){const c=this.ch[b],sw=x=>x%1?x+.16:x;
+        [c[0],c[1],c[2],c[1]].forEach((m,i)=>I.bass(m-12,t+i*B,B*.85,.22));
+        for(let i=0;i<8;i++)I.shaker(t+sw(i/2)*B,i%2?.02:.035);[1,3].forEach(x=>{I.snare(t+x*B,.05);I.accord(c.map(m=>m+12),t+x*B,B*.3,.03)});
+        melody((m,tt,d)=>{I.mando(m,tt,d*.9,.07);I.accord([m],tt,d*.85,.015)},this.mel,b,t,B)}},
+    // … et une polka qui file pour le service (sol majeur, oum-pa)
+    polka:{name:"Polka du cornetto",bpm:280,beats:4,bars:8,
+      ch:[[55,59,62],[55,59,62],[50,54,57,60],[55,59,62],[48,52,55],[55,59,62],[50,54,57,60],[55,59,62]],
+      mel:[[[71,1],[74,1],[79,1],[74,1]],[[83,1],[81,1],[79,2]],[[78,1],[81,1],[84,1],[81,1]],[[79,2],[74,2]],
+           [[76,1],[79,1],[84,1],[79,1]],[[83,1],[79,1],[74,2]],[[81,1],[78,1],[74,1],[78,1]],[[79,3],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        I.bass(c[0]-12,t,B*.8,.24);I.bass(c[2]-12,t+2*B,B*.8,.2);[0,2].forEach(x=>I.kick(t+x*B,.34));
+        [1,3].forEach(x=>{I.accord(c.map(m=>m+12),t+x*B,B*.5,.03);I.clap(t+x*B,.04)});for(let i=0;i<4;i++)I.shaker(t+i*B,.03);
+        if(b===7)[2,2.5,3,3.5].forEach((x,i)=>I.snare(t+x*B,.05+i*.02));
+        melody((m,tt,d)=>{I.mando(m,tt,d*.9,.07);I.box(m+12,tt,.05,.5)},this.mel,b,t,B)}},
     // le service : punchy et funky, pour garder le rythme
     service:{name:"Coup de feu",bpm:132,beats:4,bars:8,
       ch:[[53,57,60],[57,60,64],[58,62,65],[60,64,67],[53,57,60],[57,60,64],[58,62,65],[60,64,67]],
