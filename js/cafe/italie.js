@@ -1,6 +1,6 @@
 /* Kitsune Café : la Petite Italie, Monde 2 (03/11/2026, maquette validée par Joffray : tools/italie.html).
    20 journées (Joffray : « avec autant de produits, on peut faire 20 niveaux »), un nouveau café, le Caffè Kitsune, avec son propre
-   équipement (S.it.own, prix ×1,3) ; les pièces, les quêtes, les bonus et le style restent communs. Les gestes ne changent pas :
+   équipement (S.it.own, prix ×IT_PRICE) ; les pièces, les quêtes, les bonus et le style restent communs. Les gestes ne changent pas :
    mêmes clés de recettes, mêmes prix et cuissons, seuls le nom et le dessin changent (VAR.italie, ICON["clé@italie"]).
    Chaque journée reprend le rythme d'un jour de référence du premier monde (base), avec sa graine et son objectif calculés par
    `python tools/balance-bot.py --italie`. Lorenzo, le petit renard du quartier, accueille Roussette et présente les spécialités.
@@ -27,6 +27,9 @@ const IT_LAST=IT_DAYS.length;
 // équipement prévu pour chaque journée du quartier (calibrage, et objectif relevé au-delà, comme KIT)
 const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["serveur",1,8],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];
 S.it=S.it||{day:1,stars:{},best:{},own:{},intro:0,guest:0};
+// l'équipement du quartier coûtait ×1,3 avant le 04/11/2026 (inabordable) : on rembourse une fois la différence avec IT_PRICE
+if(!S.it.px){let back=0;for(const id in S.it.own){const u=ALLUP.find(x=>x.id===id);if(u)for(let i=0;i<S.it.own[id]&&i<u.lv.length;i++)back+=Math.round(u.lv[i].c*1.3/10)*10-Math.round(u.lv[i].c*IT_PRICE/10)*10}
+  S.it.px=1;if(back>0){S.coins+=back;setTimeout(()=>toast(`Petite Italie : l'équipement est moins cher, +${back} pièces remboursées`),1200)}save()}
 if(new URLSearchParams(location.search).get("italie")==="1"){S.itOpen=1;save()} // pour tester sans avoir fini le jour 40
 const itOpen=()=>S.day>LASTDAY||!!S.itOpen;
 const itStarSum=()=>Object.values(S.it.stars).reduce((a,b)=>a+b,0);
@@ -237,7 +240,7 @@ function renderMapIt(){
   $("mchap").textContent=`Petite Italie · ${itStarSum()} / 60 ★`;$("mstars").textContent=`★ ${itStarSum()}`;
 }
 function openMapIt(){
-  MUSIC.want("ukulele");
+  MUSIC.want("piazza");
   closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";document.querySelector(".mtt b").textContent="Caffè Kitsune";
   if(!G||!G.run){if(SEA!=="italie"){SEA="italie";renderDecor();dirty=true}}
   renderMapIt();renderHud();

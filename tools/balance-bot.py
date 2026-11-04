@@ -111,6 +111,24 @@ with sync_playwright() as p:
     page.wait_for_timeout(500)
     KIT = [tuple(x) for x in page.evaluate("() => KIT")]
     IT_KIT = [tuple(x) for x in page.evaluate("() => IT_KIT")]
+    if ITALIE and ECO:
+        # Petite Italie, --italie --economie : comme --economie, sur les 20 journées du quartier, avec l'équipement à racheter
+        # (prix ×IT_PRICE arrondis à la dizaine, comme upPrice dans data.js) et le coffre au rythme du jour de référence
+        cost = page.evaluate("() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map(l => Math.round(l.c * IT_PRICE / 10) * 10)]))")
+        bases = page.evaluate("() => IT_DAYS.map(x => x.base)")
+        coins, low, total = 1500, 1500, 0   # ce qui reste en moyenne du premier café (--economie : environ 1 850 au jour 40)
+        for d in range(1, len(bases) + 1):
+            e, g, *_, gain = page.evaluate(BOT, [d, own_it(d), GOOD, None, "italie"])
+            st = 3 if e >= g * 1.7 else 2 if e >= g * 1.35 else 1 if e >= g else 0
+            chest = round(8.5 * st + (15 + 2 * bases[d - 1] if st == 3 else 0))
+            buy = [(k, n) for k, n, kd in IT_KIT if kd == d]
+            spent = sum(cost[k][n - 1] for k, n in buy)
+            total += spent
+            coins += gain + chest + 22 + 30 - spent
+            low = min(low, coins)
+            print(f"jour {d:>2} : {'★' * st:<3} bénéfice {gain:>4}, coffre {chest:>3}, achats {spent:>5} -> solde {coins:>6}" + (" " + ", ".join(f"{k}{n}" for k, n in buy) if buy else ""))
+        print(f"kit {total} pièces, solde le plus bas {low}, final {coins}")
+        browser.close(); sys.exit()
     if ITALIE:
         # Petite Italie : même règle que --calibrer, sur les 20 journées du quartier (rythme d'un jour de référence,
         # recettes et équipement du quartier)

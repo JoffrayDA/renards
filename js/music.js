@@ -1,7 +1,7 @@
 /* Musique du Kitsune Café, partagée par les trois pages. Tout est synthétisé (Web Audio) : aucun fichier, aucune licence.
    Chaque page dit quel morceau elle veut (MUSIC.want) ; il démarre au premier toucher (règle des navigateurs).
    Un bouton [data-sound] coupe ou remet le son, choix mémorisé dans localStorage « renards-son ».
-   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), lofi (en réserve). */
+   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza et tarantella (Petite Italie), lofi (en réserve). */
 const MUSIC=(()=>{
   // Un jeu ouvert dans l'accueil (iframe) n'a pas son propre son : il pilote la musique de l'accueil, qui a déjà eu
   // son toucher de départ et continue de jouer d'une page à l'autre. Le bouton maison referme le jeu.
@@ -69,6 +69,12 @@ const MUSIC=(()=>{
     // accord plaqué, cuivré et bref
     stab(ns,t,v=.05){const lp=filt("lowpass",2400,1),g=gain(t,.004,v,.16);ns.forEach(m=>[-6,6].forEach(dt=>osc("sawtooth",hz(m),t,t+.25,dt).connect(lp)));lp.connect(g);out(g,.2)},
     openhat(t,v=.04){const hp=filt("highpass",6000),g=gain(t,.002,v,.16);noiseSrc(t,t+.2).connect(hp);hp.connect(g);out(g,.1)},
+    // mandoline : corde pincée claire, trémolo (on gratte vite et en continu) sur les notes longues
+    mando(m,t,dur,v=.06){const step=.068,n=dur<.3?1:Math.max(2,Math.round(dur/step));
+      for(let i=0;i<n;i++){const tt=t+i*step,a=i===0?1:(i%2?.55:.7);I.pluck(m,tt,v*a,i===n-1?.4:.16,3800);I.pluck(m+12,tt+.004,v*a*.25,.12,4200)}},
+    // accordéon : deux anches légèrement désaccordées, un battement doux
+    accord(ns,t,dur,v=.03){const lp=filt("lowpass",1800,.8),g=C.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.setValueAtTime(v*.85,t+Math.max(.03,dur-.04));g.gain.linearRampToValueAtTime(0,t+dur+.05);
+      ns.forEach(m=>[-9,9].forEach(dt=>osc("square",hz(m),t,t+dur+.1,dt).connect(lp)));lp.connect(g);out(g,.2)},
     bird(t,v=.05){[0,.13].forEach(o=>{const s=osc("sine",2600,t+o,t+o+.1);s.frequency.exponentialRampToValueAtTime(4300,t+o+.08);const g=gain(t+o,.005,v,.08);s.connect(g);out(g,.5)})},
     // craquement de vinyle (ambiance lo-fi) : petits clics au hasard
     crackle(t,dur){for(let i=0;i<dur*7;i++){const tt=t+Math.random()*dur,g=gain(tt,.001,.02+Math.random()*.03,.01),hp=filt("highpass",2500);noiseSrc(tt,tt+.02).connect(hp);hp.connect(g);out(g,0)}}
@@ -111,6 +117,30 @@ const MUSIC=(()=>{
         I.pad(c,t,B*4,.03);I.bass(c[0]-12,t,B*3.5,.14);
         melody((m,tt,d)=>I.flute(m,tt,d,.075,.025),this.mel,b,t,B);
         if(Math.random()<.5)I.bird(t+(1+Math.random()*2)*B,.035)}},
+    // la Petite Italie (js/cafe/italie.js), mélodies originales : une valse de terrasse sur la carte (mandoline, accordéon)…
+    piazza:{name:"Valse de la piazza",bpm:150,beats:3,bars:16,
+      ch:[[55,59,62],[55,59,62],[50,54,57,60],[50,54,57,60],[50,54,57,60],[50,54,57,60],[55,59,62],[55,59,62],
+          [55,59,62,65],[55,59,62,65],[48,52,55],[48,52,55],[57,60,64],[50,54,57,60],[55,59,62],[55,59,62]],
+      mel:[[[74,1],[79,1],[83,1]],[[83,1.5],[81,.5],[79,1]],[[78,1],[81,1],[84,1]],[[84,2],[83,1]],
+           [[81,1],[78,1],[74,1]],[[76,1.5],[78,.5],[81,1]],[[79,1],[78,1],[79,1]],[[83,2],[null,1]],
+           [[83,1],[84,1],[86,1]],[[86,1.5],[84,.5],[83,1]],[[84,1],[88,1],[84,1]],[[83,1],[81,1],[79,1]],
+           [[81,1.5],[83,.5],[84,1]],[[86,1],[84,1],[78,1]],[[79,1],[83,1],[86,1]],[[79,2],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        I.bass((b%2?c[2]-12:c[0]-12),t,B*.8,.26);[1,2].forEach(x=>I.accord(c.map(m=>m+12),t+x*B,B*.45,.04));
+        I.shaker(t,.035);[1,2].forEach(x=>I.shaker(t+x*B,.02));
+        melody((m,tt,d)=>I.mando(m,tt,d*.95,.1),this.mel,b,t,B);
+        if(b===7||b===15)I.accord([c[0]+24],t+2*B,B*.9,.02)}},
+    // … et une tarentelle pour le service (6/8, la mineur), au même entrain que « Coup de feu »
+    tarantella:{name:"Tarentelle du Caffè",bpm:380,beats:6,bars:8,
+      ch:[[45,48,52],[50,53,57],[52,56,59],[45,48,52],[45,48,52],[50,53,57],[52,56,59,62],[45,48,52]],
+      mel:[[[76,1],[72,1],[76,1],[81,2],[76,1]],[[77,1],[74,1],[77,1],[81,2],[77,1]],[[76,1],[75,1],[76,1],[80,1],[83,1],[80,1]],[[81,3],[76,3]],
+           [[84,1],[83,1],[81,1],[83,1],[81,1],[79,1]],[[77,1],[81,1],[77,1],[74,3]],[[76,1],[80,1],[83,1],[86,1],[83,1],[80,1]],[[81,2],[76,1],[69,3]]],
+      bar(b,t,B){const c=this.ch[b],r=c[0]-12;
+        I.bass(r,t,B*1.6,.22);I.bass(r+7,t+3*B,B*1.6,.18);[0,3].forEach(x=>I.kick(t+x*B,.34));
+        [1,2,4,5].forEach(x=>I.accord(c.map(m=>m+12),t+x*B,B*.55,.02));
+        for(let i=0;i<6;i++){I.shaker(t+i*B,i%3?.022:.045);if(i%3===0)I.hat(t+i*B,.03)}
+        if(b===7)[3,4,5].forEach((x,i)=>I.snare(t+x*B,.05+i*.025));
+        melody((m,tt,d)=>{I.mando(m,tt,d*.9,.06);if(d>.3)I.accord([m],tt,d*.8,.012)},this.mel,b,t,B)}},
     // le service : punchy et funky, pour garder le rythme
     service:{name:"Coup de feu",bpm:132,beats:4,bars:8,
       ch:[[53,57,60],[57,60,64],[58,62,65],[60,64,67],[53,57,60],[57,60,64],[58,62,65],[60,64,67]],

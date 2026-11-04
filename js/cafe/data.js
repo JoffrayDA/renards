@@ -77,9 +77,10 @@ const UPG={
   ]
 };
 const lv=id=>+OWN()[id]||0;
-// en Petite Italie, l'équipement se rachète un peu plus cher, et les achats des dernières saisons arrivent plus tôt
+// en Petite Italie, l'équipement se rachète (moins cher : 20 journées pour tout racheter), et les achats des dernières saisons arrivent plus tôt
 const IT_FROM={21:8,31:12};
-const upPrice=nx=>WORLD?Math.round(nx.c*1.3/10)*10:nx.c;
+const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ : 10 360 pièces pour le kit, inabordable ; python tools/balance-bot.py --italie --economie)
+const upPrice=nx=>WORLD?Math.round(nx.c*IT_PRICE/10)*10:nx.c;
 const upLocked=nx=>!!nx.from&&(WORLD?S.it.day<IT_FROM[nx.from]:S.day<nx.from);
 // Bonus à usage unique (S.boost[id] = nombre en réserve) : on les choisit avant une journée, ils ne servent qu'une fois.
 const BOOSTS=[
