@@ -34,7 +34,7 @@ const C={b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"};
 const XF=[
   {id:"lo1",name:"A · Le gamin du quartier",acc:"coppola",scale:.84,bio:"Casquette plate et foulard vert (la casquette est passée à Nonno).",c:C},
   {id:"lo2",name:"B · Le garçon de café (version actuelle)",acc:"garcon",scale:.84,bio:"Grosse moustache en guidon, col blanc, nœud papillon noir.",c:C},
-  {id:"lo3",name:"C · Le garçon de café chic",acc:"garconb",scale:.84,bio:"Gilet noir à boutons dorés, nœud bordeaux, moustache fine relevée, mèche gominée, et son plateau avec un espresso.",c:C}];
+  {id:"lo3",name:"C · Le garçon de café chic",acc:"garconb",scale:.84,bio:"Gilet noir sur tout le corps, revers, boutons dorés, nœud bordeaux, moustache fine relevée, mèche gominée, et son plateau avec un espresso.",c:C}];
 document.getElementById("out").innerHTML=XF.map(f=>`<div class="fox"><strong>${f.name}</strong><em>${f.bio||""}</em>
   <div class="row">${POSES.map(([p,n])=>`<figure>${foxArt(f,{pose:p})}<figcaption>${n}</figcaption></figure>`).join("")}</div>
   <div class="row">${EXPR.map(([e,n])=>`<figure class="pt">${foxArt(f,{portrait:1,expr:e})}<figcaption>${n}</figcaption></figure>`).join("")}<figure>${foxArt(f,{sil:1})}<figcaption>silhouette</figcaption></figure></div></div>`).join("");

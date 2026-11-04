@@ -18,6 +18,7 @@ const LOOK={
 };
 // Nouveaux renards en essai sur la planche avant d'entrer dans FOXES (Gribouille y est entré le 25/10/2026).
 const NEW_FOXES=[];
+let GVN=0; // identifiants uniques des découpes (gilet de Lorenzo)
 function foxArt(f,o={}){
   if(LOOK[f.id])f={...f,...LOOK[f.id]};
   if(f.id==="roussette"&&!o.plain&&typeof meLook==="function")f={...f,...meLook(f)}; // le look choisi par le joueur (js/moi.js)
@@ -93,11 +94,21 @@ function foxArt(f,o={}){
     // Ricotta et son tablier, Tito et son canotier (ruban bleu : pas de bande rouge sur un chapeau de paille), Donna Limone et sa couronne de citrons
     // Lorenzo en garçon de café (Joffray) : moustache en guidon, col blanc et nœud papillon noir
     garcon:`<path d="M${60-w*.62} ${neck-3} L60 ${neck+4} L${60+w*.62} ${neck-3} L${60+w*.5} ${neck+6} L60 ${neck+9} L${60-w*.5} ${neck+6}Z" fill="#fffaf2" stroke-width="1.8"/><path d="M60 ${neck+4} L50 ${neck-1} L50 ${neck+10}Z M60 ${neck+4} L70 ${neck-1} L70 ${neck+10}Z" fill="#3a3040" stroke-width="1.6"/><circle cx="60" cy="${neck+4}" r="2.8" fill="#4a3e52" stroke-width="1.4"/>`+[0,1].map(i=>`<path ${i?'transform="translate(120 0) scale(-1 1)" ':""}d="M60 ${Y+5.4} C55 ${Y+3.4} 50 ${Y+4.2} 47 ${Y+7} C45 ${Y+8.6} 42 ${Y+8} 42 ${Y+5.2} C39.6 ${Y+8.8} 43.6 ${Y+11.6} 48 ${Y+10.2} C52 ${Y+9.2} 56 ${Y+8.4} 60 ${Y+8.4}Z" fill="#5b3a2a" stroke-width="1.6"/>`).join(""),
-    // essai C (tools/lorenzo.html) : gilet noir, nœud bordeaux, moustache fine relevée, mèche gominée, plateau et espresso
-    garconb:`<path d="M${60-w*.66} ${neck-2} Q60 ${neck+2} ${60+w*.66} ${neck-2} L${60+w*.6} ${neck+22} Q60 ${neck+27} ${60-w*.6} ${neck+22}Z" fill="#3a3040" stroke-width="1.8"/><path d="M${60-w*.3} ${neck-1} L60 ${neck+16} L${60+w*.3} ${neck-1}Z" fill="#fffaf2" stroke-width="1.4"/>${[neck+12,neck+18].map(y=>`<circle cx="${60+w*.18}" cy="${y}" r="1.3" fill="#f2c94c" stroke="none"/>`).join("")}<path d="M60 ${neck+3} L52 ${neck-1} L52 ${neck+7}Z M60 ${neck+3} L68 ${neck-1} L68 ${neck+7}Z" fill="#9a2f44" stroke-width="1.4"/><circle cx="60" cy="${neck+3}" r="2.2" fill="#7a2034" stroke-width="1.2"/>`
+    // essai C (tools/lorenzo.html) : gilet noir sur tout le corps (Joffray : « que le vêtement prenne tout son corps »), découpé à la forme
+    // de la brioche, chemise blanche en V, nœud bordeaux, boutons dorés, moustache fine relevée, mèche gominée, plateau et espresso
+    garconb:f.acc!=="garconb"?"":(()=>{const {top:bt,bot,hw}=geo,L=60-hw,R=60+hw,id="gv"+(++GVN),y0=Y+12,wk=pose==="walk"?`rotate(${2.5*(o.frame?1:-1)} 60 88)`:"";
+      const bd=`M${L} ${bot} C${L-6} ${bt+25} 30 ${bt} 60 ${bt} C90 ${bt} ${R+6} ${bt+25} ${R} ${bot} Q60 ${bot+7} ${L} ${bot}Z`,bm=Math.max(y0+10,bot-3);
+      return `<g transform="${wk}"><clipPath id="${id}"><path d="${bd}"/></clipPath><g clip-path="url(#${id})">`
+      +`<path d="M0 ${y0+3} Q30 ${y0-4} 60 ${y0-1} Q90 ${y0-4} 120 ${y0+3} V130 H0Z" fill="#3a3040" stroke-width="2.4"/>`
+      +`<path d="M49 ${y0-1} Q44 ${y0+6} 52 ${bm-2} L60 ${bm-4} M71 ${y0-1} Q76 ${y0+6} 68 ${bm-2} L60 ${bm-4}" fill="#4a3e56" stroke="#6a5a72" stroke-width="1.6"/>`
+      +`<path d="M49 ${y0-1.6} L60 ${bm-4} L71 ${y0-1.6} Q60 ${y0+1} 49 ${y0-1.6}Z" fill="#fffaf2" stroke-width="1.8"/><path d="M60 ${bm-4} V${bot+8}" stroke-width="1.6"/>`
+      +[bm-1,bm+3].map(y=>`<circle cx="62.6" cy="${y}" r="1.4" fill="#f2c94c" stroke-width="1"/>`).join("")
+      +`<path d="M${L+15} ${bm-5} h7 M${R-22} ${bm-5} h7" stroke="#6a5a72" stroke-width="1.6"/></g><path d="${bd}" fill="none"/></g>`
+      +(lastPaws?paws(...lastPaws):"")
+      +`<path d="M60 ${y0+2} L53 ${y0-2} L53 ${y0+6}Z M60 ${y0+2} L67 ${y0-2} L67 ${y0+6}Z" fill="#9a2f44" stroke-width="1.4"/><circle cx="60" cy="${y0+2}" r="2.1" fill="#7a2034" stroke-width="1.2"/>`
       +`<path d="M53 ${top+9} Q51 ${top-9} 69 ${top-7} Q72 ${top-6} 70 ${top-3} Q60 ${top-4} 62 ${top+8}Z" fill="#7a4028" stroke-width="1.8"/><path d="M57 ${top+2} Q57 ${top-4} 64 ${top-5}" fill="none" stroke="#a8603a" stroke-width="1.4"/>`
       +[0,1].map(i=>`<path ${i?'transform="translate(120 0) scale(-1 1)" ':""}d="M60 ${Y+6} Q53 ${Y+3.6} 47 ${Y+7.4} Q42.6 ${Y+9.6} 42.8 ${Y+4.6}" fill="none" stroke="#3a2a22" stroke-width="2.8" stroke-linecap="round"/>`).join("")
-      +`<g transform="translate(91 ${neck+6})"><path d="M-3 4 q-4 -6 -10 -2" fill="none" stroke-width="2"/><ellipse cx="0" cy="2" rx="13" ry="3.4" fill="#d9dee5" stroke-width="1.8"/><path d="M-5 -7 H4 Q4 1 -.5 1 Q-5 1 -5 -7Z" fill="#fff" stroke-width="1.5"/><path d="M4 -5 q3 0 2.6 2.4 q-.4 1.6 -2.8 1.4" fill="none" stroke-width="1.3"/><ellipse cx="-.5" cy="-7" rx="4.5" ry="1.2" fill="#6b3f2a" stroke-width="1"/></g>`,
+      +`<g transform="translate(${R+6} ${y0+2})"><ellipse cx="0" cy="2" rx="12" ry="3.2" fill="#d9dee5" stroke-width="1.8"/><path d="M-5 -7 H4 Q4 1 -.5 1 Q-5 1 -5 -7Z" fill="#fff" stroke-width="1.5"/><path d="M4 -5 q3 0 2.6 2.4 q-.4 1.6 -2.8 1.4" fill="none" stroke-width="1.3"/><ellipse cx="-.5" cy="-7" rx="4.5" ry="1.2" fill="#6b3f2a" stroke-width="1"/></g>`})(),
     coppola:`<path d="M37 ${top+11} Q36 ${top-7} 58 ${top-10} Q82 ${top-11} 86 ${top+3} Q84 ${top+8} 82 ${top+11}Z" fill="#9a8a6a"/><path d="M42 ${top-1} Q60 ${top-7} 80 ${top-3} M40 ${top+5} Q60 ${top} 83 ${top+4}" fill="none" stroke="#7d6e52" stroke-width="1.4"/><path d="M38 ${top+9} Q26 ${top+10} 24 ${top+15} Q38 ${top+17} 52 ${top+11}Z" fill="#7d6e52"/><circle cx="59" cy="${top-9}" r="2" fill="#7d6e52" stroke-width="1.2"/><path d="M${60-w*.7} ${neck-2} Q60 ${neck+6} ${60+w*.7} ${neck-2} L${60+w*.5} ${neck+4} Q60 ${neck+9} ${60-w*.5} ${neck+4}Z" fill="#7fb48a"/><path d="M${60+w*.2} ${neck+4} l4 9 l5 -3 l-3 -7Z" fill="#6fa47a"/>`,
     casque:`<path d="M37 ${top+12} Q36 ${top-16} 60 ${top-17} Q84 ${top-16} 83 ${top+12}Z" fill="#9fd8c4"/><path d="M58 ${top-17} Q56 ${top-2} 57 ${top+12} M62 ${top-17} Q64 ${top-2} 63 ${top+12}" fill="none" stroke="#fffaf2" stroke-width="3"/><path d="M35 ${top+10} Q60 ${top+5} 85 ${top+10}" fill="none" stroke-width="2.4"/><circle cx="50" cy="${top+1}" r="6" fill="#bfe1f0" stroke-width="2"/><circle cx="70" cy="${top+1}" r="6" fill="#bfe1f0" stroke-width="2"/><path d="M47 ${top-1} l3 -2 M67 ${top-1} l3 -2" stroke="#fff" stroke-width="1.6"/><path d="M56 ${top+1} h8" stroke-width="2"/>`,
     tablier:`<path d="M${60-w*.5} ${neck-3} Q60 ${neck-9} ${60+w*.5} ${neck-3}" fill="none" stroke="#fffaf2" stroke-width="3.4"/><path d="M${60-w*.5} ${neck-3} Q60 ${neck-9} ${60+w*.5} ${neck-3}" fill="none" stroke-width="1"/><path d="M${60-w*.48} ${neck+1} H${60+w*.48} L${60+w*.56} ${neck+22} Q60 ${neck+26} ${60-w*.56} ${neck+22}Z" fill="#fffaf2"/><path d="M${60-w*.2} ${neck+11} h${w*.4} v5 q${-w*.2} 3 ${-w*.4} 0Z" fill="#f6c8a8" stroke-width="1.4"/><path d="M60 ${neck+5} c-1.6 -1.6 -4 -.4 -3 1.6 c.6 1.2 3 2.6 3 2.6 s2.4 -1.4 3 -2.6 c1 -2 -1.4 -3.2 -3 -1.6z" fill="#f6a5b4" stroke="none"/>`,
@@ -196,7 +207,8 @@ function foxArt(f,o={}){
     if(f.mark==="oeil")h=`<ellipse cx="72.5" cy="${Y-.6}" rx="7.4" ry="7" fill="${c.e}" opacity=".8" stroke="none"/>`+h;
     if(f.mark==="masque")h=`<path d="M34 ${Y+1} Q35 ${Y-8} 48 ${Y-7} Q60 ${Y-3.5} 72 ${Y-7} Q85 ${Y-8} 86 ${Y+1} Q81 ${Y+7} 72 ${Y+5} Q60 ${Y+2.5} 48 ${Y+5} Q39 ${Y+7} 34 ${Y+1}Z" fill="#625c6e" stroke="none"/>`+h;
     return dx?`<g transform="translate(${dx} 0)">${h}</g>`:h};
-  const paws=(y,l=50,r=70,lift=[0,0])=>gh?"":(f.mark==="moufle"&&!sil?`<path d="M${l-8} ${y-lift[0]+3} Q${l-9} ${y-lift[0]-7} ${l-1} ${y-lift[0]-7} Q${l+8} ${y-lift[0]-7} ${l+8} ${y-lift[0]+3}Z" fill="#7cb8e0"/><path d="M${l-8} ${y-lift[0]+3} L${l+8} ${y-lift[0]+3}" stroke="#fff" stroke-width="2.4"/><path d="M${l-4} ${y-lift[0]-3} l2 2 2 -2 2 2 2 -2" fill="none" stroke="#fff" stroke-width="1.2"/>`:`<ellipse cx="${l}" cy="${y-lift[0]}" rx="7" ry="4.4" fill="${c.s}"/>`)+`<ellipse cx="${r}" cy="${y-lift[1]}" rx="7" ry="4.4" fill="${c.s}"/>`;
+  const paws=(y,l=50,r=70,lift=[0,0])=>(lastPaws=[y,l,r,lift],pawsD(y,l,r,lift));
+  const pawsD=(y,l,r,lift)=>gh?"":(f.mark==="moufle"&&!sil?`<path d="M${l-8} ${y-lift[0]+3} Q${l-9} ${y-lift[0]-7} ${l-1} ${y-lift[0]-7} Q${l+8} ${y-lift[0]-7} ${l+8} ${y-lift[0]+3}Z" fill="#7cb8e0"/><path d="M${l-8} ${y-lift[0]+3} L${l+8} ${y-lift[0]+3}" stroke="#fff" stroke-width="2.4"/><path d="M${l-4} ${y-lift[0]-3} l2 2 2 -2 2 2 2 -2" fill="none" stroke="#fff" stroke-width="1.2"/>`:`<ellipse cx="${l}" cy="${y-lift[0]}" rx="7" ry="4.4" fill="${c.s}"/>`)+`<ellipse cx="${r}" cy="${y-lift[1]}" rx="7" ry="4.4" fill="${c.s}"/>`;
   // Luciole : le bout de la queue est une vraie petite lumière (cœur blanc, halo qui pulse, étincelles).
   // Elle est dessinée hors du filtre #wobble, avec les parties animées (fx) ; o.glowAt garde sa position pour la Clairière.
   const glow=(x,y,rot=0,ox=90,oy=82)=>{if(f.mark!=="lueur"||sil)return "";
@@ -210,7 +222,7 @@ function foxArt(f,o={}){
   // pour l'épouvantail : pas d'yeux boutons quand les yeux sont fermés
   const closedPose=["happy","sleep","groom","eat"].includes(pose);if(closedPose)o.closed=1;
   // fx : parties animées, dessinées hors du filtre #wobble (sinon il est recalculé à chaque image)
-  let body,fx="",T=35,Y=55,N=74,W=30;
+  let body,fx="",T=35,Y=55,N=74,W=30,lastPaws=null;
   if(pose==="happy"){
     // étirée vers le haut, pattes levées, queue haute
     T=27;Y=49;N=68;W=29;
