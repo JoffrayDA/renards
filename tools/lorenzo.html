@@ -22,8 +22,8 @@ p{margin:0 0 12px;opacity:.8}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
-<h1>Lorenzo : trois propositions</h1>
-<p>Le petit renard qui accueille en Petite Italie (Monde 2 du Café). A : la première version. B : le garçon de café actuel. C : un garçon de café plus chic.</p>
+<h1>Lorenzo et Nonno</h1>
+<p>Le petit renard qui accueille en Petite Italie (Monde 2 du Café). A : la première version. B : le garçon de café actuel. C : un garçon de café plus chic (gardé pour Paris). En bas, Nonno avant et après.</p>
 <div id="out"></div>
 <script src="../js/cafe/foxes.js"></script>
 <script src="../js/foxart.js"></script>
@@ -31,10 +31,13 @@ p{margin:0 0 12px;opacity:.8}
 const POSES=[["sit","assis"],["happy","content"],["walk","marche"],["eat","mange"],["groom","toilette"],["up","regarde en l'air"],["lie","allongé"],["sleep","dort"]];
 const EXPR=[["open","normal"],["joy","joie"],["shy","timide"],["surprise","surpris"],["sad","triste"]];
 const C={b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"};
+const NC={b:"#d4a684",ch:"#fbf5ec",e:"#8a6a54",s:"#7d5e4a",t:"#fbf5ec"};
 const XF=[
   {id:"lo1",name:"A · Le gamin du quartier",acc:"coppola",scale:.84,bio:"Casquette plate et foulard vert (la casquette est passée à Nonno).",c:C},
   {id:"lo2",name:"B · Le garçon de café (version actuelle)",acc:"garcon",scale:.84,bio:"Grosse moustache en guidon, col blanc, nœud papillon noir.",c:C},
-  {id:"lo3",name:"C · Le garçon de café chic",acc:"garconb",scale:.84,bio:"Gilet noir sur tout le corps, revers, boutons dorés, nœud bordeaux, moustache fine relevée, mèche gominée, et son plateau avec un espresso.",c:C}];
+  {id:"lo3",name:"C · Le garçon de café chic",acc:"garconb",scale:.84,bio:"Gilet noir sur tout le corps, revers, boutons dorés, nœud bordeaux, moustache fine relevée, mèche gominée, et son plateau avec un espresso.",c:C},
+  {id:"no1",name:"Nonno · ancien (casquette)",acc:"coppola",mark:"vieux",bio:"Le grand-père de Lorenzo avec la casquette plate et le foulard vert.",c:NC},
+  {id:"no2",name:"Nonno · nouveau (moustache et nœud papillon, version actuelle)",acc:"garcon",mark:"vieux",bio:"L'ancien patron du Caffè : moustache en guidon, col blanc, nœud papillon noir.",c:NC}];
 document.getElementById("out").innerHTML=XF.map(f=>`<div class="fox"><strong>${f.name}</strong><em>${f.bio||""}</em>
   <div class="row">${POSES.map(([p,n])=>`<figure>${foxArt(f,{pose:p})}<figcaption>${n}</figcaption></figure>`).join("")}</div>
   <div class="row">${EXPR.map(([e,n])=>`<figure class="pt">${foxArt(f,{portrait:1,expr:e})}<figcaption>${n}</figcaption></figure>`).join("")}<figure>${foxArt(f,{sil:1})}<figcaption>silhouette</figcaption></figure></div></div>`).join("");
