@@ -15,7 +15,7 @@ function newDay(d){
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
   G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?S.it.stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
-  $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?"tarantella":"service");
+  $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?(d%2?"tarantella":"polka"):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
 function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0))))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
