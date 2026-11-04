@@ -32,6 +32,9 @@ function render(){
   }
   [...box.children].forEach(e=>{if(!keep.has(e))e.remove()});
   renderKitchen();renderTray();updateBars();
+  // gelato : on explique le comptoir à glaces aux trois premières commandes (S.it.gtip)
+  if(G.it&&(S.it.gtip||0)<3){const c=G.cust.find(c=>c.state==="wait"&&!c.gt&&c.order.some(o=>o.g));
+    if(c){c.gt=1;S.it.gtip=(S.it.gtip||0)+1;const g=c.order.find(o=>o.g).g;hint(`Gelato : touche les bacs <b>dans l'ordre, de bas en haut</b> (${gelName(g)}). Raté ? Touche le cornet.`)}}
 }
 function renderTray(){
   const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;
@@ -49,7 +52,8 @@ function renderKitchen(){
   const on=G&&G.run;
   const tile=(inner,attrs,cls,extra="")=>`<div class="kw"><button class="kb ${cls}" type="button" ${attrs} ${on?"":"disabled"}>${inner}</button>${extra}</div>`;
   let dr="";
-  for(const k of Object.keys(REC)){if(REC[k].kind!=="drink"||!onMenu(k))continue;
+  const gel=gelOn()&&onMenu("smoothie");
+  for(const k of Object.keys(REC)){if(REC[k].kind!=="drink"||!onMenu(k)||gel&&k==="smoothie")continue;
     const sl=on?G.st[k]:[{}],rd=sl.some(s=>s.ready);
     dr+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span><span class="slots">${sl.map((s,i)=>`<span class="sl${s.ready?" ready":""}"><i id="sp-${k}-${i}"></i></span>`).join("")}</span>`,`data-st="${k}" aria-label="${REC[k].name}${rd?", prêt":""}"`,rd?"rdy":"");
   }
@@ -60,8 +64,10 @@ function renderKitchen(){
     pa+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span>`,`data-pa="${k}" aria-label="${REC[k].name} : ${n} en vitrine"`,n?"":"empty",
       `<span class="badge${n?"":" zero"}">${n}</span>${on&&n&&o.state==="idle"?`<button class="kbake" data-bake="${k}" type="button" aria-label="En cuire ${batchOf(k)} de plus">${icon("four")}</button>`:""}`);
   }
-  const h=`<div class="krow">${dr}</div><div class="krow">${pa}</div>`;
-  if($("kitchen")._h!==h){$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars()}
+  // la Petite Italie : le comptoir à glaces, une rangée à lui (le cornet en cours, puis un bac par parfum)
+  const cn=on?G.cone:"",gr=gel?`<div class="krow gelrow"><button class="gcone${cn?" on":""}" type="button" data-cone aria-label="${cn?"Jeter le cornet":"Cornet vide"}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${gelSVG(cn)}</svg>${cn?`<span class="gx">${icon("bin")}</span>`:""}</button>${Object.keys(GEL).map(x=>`<button class="kb gtub" type="button" data-gel="${x}" aria-label="Une boule ${GEL[x].n}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 20 H33 L30 35 H10Z" fill="#dfeef6" ${K}/><path d="M7 20 Q8 9 20 10 Q32 9 33 20Z" fill="${GEL[x].c}" ${K}/><circle cx="15" cy="15" r="1.6" fill="#fff"/></svg><span class="kn">${GEL[x].n}</span></button>`).join("")}</div>`:"";
+  const h=`<div class="krow">${dr}</div>${gr}<div class="krow">${pa}</div>`;
+  if($("kitchen")._h!==h){$("kitchen").classList.toggle("gel",!!gel);$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars()}
 }
 function updateBars(){
   if(!G||!G.run)return;
@@ -83,7 +89,7 @@ function autoHint(){
     if(need.some(k=>G.tray.includes(k)))h="Ton plateau a ce qu'il faut : <b>touche le client</b> pour le servir.";
     else if(opt)h=`Touche <b>« ${OPTS[opt.split("+")[1]].name} »</b>, au bout du plateau, pour compléter la commande.`;
     else if(G.oven.state==="ready")h="<b>Touche le four</b> pour sortir la fournée avant qu'elle brûle !";
-    else{const nb=need.map(baseOf);const d=nb.find(r=>REC[r].kind==="drink");const b=nb.find(r=>REC[r].kind==="bake");
+    else{const nb=need.map(baseOf);const d=nb.find(r=>REC[r].kind==="drink"&&G.st[r]);const b=nb.find(r=>REC[r].kind==="bake");
       if(d&&G.st[d].some(s=>s.ready))h=`« ${REC[d].name} » est prêt : <b>touche-le</b> pour le poser sur le plateau.`;
       else if(b&&G.vit[b])h=`Il y en a en vitrine : <b>touche « ${REC[b].name} »</b> pour le mettre sur le plateau.`;
       else if(d&&!G.st[d].some(s=>s.busy))h=`<b>Touche « ${REC[d].name} »</b> pour lancer la préparation.`;

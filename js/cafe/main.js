@@ -24,6 +24,8 @@ function burst(el){const [x,y]=rel(el);for(let i=0;i<3;i++){const s=document.cre
 function onTap(el,fn){el.addEventListener("pointerdown",e=>{if(e.button)return;fn(e)});el.addEventListener("click",e=>{if(e.detail===0)fn(e)})}
 onTap($("custs"),e=>{const b=e.target.closest("[data-cust]");if(!b||!G||!G.run)return;const c=G.cust.find(x=>x.id==b.dataset.cust);if(c)deliver(c,b)});
 onTap($("kitchen"),e=>{const b=e.target.closest("button");if(!b||!G||!G.run)return;
+  if(b.dataset.gel){scoop(b.dataset.gel,b);return}
+  if(b.dataset.cone!==undefined){if(G.cone){G.cone="";dirty=true}else hint("Touche les bacs de gelato <b>dans l'ordre de la commande</b>, de bas en haut.");return}
   if(b.dataset.st)tapStation(b.dataset.st,b);else if(b.dataset.bake)bake(b.dataset.bake);
   else if(b.dataset.oven!==undefined){if(G.oven.state==="ready")unload();else if(G.oven.state==="idle")hint("Touche une <b>pâtisserie</b> pour lancer une fournée.")}
   else if(b.dataset.pa){const k=b.dataset.pa;if(G.vit[k])fromVit(k,b);else if(G.oven.state==="idle")bake(k);else{shake(b);hint(G.oven.state==="ready"?"<b>Touche le four</b> pour sortir la fournée d'abord.":"Le four est occupé : attends la fin de la cuisson.")}}});

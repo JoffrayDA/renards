@@ -27,11 +27,16 @@ const OPTS={
 };
 // en Petite Italie, le lait devient la mousse (cappuccino) et la chantilly la panna
 for(const o in OPTS){const x=OPTS[o];x.nm=x.name;Object.defineProperty(x,"name",{get:()=>WORLD?{lait:"Mousse",chantilly:"Panna"}[o]:x.nm})}
-const itemKey=o=>o.r+(o.o?"+"+o.o:"");
-const baseOf=k=>k.split("+")[0];
-const itemName=k=>{const [r,o]=k.split("+");if(WORLD&&o)return o==="lait"&&r==="cafe"?"Cappuccino":`${REC[r].name} panna`;return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
-const itemPrice=k=>{const [r,o]=k.split("+");return REC[r].price+(o?OPTS[o].price:0)};
-const itemCost=k=>{const [r,o]=k.split("+");return REC[r].cost+(o?OPTS[o].cost:0)};
+// Petite Italie : le gelato se compose (Joffray, 04/11/2026) : trois boules, une de chaque parfum, dans l'ordre demandé (de bas en haut).
+// Un gelato s'écrit "smoothie~pfl" (p pistacchio, f fragola, l limone) ; pas de station, un comptoir à glaces (renderKitchen, scoop).
+const GEL={p:{n:"Pistacchio",c:"#b6dc8a"},f:{n:"Fragola",c:"#f9b8c6"},l:{n:"Limone",c:"#fde98a"}};
+const gelOn=()=>WORLD==="italie";
+const itemKey=o=>o.r+(o.g?"~"+o.g:"")+(o.o?"+"+o.o:"");
+const baseOf=k=>k.split("+")[0].split("~")[0];
+const gelName=g=>g.split("").map(x=>GEL[x].n.toLowerCase()).join(" › ");
+const itemName=k=>{if(k.includes("~"))return `${REC.smoothie.name} ${gelName(k.split("~")[1])}`;const [r,o]=k.split("+");if(WORLD&&o)return o==="lait"&&r==="cafe"?"Cappuccino":`${REC[r].name} panna`;return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
+const itemPrice=k=>{const [r0,o]=k.split("+"),r=baseOf(r0);return REC[r].price+(o?OPTS[o].price:0)};
+const itemCost=k=>{const [r0,o]=k.split("+"),r=baseOf(r0);return REC[r].cost+(o?OPTS[o].cost:0)};
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
 let SEA="automne";
 const VAR={

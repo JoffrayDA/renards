@@ -11,10 +11,10 @@ function newDay(d){
   const it=WORLD==="italie"&&IT_DAYS[d-1];
   const cfg=it?itCfg(d):cfgOf(d),st={};SEA=it?"italie":chapOf(d).sea;
   const bo={};for(const id of boostSel)if(S.boost[id]>0){S.boost[id]--;bo[id]=1}boostSel.clear();
-  for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d))st[k]=Array.from({length:k==="cafe"?1+lv("double"):OWN().machines?2:1},()=>({t:0,busy:0,ready:0}));
+  for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d)&&!(it&&k==="smoothie"))st[k]=Array.from({length:k==="cafe"?1+lv("double"):OWN().machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?S.it.stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p]))};
+  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?S.it.stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p])),cone:""};
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?(d%2?"tarantella":"polka"):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
@@ -28,7 +28,9 @@ function genOrder(){
   const n=m===1?1:m===2?(r<.6?1:2):(r<.42?1:r<.78?2:3);
   // une fois sur trois environ, l'article demande une option gagnée (café crème, chantilly)
   return Array.from({length:n},()=>{const r=un[Math.floor(G.rng()*un.length)],op=Object.keys(OPTS).find(o=>OPTS[o].for.includes(r)&&optOn(o)),roll=G.rng();
-    return{r,o:op&&roll<.35?op:undefined,done:0}});
+    // un gelato de la Petite Italie : les trois parfums dans un ordre tiré au sort
+    const g=r==="smoothie"&&gelOn()?"pfl".split("").map(x=>[G.rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(""):undefined;
+    return{r,g,o:op&&roll<.35?op:undefined,done:0}});
 }
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
@@ -126,6 +128,12 @@ function tapStation(k,el){
   if(r){if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}r.ready=0;r.t=0;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true;return}
   const f=sl.find(s=>!s.busy&&!s.ready);
   if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
+}
+// le comptoir à glaces : chaque toucher pose une boule sur le cornet ; à la troisième, le gelato part sur le plateau
+function scoop(f,el){
+  if(!G||!G.run||typeof G.cone!=="string")return;
+  if(G.cone.length===2&&G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}
+  G.cone+=f;if(G.cone.length===3){G.tray.push("smoothie~"+G.cone);G.popI=G.tray.length-1;G.cone="";G.arm=null}dirty=true;
 }
 function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
 function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(OWN().four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}

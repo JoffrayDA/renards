@@ -43,6 +43,13 @@ BOT = """(args) => {
     const onTray = {}; G.tray.forEach(k => onTray[k] = (onTray[k] || 0) + 1);
     for (const k of need) {
       if (onTray[k]) { onTray[k]--; continue; }
+      // gelato de la Petite Italie : une boule par toucher, dans l'ordre ; un cornet mal parti est jeté
+      if (k.includes("~")) {
+        const g = k.split("~")[1];
+        if (g.startsWith(G.cone)) { if (G.cone.length < 2 || G.tray.length < trayCap()) { scoop(g[G.cone.length], null); return; } continue; }
+        if (!need.some(n => n.includes("~") && n.split("~")[1].startsWith(G.cone))) { G.cone = ""; return; }
+        continue;
+      }
       const [r, op] = k.split("+");
       // option : si l'article de base est déjà sur le plateau, on la pose (sinon on prépare la base)
       if (op && onTray[r]) { onTray[r]--; applyOpt(op, null); return; }

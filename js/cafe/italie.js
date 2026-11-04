@@ -22,7 +22,7 @@ const ITF_REG=ITF.filter(f=>f.rar==="commun");
 
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde (le jour 1 du quartier se joue déjà comme le jour 15), graine et objectif par --italie
-const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:13,goal:151},{base:17,seed:12,goal:168},{base:18,seed:8,goal:185},{base:19,seed:3,goal:209},{base:20,seed:3,goal:218},{base:21,seed:0,goal:219},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:15,goal:307},{base:25,seed:14,goal:311},{base:26,seed:12,goal:327},{base:27,seed:7,goal:353},{base:28,seed:3,goal:380},{base:30,seed:6,goal:395},{base:32,seed:4,goal:441},{base:34,seed:12,goal:435},{base:36,seed:14,goal:448},{base:38,seed:14,goal:455},{base:40,seed:1,goal:461}];
+const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:13,goal:151},{base:17,seed:12,goal:168},{base:18,seed:8,goal:185},{base:19,seed:3,goal:209},{base:20,seed:3,goal:218},{base:21,seed:0,goal:219},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:7,goal:304},{base:25,seed:0,goal:319},{base:26,seed:10,goal:337},{base:27,seed:3,goal:357},{base:28,seed:13,goal:383},{base:30,seed:15,goal:414},{base:32,seed:7,goal:433},{base:34,seed:9,goal:450},{base:36,seed:1,goal:459},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
 const IT_LAST=IT_DAYS.length;
 // équipement prévu pour chaque journée du quartier (calibrage, et objectif relevé au-delà, comme KIT)
 const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["serveur",1,8],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];
@@ -292,9 +292,9 @@ const IT_PAGES={
   6:{q:"Cioccolata : si épaisse que la cuillère tient debout. Pour les jours de pluie et les cœurs gros.",lines:[
     ["tito","joy","Je l'ai pêchée dans la fontaine ! Elle est un peu mouillée…"],["page","",""],
     ["lorenzo","shy","Nonno m'en faisait toujours quand j'étais triste. Merci, Tito."]]},
-  9:{q:"Gelato : une boule pour goûter, deux pour partager, trois pour les jours de fête.",lines:[
+  9:{q:"Gelato : trois boules, pistacchio, fragola, limone. Mais c'est le client qui choisit l'ordre : l'ordre, c'est la moitié du goût.",lines:[
     ["lorenzo","joy","Celle-là était collée sous le pont du canal ! Le gelato arrive au Caffè !"],["page","",""],
-    ["lorenzo","open","Partager… Nonno partageait tout. Même son dernier cornetto."]]},
+    ["lorenzo","open","Nonno se souvenait de l'ordre de chaque habitué. Moi, je vais devoir bien écouter."]]},
   11:{q:"La panna se fouette à la main, et jamais trop. Comme les compliments.",lines:[
     ["lorenzo","surprise","Le vent l'avait poussée jusqu'en haut de la tour qui penche ! J'ai monté les 294 marches !"],["page","",""],
     ["lorenzo","open","Il n'en reste plus qu'une. La plus importante, je crois…"]]},
@@ -368,7 +368,7 @@ function endIt(){
   const bl=st>prev?st-prev+(st===3?2:0):0;if(bl)addBells(bl);
   if(st&&d===S.it.day)S.it.day++; // S.it.day passe à 21 quand le quartier est fini (itCur le borne à 20)
   const rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d&&k!=="lait");
-  if(st&&rk&&!S.it.own[rk]){S.it.own[rk]=1;news.push(itRow(icon(rk,"italie"),`Nouvelle ${OPTS[rk]?"option":"recette"} : ${OPTS[rk]?"la panna":VAR.italie[rk][0]}`,OPTS[rk]?"Touche « Panna », au bout du plateau, pour en mettre sur une cioccolata ou un tiramisù.":"Elle arrive sur la carte du Caffè dès la prochaine journée.","background:#e3f2d6"))}
+  if(st&&rk&&!S.it.own[rk]){S.it.own[rk]=1;news.push(itRow(icon(rk,"italie"),`Nouvelle ${OPTS[rk]?"option":"recette"} : ${OPTS[rk]?"la panna":VAR.italie[rk][0]}`,OPTS[rk]?"Touche « Panna », au bout du plateau, pour en mettre sur une cioccolata ou un tiramisù.":rk==="smoothie"?"Dès la prochaine journée, un comptoir à glaces : chaque client veut ses trois parfums dans son ordre à lui. Touche les bacs de bas en haut.":"Elle arrive sur la carte du Caffè dès la prochaine journée.","background:#e3f2d6"))}
   if(st&&!prev&&IT_PAGES[d])news.push(itRow(pageSVG,"Lorenzo a retrouvé une page du carnet !","Une page du carnet de Nonno t'attend sur la carte du quartier.","background:#fbf3dc"));
   if(st&&!prev&&d===IT_LAST&&!S.it.nonno)news.push(itRow(foxSVG(FOX.nonno,{sil:1}),"Quelqu'un descend des collines…","Retourne sur la carte du quartier pour l'accueillir.","background:#fbf3dc"));
   if(itStarSum()>=IT_LAST*3&&!S.it.guest){S.it.guest=1;news.push(itRow(foxSVG(FOX.donnalimone,{pose:"happy"}),"Donna Limone rejoint tes cafés !","Toute la Petite Italie en ★★★ : la légende du quartier vient désormais en invitée d'honneur, dans tous tes cafés.","background:#fbf0cc"))}
