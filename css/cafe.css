@@ -366,3 +366,21 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 @keyframes ni-spin{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.12)}}
 @keyframes ni-fall{to{transform:translate(var(--dx),110vh)}}
 @media (prefers-reduced-motion:reduce){#noelintro *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+
+/* les scènes de dialogue des quartiers (itTalk dans italie.js) : le renard en grand, sa bulle en bas, le décor visible derrière un voile */
+.vn{position:fixed;inset:0;box-sizing:border-box;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:0 12px calc(18px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(91,66,80,0) 25%,rgba(91,66,80,.5));cursor:pointer;-webkit-tap-highlight-color:transparent;animation:vnfade .25s ease-out}
+.vn-who{width:min(52vw,230px);align-self:flex-start;margin:0 0 -26px max(0px,calc(50% - 280px));position:relative;z-index:1;filter:drop-shadow(0 6px 0 rgba(91,66,80,.25))}
+.vn-who.r{align-self:flex-end;margin:0 max(0px,calc(50% - 280px)) -26px 0;transform:scaleX(-1)}
+.vn-who svg{display:block;width:100%}
+.vn-who.in{animation:vnpop .3s cubic-bezier(.3,1.5,.5,1)}
+.vn-who.r.in{animation:vnpopr .3s cubic-bezier(.3,1.5,.5,1)}
+.vn-box{position:relative;z-index:2;box-sizing:border-box;width:100%;max-width:560px;background:#fffaf2;border:3px solid var(--ink);border-radius:22px;padding:20px 18px 12px;box-shadow:0 5px 0 var(--ink)}
+.vn-box p{margin:0;font-size:16px;line-height:1.45;font-weight:600;color:var(--ink)}
+.vn-box small{display:block;text-align:right;margin-top:8px;font-size:11.5px;color:var(--ink-soft)}
+.vn-box small span{display:inline-block;animation:vnnext 1s ease-in-out infinite}
+.vn-name{position:absolute;top:-17px;left:18px;font-family:var(--display);font-weight:400;font-size:15px;background:var(--coral);color:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:3px 14px;box-shadow:0 3px 0 var(--ink)}
+.vn-name.r{left:auto;right:18px;background:#7fb48a}
+@keyframes vnfade{from{opacity:0}}
+@keyframes vnpop{from{transform:translateY(24px) scale(.9);opacity:0}}
+@keyframes vnpopr{from{transform:scaleX(-1) translateY(24px) scale(.9);opacity:0}}
+@keyframes vnnext{50%{transform:translateY(3px)}}

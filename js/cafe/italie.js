@@ -279,10 +279,17 @@ function goWorld(w){
 /* ---------- Lorenzo accueille Roussette ---------- */
 // un dialogue : lignes [qui, expression, texte] ; qui = id d'un renard, ou "page" (une page du carnet de Nonno, lue par Lorenzo)
 const pageSVG=`<svg viewBox="0 0 120 120"><g transform="rotate(-6 60 60)"><path d="M22 14 H92 L98 20 V106 H22Z" fill="#fbf3dc" ${K}/><path d="M92 14 V20 H98" fill="#efe1bc" ${K}/>${[34,46,58,70,82].map((y,i)=>`<path d="M32 ${y} q${10+i} -3 ${22+i*3} 0 t${22-i*2} 0" fill="none" stroke="#8a6a54" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>`).join("")}<circle cx="80" cy="94" r="7" fill="#f2c94c" opacity=".55"/><path d="M28 98 q6 -8 14 0" fill="none" stroke="#c9a14a" stroke-width="2" stroke-linecap="round"/></g></svg>`;
+// une scène de dialogue (04/11/2026, Joffray : « un écran blanc sur la moitié de l'écran ») : le café ou la carte restent visibles derrière
+// un voile, le renard qui parle apparaît en grand (son portrait, avec son expression), son texte dans une bulle avec son nom.
+// Le premier à parler est à gauche, les autres à droite ; on touche n'importe où pour continuer.
 function itTalk(lines,done){
-  let i=0;const show=()=>{const [who,expr,txt]=lines[i],end=i===lines.length-1,pg=who==="page",f=FOX[pg?"lorenzo":who];
-    openSheet(`<div style="width:150px;margin:0 auto">${pg?pageSVG:foxSVG(f,{pose:expr==="sad"||expr==="shy"?"sit":"happy"})}</div><div class="talk"><div class="pic">${foxArt(f,{expr:pg?"open":expr,portrait:1})}</div><div class="txt"><b>${pg?"Le carnet de Nonno":f.name}</b><span>${pg?`<i>« ${txt} »</i>`:txt}</span><small>${end?"Touche pour fermer":"Touche pour continuer"}</small></div></div>`,1);
-    $("sheet-in").querySelector(".talk").onclick=()=>{if(++i<lines.length)show();else{closeSheet();if(done)done()}}};
+  closeSheet();let i=0;const vn=document.createElement("div");vn.className="vn";document.body.appendChild(vn);
+  const first=lines[0][0];
+  const show=()=>{const [who,expr,txt]=lines[i],end=i===lines.length-1,pg=who==="page",f=FOX[pg?"lorenzo":who],right=!pg&&who!==first;
+    vn.innerHTML=`<div class="vn-who${right?" r":""}" aria-hidden="true">${pg?pageSVG:foxArt(f,{expr,portrait:1})}</div>
+    <div class="vn-box"><b class="vn-name${right?" r":""}">${pg?"Le carnet de Nonno":f.name}</b><p>${pg?`<i>« ${txt} »</i>`:txt}</p><small>${end?"Touche pour fermer":"Touche pour continuer"} <span>▼</span></small></div>`;
+    vn.querySelector(".vn-who").classList.add("in")};
+  vn.onclick=()=>{if(++i<lines.length)show();else{vn.remove();if(done)done()}};
   show();
 }
 function lorenzoIntro(){
