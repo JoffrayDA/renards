@@ -212,6 +212,32 @@ const MUSIC=(()=>{
         [1,3].forEach(x=>I.clap(t+x*B,.03));for(let i=0;i<4;i++)I.shaker(t+i*B,.022);
         melody((m,tt,d)=>I.keys(m+12,tt,.1,Math.max(.4,d*1.1)),this.mel,b,t,B);
         if(b%2)I.accord([c[2]+12,c[0]+24],t+3.5*B,B*.45,.03)}},
+    // deuxième série (Joffray : « 3 autres ») : une boîte à musique qui tourne en haut de la tour (do majeur)…
+    tourbox:{name:"La boîte à musique de la tour",bpm:104,beats:3,bars:8,
+      ch:[[48,52,55],[53,57,60],[55,59,62],[48,52,55],[57,60,64],[53,57,60],[55,59,62,65],[48,52,55]],
+      mel:[[[76,1],[79,1],[84,1]],[[81,1.5],[79,.5],[77,1]],[[74,1],[79,1],[83,1]],[[84,2],[79,1]],
+           [[81,1],[84,1],[88,1]],[[86,1],[84,1],[81,1]],[[79,1],[83,1],[86,1]],[[84,3]]],
+      bar(b,t,B){const c=this.ch[b];[c[0]+12,c[1]+12,c[2]+12,c[1]+12,c[2]+12,c[0]+24].forEach((m,i)=>I.harp(m,t+i*B/2,.05));
+        I.bass(c[0]-12,t,B*2.5,.14);I.pad(c.map(x=>x+12),t,B*3,.018);
+        melody((m,tt)=>{I.box(m+12,tt,.18,1.6);I.accord([m],tt,B*.8,.012)},this.mel,b,t,B)}},
+    // … un pique-nique au Champ-de-Mars, cordes pincées et flûte qui gambade (la majeur)…
+    picnic:{name:"Pique-nique au Champ-de-Mars",bpm:124,beats:4,bars:8,
+      ch:[[57,61,64],[62,66,69],[64,68,71],[57,61,64],[62,66,69],[57,61,64],[64,68,71,74],[57,61,64]],
+      mel:[[[76,.5],[78,.5],[81,1],[78,.5],[76,.5],[73,1]],[[74,1],[78,1],[81,2]],[[80,.5],[81,.5],[83,1],[80,1],[76,1]],[[81,3],[null,1]],
+           [[78,1],[81,.5],[83,.5],[86,1],[83,1]],[[81,1],[78,.5],[76,.5],[73,2]],[[76,1],[80,1],[83,1],[86,1]],[[85,2],[81,2]]],
+      bar(b,t,B){const c=this.ch[b];
+        [[0,1],[1,.7],[1.5,.6],[2.5,.6],[3,.8]].forEach(([x,v])=>c.forEach((m,i)=>I.pluck(m,t+x*B+i*.012,.045*v,.4,2800)));
+        I.bass(c[0]-12,t,B*.9,.2);I.bass(c[2]-12,t+2*B,B*.9,.16);for(let i=0;i<8;i++)I.shaker(t+i*B/2,i%2?.02:.032);
+        melody((m,tt,d)=>I.flute(m,tt,d*.95,.075,.01),this.mel,b,t,B)}},
+    // … et la valse des lampadaires, le soir sur les quais : lente, harpe et accordéon tout doux (si bémol majeur)
+    lampadaires:{name:"Valse des lampadaires",bpm:126,beats:3,bars:16,
+      ch:[[46,50,53],[46,50,53],[51,55,58],[51,55,58],[53,57,60,63],[53,57,60,63],[46,50,53],[46,50,53],
+          [43,46,50],[43,46,50],[51,55,58],[51,55,58],[48,52,55,58],[53,57,60,63],[46,50,53],[46,50,53]],
+      mel:[[[74,2],[77,1]],[[82,2],[81,1]],[[79,2],[75,1]],[[79,3]],[[77,1],[81,1],[84,1]],[[82,2],[81,1]],[[77,2],[74,1]],[[77,3]],
+           [[74,1],[77,1],[79,1]],[[82,2],[79,1]],[[79,1],[82,1],[87,1]],[[86,3]],[[84,1],[82,1],[79,1]],[[81,1],[84,1],[87,1]],[[86,2],[82,1]],[[82,3]]],
+      bar(b,t,B){const c=this.ch[b];[c[0],c[1]+12,c[2]+12].forEach((m,i)=>I.harp(m+(i?0:12),t+i*B,.06));
+        I.bass(c[0]-12,t,B*2.6,.14);I.pad(c.map(x=>x+12),t,B*3,.02);
+        melody((m,tt,d)=>{I.accord([m],tt,d*.95,.035);I.keys(m+12,tt,.04,d*1.2)},this.mel,b,t,B)}},
     // … et un galop endiablé pour le service (fa majeur), au même entrain que la tarentelle
     galop:{name:"Galop du Café Kitsune",bpm:300,beats:4,bars:8,
       ch:[[53,57,60],[48,52,55,58],[53,57,60],[53,57,60],[46,50,53],[53,57,60],[48,52,55,58],[53,57,60]],
