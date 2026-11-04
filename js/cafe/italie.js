@@ -23,6 +23,11 @@ const ITF_REG=ITF.filter(f=>f.rar==="commun");
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde (le jour 1 du quartier se joue déjà comme le jour 15), graine et objectif par --italie
 const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:13,goal:151},{base:17,seed:12,goal:168},{base:18,seed:8,goal:185},{base:19,seed:3,goal:209},{base:20,seed:3,goal:218},{base:21,seed:0,goal:219},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:7,goal:304},{base:25,seed:0,goal:319},{base:26,seed:10,goal:337},{base:27,seed:3,goal:357},{base:28,seed:13,goal:383},{base:30,seed:15,goal:414},{base:32,seed:7,goal:433},{base:34,seed:9,goal:450},{base:36,seed:1,goal:459},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
+// ★★★ de chaque journée, en multiple de l'objectif (04/11/2026, Joffray : tout équipé, il n'avait pas ★★★ au jour 6 ;
+// « je ne veux pas que les gens aient à payer des bonus pour avoir 3 étoiles s'ils font tout parfaitement »).
+// Mesuré avec tout l'équipement, sans bonus : le seuil est le score du bot à 1,25 s par action (1,7 au plus, 1,25 au moins),
+// et jamais plus que 97 % du bot sans faute à 0,8 s. ★★ est à mi-chemin. L'objectif ★ ne change pas.
+const IT_S3=[1.25,1.29,1.58,1.47,1.33,1.47,1.5,1.43,1.28,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.17,1.25];
 const IT_LAST=IT_DAYS.length;
 // équipement prévu pour chaque journée du quartier (calibrage, et objectif relevé au-delà, comme KIT)
 const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["serveur",1,8],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];
@@ -347,7 +352,7 @@ function itDaySheet(d){
   openSheet(`<h2>Jour ${d} · Petite Italie</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">${c.c} clients attendus, jusqu'à ${c.max} articles par commande. Patience : ${Math.round(c.pat*patMult())} s.${S.it.best[d]?` Record : <b>${S.it.best[d]} pièces</b>.`:""}</p>
   <p class="sub" style="margin-bottom:6px">À la carte : ${menu.join(", ")}.</p>
-  <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
+  <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*cuts(d)[1])}</span><span><em>★★★</em>${Math.ceil(g*cuts(d)[2])}</span></div>
   ${equipBonus(d)?`<p class="sub" style="margin:6px 0 0;font-size:12.5px">Objectif relevé de <b>${Math.round(equipBonus(d)*100)} %</b> : ton équipement dépasse celui prévu pour ce jour.</p>`:""}
   ${rw.join("")}
   ${boostHTML(()=>itDaySheet(d))}
@@ -358,7 +363,7 @@ function itGuestSheet(){const f=FOX.donnalimone,ok=S.it.guest;
 
 /* ---------- fin d'une journée du quartier ---------- */
 function endIt(){
-  const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=G.day,prev=S.it.stars[d]||0,base=IT_DAYS[d-1].base;
+  const d=G.day,[,c2,c3]=cuts(d),g=G.cfg.goal,e=G.earned,st=e>=Math.ceil(g*c3)?3:e>=Math.ceil(g*c2)?2:e>=g?1:0,prev=S.it.stars[d]||0,base=IT_DAYS[d-1].base;
   G.run=0;
   if(!G.lost&&st)qEvent("perfect");if(st===3)qEvent("stars3");
   if(st){const m=noelEvent("star");if(m)setTimeout(()=>toast(m),1200)}
@@ -374,7 +379,7 @@ function endIt(){
   if(itStarSum()>=IT_LAST*3&&!S.it.guest){S.it.guest=1;news.push(itRow(foxSVG(FOX.donnalimone,{pose:"happy"}),"Donna Limone rejoint tes cafés !","Toute la Petite Italie en ★★★ : la légende du quartier vient désormais en invitée d'honneur, dans tous tes cafés.","background:#fbf0cc"))}
   const bRow=buddyRow(),qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
-  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
+  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<IT_LAST&&d+1<=S.it.day;
   openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>Petite Italie · jour ${d}</b><br>${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div></div>

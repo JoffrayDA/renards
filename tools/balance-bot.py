@@ -124,9 +124,10 @@ with sync_playwright() as p:
         cost = page.evaluate("() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map(l => Math.round(l.c * IT_PRICE / 10) * 10)]))")
         bases = page.evaluate("() => IT_DAYS.map(x => x.base)")
         coins, low, total = 1500, 1500, 0   # ce qui reste en moyenne du premier café (--economie : environ 1 850 au jour 40)
+        s3 = page.evaluate("() => IT_S3")
         for d in range(1, len(bases) + 1):
             e, g, *_, gain = page.evaluate(BOT, [d, own_it(d), GOOD, None, "italie"])
-            st = 3 if e >= g * 1.7 else 2 if e >= g * 1.35 else 1 if e >= g else 0
+            c3 = s3[d - 1]; st = 3 if e >= g * c3 else 2 if e >= g * (1 + (c3 - 1) / 2) else 1 if e >= g else 0
             chest = round(8.5 * st + (15 + 2 * bases[d - 1] if st == 3 else 0))
             buy = [(k, n) for k, n, kd in IT_KIT if kd == d]
             spent = sum(cost[k][n - 1] for k, n in buy)
