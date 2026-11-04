@@ -124,7 +124,9 @@ function envBadge(id){const c=envCur();return !!c&&((c.step==="ask"&&c.id===id)|
 function setBadge(f){const B=f.badge;B.innerHTML="";if(f.wild)return;
   if(isTarget(f.id))B.innerHTML=`<i class="mark">!</i>`;
   else if(envBadge(f.id))B.innerHTML=`<i class="envie">${DOTS}</i>`;
-  else if(wantsHug(f.id)&&!hugLater(f.id))B.innerHTML=`<i class="want">${HEART}</i>`;moveBadge(f)}
+  else if(wantsHug(f.id)&&!hugLater(f.id))B.innerHTML=`<i class="want">${HEART}</i>`;
+  // le signe se touche comme le renard (Joffray : il tapait sur le cœur et rien ne se passait)
+  const s=B.firstElementChild;if(s)s.onpointerdown=e=>{e.stopPropagation();tapFox(f)};moveBadge(f)}
 // pas de cœur au-dessus d'un inconnu qu'on n'a pas encore reconnu, ni de la bande de Balafre avant la fin de la bataille (Joffray)
 // et personne pendant l'attaque de la bande, de son arrivée à la fin de la bataille : tout le monde est sous le choc
 const hugLater=id=>!!INC[id]&&(!known(id)||(NOEL_WILD.includes(id)&&!storyDone("balafre")))||(typeof bandeOn!=="undefined"&&noelOn()&&(bandeOn&&!(R.beat.balafre>0)||R.beat.balafre===1));

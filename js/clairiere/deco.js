@@ -314,7 +314,7 @@ const hbusy=()=>hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;return [x+100*s,y+120*s
 // (c'est le coin dodo), des meubles de Copeau et de l'âtre (le feu doit rester visible).
 // un objet du refuge (panier, potager…) : mêmes règles dehors, loin de la déco et des autres objets
 function objOk(sp){const k=sp.obj,hw=27*(OBJS[k].k||1),{x,y}=sp;if(x-hw<2||x+hw>398||y<266||y>H-6)return false;
-  if(((x-95)/88)**2+((y-420)/44)**2<1||Math.abs(x-200)<hw*.6+8)return false;
+  if(((x-95)/88)**2+((y-420)/44)**2<1||Math.abs(x-200)<hw*.6+8&&y<330)return false;
   if([[240,268,30],[85,304,36],[322,336,34],[284,404,28],[316,404,28],...noelNo()].some(([a,b,r])=>Math.hypot(x-a,y-b)<r))return false;
   if(Object.keys(R.obj).some(q=>q!==k&&objOn(q)&&OBJS[q].spot.y>200&&Math.hypot(OBJS[q].spot.x-x,OBJS[q].spot.y-y)<hw+(OBJS[q].r||26)))return false;
   return !R.deco.out.some(d=>Math.hypot(d.x-x,d.y-y)<hw+DECO[d.k].w*.3)}
@@ -325,7 +325,7 @@ function decoOk(d){if(d.obj)return objOk(d);const {x,y}=d,o=DECO[d.k];if(x<14||x
     return !R.deco.home.some(q=>q.u!==d.u&&!!DECO[q.k].wall===!!o.wall&&Math.hypot(q.x-x,q.y-y)<12)}
   if(y<266||y>H-6)return false;
   if(((x-95)/88)**2+((y-420)/44)**2<1)return false; // la mare
-  if(Math.abs(x-200)<15)return false; // le chemin de pierres
+  if(Math.abs(x-200)<15&&y<330)return false; // le haut du chemin de pierres, devant le perron ; plus bas, on peut décorer le chemin (Joffray)
   const no=[[240,268,24],[85,304,32],[322,336,30],[284,404,22],[316,404,22],...Object.keys(R.obj).filter(k=>objOn(k)&&OBJS[k].spot.y>200).map(k=>[OBJS[k].spot.x,OBJS[k].spot.y,OBJS[k].r||26]),...noelNo()];
   if(no.some(([a,b,r])=>Math.hypot(x-a,y-b)<r))return false;
   return !R.deco.out.some(o=>o.u!==d.u&&Math.hypot(o.x-x,o.y-y)<12)}

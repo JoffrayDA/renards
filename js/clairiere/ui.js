@@ -54,7 +54,8 @@ function syncDrops(){const d=R.drops=(R.drops||[]).slice(0,DROPS.length);
 function drawDrops(){syncDrops();
   DROPS.forEach(([x,y],i)=>{let el=dropEls[i];
     if(!el){el=dropEls[i]=document.createElement("button");el.className="drop";el.type="button";el.setAttribute("aria-label","Des glands");el.innerHTML=acornSVG();
-      el.style.cssText=pc(x,y)+`;z-index:${y}`;el.onpointerdown=e=>{e.stopPropagation();pickDrop(i)};$("actors").appendChild(el)}
+      el.style.cssText=pc(x,y)+`;z-index:${900+y}`; // toujours devant les renards (Joffray : des glands cachés sous un renard)
+      el.onpointerdown=e=>{e.stopPropagation();pickDrop(i)};$("actors").appendChild(el)}
     el.hidden=!R.drops[i]})}
 function pickDrop(i){syncDrops();const v=R.drops[i];if(!v)return;
   R.drops[i]=0;R.pend-=v;R.glands+=v;save();$("glands").textContent=R.glands;drawDrops();

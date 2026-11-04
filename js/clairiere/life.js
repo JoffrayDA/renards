@@ -68,15 +68,22 @@ function settle(f){
 // on ne s'assoit pas dessous, et on en fait le tour (Joffray : des renards passaient au travers de la boule)
 const obst=()=>typeof noelObst==="function"?noelObst():[];
 const inObst=(p,m=0)=>!!p&&obst().some(o=>((p.x-o.x)/(o.rx+m))**2+((p.y-o.y)/(o.ry+m))**2<1);
-function crossObst(a,b,m=1){for(const o of obst()){const ax=(a.x-o.x)/o.rx,ay=(a.y-o.y)/o.ry,bx=(b.x-o.x)/o.rx,by=(b.y-o.y)/o.ry,dx=bx-ax,dy=by-ay,L=dx*dx+dy*dy||1,
+// en marchant, on contourne aussi la mare et les objets posés par terre (04/11/2026, Joffray : des renards marchaient sur la mare,
+// sur le carton) ; un obstacle qui contient le départ ou l'arrivée (on va dans le carton, au bord de l'eau) ne compte pas
+const walkObst=()=>[...obst(),{x:96,y:421,rx:64,ry:24},...Object.keys(R.obj||{}).filter(k=>typeof objOn==="function"&&objOn(k)&&OBJS[k].spot&&OBJS[k].spot.y>266&&!OBJS[k].spot.via)
+  .map(k=>({x:OBJS[k].spot.x,y:OBJS[k].spot.y-3,rx:20*(OBJS[k].k||1),ry:9*(OBJS[k].k||1)}))];
+const inEll=(p,o)=>((p.x-o.x)/o.rx)**2+((p.y-o.y)/o.ry)**2<1;
+function crossObst(a,b,m=1){for(const o of walkObst()){if(inEll(a,o)||inEll(b,o))continue;const ax=(a.x-o.x)/o.rx,ay=(a.y-o.y)/o.ry,bx=(b.x-o.x)/o.rx,by=(b.y-o.y)/o.ry,dx=bx-ax,dy=by-ay,L=dx*dx+dy*dy||1,
   t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/L));if((ax+dx*t)**2+(ay+dy*t)**2<m*m)return o}return null}
 // un détour par le côté le plus court de l'obstacle
 function aroundObst(a,b){const o=crossObst(a,b);if(!o)return [];
-  const C=[[o.x-o.rx-22,o.y],[o.x+o.rx+22,o.y],[o.x,o.y+o.ry+20],[o.x-o.rx*.85,o.y+o.ry*1.05],[o.x+o.rx*.85,o.y+o.ry*1.05],[o.x,o.y-o.ry-20],[o.x-o.rx*.85,o.y-o.ry*1.05],[o.x+o.rx*.85,o.y-o.ry*1.05]]
+  // des points de passage autour (à 22 px du bord pour la boule, sur un anneau à 1,4 fois l'ellipse pour la mare, plus plate)
+  const C=[[o.x-o.rx-22,o.y],[o.x+o.rx+22,o.y],[o.x,o.y+o.ry+20],[o.x-o.rx*.85,o.y+o.ry*1.05],[o.x+o.rx*.85,o.y+o.ry*1.05],[o.x,o.y-o.ry-20],[o.x-o.rx*.85,o.y-o.ry*1.05],[o.x+o.rx*.85,o.y-o.ry*1.05],
+    ...Array.from({length:12},(_,i)=>[o.x+Math.cos(i*Math.PI/6)*o.rx*1.4,o.y+Math.sin(i*Math.PI/6)*o.ry*1.4])]
     .map(([x,y])=>({x:Math.max(16,Math.min(384,x)),y:Math.max(250,Math.min(H-20,y))})),D=(p,q)=>Math.hypot(q.x-p.x,q.y-p.y);
   // un point de passage, sinon deux (par devant la boule, de préférence), toujours avec de la marge
-  let best=null,bl=1e9;for(const c of C)if(!crossObst(a,c,1.15)&&!crossObst(c,b,1.15)){const l=D(a,c)+D(c,b);if(l<bl){bl=l;best=[c]}}
-  if(!best)for(const c of C)for(const d of C)if(c!==d&&!crossObst(a,c,1.15)&&!crossObst(c,d,1.15)&&!crossObst(d,b,1.15)){const l=D(a,c)+D(c,d)+D(d,b);if(l<bl){bl=l;best=[c,d]}}
+  let best=null,bl=1e9;for(const c of C)if(!crossObst(a,c,1.08)&&!crossObst(c,b,1.08)){const l=D(a,c)+D(c,b);if(l<bl){bl=l;best=[c]}}
+  if(!best)for(const c of C)for(const d of C)if(c!==d&&!crossObst(a,c,1.08)&&!crossObst(c,d,1.08)&&!crossObst(d,b,1.08)){const l=D(a,c)+D(c,d)+D(d,b);if(l<bl){bl=l;best=[c,d]}}
   return best||[]}
 // Roussette (roussette.js) occupe aussi son endroit, et personne ne s'assoit sous un obstacle
 const taken=sp=>inObst(sp)||[...foxes,...(typeof meF==="object"?[meF]:[])].some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
@@ -87,7 +94,7 @@ function goTo(f,sp){
   if(sp&&sp.via)legs.push(sp.via[0],{...sp.via[1],climb:1});
   legs.push(sp==="door"?DOOR:sp==="edge"?EDGE:sp);
   // les obstacles au sol : on en fait le tour
-  if(obst().length){let p={x:f.x,y:f.y};for(let i=0;i<legs.length;i++){const q=legs[i];if(!q.climb){const d=aroundObst(p,q);if(d.length){legs.splice(i,0,...d);i+=d.length}}p=legs[i]}}
+  {let p={x:f.x,y:f.y};for(let i=0;i<legs.length;i++){const q=legs[i];if(!q.climb){const d=aroundObst(p,q);if(d.length){legs.splice(i,0,...d);i+=d.length}}p=legs[i]}}
   f.walk={to:sp,legs};f.spot=null;leg(f);
 }
 function leg(f){
