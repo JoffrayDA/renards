@@ -63,14 +63,12 @@ Object.assign(ICON,{
   "cookie@paris":`<path d="M5 26 Q6 10 20 9 Q34 10 35 26 Q31 32 20 32 Q9 32 5 26Z" fill="#f2c27a" ${K}/><path d="M20 31 V12 M13 30 Q12 19 16 12 M27 30 Q28 19 24 12 M8 27 Q8 20 12 15 M32 27 Q32 20 28 15" fill="none" stroke="#d99a4a" stroke-width="1.6" stroke-linecap="round"/><path d="M12 10.5 Q16 9 18 9.4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/>`,
   "choco@paris":`<path d="M12 13 H28 L26.5 36 H13.5Z" fill="#eef7fb" ${K}/><path d="M12.6 22 H27.4 L26.5 35 H13.5Z" fill="#8a5a3a"/><path d="M12.8 19 H27.2 L27 22 H13Z" fill="#c99a70"/><path d="M12 13 H28 L26.5 36 H13.5Z" fill="none" ${K}/><path d="M26 15 L31 4" ${K}/><ellipse cx="31.4" cy="3.6" rx="2" ry="1.2" fill="#fff" ${K2}/>`,
   "smoothie@paris":paBoxSVG("fvc"),
-  // éclair (refait le 04/11/2026 dans le style du pain au chocolat, Joffray ; version A de tools/eclair.html)
-  "gateau@paris":`<path d="M4 25 Q2.6 25 2.6 21.6 Q2.6 16.6 8 16 H31 Q34.6 16.4 34.6 20 V27.4 Q34.6 29.6 31.6 29.6 Q19 31 7.4 29.4 Q4 28.8 4 25Z" fill="#d98a3a" ${KB}/>
-     <path d="M5 26.4 Q19 28.4 33.4 26.6" stroke="#a65a1e" stroke-width="1.3" fill="none"/>
-     <path d="M8 27.8 l1 -1.6 M14 28.6 l1 -1.6 M20 28.8 l1 -1.6 M26 28.6 l1 -1.6" stroke="#eba85a" stroke-width="1.2" stroke-linecap="round"/>
-     <path d="M4.4 20.6 Q4.4 16.6 9 16.2 H30.6 Q33.6 16.6 33.8 20 Q32 22.2 30.2 21 Q28.8 24 26.4 21.8 Q24 23.4 21.6 21.8 Q19.4 24.4 17 22 Q14.4 23.6 12.2 21.8 Q10 23.2 8.4 21.4 Q6.2 22.6 4.4 20.6Z" fill="#5a3324" ${KB}/>
-     <path d="M8.6 18.4 Q14 17 20 17.4" stroke="#a9765c" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="23.4" cy="17.8" r="1" fill="#fff" opacity=".8"/>
-     <ellipse cx="34.6" cy="23" rx="3.8" ry="6.8" fill="#e9a453" ${KB}/>
-     <ellipse cx="34.6" cy="23.6" rx="2.2" ry="4.6" fill="#fff1c8"/><path d="M33.4 21 q1.2 -.6 2.2 .2" stroke="#f2d98a" stroke-width="1.1" fill="none" stroke-linecap="round"/>`,
+  // éclair (refait le 04/11/2026 dans le style du pain au chocolat ; version B de tools/eclair.html, choix de Joffray)
+  "gateau@paris":`<path d="M9 15.6 H31 Q37.4 15.6 37.4 22.4 Q37.4 29.4 31 29.4 H9 Q2.6 29.4 2.6 22.4 Q2.6 15.6 9 15.6Z" fill="#d98a3a" ${KB}/>
+     <path d="M5 26.4 Q20 28.6 35 26.4" stroke="#a65a1e" stroke-width="1.3" fill="none"/>
+     <path d="M9 27.8 l1 -1.6 M15 28.4 l1 -1.6 M21 28.6 l1 -1.6 M27 28.4 l1 -1.6" stroke="#eba85a" stroke-width="1.2" stroke-linecap="round"/>
+     <path d="M3.4 20.4 Q4 15.6 9 15.6 H31 Q36.2 15.6 36.6 20.4 Q35 23 33 21.4 Q31.4 24.8 29 22 Q26.6 23.8 24.2 22 Q22 25 19.6 22.2 Q17 23.8 14.8 22 Q12.4 24.6 10.4 21.8 Q8 23.4 6.2 21.4 Q4.6 22.4 3.4 20.4Z" fill="#5a3324" ${KB}/>
+     <path d="M8 18 Q14 16.8 21 17.2" stroke="#a9765c" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="24.4" cy="17.6" r="1" fill="#fff" opacity=".8"/>`,
   "lait@paris":`<path d="M12 11 H26 L28 17 V33 Q28 35 26 35 H12 Q10 35 10 33 V17Z" fill="#fff" ${K}/><path d="M12 11 L10 7 H24 L26 11" fill="#fff" ${K}/><path d="M28 19 Q34 19 33 25 Q32 29 28 29" fill="none" ${K}/><path d="M11 23 H27" stroke="#5b8ac0" stroke-width="2"/>`,
   "chantilly@paris":`<path d="M10 31 Q6 25 12 23 Q8 17 15 15 Q14 8 21 8 Q28 8 26 15 Q33 16 29 23 Q35 25 30 31Z" fill="#fffaf0" ${K}/><path d="M15 21 q5 -3 10 0 M14 27 q6 -3 12 0" stroke="#e6d3c4" stroke-width="1.6" fill="none"/>`
 });
