@@ -311,33 +311,10 @@ function counterSVG(){
   const g=(id,a,b,o1,o2)=>`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}" stop-opacity="${o1}"/><stop offset="1" stop-color="${b}" stop-opacity="${o2}"/></linearGradient>`;
   return `<svg class="full" viewBox="0 0 600 375" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${g("kTop2","#ffffff","#3d2a35",.3,.15)}${g("kPanel2","#3d2a35","#ffffff",.12,.12)}<linearGradient id="kJar2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8f4fb"/><stop offset="1" stop-color="#b9d8ea"/></linearGradient></defs><g filter="url(#wobble)">${s}</g></svg>`;
 }
-// La salle remplit l'écran du téléphone (Joffray, 04/11/2026 : « agrandir l'écran pour voir mieux ») : la place libre sous la
-// cuisine sert à zoomer la salle (plus haute, un peu coupée sur les côtés), et les renards, leurs bulles et le compagnon
-// grossissent d'autant (--z), sans se chevaucher (--cap, selon le nombre de places au comptoir). Pas plus serré que ZMIN :
-// au-delà, les côtés (étagères) disparaîtraient ; le reste de la place agrandit le plateau et les tuiles de la cuisine (--kg).
-const ZMIN=1.1;
-let FITK="";
-function fitScene(force){
-  const sc=$("scene"),app=document.querySelector(".app"),kit=$("kitchen");if(!sc||!app||!kit)return;
-  // on ne recalcule que si la forme de la cuisine change (nombre de rangées et de tuiles), la largeur ou le nombre de places
-  if(typeof spotsN!=="function")return; // appelé avant que game.js soit chargé
-  const rows=kit.querySelectorAll(".krow").length,key=[innerWidth,innerHeight,rows,kit.querySelectorAll(".kb").length,spotsN()].join();
-  if(key===FITK&&!force)return;FITK=key;
-  sc.style.aspectRatio="";sc.style.height="";app.style.setProperty("--kg","0px");
-  const cw=sc.clientWidth,phone=matchMedia("(max-width:520px)").matches,h0=cw/(phone?1.4:1.6);
-  // l'espace libre sous la page, en gardant la place de deux lignes de conseil (sans compter le conseil affiché : la salle
-  // ne doit pas sauter quand il change)
-  const free=Math.floor(innerHeight-(app.offsetTop+app.offsetHeight)+$("hint").offsetHeight-42);
-  const ex=!phone||free<16?0:Math.min(free,Math.round(cw/ZMIN-h0)),kg=phone&&rows?Math.max(0,Math.min(34,Math.floor((free-ex)/(rows+.3)))):0;
-  sc.style.setProperty("--z",((h0+ex)/h0).toFixed(3));sc.style.setProperty("--cap",{2:"34%",3:"29%",4:"25%"}[spotsN()]||"25%");
-  if(ex){sc.style.aspectRatio="auto";sc.style.height=(h0+ex).toFixed(1)+"px"}
-  app.style.setProperty("--kg",kg+"px");
-}
-addEventListener("resize",()=>fitScene());
 function renderDecor(){
-  $("bgl").innerHTML=bgSVG();$("counter").innerHTML=counterSVG();fitScene(1);
+  $("bgl").innerHTML=bgSVG();$("counter").innerHTML=counterSVG();
   // le compagnon : assis pendant le service, endormi quand le café est fermé
-  $("helper").innerHTML=OWN().serveur?`<div class="buddy" style="position:absolute;left:3%;bottom:30%;width:calc(11% * var(--z,1))"><div>${foxSVG({...FOX[buddy()],scale:1},{pose:G&&G.run?"sit":"sleep"})}</div></div>`:"";
+  $("helper").innerHTML=OWN().serveur?`<div class="buddy" style="position:absolute;left:3%;bottom:30%;width:11%"><div>${foxSVG({...FOX[buddy()],scale:1},{pose:G&&G.run?"sit":"sleep"})}</div></div>`:"";
 }
 // petit saut de joie du compagnon (combo, service)
 function buddyHop(){const b=document.querySelector("#helper .buddy>div");if(!b)return;b.classList.remove("hop");void b.offsetWidth;b.classList.add("hop")

@@ -67,7 +67,7 @@ function renderKitchen(){
   // la Petite Italie : le comptoir à glaces, une rangée à lui (le cornet en cours, puis un bac par parfum)
   const cn=on?G.cone:"",gr=gel?`<div class="krow gelrow"><button class="gcone${cn?" on":""}" type="button" data-cone aria-label="${cn?"Jeter le cornet":"Cornet vide"}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${gelSVG(cn)}</svg>${cn?`<span class="gx">${icon("bin")}</span>`:""}</button>${Object.keys(GEL).map(x=>`<button class="kb gtub" type="button" data-gel="${x}" aria-label="Une boule ${GEL[x].n}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 20 H33 L30 35 H10Z" fill="#dfeef6" ${K}/><path d="M7 20 Q8 9 20 10 Q32 9 33 20Z" fill="${GEL[x].c}" ${K}/><circle cx="15" cy="15" r="1.6" fill="#fff"/></svg><span class="kn">${GEL[x].n}</span></button>`).join("")}</div>`:"";
   const h=`<div class="krow">${dr}</div>${gr}<div class="krow">${pa}</div>`;
-  if($("kitchen")._h!==h){$("kitchen").classList.toggle("gel",!!gel);$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars();fitScene()}
+  if($("kitchen")._h!==h){$("kitchen").classList.toggle("gel",!!gel);$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars()}
 }
 function updateBars(){
   if(!G||!G.run)return;
