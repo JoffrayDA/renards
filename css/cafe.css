@@ -36,7 +36,10 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .chips .pill{font-size:12px;padding:1px 10px;box-shadow:0 2px 0 rgba(91,66,80,.15)}
 
 .scene{position:relative;width:100%;aspect-ratio:16/10;border-radius:24px;overflow:hidden;border:3px solid #fff;box-shadow:0 0 0 2px var(--line),0 12px 26px rgba(91,66,80,.16);background:#fbe6d6;user-select:none;-webkit-user-select:none}
-.scene>div{position:absolute;inset:0}
+.scene>div{position:absolute;inset:0 0 var(--ex,0px) 0}
+.scene>#floor{inset:auto 0 0 0;height:var(--ex,0px);pointer-events:none}
+.scene>#closed{bottom:0}
+.scene>.chips{bottom:calc(8px + var(--ex,0px))}
 .scene svg.full{position:absolute;inset:0;width:100%;height:100%}
 #counter,#bgl{pointer-events:none}
 .notes{position:absolute;left:86%;top:11%;font-family:var(--display);color:var(--ink);font-size:clamp(10px,2vw,16px);animation:note 2.4s ease-in-out infinite;pointer-events:none}
