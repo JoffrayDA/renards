@@ -109,15 +109,15 @@ const IC={
 IC.liegeois=IC.liegeois.replace(`<path d="M12 12 H28`,`<path d="M11 12 Q12 4 20 5 Q28 4 29 12Z" fill="#fffaf0" ${K}/><path d="M12 12 H28`);
 const box=(o,done=3)=>`<path d="M2 14 H38 V31 Q38 34 35 34 H5 Q2 34 2 31Z" fill="#fff" ${K}/>${o.split("").map((m,i)=>i<done?macaron(10+i*10,24,MAC[m][1],.8):`<circle cx="${10+i*10}" cy="24" r="4.4" fill="none" stroke="#e6c3cf" stroke-width="1.4" stroke-dasharray="2 2"/>`).join("")}`;
 const ic=(k,w=40,h=38)=>`<svg viewBox="0 0 40 38" width="${w}" height="${h}" aria-hidden="true"><g filter="url(#wobble)">${IC[k]||k}</g></svg>`;
-const RECS=[["cafe","petitnoir","Petit noir","Le café serré du comptoir. Avec l'option Lait : un café crème."],["croissant","pac","Pain au chocolat","Le vrai, avec ses deux barres de chocolat. Le croissant reste celui des 40 premiers niveaux."],["the","diabolo","Diabolo","Sirop, limonade et glaçons. Menthe ou grenadine : voir plus bas."],["cookie","madeleine","Madeleine","Petite, dorée, en coquille (fournées de 4)."],["choco","liegeois","Café liégeois","Café glacé dans un grand verre : avec l'option Chantilly, le chapeau de crème. Remplace le chocolat chaud."],["smoothie","boite","Boîte de macarons","La spécialité : trois macarons dans l'ordre du client (comme le gelato)."],["gateau","eclair","Éclair","Le plus cher de la carte, au chocolat. Avec l'option Chantilly : éclair à la chantilly."]];
+const RECS=[["cafe","petitnoir","Petit noir","Le café serré du comptoir. Avec l'option Lait : un café crème."],["croissant","pac","Pain au chocolat","Le vrai, avec ses deux barres de chocolat. Le croissant reste celui des 40 premiers niveaux."],["the","grenadine","Diabolo grenadine","Sirop de grenadine, limonade et glaçons (choix de Joffray)."],["cookie","madeleine","Madeleine","Petite, dorée, en coquille (fournées de 4)."],["choco","liegeois","Café liégeois","Café glacé dans un grand verre : avec l'option Chantilly, le chapeau de crème. Remplace le chocolat chaud."],["smoothie","boite","Boîte de macarons","La spécialité : trois macarons dans l'ordre du client (comme le gelato)."],["gateau","eclair","Éclair","Le plus cher de la carte, au chocolat. Avec l'option Chantilly : éclair à la chantilly."]];
 
-/* ---------- les renards du quartier (accessoires existants ; on les affinera ensuite) ---------- */
+/* ---------- les renards du quartier (accessoires dans js/foxart.js, planche tools/parisiens.html) ---------- */
 const LOC=[
   {id:"pa1",name:"Anatole",rar:"commun",acc:"garconb",scale:.84,c:{b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"},bio:"Le garçon de café. Il t'accueille et t'accompagne tout le long, comme Lorenzo."},
-  {id:"pa2",name:"Margot",rar:"commun",acc:"beret",c:{b:"#d9a0b8",ch:"#fff6fa",e:"#9a6078",s:"#8a5068",t:"#fff6fa"},bio:"Peintre à Montmartre. Elle paie parfois avec un petit croquis."},
-  {id:"pa3",name:"Firmin",rar:"discret",acc:"tablier",c:{b:"#c7a07a",ch:"#fff8ee",e:"#7a5a3c",s:"#6a4c32",t:"#fff8ee"},bio:"Le boulanger d'en face. « Le meilleur pain au chocolat de Paris, c'est le mien. » Le rival."},
-  {id:"pa4",name:"Léon",rar:"discret",acc:"lunettes",c:{b:"#8a8f9e",ch:"#f2f2f6",e:"#5a5e6a",s:"#4c505a",t:"#f2f2f6"},bio:"Bouquiniste sur les quais. Lit en attendant sa commande, et oublie de la boire."},
-  {id:"pa5",name:"Céleste",rar:"legend",acc:"couronneor",c:{b:"#f4ead8",ch:"#ffffff",e:"#c9a86a",s:"#b8965a",t:"#ffffff"},bio:"La Diva de l'Opéra. Jurée de la finale du concours, puis invitée d'honneur."}
+  {id:"pa2",name:"Margot",rar:"commun",acc:"peintre",c:{b:"#d9a0b8",ch:"#fff6fa",e:"#9a6078",s:"#8a5068",t:"#fff6fa"},bio:"Peintre à Montmartre. Elle paie parfois avec un petit croquis."},
+  {id:"pa3",name:"Firmin",rar:"discret",acc:"boulanger",c:{b:"#c7a07a",ch:"#fff8ee",e:"#7a5a3c",s:"#6a4c32",t:"#fff8ee"},bio:"Le boulanger d'en face. « Le meilleur pain au chocolat de Paris, c'est le mien. » Le rival."},
+  {id:"pa4",name:"Léon",rar:"discret",acc:"bouquiniste",c:{b:"#8a8f9e",ch:"#f2f2f6",e:"#5a5e6a",s:"#4c505a",t:"#f2f2f6"},bio:"Bouquiniste sur les quais. Lit en attendant sa commande, et oublie de la boire."},
+  {id:"pa5",name:"Céleste",rar:"legend",acc:"diva",c:{b:"#f4ead8",ch:"#ffffff",e:"#c9a86a",s:"#b8965a",t:"#ffffff"},bio:"La Diva de l'Opéra. Jurée de la finale du concours, puis invitée d'honneur."}
 ];
 const fx=(f,o)=>foxArt(f,o||{});
 const inner=svg=>svg.replace(/^<svg[^>]*>|<\/svg>$/g,"");
@@ -237,11 +237,11 @@ function roomSVG(){
 const cu=(f,left,items,p)=>`<div class="cu" style="left:${left}%"><span class="bub">${items.map(k=>ic(k,30,28)).join("")}</span>${fx(f)}<span class="pat"><i style="width:${p}%"></i></span></div>`;
 document.getElementById("day").innerHTML=`<div class="bar"><span class="back">‹</span><div class="ttl">Jour 5 · défi<small>Objectif 209 · Firmin a fait 300</small></div><span class="pill">★ 0</span><span class="pill">96</span></div>
 <div class="room">${roomSVG()}
-  ${cu(LOC[1],20,["pac","creme"],82)}${cu(LOC[3],50,[box("fvc")],60)}${cu(FOX.petitpois,80,["diabolo","eclair"],34)}
+  ${cu(LOC[1],20,["pac","creme"],82)}${cu(LOC[3],50,[box("fvc")],60)}${cu(FOX.petitpois,80,["grenadine","eclair"],34)}
   <span class="clients">Clients 9</span><span class="duel">Toi 142 <em>Firmin 300</em></span></div>
 <div class="tray"><span class="slot f">${ic("pac",38,36)}</span><span class="slot f">${ic("petitnoir",38,36)}</span><span class="slot"></span>
   <div class="opt"><span>${ic("lait",26,24)}Crème</span><span>${ic("chantilly",26,24)}Chantilly</span></div></div>
-<div class="tiles t3"><div class="tile">${ic("petitnoir")}Petit noir<div class="bar2"><i style="width:60%"></i></div></div><div class="tile">${ic("diabolo")}Diabolo<div class="bar2"><i style="width:100%;background:#8fd18a"></i></div></div><div class="tile">${ic("liegeois")}Café liégeois<div class="bar2"><i style="width:25%"></i></div></div></div>
+<div class="tiles t3"><div class="tile">${ic("petitnoir")}Petit noir<div class="bar2"><i style="width:60%"></i></div></div><div class="tile">${ic("grenadine")}Diabolo<div class="bar2"><i style="width:100%;background:#8fd18a"></i></div></div><div class="tile">${ic("liegeois")}Café liégeois<div class="bar2"><i style="width:25%"></i></div></div></div>
 <div class="tiles t4"><div class="tile box">${ic(box("fv",1))}La boîte</div>${Object.keys(MAC).map(m=>`<div class="tile">${ic(macaron(20,20,MAC[m][1],1.5))}${MAC[m][0]}</div>`).join("")}</div>
 <div class="tiles t4"><div class="tile">${ic("four")}Four<div class="bar2"><i style="width:35%"></i></div></div><div class="tile"><span class="n">2</span>${ic("pac")}Pain au choc.</div><div class="tile"><span class="n">4</span>${ic("madeleine")}Madeleine</div><div class="tile"><span class="n">0</span>${ic("eclair")}Éclair</div></div>`;
 
@@ -249,8 +249,6 @@ document.getElementById("day").innerHTML=`<div class="bar"><span class="back">�
 document.getElementById("info").innerHTML=`
 <div class="card"><h2>La carte de Paris</h2><p>Mêmes prix et mêmes cuissons que le Café : seuls le nom et le dessin changent.</p>
 <div class="rec">${RECS.map(([k,i,n,d])=>`${ic(i,42,38)}<div><b>${n}</b><span>${d}</span></div>`).join("")}${ic("creme",42,38)}<div><b>Café crème</b><span>Petit noir + Lait.</span></div></div></div>
-<div class="card"><h2>Diabolo : menthe ou grenadine ?</h2><p>Le diabolo est servi d'une seule couleur toute la journée. Lequel ?</p>
-<div class="choice"><div>${ic("diabolo",60,56)}Menthe<br><span style="font-weight:500;font-size:12px;opacity:.75">Vert : ne ressemble à rien d'autre à la carte.</span></div><div>${ic("grenadine",60,56)}Grenadine<br><span style="font-weight:500;font-size:12px;opacity:.75">Rouge : plus proche de la framboise des macarons.</span></div></div></div>
 <div class="card"><h2>La boîte de macarons</h2><p>Le client veut trois macarons dans son ordre, de gauche à droite : framboise, violette, caramel. On touche les tuiles dans l'ordre, la boîte se remplit ; toucher la boîte la vide. Comme le gelato, mais à plat, avec d'autres couleurs.</p><div style="display:flex;gap:8px;justify-content:center">${["fvc","cfv","vcf"].map(o=>ic(box(o),60,56)).join("")}</div></div>
 <div class="card"><h2>Les renards du quartier</h2>
 <div class="foxes">${LOC.map(f=>`<div class="fx">${fx(f)}<span class="tag${f.rar==="legend"?" l":f.id==="pa3"?" r":""}">${f.id==="pa3"?"le rival":{commun:"commun",discret:"discret",legend:"légendaire"}[f.rar]}</span><b>${f.name}</b><span>${f.bio}</span></div>`).join("")}</div></div>
