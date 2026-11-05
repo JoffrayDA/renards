@@ -33,6 +33,14 @@ const SEATS=[[96,384],[148,384],[200,384],[252,384],[294,384],[200,452],[122,426
 const seats=()=>{const busy=hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;return [x+100*s,y+120*s]});
   const rug=R.hup.coussins?SEATS:SEATS.slice(0,6);
   return (R.hup.mezzanine?rug.concat(UPSTAIRS):rug).filter(([x,y])=>!busy.some(([bx,by])=>Math.hypot(bx-x,by-y)<70))};
+// tout le refuge rentre (05/11/2026, Joffray : « quand je vais à l'intérieur, j'aimerais bien avoir tous les renards ») :
+// après le tapis et la mezzanine, ils se serrent sur le plancher, devant puis sur les côtés
+function moreSeats(n,pl){const busy=hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;return [x+100*s,y+120*s]}).concat(R.deco.home.map(d=>[d.x,d.y])),out=[];
+  const rows=[];for(let y=500,r=0;y<=H-20;y+=46,r++)rows.push([y,r]);if(H<560)rows.push([440,1],[400,0]); // sans plancher en plus : sur les côtés du tapis
+  for(const [y,r] of rows)for(let i=0;i<8&&out.length<n;i++){const x=48+i*44+(r%2?22:0);
+    if(x>360||(y<470&&x>70&&x<330)||(y>H-70&&x>280))continue; // le tapis reste dégagé, et le bouton Sortir
+    if(pl.concat(out).some(([a,b])=>Math.hypot(a-x,b-y)<34)||busy.some(([a,b])=>Math.hypot(a-x,b-y)<60))continue;out.push([x,y])}
+  return out}
 
 // la porte, touchable une fois la maison ouverte
 const doorEl=document.createElement("button");doorEl.className="doorbtn";doorEl.type="button";doorEl.setAttribute("aria-label","Entrer dans la maison");
@@ -248,9 +256,9 @@ HOBJ.couverture.art=id=>(id?foxAt(id,100,140,92,{pose:"sleep"}):"")+`<g filter="
   <g stroke="#9ec3ef" stroke-width="2.4" stroke-linecap="round">${[40,56,72,88,104,120,136,152,164].map(x=>`<path d="M${x} 146 l-1 6"/>`).join("")}</g>`;
 // qui est à l'intérieur : les renards de la clairière ; la nuit, ils dorment tous
 function enterHouse(){
-  const all=foxes.filter(f=>!f.wild).map(f=>f.id).sort((a,b)=>i0(a+today())%97-i0(b+today())%97),night=phaseNow()==="nuit"; // d'autres têtes chaque jour
+  const all=[...new Set([...foxes.filter(f=>!f.wild).map(f=>f.id),...Object.keys(R.res).filter(id=>FOX[id]&&!noelAway(id))])].sort((a,b)=>i0(a+today())%97-i0(b+today())%97),night=phaseNow()==="nuit"; // d'autres têtes chaque jour
   const objs=hobjs().filter(k=>k!=="guirlandes"&&(!night||HOBJ[k].night)),inObj=objs.map((k,i)=>[k,all[i]]).filter(([,id])=>id);
-  const hd=houseDecoSeats(all.slice(inObj.length),night),ids=hd.rest,pl=seats(),here=ids.slice(0,pl.length),out=ids.length-here.length; // les objets de la déco d'abord (deco.js)
+  const hd=houseDecoSeats(all.slice(inObj.length),night),ids=hd.rest,pl0=seats(),pl=pl0.concat(moreSeats(ids.length-pl0.length,pl0)),here=ids.slice(0,pl.length),out=ids.length-here.length; // les objets de la déco d'abord (deco.js)
   houseEl=document.createElement("div");houseEl.className="play house";
   houseEl.innerHTML=`<svg viewBox="0 0 400 ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${houseSVG()}<g id="hfox"></g></svg>${out?`<div class="psay">${out} renard${out>1?"s":""} reste${out>1?"nt":""} dehors : il manque de la place.</div>`:""}
     <div class="hbtns"><button class="btn ghost hgrow" type="button"${storyDone("copeau")?"":" hidden"}>Aménager</button><button class="btn ghost hdeco" type="button"${Object.keys(DECO).some(k=>DECO[k].home&&(R.deco.inv[k]||R.deco.home.some(d=>d.k===k)))?"":" hidden"}>Décorer</button></div><button class="btn pclose" type="button">Sortir</button>`;

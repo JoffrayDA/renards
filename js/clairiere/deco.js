@@ -241,15 +241,19 @@ const allDeco=()=>R.deco.out.concat(R.deco.home);
 let shopTab="jour";
 function shopSheet(tab){if(tab)shopTab=tab;
   const own=Object.keys(DECO).filter(k=>R.deco.inv[k]||allDeco().some(d=>d.k===k)),has=h=>own.some(k=>!!DECO[k].home===h);
+  // (05/11/2026, Joffray : « trop de texte ») : une grille d'images ; toucher l'image montre sa description
   const card=(k,buy)=>{const o=DECO[k],sold=soldToday(k),can=o.b?bellsN()>=o.b:cafeCoins()>=o.p,n=R.deco.inv[k]||0,on=allDeco().filter(d=>d.k===k).length;
-    return `<div class="opt${o.b?" rare":""}"><span class="thumb dthumb">${dSvg(k,"all")}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}${o.fav&&!buy?" Quelqu'un l'adore, on dirait…":""}</span>${buy?(o.home?`<span class="dcount">Pour la maison</span>`:""):`<span class="dcount">${on?`${on} posé${on>1?"s":""}`:""}${on&&n?" · ":""}${n?`${n} en réserve`:""}</span>`}</div>
-      ${buy?`<button class="btn" data-dbuy="${k}" type="button" ${sold||!can?"disabled":""}>${sold?"Acheté":dPrice(o)}</button>`:n?`<button class="btn" data-dput="${k}" type="button">Poser</button>`:""}</div>`};
-  const body=shopTab==="jour"?`<p class="sub">Nouveaux objets ${untilMidnight()}. Chaque objet revient régulièrement : rien n'est perdu pour toujours.</p>${shopToday().map(k=>card(k,1)).join("")}`
-    :shopTab==="mes"?(own.length?`${has(false)?`<button class="btn big wide" data-deco="out" type="button">Décorer la clairière</button>`:""}${has(true)&&houseOpen()?`<button class="btn big wide" data-deco="home" type="button">Décorer la maison</button>`:""}<p class="sub">Fais glisser les objets du doigt pour les placer où tu veux.</p>${own.map(k=>card(k,0)).join("")}`:`<p class="sub">Tu n'as encore aucun objet. Va voir la boutique du jour !</p>`)
+    return dTile(o.b?" rare":"",dSvg(k,"all"),o.name,o.desc,buy?(o.home?"Maison":""):[on?`${on} posé${on>1?"s":""}`:"",n?`${n} en réserve`:""].filter(Boolean).join(" · "),
+      buy?`<button class="btn" data-dbuy="${k}" type="button" ${sold||!can?"disabled":""}>${sold?"Acheté":dPrice(o)}</button>`:n?`<button class="btn" data-dput="${k}" type="button">Poser</button>`:"")};
+  const sec=(home,t)=>{const ks=own.filter(k=>!!DECO[k].home===home);if(!ks.length||(home&&!houseOpen()))return "";
+    return `<div class="dsec"><h3 class="sec">${t}</h3><button class="btn" data-deco="${home?"home":"out"}" type="button">Décorer</button></div><div class="dgrid">${ks.map(k=>card(k,0)).join("")}</div>`};
+  const body=shopTab==="jour"?`<p class="sub">Nouveaux objets ${untilMidnight()}.</p><div class="dgrid">${shopToday().map(k=>card(k,1)).join("")}</div>`
+    :shopTab==="mes"?(own.length?sec(false,"Clairière")+sec(true,"Maison"):`<p class="sub">Aucun objet pour l'instant. Va voir la boutique du jour !</p>`)
     :shopTab==="noel"?noelTab():objList();
   openSheet(`<h2>Boutique</h2><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span><span>${acornSVG()} ${R.glands}</span>${atelierOn()?`<span>${sucreSVG} ${sucresN()}</span><span>${pelSVG} ${pelN()}</span>`:""}</div>
     <div class="tabs">${[["jour","Du jour"],["mes","Mes objets"],["refuge","Refuge"],...(atelierOn()?[["noel","Noël"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-dtab="${k}" type="button">${n}</button>`).join("")}</div>${body}
-    <p class="sub">Les pièces se gagnent au Café, les clochettes avec les étoiles du Café, ses quêtes et les histoires du refuge.</p>`)}
+`)}
+const dTile=(cls,pic,name,desc,small,btn)=>`<div class="dtile${cls}"><button class="dpic" data-dinfo type="button">${pic}</button><b>${name}</b>${small?`<small>${small}</small>`:""}<p class="ddesc">${desc}</p>${btn}</div>`;
 
 /* ---------- dans la scène et dans la maison ---------- */
 // les objets du dehors vivent dans #actors ; ceux de la maison dans son calque (houseEl, maison.js), refaits à chaque visite

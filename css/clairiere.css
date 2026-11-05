@@ -65,6 +65,8 @@ h1 span{color:var(--coral-d)}
 @keyframes float{50%{transform:translateY(-4%)}}
 .bowl{position:absolute;width:10%;transform:translate(-50%,-60%);background:none;border:0;padding:0;cursor:pointer;pointer-events:auto}
 .bowl svg{display:block;width:100%}
+.bowl .bgauge{display:block;width:64%;height:6px;margin:1px auto 0;border:1.6px solid #5b4250;border-radius:4px;background:rgba(255,250,240,.85);overflow:hidden}
+.bowl .bgauge b{display:block;height:100%}
 .bowl.want svg{animation:bowlwant 1.3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,248,200,.95))}
 @keyframes bowlwant{50%{transform:scale(1.15) translateY(-6%)}}
 .bubble{position:absolute;transform:translate(-50%,-100%);width:max-content;max-width:min(250px,calc(100% - 12px));text-align:center;background:var(--card);border:2.5px solid var(--ink);border-radius:12px;padding:4px 10px;font-size:13px;font-weight:700;white-space:nowrap;z-index:5;pointer-events:none;box-shadow:0 3px 0 var(--ink)}
@@ -453,3 +455,17 @@ h1 .la{font-style:normal}
 .fox.upside .flip>svg{transform:rotate(180deg) translateY(-18%)}
 .kostars{position:absolute;left:50%;top:6%;width:70%;transform:translate(-50%,0);pointer-events:none}.kostars svg{display:block;width:100%;overflow:visible}
 .kostars path{transform-box:fill-box;animation:kost 1.2s linear infinite}@keyframes kost{0%{transform:translate(-22px,0) scale(.8)}25%{transform:translate(0,4px) scale(1.1)}50%{transform:translate(22px,0) scale(.8)}75%{transform:translate(0,-4px) scale(.6)}100%{transform:translate(-22px,0) scale(.8)}}
+
+/* boutique en grille (05/11/2026) : l'image, le nom, le prix ; la description au toucher */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin:8px 0 12px}
+.dtile{background:var(--card-2);border-radius:16px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.dtile.rare{background:#fbf0cc}
+.dtile .dpic{background:none;border:0;padding:0;height:64px;width:100%;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dtile .dpic{overflow:hidden}.dtile .dpic svg{height:64px;width:auto;max-width:100%;display:block}
+.dtile b{font-size:13px;line-height:1.15}
+.dtile small{font-size:11.5px;color:var(--ink-soft);font-weight:700}
+.dtile .ddesc{display:none;font-size:12.5px;color:var(--ink-soft);margin:2px 0}
+.dtile.open{grid-column:1/-1}.dtile.open .ddesc{display:block}
+.dtile .btn{margin-top:auto;padding:6px 10px}
+.dsec{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}.dsec .sec{margin:0}
+.bnow{margin:4px 0 12px;font-size:14px}.bnow .bgauge{display:block;height:10px;margin-top:5px;border:1.6px solid #5b4250;border-radius:6px;background:#fff;overflow:hidden}.bnow .bgauge b{display:block;height:100%}

@@ -115,7 +115,8 @@ function fillObjs(){if(scn.rain)return;
 
 // l'onglet Refuge de la boutique (deco.js) : les objets en glands, à leur place fixe
 function objList(){
-  return `<p class="sub">Pose un objet dans la clairière : il attire les renards dans des positions qu'on ne voit nulle part ailleurs. Sors l'appareil photo pour les prendre.</p>${Object.entries(OBJS).map(([k,o])=>`<div class="opt"><span class="thumb">${o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`)}</span><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`}
+  return `<div class="dgrid">${Object.entries(OBJS).map(([k,o])=>dTile("",o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`),o.name,o.desc,"",
+    `<button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button>`)).join("")}</div>`}
 function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
   R.glands-=o.price;R.obj[k]=1;renderHud();
   // un objet par terre : on le pose tout de suite où on veut, en mode Décorer

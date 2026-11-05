@@ -39,8 +39,11 @@ const bowlEl=document.createElement("button");bowlEl.className="bowl";bowlEl.typ
 bowlEl.onpointerdown=e=>{e.stopPropagation();bowlSheet()};
 // tant qu'un sauvage est venu manger, la gamelle montre encore ce qu'il est venu chercher
 function drawBowl(){const v=foxes.find(f=>f.wild&&f.food);
-  bowlEl.style.cssText=pc(240,268)+";z-index:269";bowlEl.innerHTML=bowlSVG(v?v.food:R.bowl&&R.bowl.type);
+  // une jauge sous la gamelle dit ce qu'il reste (05/11/2026, Joffray : il fallait ouvrir la feuille pour le savoir)
+  const B=R.bowl&&BOWLS[R.bowl.type],fr=B?Math.max(0,Math.min(1,(R.bowl.until-Date.now())/(B.hours*36e5))):0;
+  bowlEl.style.cssText=pc(240,268)+";z-index:269";bowlEl.innerHTML=bowlSVG(v?v.food:R.bowl&&R.bowl.type,B?Math.max(1,Math.ceil(fr*3)):3)+(B&&!v?`<i class="bgauge"><b style="width:${(fr*100).toFixed(0)}%;background:${B.col}"></b></i>`:"");
   bowlEl.classList.toggle("want",!R.bowl&&!v&&typeof wildLeft==="function"&&wildLeft().length>0&&!nextId())}
+setInterval(()=>{if(!document.hidden)drawBowl()},6e4);
 
 /* ---------- glands dans l'herbe ---------- */
 // les glands rapportés par les renards (R.pend) traînent dans l'herbe : 6 tas au plus, on les touche pour les ramasser
@@ -107,6 +110,7 @@ function openSheet(h,back){$("sheet-in").innerHTML=`<button class="btn ghost she
 function closeSheet(){$("sheet").hidden=true;const d=afterSheet;afterSheet=null;if(d)d()}
 $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"))return closeSheet();
   const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.dinfo!==undefined){const t=b.closest(".dtile");for(const o of $("sheet-in").querySelectorAll(".dtile.open"))if(o!==t)o.classList.remove("open");t.classList.toggle("open");return}
   if(b.dataset.buy)buyBowl(b.dataset.buy);
   else if(b.dataset.obj)buyObj(b.dataset.obj);
   else if(b.dataset.dbuy)buyDeco(b.dataset.dbuy);
@@ -126,8 +130,10 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
 
 function hoursLeft(){if(!R.bowl)return "";const h=(R.bowl.until-Date.now())/36e5;return h>=1?`encore ${Math.round(h)} h`:"presque vide"}
 function bowlSheet(){
-  const cur=R.bowl?`<p class="sub">Dans la gamelle : <b>${BOWLS[R.bowl.type].name}</b>, ${hoursLeft()}. En remplir une autre remplace ce qu'il y a dedans.</p>`:`<p class="sub">La gamelle est vide.</p>`;
-  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name}</strong><span>${B.desc} Dure ${B.hours} h.</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Un sauvage passe souvent quand tu n'es pas là. Il laisse une photo de sa visite : c'est la seule trace de son passage.</p><p class="sub"><b>Pêcher :</b> ${canFish()?"touche la mare quand tu veux. Un poisson une fois sur trois, sinon de vieilles bottes et des algues.":"il te faudra une canne à pêche. Un certain pêcheur en a peut-être une…"}</p><p class="sub"><b>Gagner des glands :</b> chaque renard du refuge en rapporte quelques-uns par jour (plus il t'aime, plus il en rapporte) ; ils t'attendent dans l'herbe, touche-les pour les ramasser. Un câlin par jour et par renard en donne un, et les histoires en donnent aussi.</p>`);
+  // (05/11/2026, Joffray : « trop de texte ») : ce qu'il reste en jauge, une ligne par gamelle
+  const B=R.bowl&&BOWLS[R.bowl.type],fr=B?Math.max(0,Math.min(1,(R.bowl.until-Date.now())/(B.hours*36e5))):0;
+  const cur=B?`<div class="bnow"><b>${B.name}</b> · ${hoursLeft()}<i class="bgauge"><b style="width:${(fr*100).toFixed(0)}%;background:${B.col}"></b></i></div>`:`<p class="sub">La gamelle est vide.</p>`;
+  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name} · ${B.hours} h</strong><span>${B.desc}</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Chaque visiteur laisse une photo.${canFish()?"":" Le poisson se pêche dans la mare, avec une canne."}</p>`);
 }
 function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))return;
   R.glands-=B.price;R.fish-=B.fish||0;R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();
@@ -157,7 +163,15 @@ function wildPhoto(p,f){let x=Math.floor((p.t||0)/1e3)|0;x=Math.imul(x^x>>>16,0x
   let bowl=p.near?(OBJS[p.near]?`<svg x="${flip?-6:58}" y="34" width="70" height="68" viewBox="${OBJS[p.near].thumb}" overflow="visible">${inner(OBJS[p.near].svg())}</svg>`:DECO[p.near]?`<svg x="${flip?-10:50}" y="${100-DECO[p.near].h*.8}" width="80" height="${(DECO[p.near].h*.8).toFixed(0)}" viewBox="-50 -${DECO[p.near].h} 100 ${DECO[p.near].h}" overflow="visible">${inner(dSvg(p.near,"all"))}</svg>`:"")
     :eat?`<g transform="translate(36 63) scale(1.2)">${inner(bowlSVG(p.bowl))}</g>`:`<g transform="translate(${flip?2:84} 72) scale(.85)">${inner(bowlSVG(null))}</g>`;
   // un inconnu du lot 3 dans son objet (Cachou dans le carton) : l'objet le dessine, comme dans la clairière
-  if(p.near&&OBJS[p.near]&&pz===OBJS[p.near].pose){fox="";bowl=`<svg x="16" y="14" width="88" height="86" viewBox="0 -16 120 116" overflow="visible">${inner(OBJS[p.near].svg(p.id))}</svg>`}
+  // (05/11/2026, Joffray : le renard flottait à côté de l'objet) : toujours dedans pour un objet du refuge
+  if(p.near&&OBJS[p.near]){fox="";bowl=`<svg x="16" y="14" width="88" height="86" viewBox="0 -16 120 116" overflow="visible">${inner(OBJS[p.near].svg(p.id))}</svg>`}
+  // une déco (tente, hamac) : dedans comme dans la clairière si la pose s'y prête, sinon juste devant
+  else if(p.near&&DECO[p.near]&&DECO[p.near].seat){const o=DECO[p.near],s=o.seat,k=o.w/100,sc=Math.min(1.2,78/(o.h*k),100/o.w),ix=60,base=94,
+      L=`stroke="${INK}" stroke-width="${dLw(o.w)}" stroke-linejoin="round" stroke-linecap="round"`,
+      box=part=>`<svg x="${(ix-o.w*sc/2).toFixed(1)}" y="${(base-o.h*k*sc).toFixed(1)}" width="${(o.w*sc).toFixed(1)}" height="${(o.h*k*sc).toFixed(1)}" viewBox="-50 -${o.h} 100 ${o.h}" overflow="visible">${o[part](L)}</svg>`,
+      inside=s.poses.concat(p.near==="hamac"?["happy"]:[]).includes(pz),
+      me=inside?foxAt(f,ix+s.dx*sc,base+s.dy*sc,54*sc,{pose:pz}):foxAt(f,ix+(flip?-1:1)*Math.min(30,o.w*sc*.22),base+4,46*sc,{pose:pz,expr:tr===0&&pz==="sit"?"surprise":undefined});
+    fox="";bowl=inside?box("art")+me+(o.front?box("front"):""):box("art")+(o.front?box("front"):"")+me}
   const [tc,ta]=PH_TINT[ph],ex=[];
   if(ph==="jour"&&!wet&&r()<.6)ex.push(`<path transform="translate(${80+r()*24} ${10+r()*14})" d="M0 0 q-6 -7 -8 0 q2 5 8 0 q6 -7 8 0 q-2 5 -8 0Z" fill="#f6a5b4" stroke="${INK}" stroke-width="1.2"/>`);
   if(night)for(let i=0;i<6;i++)ex.push(`<circle cx="${(r()*120).toFixed(0)}" cy="${(r()*24).toFixed(0)}" r="${(.8+r()).toFixed(1)}" fill="#fff6c8"/>`);
@@ -219,7 +233,7 @@ function showNews(){
   R.news=[];save();
   const next=()=>{if(arr.length){const n=arr.shift();syncFoxes();talk(arrLines(n.id),next)}else renderStory()};
   if(wild.length){
-    openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence, ${wild.length>1?"des renards sauvages sont passés":"un renard sauvage est passé"} à la gamelle.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG({id:n.id,t:n.t,clue:n.clue,bowl:R.photos.find(p=>p.t===n.t)?.bowl||WILD[n.id]})}<figcaption><b>${nameOf(n.id)}</b>${n.clue!=null?`Indice ${n.clue+1} sur 5 : ${INC[n.id].clues[n.clue].txt}`:n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
+    openSheet(`<h2>Qui est venu ?</h2><p class="sub">Pendant ton absence.</p><div class="pgrid">${wild.map(n=>`<figure class="photo">${photoSVG(R.photos.find(p=>p.t===n.t&&p.id===n.id)||{id:n.id,t:n.t,clue:n.clue,bowl:WILD[n.id]})}<figcaption><b>${nameOf(n.id)}</b>${n.clue!=null?`Indice ${n.clue+1} sur 5 : ${INC[n.id].clues[n.clue].txt}`:n.first?"Première visite ! Il pourra passer au Café.":fmtDate(n.t)}</figcaption></figure>`).join("")}</div>`);
     afterSheet=next;
   }else next();
 }
