@@ -120,7 +120,9 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   else if(b.dataset.house)buildHouse(b.dataset.house);
   else if(b.dataset.fox)foxSheet(b.dataset.fox);
   else if(b.dataset.reread)reread(b.dataset.reread);
-  else if(b.dataset.buddy){R.buddy=b.dataset.buddy;save();toast(`${FOX[R.buddy].name} t'accompagnera au Café.`);foxSheet(R.buddy)}
+  else if(b.dataset.buddy){R.buddy=b.dataset.buddy;save();toast(`${FOX[R.buddy].name} t'accompagnera au Café.`);b.dataset.back==="pick"?carnet():foxSheet(R.buddy)}
+  else if(b.dataset.fav){const id=b.dataset.fav;if(R.fav[id])delete R.fav[id];else R.fav[id]=1;save();const y=$("sheet-in").scrollTop;b.dataset.from==="folder"?photoFolder(id):foxSheet(id);$("sheet-in").scrollTop=y}
+  else if(b.dataset.go==="buddy")buddyPick();
   else if(b.dataset.inco)incoSheet(b.dataset.inco);
   else if(b.dataset.push==="on")pushEnable(pushPlan()).then(ok=>{toast(ok?"C'est noté : Petit Pois te préviendra.":"Les notifications sont bloquées. Tu peux les autoriser dans les réglages du téléphone.");drawBell();closeSheet()}).catch(()=>{toast("Impossible pour l'instant. Réessaie plus tard.");drawBell()});
   else if(b.dataset.push==="off")pushOff().then(()=>{toast("D'accord, plus de notifications.");drawBell();closeSheet()});
@@ -197,10 +199,18 @@ function carnet(){
   const M=metIds(),n=ROSTER.filter(id=>R.res[id]||R.met[id]).length;
   const extra=FOXES.filter(f=>f.event&&R.res[f.id]); // invités d'Halloween et de Noël passés au refuge
   const card=id=>{const f=FOX[id],s=status(id,M),r=RAR[f.rar];
-    return `<button class="card${s.ok?"":" unseen"}" data-fox="${id}" type="button"><div class="pic ${r.cls}">${foxArt(f,{sil:!s.ok&&!s.seen})}</div><h3>${s.ok||s.seen?f.name:"???"}</h3>${R.res[id]?heartsHTML(R.res[id].h):""}<p>${s.txt}</p></button>`};
-  meBack="carnet";
-  openSheet(`<h2>Le carnet du refuge</h2><button class="mecard" type="button" data-go="moi"><span class="pic">${foxArt(FOX.roussette,{expr:"joy",portrait:1})}</span><span><b>C'est toi : ${ME()}</b><small>Ton look, tes chiffres. Touche pour te personnaliser.</small></span><i aria-hidden="true">›</i></button><button class="btn ghost jbtn" type="button" data-go="journal">Les histoires</button><p class="sub">Le grand portrait : <b>${n} / ${ROSTER.length}</b> renards réunis. Quand tout le monde sera là, on fera une photo de famille.</p><div class="progress"><i style="width:${(n/ROSTER.length*100).toFixed(1)}%"></i></div><div class="grid">${ROSTER.map(card).join("")}${extra.map(f=>card(f.id)).join("")}</div>`);
+    return `<button class="card${s.ok?"":" unseen"}" data-fox="${id}" type="button"><div class="pic ${r.cls}">${foxArt(f,{sil:!s.ok&&!s.seen})}</div><h3>${R.fav[id]?favStar(1)+" ":""}${s.ok||s.seen?f.name:"???"}</h3>${R.res[id]?heartsHTML(R.res[id].h):""}<p>${s.txt}</p></button>`};
+  meBack="carnet";const favs=Object.keys(R.fav).filter(id=>FOX[id]&&R.res[id]);
+  openSheet(`<h2>Le carnet du refuge</h2><button class="mecard" type="button" data-go="moi"><span class="pic">${foxArt(FOX.roussette,{expr:"joy",portrait:1})}</span><span><b>C'est toi : ${ME()}</b><small>Ton look, tes chiffres. Touche pour te personnaliser.</small></span><i aria-hidden="true">›</i></button>
+    <button class="mecard bud" type="button" data-go="buddy"><span class="pic">${foxArt(FOX[R.buddy]||FOX.petitpois,{expr:"joy",portrait:1})}</span><span><b>Compagnon au Café : ${(FOX[R.buddy]||FOX.petitpois).name}</b><small>Touche pour changer.</small></span><i aria-hidden="true">›</i></button><button class="btn ghost jbtn" type="button" data-go="journal">Les histoires</button>${favs.length?`<h3 class="sec">${favStar(1)} Mes favoris</h3><div class="grid">${favs.map(card).join("")}</div>`:""}<p class="sub">Le grand portrait : <b>${n} / ${ROSTER.length}</b> renards réunis. Quand tout le monde sera là, on fera une photo de famille.</p><div class="progress"><i style="width:${(n/ROSTER.length*100).toFixed(1)}%"></i></div><div class="grid">${ROSTER.map(card).join("")}${extra.map(f=>card(f.id)).join("")}</div>`);
 }
+/* ---------- favoris et compagnon (05/11/2026, Joffray) ---------- */
+const favStar=on=>`<svg class="favstar" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="${on?"#f2c45a":"#fffaf2"}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+const favBtn=(id,from="")=>`<button class="btn ghost favbtn${R.fav[id]?" on":""}" data-fav="${id}"${from?` data-from="${from}"`:""} type="button">${favStar(R.fav[id])} ${R.fav[id]?"Favori":"Mettre en favori"}</button>`;
+// choisir le compagnon du Café : les favoris d'abord, puis Petit Pois et ceux dont l'histoire est finie
+function buddyPick(){const ids=Object.keys(R.res).filter(canBuddy).sort((a,b)=>(R.fav[b]?1:0)-(R.fav[a]?1:0)||(b==="petitpois")-(a==="petitpois"));
+  const own=((load(CAFEKEY)||{}).own||{}).serveur;
+  openSheet(`<h2>Compagnon au Café</h2><p class="sub">Il s'assoit à côté de toi pendant le service. Une journée ensemble = un cœur.${own?"":" Sa place s'ouvre avec l'Apprenti serveur (boutique du Café)."}</p><div class="grid">${ids.map(id=>`<button class="card${R.buddy===id?" on":""}" data-buddy="${id}" data-back="pick" type="button"><div class="pic ${RAR[FOX[id].rar].cls}">${foxArt(FOX[id],{expr:"joy",portrait:1})}</div><h3>${R.fav[id]?favStar(1)+" ":""}${FOX[id].name}</h3><p>${R.buddy===id?"Avec toi":(R.tog[id]?`${R.tog[id]} journée${R.tog[id]>1?"s":""}`:"")}</p></button>`).join("")}</div><p class="sub">Un renard peut venir quand son histoire est finie.</p>`,"carnet")}
 /* ---------- « C'est toi » : Roussette, ses chiffres et son look (js/moi.js) ---------- */
 let meTab="c",meBack="carnet"; // touchée dans la scène, la fiche se ferme au lieu de revenir au carnet
 // un accessoire acheté dans la boutique Style du Café compte aussi
@@ -223,7 +233,7 @@ function meBuy(v){const [k,id]=v.split("|"),L={c:ME_FUR,m:ME_MARK,a:ME_ACC,y:ME_
   $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});if(!meF.walk)draw(meF);const y=$("sheet-in").scrollTop;moiSheet();$("sheet-in").scrollTop=y}
 function foxSheet(id){
   const f=FOX[id],r=R.res[id],M=metIds(),s=status(id,M),show=s.ok||s.seen;
-  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}${r||id==="roussette"?tenueHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`,"carnet");
+  openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>${favBtn(id)}`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}${r||id==="roussette"?tenueHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`,"carnet");
 }
 
 /* ---------- nouvelles au retour ---------- */

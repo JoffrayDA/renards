@@ -29,7 +29,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}}
 function canFollow(id){const f=FOX[id];return f&&!f.event&&!WILD[id]&&id!=="roussette"}
 const isRes=id=>!!R.res[id];
 // compagnon au Café (Petit Pois par défaut) ; R.tog[id] = journées ensemble au Café déjà comptées en cœurs
-R.buddy=R.buddy||"petitpois";R.tog=R.tog||{};
+R.buddy=R.buddy||"petitpois";R.tog=R.tog||{};R.fav=R.fav||{}; // renards favoris (05/11/2026, Joffray)
 function syncTogether(){const T=(load(CAFEKEY)||{}).together||{},got=[];
   for(const id in T){const n=T[id].n-(R.tog[id]||0);if(n>0&&R.res[id]){R.res[id].h+=n;got.push([id,n])}if(T[id].n>(R.tog[id]||0))R.tog[id]=T[id].n}
   if(got.length)save();return got}
