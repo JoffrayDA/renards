@@ -32,7 +32,7 @@ syncFoxes();drawObjs();fillObjs();gardenSync(); // le record de Boule-de-Neige (
 chainTick(false);if(checkArrival())syncFoxes(); // arrivé à l'ouverture : il est là tout de suite
 renderHud();
 $("b-bowl").innerHTML=acornSVG()+"Gamelle";
-$("b-bowl").onclick=bowlSheet;$("goal").onclick=()=>{if(!cur()&&envieGoal())return;journal()};$("b-carnet").onclick=carnet;$("b-photos").onclick=photos;$("b-obj").onclick=()=>shopSheet("jour");
+$("b-bowl").onclick=()=>ppTip("gamelle",bowlSheet);$("goal").onclick=()=>{if(!cur()&&envieGoal())return;journal()};$("b-carnet").onclick=()=>ppTip("carnet",carnet);$("b-photos").onclick=()=>ppTip("photos",photos);$("b-obj").onclick=()=>ppTip("boutique",()=>shopSheet("jour"));
 // au tout premier passage, Petit Pois accueille Roussette ; ensuite, les nouvelles depuis la dernière visite
 if(!R.intro)talk(INTRO,()=>{R.intro=1;save();showNews()});else showNews();
 renderStory();envieTick();drawBell();pushSync(pushPlan());

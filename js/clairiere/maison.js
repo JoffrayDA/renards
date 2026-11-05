@@ -277,6 +277,7 @@ function enterHouse(){
   houseEl.querySelector(".hgrow").onpointerdown=e=>{e.stopPropagation();houseSheet()};
   houseEl.querySelector(".hdeco").onpointerdown=e=>{e.stopPropagation();decoStart(null,"home")};
   $("scene").appendChild(houseEl);drawHouseDeco(hd.seated);
+  if(!decoMode)ppTip("maison");
 }
 const i0=id=>[...id].reduce((a,c)=>a+c.charCodeAt(0),0);
 function leaveHouse(){if(houseEl){if(decoMode)decoEnd();houseEl.remove();houseEl=null}}

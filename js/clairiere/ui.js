@@ -60,7 +60,7 @@ function drawDrops(){syncDrops();
       el.style.cssText=pc(x,y)+`;z-index:${900+y}`; // toujours devant les renards (Joffray : des glands cachés sous un renard)
       el.onpointerdown=e=>{e.stopPropagation();pickDrop(i)};$("actors").appendChild(el)}
     el.hidden=!R.drops[i]})}
-function pickDrop(i){syncDrops();const v=R.drops[i];if(!v)return;
+function pickDrop(i){syncDrops();const v=R.drops[i];if(!v)return;setTimeout(()=>ppTip("glands"),400);
   R.drops[i]=0;R.pend-=v;R.glands+=v;save();$("glands").textContent=R.glands;drawDrops();
   const [x,y]=DROPS[i],p=document.createElement("div");p.className="plus";p.textContent=`+${v}`;p.style.cssText=pc(x,y-14);$("scene").appendChild(p);setTimeout(()=>p.remove(),900)}
 
@@ -95,6 +95,24 @@ function nextLine(){const el=$("talk");
   if(typeof act==="function")try{act()}catch(e){} // les renards jouent la scène pendant la réplique (scenes.js)
 }
 $("talk").onclick=()=>{if(typeof talkHeld!=="undefined"&&talkHeld)return;nextLine()};
+/* ---------- Petit Pois explique (05/11/2026, Joffray : « comme pour l'Italie et Paris ») ----------
+   La première fois qu'on ouvre quelque chose, Petit Pois vient voir Roussette et explique en deux ou trois répliques (R.tips). */
+const PP_TIPS={
+  gamelle:[["joy","La gamelle ! Ce que tu y mets attire des renards sauvages."],["open","Baies, poisson, miel : chacun attire d'autres renards. La petite jauge dessous dit ce qu'il reste."],["shy","Ils passent surtout quand tu n'es pas là. Mais ils laissent toujours une photo !"]],
+  boutique:[["joy","La boutique ! Les objets du jour changent chaque nuit."],["open","Les pièces viennent du Café, les clochettes de tes étoiles. Les glands, eux, se trouvent ici, au refuge."],["joy","Dans Refuge, Copeau construit contre des glands. Dans Mes objets, tu retrouves tout ce que tu as."]],
+  glands:[["surprise","Des glands ! Les renards du refuge t'en rapportent chaque jour."],["joy","Un câlin par renard et par jour en donne un, et les histoires beaucoup plus. Ramasse-les dans l'herbe !"]],
+  photos:[["joy","L'album ! Chaque renard a son dossier, une photo par pose."],["open","Touche l'appareil en haut de l'écran, puis un renard. Dans un objet ou sur une déco, c'est une pose de plus !"]],
+  appareil:[["joy","Clic-clac ! Touche un renard pour le prendre en photo."],["shy","Il ne doit pas bouger. Les sauvages, eux, sont trop farouches : c'est la gamelle qui les photographie."]],
+  carnet:[["joy","Le carnet du refuge : tous les renards que tu as croisés."],["open","Touche un renard pour voir sa fiche. L'étoile en fait un favori. Et en haut, tu choisis qui t'accompagne au Café."]],
+  deco:[["joy","On décore ! Fais glisser les objets du doigt."],["open","Touche un objet pour le retourner ou le ranger. Quand c'est joli, touche Terminé."]],
+  maison:[["joy",`Bienvenue chez toi, ${ME()} ! Ici, tout le refuge dort au chaud.`],["open","Copeau peut l'aménager contre des glands : touche Aménager. Et Décorer pour y poser tes objets."]]
+};
+R.tips=R.tips||{};
+// la première fois : Petit Pois vient et explique, puis then() ; sinon then() tout de suite
+function ppTip(k,then){const L=PP_TIPS[k];
+  if(!L||R.tips[k]||!R.intro||(typeof gameOn!=="undefined"&&gameOn)||!$("talk").hidden){if(then)then();return}
+  R.tips[k]=1;save();
+  talk(L.map(([e,t],i)=>["petitpois",e,t,i===0?()=>{try{if(!houseEl)actNear("petitpois","me")}catch(x){}}:undefined]),then)}
 const INTRO=[
   ["petitpois","joy",`${ME()} ! Te voilà ! J'ai gardé la maison toute la journée.`],
   ["petitpois","shy","Enfin… j'ai surtout dormi sous le porche."],

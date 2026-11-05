@@ -383,7 +383,7 @@ function decoStart(k,w){w=k?(DECO[k].home?"home":"out"):w||"out";
     for(const f of foxes)if(f.spot&&(f.spot.deco||f.spot.obj&&objMoves(f.spot.obj))){f.walk=null;const fs=SPOTS.filter(s=>!taken(s)&&!s.bowl&&!s.lamp&&!s.obj&&!s.deco);place(f,fs[Math.floor(Math.random()*fs.length)]||SPOT.g3)}}
   decoMode=true;decoSel=null;$("scene").classList.add("decoing");
   decoSpots();$("decobar").hidden=false;document.querySelector(".actions").hidden=true;$("goal").classList.add("off");
-  toast(w==="home"?"Fais glisser les objets du doigt : au mur, ou par terre autour du tapis.":"Fais glisser les objets du doigt. Touche-en un pour le retourner ou le ranger.");drawDBar();if(k)decoAdd(k);drawDeco()}
+  if(R.tips.deco)toast(w==="home"?"Fais glisser les objets du doigt : au mur, ou par terre autour du tapis.":"Fais glisser les objets du doigt. Touche-en un pour le retourner ou le ranger.");drawDBar();if(k)decoAdd(k);drawDeco();ppTip("deco")}
 function decoEnd(){decoMode=false;decoSel=null;$("scene").classList.remove("decoing");$("decobar").hidden=true;document.querySelector(".actions").hidden=false;$("goal").classList.remove("off");
   if(dWhere==="home"&&houseEl){leaveHouse();enterHouse()}
   addObjSpots();decoSpots();drawDeco();drawGlow()}

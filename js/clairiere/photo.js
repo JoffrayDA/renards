@@ -8,7 +8,7 @@
 let shooting=false;
 const camEl=document.createElement("button");camEl.className="cam";camEl.type="button";camEl.setAttribute("aria-label","Appareil photo");
 camEl.innerHTML=`<svg viewBox="0 0 32 28" aria-hidden="true"><g stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"><path d="M10 6 L12 2.5 H20 L22 6 H27 Q30 6 30 9 V23 Q30 26 27 26 H5 Q2 26 2 23 V9 Q2 6 5 6Z" fill="#f6a5b4"/><circle cx="16" cy="15.5" r="6.4" fill="#fffaf2"/><circle cx="16" cy="15.5" r="3.2" fill="#9ec3ef"/></g><circle cx="14.6" cy="14" r="1.1" fill="#fff"/><circle cx="25.5" cy="10" r="1.5" fill="#fff6c8" stroke="${INK}" stroke-width="1.2"/></svg>`;
-camEl.onpointerdown=e=>{e.stopPropagation();camMode(!shooting)};
+camEl.onpointerdown=e=>{e.stopPropagation();shooting?camMode(false):ppTip("appareil",()=>camMode(true))};
 $("scene").appendChild(camEl);
 function camMode(on){shooting=on;$("scene").classList.toggle("shooting",on);camEl.classList.toggle("on",on);if(on)toast("Touche un renard pour le prendre en photo.")}
 
