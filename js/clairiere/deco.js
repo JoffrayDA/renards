@@ -69,7 +69,7 @@ const DECO={
     desc:"Un pouf rayé, rembourré à craquer. Le plus moelleux de toute la forêt.",
     art:L=>`${dSh(44)}<g ${L}${dWob}><path d="M-44 -12 Q-46 -38 0 -40 Q46 -38 44 -12 Q44 1 0 1 Q-44 1 -44 -12Z" fill="#f6b8c4"/></g>
       ${[-26,-8,10,28].map(x=>`<path d="M${x} -38 Q${x+2} -18 ${x} 0" fill="none" stroke="#fffaf2" stroke-width="5" opacity=".75"/>`).join("")}<ellipse cx="0" cy="-30" rx="30" ry="6" fill="#fff" opacity=".3"/><circle cx="0" cy="-26" r="3.6" fill="#e08a9c" ${L}/>`},
-  hamac:{name:"Hamac",p:1200,w:96,h:74,fav:"somnus",seat:{dx:0,dy:-44,poses:["sleep","lie"]},
+  hamac:{name:"Hamac",p:1200,w:96,h:74,fav:"somnus",seat:{dx:0,dy:-39,poses:["sleep","lie"]},
     desc:"Une toile tendue entre deux piquets. On s'y balance doucement jusqu'à s'endormir. Un grand dormeur de la forêt en rêve, paraît-il.",
     art:L=>`${dSh(40,-3)}<g ${L}${dWob}><path d="M-46 -2 L-42 -70 M46 -2 L42 -70" fill="none" stroke-width="${(1.35*100/96*2.6).toFixed(2)}"/><path d="M-46 -2 L-42 -70 M46 -2 L42 -70" fill="none" stroke="#a9785a" stroke-width="2.4"/>
       <path d="M-42 -64 L-34 -46 M-42 -64 L-30 -46 M42 -64 L34 -46 M42 -64 L30 -46" fill="none" stroke-width="1"/><path d="M-36 -46 Q0 -34 36 -46 Q0 -12 -36 -46Z" fill="#7fa8d8"/></g>`,
