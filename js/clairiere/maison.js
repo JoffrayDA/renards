@@ -280,8 +280,18 @@ function enterHouse(){
 }
 const i0=id=>[...id].reduce((a,c)=>a+c.charCodeAt(0),0);
 function leaveHouse(){if(houseEl){if(decoMode)decoEnd();houseEl.remove();houseEl=null}}
+// (05/11/2026, Joffray : « trop de texte ») : en grille comme la boutique, la description au toucher de l'image
+const HICON={
+  coussins:`<g stroke="${INK}" stroke-width="3" stroke-linejoin="round">${[[60,120,"#f6b8c4"],[140,120,"#9ec3ef"],[100,96,"#f2d27a"]].map(([x,y,c])=>`<path d="M${x-36} ${y} Q${x-38} ${y-26} ${x} ${y-28} Q${x+38} ${y-26} ${x+36} ${y} Q${x} ${y+12} ${x-36} ${y}Z" fill="${c}"/><circle cx="${x}" cy="${y-12}" r="3.4" fill="#fff"/>`).join("")}</g>`,
+  etagere:`<g stroke="${INK}" stroke-width="3" stroke-linejoin="round"><rect x="30" y="96" width="140" height="10" rx="3" fill="#c08a5c"/><path d="M50 106 v16 M150 106 v16" stroke-width="5"/>
+    <rect x="44" y="60" width="22" height="36" rx="6" fill="#bfe3f2"/><rect x="74" y="70" width="18" height="26" rx="4" fill="#f2c45a"/><circle cx="114" cy="82" r="14" fill="#f6a5b4"/><path d="M138 96 l8 -36 l12 36Z" fill="#9ec3ef"/></g>`,
+  mezzanine:`<g stroke="${INK}" stroke-width="3" stroke-linejoin="round"><rect x="20" y="44" width="130" height="14" rx="3" fill="#c08a5c"/><path d="M36 58 V140 M134 58 V140" stroke="#a8724c" stroke-width="6"/><path d="M36 58 V140 M134 58 V140" fill="none"/>
+    <path d="M150 50 L170 146 M178 50 L196 146" stroke-width="4"/>${[70,92,114,136].map(y=>`<path d="M${150+(y-50)*.21} ${y} H${178+(y-50)*.19}" stroke-width="4"/>`).join("")}</g>`,
+  guirlandes:`<path d="M10 40 Q100 100 190 40" fill="none" stroke="${INK}" stroke-width="3"/>${[[34,56,"#f6a5b4"],[66,72,"#f2d27a"],[100,78,"#9ec3ef"],[134,72,"#b9e0a8"],[166,56,"#c9a8ec"]].map(([x,y,c])=>`<path d="M${x-12} ${y-4} L${x+12} ${y-4} L${x} ${y+20}Z" fill="${c}" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>`).join("")}${[50,84,118,150].map(x=>`<circle cx="${x}" cy="${40+Math.sin((x-10)/180*Math.PI)*42}" r="4.5" fill="#fff3a8" stroke="${INK}" stroke-width="2"/>`).join("")}`};
 function houseSheet(){
-  openSheet(`<h2>Aménager la maison</h2><p class="sub">Copeau a des idées plein la tête. Les objets attirent un renard : sors l'appareil photo pour le prendre. Tu as ${R.glands} glands.</p>${Object.entries(HOUSE).map(([k,o])=>`<div class="opt"><div class="txt"><strong>${o.name}</strong><span>${o.desc}</span></div><button class="btn" data-house="${k}" type="button" ${R.hup[k]||R.glands<o.price?"disabled":""}>${R.hup[k]?"Fait":`${acornSVG()} ${o.price}`}</button></div>`).join("")}`)}
+  const pic=k=>`<svg viewBox="${{coussins:"20 62 160 72",etagere:"26 52 148 76",couverture:"22 96 160 62",theiere:"78 62 116 92",disque:"52 24 150 128",fauteuil:"20 36 156 120",mezzanine:"14 40 186 110",guirlandes:"6 30 190 76"}[k]}" aria-hidden="true">${HOBJ[k]?HOBJ[k].art(null):HICON[k]||""}</svg>`;
+  openSheet(`<h2>Aménager la maison</h2><p class="sub">Copeau construit contre des glands.</p><div class="dgrid">${Object.entries(HOUSE).map(([k,o])=>dTile("",pic(k),o.name,o.desc,"",
+    `<button class="btn" data-house="${k}" type="button" ${R.hup[k]||R.glands<o.price?"disabled":""}>${R.hup[k]?"Fait":`${acornSVG()} ${o.price}`}</button>`)).join("")}</div>`)}
 function buildHouse(k){const o=HOUSE[k];if(R.hup[k]||R.glands<o.price)return;
   R.glands-=o.price;R.hup[k]=1;save();renderHud();closeSheet();
   if(houseEl){leaveHouse();enterHouse()}
