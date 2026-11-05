@@ -23,24 +23,24 @@ const boostIc=b=>b.ic==="coin"?coinSVG:icon(b.ic,"base");
 // les bonus avant une journée (ctx : la feuille à réafficher après un choix)
 function boostHTML(ctx){
   boostCtx=ctx;
-  return `<p class="sub" style="margin:10px 0 6px"><b>Bonus pour cette journée</b> · ils ne servent qu'une fois</p><div class="col">${BOOSTS.map(b=>{const n=S.boost[b.id]||0,on=boostSel.has(b.id);
-    return `<div class="it${on?" bon":""}" style="padding:8px 12px"><span class="ic">${boostIc(b)}</span><span class="tx"><strong style="font-size:14px">${b.name}</strong><span>${b.d}${n?` En réserve : ${n}.`:""}</span></span><span class="side">${n?`<button class="btn${on?"":" ghost"}" data-boost="${b.id}" type="button">${on?"Pris":"Prendre"}</button>`:`<span class="price">${coinSVG}${b.c}</span><button class="btn ghost" data-bbuy="${b.id}" type="button" ${S.coins>=b.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")}</div>`;
+  // (05/11/2026, Joffray : « trop de texte ») : quatre petites cases
+  return `<p class="sub" style="margin:10px 0 6px"><b>Bonus</b> · un seul usage</p><div class="bgrid">${BOOSTS.map(b=>{const n=S.boost[b.id]||0,on=boostSel.has(b.id);
+    return `<div class="bt${on?" bon":""}"><span class="ic">${boostIc(b)}</span><b>${b.s}</b>${n?`<button class="btn${on?"":" ghost"}" data-boost="${b.id}" type="button">${on?"Pris":`Prendre (${n})`}</button>`:`<button class="btn ghost" data-bbuy="${b.id}" type="button" ${S.coins>=b.c?"":"disabled"}>${coinSVG}${b.c}</button>`}</div>`}).join("")}</div>`;
 }
 function daySheet(d){
   if(!dayOpen(d)){toast(d>S.day?"Réussis la journée précédente pour ouvrir celle-ci.":"La porte de la saison est encore fermée.");return}
   const c=cfgOf(d),g=c.goal,st=S.stars[d]||0,ch=chapOf(d),rk=Object.keys(REC).find(k=>REC[k].day===d);
   const rw=[];
-  if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,`Réussis cette journée pour l'ajouter à ta carte.`,"background:#e3f2d6"));
+  if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,"Réussis la journée pour l'avoir.","background:#e3f2d6"));
   const ok=Object.keys(OPTS).find(o=>OPTS[o].day===d);
-  if(ok&&!S.own[ok])rw.push(itRow(icon(ok),`Option à gagner : ${OPTS[ok].name}`,OPTS[ok].desc,"background:#e3f2d6"));
-  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que la moitié des pièces. Les nouvelles étoiles restent payées par le coffre."));
-  rw.push(st<3?itRow(icon("chest"),"Coffre ★★★",st?"Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre.":"Chaque étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
-  if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient dans toutes les journées, toutes saisons confondues : il paie le triple, mais il est pressé.":`Obtiens ★★★ sur les 10 journées du ${ch.name} pour l'inviter (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
+  if(ok&&!S.own[ok])rw.push(itRow(icon(ok),`Option à gagner : ${OPTS[ok].name}`,"Réussis la journée pour l'avoir.","background:#e3f2d6"));
+  rw.push(itRow(icon("chest"),st<3?"Coffre ★★★":"Coffre ouvert",(st<3?"Chaque nouvelle étoile rapporte des pièces.":"Plus rien dans le coffre.")+(st?" Rejouer : moitié des pièces.":"")));
+  if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient partout en VIP.":`★★★ sur tout ${ch.name.replace(/^(Automne|Été|Hiver)$/,"l'$1").replace(/^Printemps$/,"le Printemps")} (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
-  <p class="sub">${c.c} clients attendus${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Patience : ${Math.round(c.pat*patMult())} s.${S.best[d]?` Record : <b>${S.best[d]} pièces</b>.`:""}</p>
+  <p class="sub">${c.c} clients${c.max>1?` · ${c.max} articles max`:""} · patience ${Math.round(c.pat*patMult())} s${S.best[d]?` · record <b>${S.best[d]}</b>`:""}</p>
   ${d===1&&!S.total?`<div class="tuto"><b>Comment jouer</b><ol><li>Touche <b>Café</b> pour le préparer, puis touche-le à nouveau quand il est prêt : il va sur ton plateau.</li><li>Touche <b>${vName("croissant",CHAP[0].sea)[0]}</b> pour lancer une fournée, puis le <b>four</b> quand elle est cuite, avant qu'elle brûle. Touche-la ensuite pour la poser sur le plateau.</li><li>Touche un <b>client</b> pour lui servir ce qui est sur ton plateau. Plus tu es rapide, plus le pourboire est gros.</li></ol></div>`:""}
-  <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
-  ${equipBonus(d)?`<p class="sub" style="margin:6px 0 0;font-size:12.5px">Objectif relevé de <b>${Math.round(equipBonus(d)*100)} %</b> : ton équipement dépasse celui prévu pour ce jour.</p>`:""}
+  <p class="sub" style="margin-bottom:6px">Objectif (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
+  ${equipBonus(d)?`<p class="sub" style="margin:6px 0 0;font-size:12.5px">Objectif +${Math.round(equipBonus(d)*100)} % : tu es très bien équipé.</p>`:""}
   ${rw.join("")}
   ${d>=3?boostHTML(()=>daySheet(d)):""}
   <div class="col" style="margin-top:10px"><button class="btn big wide" data-play="${d}" type="button">Ouvrir le café</button></div>`);
@@ -82,13 +82,13 @@ function nightSheet(n){
   ${boostHTML(()=>nightSheet(n))}
   <div class="col" style="margin-top:6px"><button class="btn big wide" data-nplay="${n}" type="button">Commencer la nuit</button><button class="btn ghost wide" data-act="hw" type="button">Retour</button></div>`);
 }
-function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées. Une quête réussie rapporte des pièces, et une nouvelle la remplace.</p>${questHTML()}`)}
+function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées.</p>${questHTML()}`)}
 let shopTab="equip";
 function shop(){
   let list;
   if(shopTab==="hw"&&!HW)shopTab="style";
   boostCtx=null;
-  if(shopTab==="boost")list=`<p class="sub" style="margin:0 0 8px">Achète-les d'avance, puis choisis-les avant une journée (à partir du jour 3). Chacun ne sert qu'une fois.</p>`+BOOSTS.map(b=>`<div class="it"><span class="ic">${boostIc(b)}</span><span class="tx"><strong>${b.name}</strong><span>${b.d} En réserve : <b>${S.boost[b.id]||0}</b>.</span></span><span class="side"><span class="price">${coinSVG}${b.c}</span><button class="btn" data-bbuy="${b.id}" type="button" ${S.coins>=b.c?"":"disabled"}>Acheter</button></span></div>`).join("");else
+  if(shopTab==="boost")list=`<p class="sub" style="margin:0 0 8px">À choisir avant une journée, dès le jour 3. Un seul usage.</p>`+BOOSTS.map(b=>`<div class="it"><span class="ic">${boostIc(b)}</span><span class="tx"><strong>${b.name}</strong><span>${b.d} En réserve : <b>${S.boost[b.id]||0}</b>.</span></span><span class="side"><span class="price">${coinSVG}${b.c}</span><button class="btn" data-bbuy="${b.id}" type="button" ${S.coins>=b.c?"":"disabled"}>Acheter</button></span></div>`).join("");else
   if(shopTab==="style"||shopTab==="hw"){
     S.style=S.style||{wall:"rose",counter:"bois",acc:""};
     const hw=shopTab==="hw";
@@ -100,9 +100,9 @@ function shop(){
   }else list=UPG[shopTab].map(u=>{
     const n=lv(u.id),max=u.lv.length,nx=u.lv[n],early=nx&&upLocked(nx);
     const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";
-    const desc=nx?(n?`Maintenant : ${lvDesc(u,n)} <b>Niveau ${n+1} :</b> ${nx.d}`:nx.d)+(early?(WORLD?` (Arrive au jour ${IT_FROM[nx.from]} du quartier.)`:` (Arrive avec la saison ${chapOf(nx.from).name}.)`):""):lvDesc(u,n);
+    const desc=nx?(n?`<b>Niv. ${n+1} :</b> ${nx.d}`:nx.d)+(early?(WORLD?` (Arrive au jour ${IT_FROM[nx.from]} du quartier.)`:` (Arrive avec la saison ${chapOf(nx.from).name}.)`):""):lvDesc(u,n);
     return `<div class="it"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${upPrice(nx)}</span><button class="btn" data-buy="${u.id}" type="button" ${!early&&S.coins>=upPrice(nx)?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("");
-  openSheet(`<h2>${WORLD?`Boutique du ${WD().short}`:"Boutique"}</h2>${WORLD?`<p class="sub" style="background:#fff3d6;border-radius:12px;padding:8px 10px">Le ${WD().cafe} a <b>son propre équipement</b> : ce que tu achètes ici ne sert que dans ce quartier (${WD().name}). Les bonus et le style sont communs à tous tes cafés.</p>`:""}<p class="sub">Tu as <b>${S.coins} pièces</b> et <b>${bellsN()} clochette${bellsN()>1?"s":""}</b>. Les recettes se gagnent sur la carte ; ici, chaque achat change ta façon de jouer, et le style rend ton café unique.</p><div class="tabs">${[["equip","Équipement"],["deco","Déco"],["boost","Bonus"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
+  openSheet(`<h2>${WORLD?`Boutique du ${WD().short}`:"Boutique"}</h2>${WORLD?`<p class="sub" style="background:#fff3d6;border-radius:12px;padding:8px 10px">L'équipement d'ici ne sert qu'au ${WD().cafe}. Bonus et style : communs.</p>`:""}<div class="tabs">${[["equip","Équipement"],["deco","Déco"],["boost","Bonus"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
   const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
 }
 function carnet(){
@@ -110,6 +110,6 @@ function carnet(){
   const rows=list.map(f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
     const show=n||(f.event==="halloween"&&HW)||(c&&S.guest[f.id]); // invités d'Halloween pendant l'événement, invités d'honneur débloqués : montrés même pas encore venus
     return `<div class="fc${c?" vipc":f.event?" hwc":""}">${foxSVG(f,{sil:!show})}${show||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur : viendra bientôt en VIP":`★★★ au ${c.name}`):f.world?"Vit en Petite Italie":f.event==="noel"?"Vient à Noël":f.event&&!HW?"Vient à Halloween":WILD[f.id]?`Sauvage : une gamelle ${WILD_FOOD[WILD[f.id]]} au refuge l'attirera`:"Pas encore venu"}</em></div>`}).join("");
-  openSheet(`<h2>Carnet des clients</h2><p class="sub">${list.filter(f=>S.seen[f.id]).length} / ${list.length} clients rencontrés. Les invités d'honneur viennent quand une saison entière est en ★★★.</p><div class="fgrid">${rows}</div>${Object.keys(S.costSeen).length||HW?`<div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`:""}`);
+  openSheet(`<h2>Carnet des clients</h2><p class="sub">${list.filter(f=>S.seen[f.id]).length} / ${list.length} clients rencontrés.</p><div class="fgrid">${rows}</div>${Object.keys(S.costSeen).length||HW?`<div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`:""}`);
 }
 function pauseMenu(){if(!G||!G.run)return;G.paused=1;openSheet(`<h2>Pause</h2><p class="sub">Les clients t'attendent sagement.</p><div class="col"><button class="btn big wide" data-act="resume" type="button">Reprendre</button><button class="btn ghost wide" data-act="quit" type="button">Abandonner la journée</button></div>`,true)}

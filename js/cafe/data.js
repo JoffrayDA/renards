@@ -73,9 +73,9 @@ const UPG={
     {id:"plateau",name:"Plateau",lv:[{d:"4 places sur le plateau au lieu de 3.",c:60},{d:"5 places sur le plateau.",c:1000,from:21,ic:"plateau5"}]},
     {id:"double",name:"Machine à café",lv:[{d:"Prépare 2 cafés en même temps.",c:80},{d:"Prépare 3 cafés en même temps.",c:1100}]},
     {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:400,ic:"comptoir2"}]},
-    {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 12 % plus rapide, et les fournées brûlent un peu moins vite.",c:110},{d:"Cuisson 20 % plus rapide, et les fournées brûlent encore un peu moins vite.",c:1200}]},
+    {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 12 % plus rapide, brûle moins vite.",c:110},{d:"Cuisson 20 % plus rapide, brûle moins vite.",c:1200}]},
     {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 15 % plus vite.",c:150},{d:"Toutes les boissons se préparent 22 % plus vite.",c:950},{d:"Toutes les boissons se préparent 30 % plus vite.",c:2800,from:31}]},
-    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Ton compagnon (Petit Pois, ou un autre ami du refuge) apporte tout seul, et tout de suite, les pâtisseries de la vitrine aux clients.",c:320}]},
+    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Ton compagnon apporte les pâtisseries de la vitrine aux clients.",c:320}]},
     {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:1100,from:21}]},
     {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:1800,from:31}]}
   ],
@@ -98,10 +98,10 @@ const upPrice=nx=>WORLD?Math.round(nx.c*IT_PRICE/10)*10:nx.c;
 const upLocked=nx=>!!nx.from&&(WORLD?WD().sv().day<IT_FROM[nx.from]:S.day<nx.from);
 // Bonus à usage unique (S.boost[id] = nombre en réserve) : on les choisit avant une journée, ils ne servent qu'une fois.
 const BOOSTS=[
-  {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",c:90,ic:"the"},
-  {id:"tips",name:"Pot à pourboires",d:"Pourboires doublés.",c:120,ic:"coin"},
-  {id:"four",name:"Bûches de hêtre",d:"Le four cuit deux fois plus vite.",c:80,ic:"fourpro"},
-  {id:"vip",name:"Invitations dorées",d:"Deux fois plus de clients VIP.",c:140,ic:"coussins"}
+  {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",s:"Patience +30 %",c:90,ic:"the"},
+  {id:"tips",name:"Pot à pourboires",d:"Pourboires doublés.",s:"Pourboires ×2",c:120,ic:"coin"},
+  {id:"four",name:"Bûches de hêtre",d:"Le four cuit deux fois plus vite.",s:"Four ×2",c:80,ic:"fourpro"},
+  {id:"vip",name:"Invitations dorées",d:"Deux fois plus de clients VIP.",s:"VIP ×2",c:140,ic:"coussins"}
 ];
 let boostSel=new Set(),boostCtx=null;
 // Style : purement décoratif (papier peint, comptoir, tenue de Roussette sur la carte). S.style garde le choix.

@@ -384,3 +384,11 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 @keyframes vnpop{from{transform:translateY(24px) scale(.9);opacity:0}}
 @keyframes vnpopr{from{transform:scaleX(-1) translateY(24px) scale(.9);opacity:0}}
 @keyframes vnnext{50%{transform:translateY(3px)}}
+
+/* bonus de la fiche du jour en petites cases (05/11/2026) */
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bt{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px;border-radius:16px;background:var(--card-2,#fbeee0);text-align:center}
+.bt.bon{background:#e3f2d6}
+.bt .ic{width:40px;height:40px;display:block}.bt .ic svg{width:100%;height:100%}
+.bt b{font-size:13.5px}
+.bt .btn{padding:6px 12px;font-size:13px}.bt .btn svg{width:16px;height:16px;vertical-align:-3px}
