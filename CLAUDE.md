@@ -129,6 +129,8 @@ Refondue le 24/10/2026 (fiche : `docs/clairiere-v2.md`). Le Café, c'est la tens
 
 - Retours de la copine de Joffray (27/10/2026) : elle ne trouvait pas comment fermer le carnet ou les photos (bouton ‹ Retour en haut de chaque feuille, `openSheet(h, back)`, la fiche d'un renard revient au carnet) ; elle ne voyait pas les signes « ! », « … » et cœur la nuit sous la pluie (ils vivent maintenant dans `f.badge`, dans la couche `#lights` au-dessus du voile de la nuit, avec un halo clair ; le « ! » des endroits aussi) ; « Viens, petit » de Luciole à Petit Pois sonnait bizarre (« Viens, Petit Pois »).
 
+- Pas de son sur l'iPhone de la copine de Joffray (06/11/2026) : en mode silencieux, iOS coupe le Web Audio. `wake` (music.js) passe la session audio en « playback » (`navigator.audioSession`, sinon petit `<audio>` muet en boucle), crée et réveille le contexte pendant le toucher, et relance aussi l'état `interrupted` d'iOS (`C.state!=="running"`). Le son du jeu passe donc même téléphone en silencieux ; le bouton son le coupe.
+
 - Sur iPhone, le Café ramait beaucoup : Safari recalcule le filtre SVG `#wobble` à chaque image dès qu'un renard bouge. Couper le filtre sur iOS (`LITE` dans `js/foxart.js`, `?lite=1` pour tester) a réglé le problème (confirmé par la copine de Joffray). Pas de filtre SVG coûteux sous une animation.
 
 - Les petits jeux ramaient (luge, tournée, 03/11/2026) : la petite piste de la luge était redessinée à chaque image (portraits compris), et la clairière continuait d'être dessinée sous le jeu. Pendant un jeu, la scène reçoit la classe `gaming` qui cache tout sauf `#play` ; dans un jeu, ne jamais refaire un `innerHTML` à chaque image, déplacer avec `transform`, et retirer `#wobble` des renards qui bougent.

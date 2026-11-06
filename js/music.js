@@ -382,16 +382,16 @@ const MUSIC=(()=>{
       const E=T+.3+12*B;I.pad([48,55,60,64],E,2,.03);I.box(84,E,.12,2.4);I.bass(36,E,2,.2)}}
   };
   let jtimer=null;
-  function jingle(id){const J=JINGLES[id];if(!J||!on||!unlocked)return;init();if(C.state==="suspended")C.resume();
+  function jingle(id){const J=JINGLES[id];if(!J||!on||!unlocked)return;init();if(C.state!=="running")C.resume();
     stop();cur="jingle:"+id;bus=newBus();J.play(C.currentTime+.08);
     clearTimeout(jtimer);jtimer=setTimeout(()=>{jtimer=null;if(cur==="jingle:"+id){cur=null;if(on&&wanted)play(wanted)}},J.len*1000)}
   // l'animation est passée avant la fin : fondu, puis le morceau voulu
   // une note de piano toute douce (les flaques de Plouf), par-dessus la musique
-  function note(m){if(!on||!unlocked)return;init();if(C.state==="suspended")C.resume();const t=C.currentTime+.01;
+  function note(m){if(!on||!unlocked)return;init();if(C.state!=="running")C.resume();const t=C.currentTime+.01;
     const g=gain(t,.006,.16,1.1);g.connect(master);const s=C.createGain();s.gain.value=.25;g.connect(s);s.connect(rev);
     osc("triangle",hz(m),t,t+1.3).connect(g);const g2=gain(t,.004,.07,.4);g2.connect(g);osc("sine",hz(m)*2,t,t+.6).connect(g2)}
   // les bruitages des petits jeux (games.js), par-dessus la musique ; n : un rang, pour monter la note (ricochets, pierres…)
-  function sfx(k,n=0){if(!on||!unlocked)return;init();if(C.state==="suspended")C.resume();const t=C.currentTime+.01;
+  function sfx(k,n=0){if(!on||!unlocked)return;init();if(C.state!=="running")C.resume();const t=C.currentTime+.01;
     const o=(g,w=.12)=>{g.connect(master);const s=C.createGain();s.gain.value=w;g.connect(s);s.connect(rev)};
     const tone=(type,f1,f2,d,v,at=0)=>{const g=gain(t+at,.004,v,d),x=osc(type,f1,t+at,t+at+d+.05);x.frequency.setValueAtTime(f1,t+at);x.frequency.exponentialRampToValueAtTime(f2,t+at+d);x.connect(g);o(g)};
     const nz=(f,q,d,v,at=0,f2)=>{const bp=filt("bandpass",f,q);if(f2){bp.frequency.setValueAtTime(f,t+at);bp.frequency.exponentialRampToValueAtTime(f2,t+at+d)}const g=gain(t+at,.005,v,d);noiseSrc(t+at,t+at+d+.05).connect(bp);bp.connect(g);o(g,.05)};
@@ -457,7 +457,7 @@ const MUSIC=(()=>{
 
   function play(id){
     clearTimeout(jtimer);jtimer=null;
-    init();if(C.state==="suspended")C.resume();
+    init();if(C.state!=="running")C.resume();
     stop();const tr=TRACKS[id];if(!tr)return;cur=id;bus=newBus();
     const B=60/tr.bpm,len=tr.beats*B;let next=C.currentTime+.1,bar=0;
     const tick=()=>{while(next<C.currentTime+.35){tr.bar(bar%tr.bars,next,B);if(tr.crackle)I.crackle(next,len);next+=len;bar++}};
@@ -475,9 +475,20 @@ const MUSIC=(()=>{
   try{on=localStorage.getItem(SKEY)!=="0"}catch(e){}
   function want(id){wanted=id;if(unlocked&&on&&cur!==id)play(id)}
   // le son n'est permis qu'après un vrai toucher (doigt relevé, clic ou touche) : pas sur « pointerdown » au doigt
-  const unlock=()=>{if(C&&C.state==="suspended")C.resume();if(unlocked)return;unlocked=true;if(on&&wanted)play(wanted)};
+  // iPhone (06/11/2026, la copine de Joffray n'avait aucun son) : en mode silencieux, iOS coupe le Web Audio ;
+  // la session « playback » le laisse passer (iOS 16.4+), sinon un petit <audio> muet joué au toucher fait pareil.
+  // Le contexte est créé et réveillé pendant le toucher (après, iOS le laisse endormi), et iOS peut le mettre en « interrupted ».
+  const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  let tag=null;
+  function wake(){
+    try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}
+    init();if(C.state!=="running")C.resume();
+    try{const s=C.createBufferSource();s.buffer=C.createBuffer(1,1,22050);s.connect(C.destination);s.start(0)}catch(e){}
+    if(IOS&&!navigator.audioSession&&!tag){tag=new Audio("data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==");tag.loop=true;tag.setAttribute("playsinline","");try{const r=tag.play();if(r&&r.catch)r.catch(()=>{})}catch(e){}}
+  }
+  const unlock=()=>{if(on)wake();if(unlocked)return;unlocked=true;if(on&&wanted)play(wanted)};
   ["pointerup","touchend","click","keydown"].forEach(ev=>addEventListener(ev,unlock,{capture:true}));
-  document.addEventListener("visibilitychange",()=>{if(!C)return;document.hidden?C.suspend():C.resume()});
+  document.addEventListener("visibilitychange",()=>{if(!C)return;if(document.hidden){C.suspend();if(tag)tag.pause()}else{C.resume();if(tag&&on)tag.play().catch(()=>{})}});
   const ICON_ON='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M3 8 H6 L10 4.5 V15.5 L6 12 H3Z" fill="#5b4250"/><path d="M13 7 Q15 10 13 13 M15.5 5 Q19 10 15.5 15" fill="none" stroke="#5b4250" stroke-width="2" stroke-linecap="round"/></svg>';
   const ICON_OFF='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M3 8 H6 L10 4.5 V15.5 L6 12 H3Z" fill="#5b4250"/><path d="M13 7.5 L18 12.5 M18 7.5 L13 12.5" fill="none" stroke="#5b4250" stroke-width="2" stroke-linecap="round"/></svg>';
   const icon=()=>on?ICON_ON:ICON_OFF;

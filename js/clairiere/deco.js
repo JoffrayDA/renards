@@ -73,7 +73,7 @@ const DECO={
     desc:"Une toile tendue entre deux piquets. On s'y balance doucement jusqu'à s'endormir. Un grand dormeur de la forêt en rêve, paraît-il.",
     art:L=>`${dSh(40,-3)}<g ${L}${dWob}><path d="M-46 -2 L-42 -70 M46 -2 L42 -70" fill="none" stroke-width="${(1.35*100/96*2.6).toFixed(2)}"/><path d="M-46 -2 L-42 -70 M46 -2 L42 -70" fill="none" stroke="#a9785a" stroke-width="2.4"/>
       <path d="M-42 -64 L-34 -46 M-42 -64 L-30 -46 M42 -64 L34 -46 M42 -64 L30 -46" fill="none" stroke-width="1"/><path d="M-36 -46 Q0 -34 36 -46 Q0 -12 -36 -46Z" fill="#7fa8d8"/></g>`,
-    front:L=>`<g ${L}${dWob}><path d="M-38 -45 Q0 -2 38 -45 Q0 -22 -38 -45Z" fill="#9ec3ef"/></g>${[-22,-8,8,22].map(x=>`<path d="M${x} ${-34+Math.abs(x)/3} q1 8 0 ${14-Math.abs(x)/2.4}" stroke="#fffaf2" stroke-width="3" opacity=".8" fill="none"/>`).join("")}`},
+    front:L=>`<g ${L}${dWob}><path d="M-38 -45 Q0 -2 38 -45 Q0 -38 -38 -45Z" fill="#9ec3ef"/></g>${[-22,-8,8,22].map(x=>`<path d="M${x} ${-38+Math.abs(x)/4} q1 9 0 ${16-Math.abs(x)/2.2}" stroke="#fffaf2" stroke-width="3" opacity=".8" fill="none"/>`).join("")}`},
   moulin:{name:"Petit moulin à vent",p:900,w:56,h:136,fav:"moka",seat:{dx:16,dy:2,poses:["up","sit"]},
     desc:"Un moulin miniature dont les ailes tournent au moindre souffle de vent.",
     art:L=>`${dSh(26)}<g ${L}${dWob}><path d="M-18 -2 L-12 -80 H12 L18 -2Z" fill="#fbecd8"/><path d="M-6 -2 V-18 Q0 -24 6 -18 V-2Z" fill="#a9785a"/><rect x="-5" y="-56" width="10" height="10" rx="2" fill="#ffe7a3"/><path d="M-17 -78 L0 -100 L17 -78Z" fill="#d9776a"/></g>

@@ -29,7 +29,7 @@ const hPlace=k=>{const [x,y,s]=HOBJ[k].at;return `translate(${x} ${y}) scale(${s
 const houseBack=()=>`<defs><linearGradient id="hbW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ecc08e"/><stop offset="1" stop-color="#d9a46e"/></linearGradient></defs><rect width="200" height="160" fill="url(#hbW)"/>${[18,54,90,126,162,198].map(x=>`<path d="M${x} 0 V90" stroke="#c08a5c" stroke-width="2"/><path d="M${x+10} 14 q2 22 0 40" stroke="#f6d3a4" stroke-width="1.2" fill="none" opacity=".7"/>`).join("")}<rect y="84" width="200" height="22" fill="#c98f5c"/><path d="M0 84 H200" stroke="#a8724c" stroke-width="3"/><rect y="104" width="200" height="56" fill="#b9814a"/><path d="M0 104 H200" stroke="#7a4f34" stroke-width="3"/><path d="M0 124 H200 M0 146 H200" stroke="#8a5a32" stroke-width="2"/>`;
 // les places, dans le repère 400 × 480 : autour du feu, puis sur la mezzanine
 // sur le tapis : deux rangées et un au milieu devant ; les 6 premières sans les coussins
-const SEATS=[[96,384],[148,384],[200,384],[252,384],[294,384],[200,452],[122,426],[174,426],[226,426],[278,426]],UPSTAIRS=[[50,112],[100,112],[150,112],[230,112],[280,112],[330,112]];
+const SEATS=[[96,384],[148,384],[200,384],[252,384],[294,384],[200,452],[122,426],[174,426],[226,426],[278,426]],UPSTAIRS=[[50,122],[100,122],[150,122],[230,122],[280,122],[330,122]];
 const seats=()=>{const busy=hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;return [x+100*s,y+120*s]});
   const rug=R.hup.coussins?SEATS:SEATS.slice(0,6);
   return (R.hup.mezzanine?rug.concat(UPSTAIRS):rug).filter(([x,y])=>!busy.some(([bx,by])=>Math.hypot(bx-x,by-y)<70))};
