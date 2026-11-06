@@ -99,7 +99,7 @@ $("talk").onclick=()=>{if(typeof talkHeld!=="undefined"&&talkHeld)return;nextLin
    La première fois qu'on ouvre quelque chose, Petit Pois vient voir Roussette et explique en deux ou trois répliques (R.tips). */
 const PP_TIPS={
   gamelle:[["joy","La gamelle ! Ce que tu y mets attire des renards sauvages."],["open","Baies, poisson, miel : chacun attire d'autres renards. La petite jauge dessous dit ce qu'il reste."],["shy","Ils passent surtout quand tu n'es pas là. Mais ils laissent toujours une photo !"]],
-  boutique:[["joy","La boutique ! Les objets du jour changent chaque nuit."],["open","Les pièces viennent du Café, les clochettes de tes étoiles. Les glands, eux, se trouvent ici, au refuge."],["joy","Dans Refuge, Copeau construit contre des glands. Dans Mes objets, tu retrouves tout ce que tu as."]],
+  boutique:[["joy","La boutique ! Les objets du jour changent chaque nuit."],["open","Les pièces viennent du Café, les clochettes de tes étoiles. Les glands, eux, se trouvent ici, au refuge : chaque jour, un objet se paie en glands."],["joy","Dans Refuge, Copeau construit contre des glands. Dans Mes objets, tu retrouves tout ce que tu as."]],
   glands:[["surprise","Des glands ! Les renards du refuge t'en rapportent chaque jour."],["joy","Un câlin par renard et par jour en donne un, et les histoires beaucoup plus. Ramasse-les dans l'herbe !"]],
   photos:[["joy","L'album ! Chaque renard a son dossier, une photo par pose."],["open","Touche l'appareil en haut de l'écran, puis un renard. Dans un objet ou sur une déco, c'est une pose de plus !"]],
   appareil:[["joy","Clic-clac ! Touche un renard pour le prendre en photo."],["shy","Il ne doit pas bouger. Les sauvages, eux, sont trop farouches : c'est la gamelle qui les photographie."]],

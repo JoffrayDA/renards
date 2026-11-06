@@ -71,7 +71,8 @@ function simulate(live){
   while(t+STEP<=now){
     t+=STEP;
     for(const id in R.res)R.gf+=GLANDS_DAY[lvOf(R.res[id].h)]/48;
-    if(R.gf>=1){const n=Math.floor(R.gf);R.pend=(R.pend||0)+n;R.gf-=n} // laissés dans l'herbe, à ramasser
+    // laissés dans l'herbe, à ramasser ; 100 par jour au plus : sans plafond, 45 renards en laissaient 270 par jour sans rien à acheter
+    if(R.gf>=1){let n=Math.floor(R.gf);R.gf-=n;const d=today(t);if(!R.gd||R.gd.d!==d)R.gd={d,n:0};n=Math.min(n,GLANDS_CAP-R.gd.n);if(n>0){R.gd.n+=n;R.pend=(R.pend||0)+n}}
     if(R.bowl&&t>R.bowl.until)R.bowl=null;
     const B=R.bowl&&BOWLS[R.bowl.type];
     if(R.wildDay!==today(t)){R.wildDay=today(t);R.wildN=0} // deux visites par jour au plus

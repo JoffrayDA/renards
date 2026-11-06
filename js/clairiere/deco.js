@@ -228,10 +228,13 @@ const SHOP_P=["tulipes","banc","tableau","lanterne","hamac","plante","coussin","
   SHOP_B=["lampions","carillon","photos","topiaire","fontaine","coffre"];
 const dayN=()=>{const d=new Date();return Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(2026,0,1))/864e5)};
 const shopPool=a=>a.filter(k=>!DECO[k].home||houseOpen());
-const shopToday=()=>{const n=dayN(),P=shopPool(SHOP_P),B=shopPool(SHOP_B);return [0,1,2].map(i=>P[(3*n+i)%P.length]).concat(B[n%B.length])};
+const shopToday=()=>{const n=dayN(),P=shopPool(SHOP_P),B=shopPool(SHOP_B);return [0,1,2].map(i=>P[(3*n+i)%P.length]).concat(B[n%B.length],shopGland())};
+// et un objet en glands (06/11/2026, tools/glands-sim.py : sans lui, les glands s'entassaient une fois le refuge équipé), pris à l'autre bout de la liste
+// pour ne pas tomber sur ceux du jour en pièces ; prix en glands = un quart du prix en pièces
+const shopGland=()=>{const P=shopPool(SHOP_P);return P[(3*dayN()+Math.floor(P.length/2))%P.length]},glandPrice=k=>Math.round(DECO[k].p/40)*10,inGlands=k=>k===shopGland();
 const soldToday=k=>R.deco.sold.d===dayN()&&R.deco.sold.ks.includes(k);
 function buyDeco(k){const o=DECO[k];if(soldToday(k)||!shopToday().includes(k))return;
-  if(o.b){if(bellsN()<o.b)return;addBells(-o.b)}else if(!spendCoins(o.p))return;
+  if(inGlands(k)){const g=glandPrice(k);if(R.glands<g)return;R.glands-=g;renderHud()}else if(o.b){if(bellsN()<o.b)return;addBells(-o.b)}else if(!spendCoins(o.p))return;
   if(R.deco.sold.d!==dayN())R.deco.sold={d:dayN(),ks:[]};R.deco.sold.ks.push(k);
   R.deco.inv[k]=(R.deco.inv[k]||0)+1;bip("buy");save();decoStart(k);toast(`${o.name} : fais-le glisser où tu veux, puis touche Terminé.`)} // on le pose tout de suite
 const untilMidnight=()=>{const d=new Date(),m=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1),h=Math.ceil((m-d)/36e5);return h>1?`dans ${h} h`:"dans moins d'une heure"};
@@ -242,9 +245,9 @@ let shopTab="jour";
 function shopSheet(tab){if(tab)shopTab=tab;
   const own=Object.keys(DECO).filter(k=>R.deco.inv[k]||allDeco().some(d=>d.k===k)),has=h=>own.some(k=>!!DECO[k].home===h);
   // (05/11/2026, Joffray : « trop de texte ») : une grille d'images ; toucher l'image montre sa description
-  const card=(k,buy)=>{const o=DECO[k],sold=soldToday(k),can=o.b?bellsN()>=o.b:cafeCoins()>=o.p,n=R.deco.inv[k]||0,on=allDeco().filter(d=>d.k===k).length;
-    return dTile(o.b?" rare":"",dSvg(k,"all"),o.name,o.desc,buy?(o.home?"Maison":""):[on?`${on} posé${on>1?"s":""}`:"",n?`${n} en réserve`:""].filter(Boolean).join(" · "),
-      buy?`<button class="btn" data-dbuy="${k}" type="button" ${sold||!can?"disabled":""}>${sold?"Acheté":dPrice(o)}</button>`:n?`<button class="btn" data-dput="${k}" type="button">Poser</button>`:"")};
+  const card=(k,buy)=>{const o=DECO[k],sold=soldToday(k),gl=buy&&inGlands(k),can=gl?R.glands>=glandPrice(k):o.b?bellsN()>=o.b:cafeCoins()>=o.p,n=R.deco.inv[k]||0,on=allDeco().filter(d=>d.k===k).length;
+    return dTile(o.b?" rare":gl?" glands":"",dSvg(k,"all"),o.name,o.desc,buy?(o.home?"Maison":""):[on?`${on} posé${on>1?"s":""}`:"",n?`${n} en réserve`:""].filter(Boolean).join(" · "),
+      buy?`<button class="btn" data-dbuy="${k}" type="button" ${sold||!can?"disabled":""}>${sold?"Acheté":gl?`${acornSVG()} ${glandPrice(k)}`:dPrice(o)}</button>`:n?`<button class="btn" data-dput="${k}" type="button">Poser</button>`:"")};
   const sec=(home,t)=>{const ks=own.filter(k=>!!DECO[k].home===home);if(!ks.length||(home&&!houseOpen()))return "";
     return `<div class="dsec"><h3 class="sec">${t}</h3><button class="btn" data-deco="${home?"home":"out"}" type="button">Décorer</button></div><div class="dgrid">${ks.map(k=>card(k,0)).join("")}</div>`};
   const body=shopTab==="jour"?`<p class="sub">Nouveaux objets ${untilMidnight()}.</p><div class="dgrid">${shopToday().map(k=>card(k,1)).join("")}</div>`

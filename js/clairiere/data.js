@@ -63,7 +63,7 @@ const WILD_HINT={baies:"le sous-bois",poisson:"la rivière",miel:"les neiges"};
 const LV_T=[0,3,8,15,25],LV_N=["","Timide","Curieux","Copain","Ami","Inséparable"];
 const lvOf=h=>{let l=1;for(let i=1;i<5;i++)if(h>=LV_T[i])l=i+1;return l};
 // glands laissés par chaque renard installé, par jour (selon l'amitié)
-const GLANDS_DAY=[0,2,3,3,4,5];
+const GLANDS_DAY=[0,2,3,3,4,5],GLANDS_CAP=100; // glands laissés par jour selon l'amitié ; tous les renards ensemble, 100 par jour au plus (06/11/2026, tools/glands-sim.py)
 
 /* ---------- le grand portrait ---------- */
 // tout le monde, sauf Roussette (c'est toi) et les invités d'Halloween (en bonus s'ils ont été croisés)
