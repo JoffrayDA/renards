@@ -32,7 +32,7 @@ onTap($("kitchen"),e=>{const b=e.target.closest("button");if(!b||!G||!G.run)retu
 onTap($("tray"),e=>{const p=e.target.closest("[data-opt]");if(p&&G&&G.run){applyOpt(p.dataset.opt,p);return}
   const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;const i=+b.dataset.tray,now=performance.now();
   if(G.pick&&G.pick.until>now){const o=G.pick.o;G.pick=null;if(optFits(o).includes(i))applyOpt(o,b,i);dirty=true;return}
-  if(G.arm&&G.arm.i===i&&G.arm.until>now){G.tray.splice(i,1);G.arm=null}
+  if(G.arm&&G.arm.i===i&&G.arm.until>now){G.tray.splice(i,1);G.arm=null;bip("toss")}
   else{G.arm={i,until:now+1800};setTimeout(()=>{dirty=true},1850);hint("Touche encore l'article pour le <b>jeter</b>.")}
   dirty=true});
 $("back").onclick=()=>{if(G&&G.run)pauseMenu();else openMap()};

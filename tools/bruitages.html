@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bruitages</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#5b4250;--bg:#f6f1ea;--card:#fffaf2;--acc:#e0505a}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic",sans-serif;padding:16px}
+h1{font-family:"Mochiy Pop One",sans-serif;font-weight:400;font-size:22px;margin:8px 0 4px}
+h2{font-family:"Mochiy Pop One",sans-serif;font-weight:400;font-size:17px;margin:20px 0 8px}
+p{margin:0 0 14px;line-height:1.45}
+.list{display:grid;gap:10px;max-width:520px}
+button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:2.4px solid var(--ink);border-radius:18px;padding:12px 14px;cursor:pointer}
+button b{display:block;font-size:16px}button span{font-size:13px;opacity:.8}
+button i{flex:none;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-style:normal;font-size:15px}
+.mus{justify-content:center;max-width:520px;margin-bottom:10px}
+</style></head><body>
+<h1>Bruitages</h1>
+<p>Touche un bruitage pour l'écouter. Le bouton du haut lance la musique du service, pour entendre les bruitages par-dessus.</p>
+<button class="mus" data-m="1">Musique du Café : marche / arrêt</button>
+<h2>Au Café</h2>
+<div class="list">
+<button data-s="tap"><i>1</i><div><b>Lancer une boisson ou une fournée</b><span>tap</span></div></button>
+<button data-s="pop"><i>2</i><div><b>Un article sur le plateau</b><span>pop</span></div></button>
+<button data-s="plic" data-n="6"><i>3</i><div><b>Une boule de gelato</b><span>plic</span></div></button>
+<button data-s="ding"><i>4</i><div><b>Le four est prêt</b><span>ding</span></div></button>
+<button data-s="burn"><i>5</i><div><b>La fournée a brûlé</b><span>burn</span></div></button>
+<button data-s="coin"><i>6</i><div><b>Client servi</b><span>coin (plus aigu avec le combo)</span></div></button>
+<button data-s="coin" data-n="5"><i>7</i><div><b>Client servi, combo ×5</b><span>coin</span></div></button>
+<button data-s="angry"><i>8</i><div><b>Un client part fâché</b><span>angry</span></div></button>
+<button data-s="toss"><i>9</i><div><b>Jeter un article</b><span>toss</span></div></button>
+<button data-s="win"><i>10</i><div><b>Journée réussie</b><span>win</span></div></button>
+<button data-s="lose"><i>11</i><div><b>Objectif manqué</b><span>lose</span></div></button>
+</div>
+<h2>À la Clairière</h2>
+<div class="list">
+<button data-s="purr"><i>1</i><div><b>Câlin</b><span>purr (les figures gardent leurs notes)</span></div></button>
+<button data-s="acorn"><i>2</i><div><b>Ramasser des glands</b><span>acorn</span></div></button>
+<button data-s="shutter"><i>3</i><div><b>Photo</b><span>shutter</span></div></button>
+<button data-s="door"><i>4</i><div><b>Entrer ou sortir de la maison</b><span>door</span></div></button>
+<button data-s="kibble"><i>5</i><div><b>Remplir la gamelle</b><span>kibble</span></div></button>
+<button data-s="buy"><i>6</i><div><b>Acheter un objet</b><span>buy</span></div></button>
+<button data-s="good"><i>7</i><div><b>Petite envie réalisée</b><span>good</span></div></button>
+<button data-s="cheer"><i>8</i><div><b>Histoire finie, inconnu deviné</b><span>cheer</span></div></button>
+</div>
+<script src="../js/music.js"></script>
+<script>
+document.querySelectorAll("button[data-s]").forEach(b=>b.onclick=()=>{MUSIC.setOn(true);MUSIC.sfx(b.dataset.s,+(b.dataset.n||0))});
+let m=false;document.querySelector("[data-m]").onclick=()=>{MUSIC.setOn(true);m=!m;if(m)MUSIC.want("service");else MUSIC.stop()};
+</script>
+</body></html>

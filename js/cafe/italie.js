@@ -419,5 +419,5 @@ function endIt(){
   ${questHTML(qShow)}
   <div class="col">${canNext?`<button class="btn big wide" data-itday="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-itplay="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
-  Q.scenes(()=>openSheet(sheet,true));
+  Q.scenes(()=>{endFx(st);openSheet(sheet,true)});
 }

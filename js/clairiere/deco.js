@@ -233,7 +233,7 @@ const soldToday=k=>R.deco.sold.d===dayN()&&R.deco.sold.ks.includes(k);
 function buyDeco(k){const o=DECO[k];if(soldToday(k)||!shopToday().includes(k))return;
   if(o.b){if(bellsN()<o.b)return;addBells(-o.b)}else if(!spendCoins(o.p))return;
   if(R.deco.sold.d!==dayN())R.deco.sold={d:dayN(),ks:[]};R.deco.sold.ks.push(k);
-  R.deco.inv[k]=(R.deco.inv[k]||0)+1;save();decoStart(k);toast(`${o.name} : fais-le glisser où tu veux, puis touche Terminé.`)} // on le pose tout de suite
+  R.deco.inv[k]=(R.deco.inv[k]||0)+1;bip("buy");save();decoStart(k);toast(`${o.name} : fais-le glisser où tu veux, puis touche Terminé.`)} // on le pose tout de suite
 const untilMidnight=()=>{const d=new Date(),m=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1),h=Math.ceil((m-d)/36e5);return h>1?`dans ${h} h`:"dans moins d'une heure"};
 
 R.deco.home=R.deco.home||[];

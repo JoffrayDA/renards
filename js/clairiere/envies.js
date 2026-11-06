@@ -161,7 +161,7 @@ function envieTap(f){const c=envCur();if(!c||gameOn)return false;const E=envDef(
 
 // l'envie est faite : merci, +5 glands et un cœur
 function envieDone(c){const E=envDef(c),f=envFox(c.id);
-  R.env.cur=null;R.env.last=Date.now();R.glands+=5;const r=R.res[c.id];if(r)r.h++;save();const nm=noelEvent("envie");if(nm)setTimeout(()=>toast(nm),2500);
+  R.env.cur=null;R.env.last=Date.now();R.glands+=5;bip("good");const r=R.res[c.id];if(r)r.h++;save();const nm=noelEvent("envie");if(nm)setTimeout(()=>toast(nm),2500);
   talk([[c.id,"joy",txt(E.thx,c.friend)]],()=>{
     if(f){if(E.to&&!f.walk&&SPOT[E.to]&&!taken(SPOT[E.to]))goTo(f,SPOT[E.to]);else if(!f.walk&&!E.basket&&!E.friend){f.pose="happy";f.until=Date.now()+3000;draw(f)}hugFx(f)}
     for(const x of foxes)if(!x.wild)setBadge(x);

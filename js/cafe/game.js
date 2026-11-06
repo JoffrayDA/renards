@@ -58,9 +58,9 @@ function update(dt){
   G.t+=dt;
   if(G.spawned<G.cfg.c&&G.t>=G.next){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
   for(const c of G.cust){
-    if(c.state==="wait"){c.pat-=dt;if(c.pat<=0){c.state="angry";c.leave=.9;G.lost++;G.combo=0;dirty=true}
+    if(c.state==="wait"){c.pat-=dt;if(c.pat<=0){c.state="angry";c.leave=.9;G.lost++;G.combo=0;dirty=true;bip("angry")}
       else if(c.pat/c.patMax<.3&&!c.low){c.low=1;dirty=true}}
-    else if(c.state==="queue"){c.qp-=dt;if(c.qp<=0){c.state="angry";c.leave=.9;c.gave=1;G.lost++;G.combo=0;dirty=true}}
+    else if(c.state==="queue"){c.qp-=dt;if(c.qp<=0){c.state="angry";c.leave=.9;c.gave=1;G.lost++;G.combo=0;dirty=true;bip("angry")}}
     else if(c.state==="walkin"){c.walk-=dt;if(c.walk<=0){c.state="wait";c.born=G.t;dirty=true}}
     else if(c.state==="walkout"){c.walk-=dt;if(c.walk<=0){c.gone=1;dirty=true}}
     else{c.leave-=dt;if(c.leave<=0){if(c.gave)c.gone=1;else{c.state="walkout";c.walk=WALK};dirty=true}}
@@ -71,8 +71,8 @@ function update(dt){
   const sp=[1,1.15,1.22,1.3][lv("barista")];
   for(const k in G.st)for(const s of G.st[k])if(s.busy){s.t+=dt*sp;if(s.t>=REC[k].time){s.busy=0;s.ready=1;dirty=true}}
   const o=G.oven;
-  if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,5.2,6][lv("fourpro")];dirty=true}}
-  else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
+  if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,5.2,6][lv("fourpro")];dirty=true;bip("ding")}}
+  else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;bip("burn");S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte au client le plus pressé ce qui l'attend sur le plateau
   // (la « vitrine » de Joffray) ; il ne touche jamais au plan de travail : sinon c'est de la triche, et on ne comprend plus
@@ -80,7 +80,7 @@ function update(dt){
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
     for(const c of w){let got=0;for(const it of c.order){if(it.done)continue;const k=G.tray.indexOf(itemKey(it));if(k<0)continue;
         flyPastry(itemKey(it),custEl(c),got+1,k);G.tray.splice(k,1);it.done=1;got++;G.arm=null;G.pick=null}
-      if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);buddyHop();buddyTip();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
+      if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);bip("pop");buddyHop();buddyTip();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
 }}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
@@ -93,7 +93,7 @@ function applyOpt(o,el,at){
   if(!fit.length){shake(el);hint(`Pose d'abord ${OPTS[o].for.map(r=>REC[r].name.toLowerCase()).join(" ou ")} sur le plateau, puis touche « ${OPTS[o].name} ».`);return}
   // plusieurs possibles (un chocolat et un gâteau pour la chantilly) : on touche celui qui la reçoit
   if(at==null&&el&&fit.length>1&&new Set(fit.map(i=>G.tray[i])).size>1){G.pick={o,until:performance.now()+5000};setTimeout(()=>{dirty=true},5050);hint(`Touche l'article qui reçoit ${OPTS[o].name.toLowerCase()}.`);dirty=true;return}
-  const i=at!=null?at:fit[0];G.tray[i]+="+"+o;G.popI=i;G.arm=null;G.pick=null;dirty=true;
+  const i=at!=null?at:fit[0];bip("pop",4);G.tray[i]+="+"+o;G.popI=i;G.arm=null;G.pick=null;dirty=true;
 }
 function deliver(c,el){
   if(c.state!=="wait")return;let got=0;
@@ -113,7 +113,7 @@ function complete(c){
   G.earned+=tot;G.cost+=cost;G.gain+=gain;S.coins+=gain;S.total+=gain;G.served++;S.served++;
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
   if(frac>=.6)qEvent("green");
-  c.state="happy";c.leave=1;
+  c.state="happy";c.leave=1;bip("coin",Math.min(G.combo,6));
   // Halloween : les clients déguisés donnent des bonbons (2 s'ils sont servis vite), les invités d'Halloween 5
   const cdy=HW&&!G.noel?(FOX[c.fox].event==="halloween"?5:c.costume?(frac>=.5?2:1):0):0;
   if(cdy){S.candy+=cdy;G.candy+=cdy;qEvent("candy",cdy)}
@@ -127,16 +127,16 @@ function complete(c){
 function tapStation(k,el){
   if(!G||!G.run)return;
   const sl=G.st[k],r=sl.find(s=>s.ready);
-  if(r){if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}r.ready=0;r.t=0;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true;return}
+  if(r){if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}r.ready=0;r.t=0;bip("pop");G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true;return}
   const f=sl.find(s=>!s.busy&&!s.ready);
-  if(f){f.busy=1;f.t=0;dirty=true}else shake(el);
+  if(f){f.busy=1;f.t=0;dirty=true;bip("tap")}else shake(el);
 }
 // le comptoir à glaces : chaque toucher pose une boule sur le cornet ; à la troisième, le gelato part sur le plateau
 function scoop(f,el){
   if(!G||!G.run||typeof G.cone!=="string")return;
   if(G.cone.length===2&&G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}
-  G.cone+=f;if(G.cone.length===3){G.tray.push("smoothie~"+G.cone);G.popI=G.tray.length-1;G.cone="";G.arm=null}dirty=true;
+  G.cone+=f;bip("plic",G.cone.length*3);if(G.cone.length===3){G.tray.push("smoothie~"+G.cone);G.popI=G.tray.length-1;G.cone="";G.arm=null}dirty=true;
 }
-function bake(k){const o=G.oven;if(o.state!=="idle")return;Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
-function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(OWN().four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";dirty=true}
-function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}
+function bake(k){const o=G.oven;if(o.state!=="idle")return;bip("tap");Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
+function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(OWN().four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";bip("pop",-3);dirty=true}
+function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;bip("pop");G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}

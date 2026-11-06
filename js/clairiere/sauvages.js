@@ -180,7 +180,7 @@ function incoSheet(id){const f=INC[id],s=incOf(id),ps=R.photos.filter(p=>p.id===
   openSheet(`<div class="foxhead"><div class="pic rare">${foxArt(FOX[id],{expr:"joy",portrait:1,sil:!s.found})}</div><div><h2>${s.found?f.name:"Un inconnu"}</h2><span class="chip rare">Sauvage</span></div></div>${act}${tip}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>Indice ${p.clue+1}</b>${f.clues[p.clue].txt}</figcaption></figure>`).join("")}</div>`,"photos")}
 function guessInco(id,name){const f=INC[id],s=incOf(id);if(!canGuess(id))return;
   if(name!==f.name){s.lock=s.n;save();toast(`Il ne réagit pas à « ${name} ». Ce n'est pas ça.`);incoSheet(id);return}
-  s.found=1;R.glands+=20;save();renderHud();closeSheet();
+  s.found=1;R.glands+=20;bip("cheer");save();renderHud();closeSheet();
   talk([[id,"joy",f.hello],["petitpois","joy",`${f.name} ! Bien vu, ${ME()}.`]],()=>{toast(`${f.name} retrouvé ! +20 glands`);renderStory()})}
 function askInco(id){const f=INC[id],s=incOf(id);if(s.found||s.n<5)return;
   s.found=1;R.glands+=5;save();renderHud();closeSheet();

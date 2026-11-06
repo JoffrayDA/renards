@@ -118,7 +118,7 @@ function objList(){
   return `<div class="dgrid">${Object.entries(OBJS).map(([k,o])=>dTile("",o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`),o.name,o.desc,"",
     `<button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button>`)).join("")}</div>`}
 function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
-  R.glands-=o.price;R.obj[k]=1;renderHud();
+  R.glands-=o.price;R.obj[k]=1;bip("buy");renderHud();
   // un objet par terre : on le pose tout de suite où on veut, en mode Décorer
   if(objMoves(k)){R.objAt[k]={away:1};save();addObjSpots();decoStart(null,"out");decoAdd("o:"+k);toast(`${o.name} : fais-le glisser où tu veux, puis touche Terminé.`);return}
   save();addObjSpots();drawObjs();drawBg();closeSheet();toast(`${o.name} : Copeau l'installe dans l'arbre. Qui va y grimper ?`)}

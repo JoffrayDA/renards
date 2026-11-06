@@ -14,7 +14,7 @@ function camMode(on){shooting=on;$("scene").classList.toggle("shooting",on);camE
 
 // la pose photographiée : une par renard et par clé (les visites de la gamelle gardent chacune leur photo)
 const dkey=p=>p.deco&&(p.deco.k||p.deco),pkey=p=>p.bowl?null:p.obj||(p.deco&&p.at+":"+dkey(p))||p.at+":"+p.pose;
-function keepShot(p,host){const k=pkey(p),old=R.photos.findIndex(q=>q.id===p.id&&!q.bowl&&pkey({at:"out",...q})===k);
+function keepShot(p,host){bip("shutter");const k=pkey(p),old=R.photos.findIndex(q=>q.id===p.id&&!q.bowl&&pkey({at:"out",...q})===k);
   if(old>=0)R.photos.splice(old,1);R.photos.push(p);save();camMode(false);
   const fl=document.createElement("div");fl.className="snapflash";host.appendChild(fl);setTimeout(()=>fl.remove(),700);
   toast(`Clic ! ${old>=0?"Nouvelle photo de":"Une photo de"} ${nameOf(p.id)}, rangée dans son dossier.`);const m=noelEvent("photo");if(m)setTimeout(()=>toast(m),1800)}

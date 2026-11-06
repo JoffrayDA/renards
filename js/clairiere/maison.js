@@ -47,7 +47,7 @@ const doorEl=document.createElement("button");doorEl.className="doorbtn";doorEl.
 doorEl.style.cssText=pc(200,170)+";z-index:240";
 doorEl.onpointerdown=e=>{e.stopPropagation();if(storyTap("@porch"))return;if(gameOn||!$("talk").hidden||!$("sheet").hidden)return;
   if(!houseOpen()){toast("La porte est fermée. Elle ne s'est jamais ouverte, d'aussi loin qu'on se souvienne.");return}
-  enterHouse()};
+  bip("door");enterHouse()};
 $("actors").appendChild(doorEl);
 
 let houseEl=null;
@@ -267,13 +267,13 @@ function enterHouse(){
   for(const k of hobjs())if(k!=="guirlandes"&&!inObj.some(([o])=>o===k))grp(box,HOBJ[k].art(null),{transform:hPlace(k)});
   for(const [k,id] of inObj){const g=grp(box,HOBJ[k].art(id),{transform:hPlace(k)});g.style.cursor="pointer";
     g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,obj:k});return}
-      const r=pet(id);toast(r?`${nameOf(id)} est ravi (+1 cœur, +1 gland).`:`${nameOf(id)} : ${HOBJ[k].in.toLowerCase()}.`);if(r)renderHud()}}
+      const r=pet(id);if(r)bip("purr");toast(r?`${nameOf(id)} est ravi (+1 cœur, +1 gland).`:`${nameOf(id)} : ${HOBJ[k].in.toLowerCase()}.`);if(r)renderHud()}}
   // les plus hauts d'abord, pour que ceux de devant passent par-dessus
   here.map((id,i)=>[id,pl[i]]).sort((a,b)=>a[1][1]-b[1][1]).forEach(([id,[x,y]])=>{const up=y<200,w=up?52:60,pose=night?"sleep":POSES[(id.length+i0(id))%POSES.length];
     const g=grp(box,foxAt(id,x,y,w,{pose})+`<circle cx="${x}" cy="${y-w/2}" r="${w/2}" fill="transparent"/>`);
-    g.style.cursor="pointer";g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,x,y:y+w*.04,pose,w});return}const r=pet(id);
+    g.style.cursor="pointer";g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,x,y:y+w*.04,pose,w});return}const r=pet(id);if(r)bip("purr");
       toast(r?`${nameOf(id)} ronronne près du feu (+1 cœur, +1 gland).`:`${nameOf(id)} ${night?"dort, roulé en boule":"se chauffe les pattes"}.`);if(r)renderHud()}});
-  houseEl.querySelector(".pclose").onpointerdown=e=>{e.stopPropagation();leaveHouse()};
+  houseEl.querySelector(".pclose").onpointerdown=e=>{e.stopPropagation();bip("door");leaveHouse()};
   houseEl.querySelector(".hgrow").onpointerdown=e=>{e.stopPropagation();houseSheet()};
   houseEl.querySelector(".hdeco").onpointerdown=e=>{e.stopPropagation();decoStart(null,"home")};
   $("scene").appendChild(houseEl);drawHouseDeco(hd.seated);
@@ -294,6 +294,6 @@ function houseSheet(){
   openSheet(`<h2>Aménager la maison</h2><p class="sub">Copeau construit contre des glands.</p><div class="dgrid">${Object.entries(HOUSE).map(([k,o])=>dTile("",pic(k),o.name,o.desc,"",
     `<button class="btn" data-house="${k}" type="button" ${R.hup[k]||R.glands<o.price?"disabled":""}>${R.hup[k]?"Fait":`${acornSVG()} ${o.price}`}</button>`)).join("")}</div>`)}
 function buildHouse(k){const o=HOUSE[k];if(R.hup[k]||R.glands<o.price)return;
-  R.glands-=o.price;R.hup[k]=1;save();renderHud();closeSheet();
+  R.glands-=o.price;R.hup[k]=1;bip("buy");save();renderHud();closeSheet();
   if(houseEl){leaveHouse();enterHouse()}
   toast(HOBJ[k]?`${o.name} : installé ! Quelqu'un va vite venir l'essayer.`:`Copeau a fini : ${o.name.toLowerCase()} !`)}

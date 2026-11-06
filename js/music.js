@@ -452,7 +452,20 @@ const MUSIC=(()=>{
     else if(k==="flip"){nz(3200,1,.04,.06);tone("sine",1200,1500,.05,.05)}
     else if(k==="cheer"){[0,4,7,12].forEach((d,i)=>bell(84+d,.1,i*.06,.5))}
     else if(k==="win"){[72,76,79,84,88].forEach((m,i)=>bell(m,.14,i*.09,.9));[0,.1,.2].forEach(a=>nz(6000,.7,.4,.03,.45+a))}
-    else if(k==="lose"){[67,64,60].forEach((m,i)=>tone("triangle",hz(m),hz(m)*.98,.3,.11,i*.18))}}
+    else if(k==="lose"){[67,64,60].forEach((m,i)=>tone("triangle",hz(m),hz(m)*.98,.3,.11,i*.18))}
+    // bruitages doux des deux jeux (06/11/2026, Joffray : « bruitages oui »), à écouter sur tools/bruitages.html
+    else if(k==="coin"){bell(91+n,.07,0,.35);bell(98+n,.06,.06,.45)} // une pièce (n monte avec le combo)
+    else if(k==="purr"){for(let i=0;i<6;i++)tone("sine",92,80,.07,.045,i*.085);nz(260,.7,.5,.03);bell(86,.04,.4,.5)} // le câlin : petit ronron, un tintement
+    else if(k==="acorn"){tone("sine",950,520,.045,.1);tone("triangle",1350,800,.035,.06,.07);tone("sine",700,420,.04,.05,.13)} // des glands qui s'entrechoquent
+    else if(k==="shutter"){nz(4200,1,.025,.14);tone("square",320,180,.03,.035);nz(2600,1,.035,.1,.08);tone("square",260,160,.03,.03,.08)} // l'appareil photo
+    else if(k==="door"){tone("sine",170,95,.16,.18);nz(700,1,.08,.05);bell(88,.045,.12,.5);bell(95,.035,.2,.5)} // la porte et sa clochette
+    else if(k==="kibble"){for(let i=0;i<8;i++)tone("sine",1300+Math.random()*900,700,.025,.04,i*.04+Math.random()*.02)} // la gamelle qu'on remplit
+    else if(k==="ding"){bell(93,.1,0,.8);bell(100,.05,.01,.6)} // c'est prêt (le four)
+    else if(k==="burn"){nz(5200,.5,.7,.07);tone("triangle",300,140,.4,.07,.1)} // ça a brûlé
+    else if(k==="angry"){tone("triangle",280,200,.16,.07);tone("triangle",240,160,.22,.07,.14)} // un client part fâché
+    else if(k==="toss"){nz(500,1.2,.2,.07,0,2200)} // à la poubelle
+    else if(k==="buy"){[0,4,7].forEach((d,i)=>bell(84+d,.07,i*.07,.5));bell(91,.06,.21,.6)} // un achat
+  }
   function jingleEnd(){if(!jtimer)return;clearTimeout(jtimer);jtimer=null;if(cur&&cur.startsWith("jingle:")){stop();if(on&&wanted)play(wanted)}}
 
   function play(id){

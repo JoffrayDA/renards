@@ -1,6 +1,8 @@
 /* La Clairière (refuge de Roussette) : données. Voir docs/clairiere-v2.md.
    Les renards (FOXES, FOX) et leur dessin (foxArt) viennent de js/cafe/foxes.js et js/foxart.js. */
 const KEY="clairiere-renards-v2",OLDKEY="clairiere-renards-v1",CAFEKEY="cafe-renards-v1";
+// un bruitage (js/music.js)
+const bip=(k,n)=>{try{MUSIC.sfx(k,n)}catch(e){}};
 const STEP=30*60e3,MAXSIM=48*36e5; // simulation page fermée : pas de 30 min, 48 h au plus
 // la scène s'allonge vers le bas pour remplir l'écran (Joffray, sur S22 : un bon centimètre vide sous les boutons) :
 // le haut garde le repère 400 × 480, EXT ajoute de l'herbe en dessous (la maison : du plancher ; les jeux : du ciel au-dessus)

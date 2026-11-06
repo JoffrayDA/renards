@@ -45,7 +45,7 @@ function endNoel(){
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
   const canNext=st&&!last&&noelNightOpen(n+1);
-  openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NOEL_NAMES[n-1]}</b><br>${nxt}</p>
+  endFx(st);openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NOEL_NAMES[n-1]}</b><br>${nxt}</p>
   <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b></div><div>Sucres d'orge<b>+${su+(G.sucres||0)}</b></div></div>
   ${su?itRow(sucreSVG,`Hotte de la nuit : +${su} sucres d'orge`,st===3?"Trois étoiles : la grande hotte !":"Chaque nouvelle étoile d'une nuit rapporte des sucres d'orge, à dépenser dans la boutique de Noël de la Clairière."):""}
   ${news.join("")}${bRow}

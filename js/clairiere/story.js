@@ -529,7 +529,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
       if(f.inside){f.inside=false;f.el.classList.remove("inside");f.x=DOOR.x;f.y=DOOR.y;drawGlow()}goTo(f,SPOT[sp])}R.glands+=3; // chaque moment rapporte des glands, la fin d'une histoire bien plus
     if(b.leave){const f=foxes.find(x=>x.id===at);if(f)f.until=0}
     if(c.id==="gaston"&&storyDone("gaston")){drawBg();toast("La pêche est ouverte : touche la mare quand tu veux.")}
-    if(storyDone(c.id)){R.souv[c.id]=STORIES[c.id].souv;if(!freeStory(c.id))R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();if(isNoelStory(c.id))drawBg();R.glands+=15;addBells(2);if(STORIES[c.id].end)STORIES[c.id].end();toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands, +2 clochettes`)}
+    if(storyDone(c.id)){bip("cheer");R.souv[c.id]=STORIES[c.id].souv;if(!freeStory(c.id))R.nextAt=VITE||ORDER.indexOf(c.id)<1?0:nextMorning();if(isNoelStory(c.id))drawBg();R.glands+=15;addBells(2);if(STORIES[c.id].end)STORIES[c.id].end();toast(`Souvenir reçu : ${STORIES[c.id].souv}. +18 glands, +2 clochettes`)}
     else toast("+3 glands");
     if(storyDone(c.id)&&c.id!=="petitpois"&&!R.lure&&!metAny())setTimeout(firstLure,500);
     else if(storyDone(c.id))setTimeout(wildNudge,600);

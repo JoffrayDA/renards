@@ -12,7 +12,7 @@ function hugFx(f,o={}){const can=!f.walk&&!f.inside&&!objOf(f.spot),ks=Object.ke
   clearTimeout(f.hugT);f.hugT=setTimeout(()=>f.el.classList.remove("hug"),T?T.ms+100:1700);
   if(o.hearts!==false)for(let i=0;i<5;i++){const h=document.createElement("i");h.className="lovep";h.innerHTML=HEART;
     h.style.cssText=pc(f.x+(i-2)*8,f.y-38)+`;animation-delay:${(i*.16+(T?.35:0)).toFixed(2)}s;--dx:${(i-2)*14}px`;$("scene").appendChild(h);setTimeout(()=>h.remove(),2800)}
-  if(!T)return;
+  if(!T){if(o.hearts!==false)bip("purr");return}
   T.notes.forEach((n,i)=>setTimeout(()=>{try{MUSIC.note(n)}catch(e){}},i*110));
   // les effets autour du renard : poussière, étoiles, tourbillon, ondes
   const N=T.fx==="stars"?(o.big?14:9):T.fx==="rings"?3:7;
@@ -61,7 +61,7 @@ function drawDrops(){syncDrops();
       el.onpointerdown=e=>{e.stopPropagation();pickDrop(i)};$("actors").appendChild(el)}
     el.hidden=!R.drops[i]})}
 function pickDrop(i){syncDrops();const v=R.drops[i];if(!v)return;setTimeout(()=>ppTip("glands"),400);
-  R.drops[i]=0;R.pend-=v;R.glands+=v;save();$("glands").textContent=R.glands;drawDrops();
+  R.drops[i]=0;R.pend-=v;R.glands+=v;bip("acorn");save();$("glands").textContent=R.glands;drawDrops();
   const [x,y]=DROPS[i],p=document.createElement("div");p.className="plus";p.textContent=`+${v}`;p.style.cssText=pc(x,y-14);$("scene").appendChild(p);setTimeout(()=>p.remove(),900)}
 
 /* ---------- bulles ---------- */
@@ -156,7 +156,7 @@ function bowlSheet(){
   openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name} · ${B.hours} h</strong><span>${B.desc}</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Chaque visiteur laisse une photo.${canFish()?"":" Le poisson se pêche dans la mare, avec une canne."}</p>`);
 }
 function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))return;
-  R.glands-=B.price;R.fish-=B.fish||0;R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();
+  R.glands-=B.price;R.fish-=B.fish||0;bip("kibble");R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();
   toast(k==="croquettes"?"La gamelle est pleine de croquettes.":`${B.name} dans la gamelle. Qui va venir ?`)}
 
 // une visite à la gamelle a sa photo à part ; les autres sont des cadrages de la scène (photo.js)

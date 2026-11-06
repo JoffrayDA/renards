@@ -1,6 +1,8 @@
 /* Kitsune Café : données du jeu (recettes, saisons, boutique, quêtes, difficulté). */
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
+// un bruitage (js/music.js) ; à la fin d'une journée, des clochettes si c'est réussi
+const bip=(k,n)=>{try{MUSIC.sfx(k,n)}catch(e){}},endFx=st=>bip(st?"win":"lose");
 // Les mondes du Café (03/11/2026) : "" = le premier (4 saisons, 40 journées), puis les quartiers de la Ville, 20 journées chacun :
 // "italie" = la Petite Italie (js/cafe/italie.js, S.it), "paris" = Paris (js/cafe/paris.js, S.pa, 04/11/2026).
 // Chaque quartier a ses journées, ses étoiles et son équipement ; les pièces, les quêtes, les bonus et le style sont communs.
