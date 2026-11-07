@@ -38,14 +38,8 @@ function startTuto(){
   closeSheet();newDay(1);G.tuto=1;G.cfg={...G.cfg,c:99};G.next=1e9;G.vit.croissant=0;S.tuto=1;save();
   TU={i:-1,el:document.createElement("div"),fg:document.createElement("div"),cat:document.createElement("div")};
   TU.el.className="coach";TU.fg.className="tfinger";TU.cat.className="tcatch";
-  // la pattoune (refaite le 07/11/2026, Joffray : « un peu mieux ») : une patte de renard qui descend d'en haut, coussinets roses,
-  // elle appuie (petit écrasement) et une onde part du bout au même moment ; le bout de la patte est le point (30, 76) du dessin
-  TU.fg.innerHTML=`<i class="tring"></i><i class="tring t2"></i><svg viewBox="0 0 60 80" aria-hidden="true"><g transform="rotate(16 30 76)" stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M18 46 V30 Q18 16 30 16 Q42 16 42 30 V46Z" fill="#f2a65e"/><path d="M23 40 V30 Q23 22 29 21" stroke="#fff" stroke-width="3" opacity=".5" fill="none"/>
-    <path d="M17 44 q4 -6 8 -1 q5 -6 10 0 q4 -5 8 1" fill="#fff6ea"/>
-    <ellipse cx="30" cy="59" rx="17" ry="16" fill="#fff6ea"/>
-    <g stroke-width="2.2" fill="#f7a3b5"><path d="M30 73 c-7 0 -10 -4 -8 -8 c2 -4 6 -3 8 -5 c2 2 6 1 8 5 c2 4 -1 8 -8 8Z"/><ellipse cx="18.5" cy="54" rx="3.4" ry="4.2"/><ellipse cx="25" cy="48.5" rx="3.4" ry="4.2"/><ellipse cx="35" cy="48.5" rx="3.4" ry="4.2"/><ellipse cx="41.5" cy="54" rx="3.4" ry="4.2"/></g>
-    <ellipse cx="25" cy="66" rx="2.4" ry="1.4" fill="#fff" stroke="none" opacity=".8"/></g></svg>`;
+  // la pattoune : celle du début, gardée (07/11/2026, Joffray trouvait la version redessinée « archi moche »)
+  TU.fg.innerHTML=`<i class="tring"></i><svg viewBox="-20 -24 40 40" aria-hidden="true"><g stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"><ellipse cx="0" cy="4" rx="11" ry="9.5" fill="#f6a96c"/><ellipse cx="0" cy="6" rx="6" ry="4.6" fill="#fff3e2"/>${[[-10,-7],[-3.6,-12],[3.6,-12],[10,-7]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="3.6" ry="4.2" fill="#fff3e2"/>`).join("")}</g></svg>`;
   $("scene").appendChild(TU.el);document.body.appendChild(TU.fg);document.body.appendChild(TU.cat);
   TU.cat.onclick=tuNext;TU.el.onclick=()=>{if(TU&&TU_STEPS[TU.i].info)tuNext()};
   tuNext();
