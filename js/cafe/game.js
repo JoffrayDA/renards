@@ -76,7 +76,7 @@ function update(dt){
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte au client le plus pressé ce qui l'attend sur le plateau
   // (la « vitrine » de Joffray) ; il ne touche jamais au plan de travail : sinon c'est de la triche, et on ne comprend plus
-  if(OWN().serveur){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
+  if(OWN().serveur&&!G.tuto){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
     for(const c of w){let got=0;for(const it of c.order){if(it.done)continue;const k=G.tray.indexOf(itemKey(it));if(k<0)continue;
         flyPastry(itemKey(it),custEl(c),got+1,k);G.tray.splice(k,1);it.done=1;got++;G.arm=null;G.pick=null}

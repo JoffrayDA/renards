@@ -7,10 +7,10 @@ function welcome(){
   const say=(expr,txt,extra="")=>`<div style="width:150px;margin:0 auto">${foxSVG(FOX.roussette,{pose:"happy"})}</div><div class="talk"><div class="pic">${foxArt(FOX.petitpois,{expr,portrait:1})}</div><div class="txt"><b>Petit Pois</b><span>${txt}</span>${extra||"<small>Touche pour continuer</small>"}</div></div>`;
   const steps=[()=>say("joy","Coucou ! Ce petit renard, c'est toi ! C'est toi qui tiens le Kitsune Café."),
     ()=>say("shy","Euh… tu t'appelles comment, déjà ?",`<form class="name" id="wname"><input id="wname-in" maxlength="14" value="${ME()}" autocomplete="off" aria-label="Ton nom"><button class="btn" type="submit">C'est moi !</button></form>`),
-    ()=>say("joy",`${ME()} ! Je ne l'oublierai plus. Allez, les clients t'attendent !`)];
+    ()=>say("joy",S.total?`${ME()} ! Je ne l'oublierai plus. Allez, les clients t'attendent !`:`${ME()} ! Je ne l'oublierai plus. Viens, je vais te montrer comment on tient le café !`)];
   let i=0;const show=()=>{openSheet(steps[i](),1);
     const f=$("wname");if(f)f.onsubmit=e=>{e.preventDefault();S.name=$("wname-in").value.replace(/[<>"&]/g,"").trim().replace(/\s+/g," ")||"Roussette";S.named=1;save();i++;show()};
-    else $("sheet-in").querySelector(".talk").onclick=()=>{if(++i<steps.length)show();else{closeSheet();dailyBonus()}}};
+    else $("sheet-in").querySelector(".talk").onclick=()=>{if(++i<steps.length)show();else if(!S.total&&!S.tuto)startTuto();else{closeSheet();dailyBonus()}}}; // une nouvelle partie : la leçon (tuto.js)
   show();
 }
 function dailyBonus(){
@@ -38,7 +38,7 @@ function daySheet(d){
   if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient partout en VIP.":`★★★ sur tout ${ch.name.replace(/^(Automne|Été|Hiver)$/,"l'$1").replace(/^Printemps$/,"le Printemps")} (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">${c.c} clients${c.max>1?` · ${c.max} articles max`:""} · patience ${Math.round(c.pat*patMult())} s${S.best[d]?` · record <b>${S.best[d]}</b>`:""}</p>
-  ${d===1&&!S.total?`<div class="tuto"><b>Comment jouer</b><ol><li>Touche <b>Café</b> pour le préparer, puis touche-le à nouveau quand il est prêt : il va sur ton plateau.</li><li>Touche <b>${vName("croissant",CHAP[0].sea)[0]}</b> pour lancer une fournée, puis le <b>four</b> quand elle est cuite, avant qu'elle brûle. Touche-la ensuite pour la poser sur le plateau.</li><li>Touche un <b>client</b> pour lui servir ce qui est sur ton plateau. Plus tu es rapide, plus le pourboire est gros.</li></ol></div>`:""}
+  ${d<=2?`<button class="btn ghost wide" data-act="tuto" type="button" style="margin:0 0 12px">Revoir la leçon de Petit Pois</button>`:""}
   <p class="sub" style="margin-bottom:6px">Objectif (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
   ${equipBonus(d)?`<p class="sub" style="margin:6px 0 0;font-size:12.5px">Objectif +${Math.round(equipBonus(d)*100)} % : tu es très bien équipé.</p>`:""}
   ${rw.join("")}
@@ -87,6 +87,7 @@ let shopTab="equip";
 function shop(){
   let list;
   if(shopTab==="hw"&&!HW)shopTab="style";
+  if(shopTab==="deco")shopTab="equip"; // Équipement et Déco réunis (07/11/2026, un pote de Joffray : « la déco, je m'en fiche », alors que ce sont des améliorations)
   boostCtx=null;
   if(shopTab==="boost")list=`<p class="sub" style="margin:0 0 8px">À choisir avant une journée, dès le jour 3. Un seul usage.</p>`+BOOSTS.map(b=>`<div class="it"><span class="ic">${boostIc(b)}</span><span class="tx"><strong>${b.name}</strong><span>${b.d} En réserve : <b>${S.boost[b.id]||0}</b>.</span></span><span class="side"><span class="price">${coinSVG}${b.c}</span><button class="btn" data-bbuy="${b.id}" type="button" ${S.coins>=b.c?"":"disabled"}>Acheter</button></span></div>`).join("");else
   if(shopTab==="style"||shopTab==="hw"){
@@ -97,12 +98,12 @@ function shop(){
       const key=`st-${k}-${it.id}`,own=(!it.c&&!it.cb&&!it.album)||S.own[key],on=styleOf(k).id===it.id;
       const sw=k==="acc"?foxSVG({...FOX.roussette,acc:it.id||undefined},{pose:"happy"}):k==="wall"?`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="22" rx="4" fill="${it.w}" ${K}/>${[[11,11],[23,11],[17,18],[29,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="${it.d}"/>`).join("")}<rect x="4" y="26" width="32" height="10" rx="3" fill="${it.b}" ${K}/></svg>`:`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="10" width="34" height="7" rx="3" fill="${it.t}" ${K}/><rect x="5" y="17" width="30" height="18" fill="${it.f}" ${K}/><rect x="9" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/><rect x="22" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/></svg>`;
       return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${it.album?`Sers les ${HWF.length} invités d'Halloween pour l'obtenir.`:k==="acc"?`${ME()} la porte sur la carte.`:"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:it.album?`<span class="owned">Album ${ak} / ${HWF.length}</span>`:it.cb?`<span class="price cnd">${candySVG}${it.cb}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.candy>=it.cb?"":"disabled"}>Acheter</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
-  }else list=UPG[shopTab].map(u=>{
+  }else list=[["equip","Au comptoir : préparer plus vite"],["deco","Dans la salle : patience, pourboires, VIP"]].map(([g,t])=>`<p class="sub upg">${t}</p>`+UPG[g].map(u=>{
     const n=lv(u.id),max=u.lv.length,nx=u.lv[n],early=nx&&upLocked(nx);
     const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";
     const desc=nx?(n?`<b>Niv. ${n+1} :</b> ${nx.d}`:nx.d)+(early?(WORLD?` (Arrive au jour ${IT_FROM[nx.from]} du quartier.)`:` (Arrive avec la saison ${chapOf(nx.from).name}.)`):""):lvDesc(u,n);
-    return `<div class="it"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${upPrice(nx)}</span><button class="btn" data-buy="${u.id}" type="button" ${!early&&S.coins>=upPrice(nx)?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("");
-  openSheet(`<h2>${WORLD?`Boutique du ${WD().short}`:"Boutique"}</h2>${WORLD?`<p class="sub" style="background:#fff3d6;border-radius:12px;padding:8px 10px">L'équipement d'ici ne sert qu'au ${WD().cafe}. Bonus et style : communs.</p>`:""}<div class="tabs">${[["equip","Équipement"],["deco","Déco"],["boost","Bonus"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
+    return `<div class="it"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${upPrice(nx)}</span><button class="btn" data-buy="${u.id}" type="button" ${!early&&S.coins>=upPrice(nx)?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("")).join("");
+  openSheet(`<h2>${WORLD?`Boutique du ${WD().short}`:"Boutique"}</h2>${WORLD?`<p class="sub" style="background:#fff3d6;border-radius:12px;padding:8px 10px">L'équipement d'ici ne sert qu'au ${WD().cafe}. Bonus et style : communs.</p>`:""}<div class="tabs">${[["equip","Améliorations"],["boost","Bonus"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
   const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
 }
 function carnet(){

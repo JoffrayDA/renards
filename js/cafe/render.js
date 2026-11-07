@@ -5,6 +5,7 @@ function renderHud(){
   if(xmasDay())$("noelbtn").innerHTML=`Noël <span class="hwn">${sucreSVG}${sucresN()}</span>`;
   if(HW)$("hwbtn").innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${WORLD?itStarSum():starSum()}</span>`;$("chips").innerHTML="";return}
+  if(G.tuto){$("hud").innerHTML=`<span class="pill day">Leçon de Petit Pois</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,cu=G.night||G.noel?[1,1.35,1.7]:cuts(G.day),mx=g*cu[2],e=G.earned;
   $("hud").innerHTML=`<span class="pill day">${G.noel?`Noël ${G.noel}`:G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${cu.map(m=>`<span class="tick${e>=Math.ceil(g*m)?" on":""}" style="left:${m/cu[2]*100}%">★</span>`).join("")}${G.duel?`<span class="tick duel${e>=G.duel?" on":""}" style="left:${Math.min(100,G.duel/mx*100)}%" title="Firmin : ${G.duel}">${icon("croissant","paris")}</span>`:""}</div><b>${e}/${g}</b></div>`;
   $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait"||c.state==="walkin"||c.state==="queue").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW&&!G.noel?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
@@ -76,7 +77,7 @@ function updateBars(){
   const o=G.oven;if(o.state==="bake"){const e=$("ov-p");if(e)e.style.width=(o.t/o.dur*100)+"%"}
   if(o.state==="ready"){const e=$("ov-b");if(e)e.style.width=(o.burn/o.burnMax*100)+"%";const u=$("unl");if(u)u.classList.toggle("danger",o.burn<2)}
   const gf=$("gfill");if(gf)gf.style.width=Math.min(100,G.earned/(G.cfg.goal*(G.night||G.noel?1.7:cuts(G.day)[2]))*100)+"%";
-  if(G.day<=2&&!hintLock)autoHint();
+  if(G.tuto&&!(TU&&TU_STEPS[TU.i]&&TU_STEPS[TU.i].free)){if($("hint").innerHTML)$("hint").innerHTML=""}else if(G.day<=2&&!hintLock)autoHint(); // pendant la leçon, Petit Pois parle à la place
 }
 let hintLock=0;
 function hint(h){$("hint").innerHTML=h;hintLock=1;clearTimeout(hint.t);hint.t=setTimeout(()=>hintLock=0,3500)}

@@ -42,7 +42,8 @@ function onAct(a){
   else if(a==="map")openMap();
   else if(a==="italie")goWorld("italie");else if(a==="paris")goWorld("paris");else if(a==="anatole")paCarnet();else if(a==="anatoleintro")anatoleIntro();else if(a==="finale")paFinaleSheet();else if(a==="monde1")goWorld("");else if(a==="lorenzo")itCarnet();else if(a==="lorenzointro")lorenzoIntro();else if(a==="nonno")nonnoSheet();
   else if(a==="resume"){closeSheet();G.paused=0}
-  else if(a==="quit"){closeSheet();G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
+  else if(a==="tuto"){closeSheet();startTuto()}
+  else if(a==="quit"){closeSheet();tuEnd(false);G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
 }
 $("map").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
@@ -63,7 +64,7 @@ $("sheet").addEventListener("click",e=>{
   if(b.dataset.nnplay){closeSheet();newNoel(+b.dataset.nnplay);return}
   if(b.dataset.night){nightSheet(+b.dataset.night);return}
   if(b.dataset.nplay){closeSheet();newNight(+b.dataset.nplay);return}
-  if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<upPrice(nx)||upLocked(nx))return;S.coins-=upPrice(nx);OWN()[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;shop();return}
+  if(b.dataset.buy){const id=b.dataset.buy,u=ALLUP.find(x=>x.id===id),n=lv(id),nx=u.lv[n];if(!nx||S.coins<upPrice(nx)||upLocked(nx))return;S.coins-=upPrice(nx);OWN()[id]=n+1;fillQuests();save();renderDecor();renderHud();renderKitchen();bip("buy");toast(n?`${u.name} : niveau ${n+1} !`:`${u.name} : acheté !`);shop.y=$("sheet-in").scrollTop;if(id==="serveur"){serveurTalk();return}shop();return} // le compagnon explique ce qu'il fait (tuto.js)
   if(b.dataset.sbuy||b.dataset.style){const [k,id]=(b.dataset.sbuy||b.dataset.style).split(":"),it=STYLE[k].items.find(x=>x.id===id),key=`st-${k}-${id}`;
     if(b.dataset.sbuy){if(it.cb){if(S.candy<it.cb)return;S.candy-=it.cb}else{if(S.coins<it.c)return;S.coins-=it.c}S.own[key]=1;toast(`${it.name} : acheté !`)}
     S.style=S.style||{};S.style[k]=id;save();if(k==="acc"){const m=meB();m.a=id;if(id)m.own["a:"+id]=1;mePut(m)} // la page « C'est toi » suit (js/moi.js)
@@ -80,6 +81,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden&&G&&G.run&&
 function loop(ts){
   const dt=Math.min(.1,(ts-(last||ts))/1000);last=ts;
   if(G&&G.run&&!G.paused)update(dt);
+  if(G&&G.tuto)tuTick(); // la leçon de Petit Pois (tuto.js)
   if(dirty)render();else if(G&&G.run)updateBars();
   requestAnimationFrame(loop);
 }
