@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kyoto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Planche de Kyoto (08/11/2026, Joffray : « tous les éléments sur une page ») : les vrais dessins du jeu, tirés de js/cafe/kyoto.js
+   par un cadre caché qui charge cafe.html ; la planche reste donc à jour quand le quartier change. */
+:root{--ink:#5b4250;--cream:#fffaf5;--line:#ead9cf}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#f6ece4;color:var(--ink);font:500 14px "Zen Maru Gothic",system-ui,sans-serif}
+h1,h2{font-family:"Mochiy Pop One",sans-serif;font-weight:400}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:17px;margin:26px 0 10px}
+.intro{margin:0 0 10px;max-width:760px;opacity:.85}
+.wrap{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.phone{width:360px;max-width:100%;background:#fdf6ee;border:3px solid var(--ink);border-radius:26px;overflow:hidden;box-shadow:0 6px 0 #e3cfc2}
+.mapbox{height:70vh;max-height:720px;overflow-y:auto}
+.mapbox svg{display:block;width:100%;height:auto}
+.room{position:relative;width:520px;max-width:100%;aspect-ratio:600/375;border:3px solid var(--ink);border-radius:20px;overflow:hidden;box-shadow:0 6px 0 #e3cfc2}
+.room svg{position:absolute;inset:0;width:100%;height:100%}
+.room .notes,.room span{display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.card{background:var(--cream);border:2px solid var(--line);border-radius:16px;padding:10px;text-align:center}
+.card svg{display:block;width:100%;height:auto;max-height:150px}
+.card b{display:block;margin-top:4px}
+.card span{display:block;font-size:12px;opacity:.75}
+.rec{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.rec .card svg{width:64px;height:64px;margin:0 auto}
+.fox{background:var(--cream);border:2px solid var(--line);border-radius:18px;padding:12px;margin-bottom:12px}
+.fox h3{font-family:"Mochiy Pop One",sans-serif;font-weight:400;font-size:16px;margin:0}
+.fox p{margin:4px 0 8px;max-width:640px}
+.tag{display:inline-block;font-size:11px;font-weight:900;padding:1px 8px;border-radius:8px;background:#f3e6dc;margin-left:6px;vertical-align:middle}
+.tag.rare{background:#f6c3c9}.tag.legend{background:#ffd36a}
+.poses{display:flex;flex-wrap:wrap;gap:6px}
+.poses div{width:96px;text-align:center;font-size:11px;opacity:.85}
+.poses svg{width:96px;display:block}
+.scene{background:var(--cream);border:2px solid var(--line);border-radius:16px;padding:10px 12px;margin-bottom:10px}
+.scene h3{font-size:14px;margin:0 0 6px;font-weight:900}
+.line{display:flex;gap:8px;align-items:flex-start;margin:4px 0}
+.line .pic{width:38px;flex:none}
+.line .pic svg{width:38px;display:block}
+.line b{font-size:12px;display:block}
+.mus{display:flex;flex-wrap:wrap;gap:8px}
+.mus button{font:inherit;font-weight:900;color:var(--ink);background:#fff;border:2.4px solid var(--ink);border-radius:99px;padding:8px 16px;cursor:pointer}
+.mus button.on{background:#f9c4d2}
+#load{padding:20px;font-weight:900}
+@media (max-width:420px){body{padding:10px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+  <filter id="soft" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="7"/></filter>
+  <defs id="kydefs"></defs>
+</svg>
+<h1>Monde 3 · Kyoto</h1>
+<p class="intro">Tout le quartier sur une page, avec les vrais dessins du jeu : la carte, la salle, les recettes, les renards, les décors, l'histoire du Matsuri et la musique.</p>
+<div id="load">Chargement…</div>
+<div id="out" hidden>
+  <div class="wrap">
+    <div><h2>La carte</h2><div class="phone mapbox" id="map"></div></div>
+    <div><h2>La salle du Kitsune Kissa</h2><div class="room" id="room"></div>
+      <h2>La musique</h2><div class="mus" id="mus"></div></div>
+  </div>
+  <h2>Les recettes</h2><div class="rec" id="rec"></div>
+  <h2>Les renards du quartier</h2><div id="foxes"></div>
+  <h2>Les décors de la carte</h2><div class="grid" id="deco"></div>
+  <h2>L'histoire : le Matsuri</h2><div id="story"></div>
+</div>
+<iframe id="game" src="../cafe.html" style="position:absolute;left:-9999px;top:0;width:400px;height:800px;border:0" tabindex="-1" aria-hidden="true"></iframe>
+<script src="../js/music.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+$("game").addEventListener("load",()=>setTimeout(build,400));
+function build(){
+  // tout se calcule comme si le quartier affiché était Kyoto (WORLD et SEA du jeu), puis on remet les valeurs du jeu
+  const w=$("game").contentWindow,W=f=>w.eval(`(()=>{const o=WORLD,s=SEA;WORLD="kyoto";SEA="kyoto";try{return (${f})()}finally{WORLD=o;SEA=s}})()`),E=x=>W("()=>"+x);
+  $("kydefs").innerHTML=E("KY_DEFS");
+  // la carte, la salle
+  $("map").innerHTML=W("()=>kyMapSVG(kyLayout())");
+  $("room").innerHTML=W("()=>bgSVG()+counterSVG()");
+  // la musique (morceaux de js/music.js)
+  [["torii","Le chemin des torii (carte)"],["matsuri","Matsuri (service)"],["taiko","Les tambours taiko (service)"]].forEach(([k,n])=>{const b=document.createElement("button");b.textContent=n;
+    b.onclick=()=>{const on=b.classList.contains("on");document.querySelectorAll(".mus button").forEach(x=>x.classList.remove("on"));MUSIC.setOn(true);if(on)MUSIC.stop();else{MUSIC.want(k);b.classList.add("on")}};$("mus").appendChild(b)});
+  // les recettes
+  const base={cafe:"Café",croissant:"Croissant",the:"Thé",cookie:"Cookie",choco:"Chocolat chaud",smoothie:"Smoothie",gateau:"Gâteau"};
+  const rec=E(`Object.entries(VAR.kyoto).map(([k,[n]])=>[k,n,icon(k,"kyoto")])`);
+  let h=rec.map(([k,n,ic])=>`<div class="card">${ic}<b>${n}</b><span>au premier café : ${base[k]}</span></div>`).join("");
+  h+=E(`[["cafe+lait","Matcha latte","Matcha + Lait"],["choco+chantilly","Hōjicha à la crème","Hōjicha + Crème"],["gateau+chantilly","Cheesecake à la crème","Cheesecake + Crème"]].map(([k,n,d])=>'<div class="card">'+icon(k,"kyoto")+'<b>'+n+'</b><span>'+d+'</span></div>').join("")`);
+  h+=E(`Object.entries(KY_DANGO).map(([k,v])=>'<div class="card"><svg viewBox="0 0 40 40">'+WORLDS.kyoto.tubSVG(k)+'</svg><b>Boule '+v.n.toLowerCase()+'</b><span>pour la brochette</span></div>').join("")`);
+  h+=E(`["rbv","vvr","brb","rrr"].map(g=>'<div class="card">'+icon("smoothie~"+g,"kyoto")+'<b>Brochette</b><span>'+g.split("").map(x=>KY_DANGO[x].n.toLowerCase()).join(" › ")+'</span></div>').join("")`);
+  $("rec").innerHTML=h+`<div class="card" style="text-align:left"><b>La brochette de dango</b><span>Le client veut ses trois boules dans son ordre. On les enfile de bas en haut, en touchant les boules. Raté ? On touche la brochette pour la vider.</span></div>`;
+  // les renards
+  $("foxes").innerHTML=E(`KYF.map(f=>{const r={commun:"",rare:" rare",legend:" legend"}[f.rar],lab={commun:"Habitué",rare:"Rare",legend:"Légendaire"}[f.rar];
+    const poses=["sit","happy","walk","eat","sleep"].map(p=>'<div>'+foxSVG(f,{pose:p})+p+'</div>').join("")+["open","joy","sad","surprise","shy"].map(x=>'<div>'+foxArt(f,{expr:x,portrait:1})+x+'</div>').join("");
+    return '<div class="fox"><h3>'+f.name+'<span class="tag'+r+'">'+lab+'</span></h3><p>'+f.bio+'</p><div class="poses">'+poses+'</div></div>'}).join("")`);
+  // les décors, chacun seul
+  const D=[["Le Kitsune Kissa","kyCafeSVG(200,200)","20 0 360 240"],["La grande porte","kyArchSVG(200,180)","90 70 220 140"],["Torii du chemin","kyTorii(100,150,1.6)","30 60 140 100"],
+    ["Maison en bois","kyMachiya(40,150,120,100)","20 20 165 140"],["Lanterne","kyLantern(100,80,2)","60 40 80 80"],["Bambous","kyBamboo(100,150,1.1)","50 10 100 150"],
+    ["Cerisier","kySakura(100,150,1.5)","40 52 125 108"],["Pin","kyPine(100,150,1.5)","42 58 120 102"],["Lanterne de pierre","kyToro(100,150)","75 100 50 55"],
+    ["Renard de pierre","kyFoxStatue(100,150)","80 105 40 50"],["Pavillon d'or","kyKinkaku(100,140)","5 20 190 150"],["Pagode","kyPagoda(100,160,1)","50 10 100 160"],
+    ["Sanctuaire","kyShrine(100,150)","45 80 110 80"],["Stand du Matsuri","kyYatai(100,150,'#e0503c')","56 96 88 60"],["Pierres de gué","kyStones(100,100)","40 85 120 30"]];
+  $("deco").innerHTML=D.map(([n,f,vb])=>`<div class="card"><svg viewBox="${vb}">${E(f)}</svg><b>${n}</b></div>`).join("");
+  // l'histoire
+  const sc=E(`Object.entries(KY_SCENES).map(([d,ls])=>[d,ls.map(([who,ex,t])=>[FOX[who].name,foxArt(FOX[who],{expr:ex,portrait:1}),t])])`);
+  const intro=E(`[["yuzu","joy","Irasshaimase ! Bienvenue à Kyoto ! Moi, c'est Yuzu."],["yuzu","open","Ce salon de thé, c'est le Kitsune Kissa. Ici, les renards sont chez eux : le chemin des torii monte jusqu'au sanctuaire d'Inari."]].map(([w,e,t])=>[FOX[w].name,foxArt(FOX[w],{expr:e,portrait:1}),t])`);
+  $("story").innerHTML=[["L'arrivée",intro],...sc.map(([d,ls])=>[d==="20"?"Jour 20 : le soir du Matsuri":`Jour ${d}`,ls])].map(([t,ls])=>`<div class="scene"><h3>${t}</h3>${ls.map(([n,pic,tx])=>`<div class="line"><div class="pic">${pic}</div><div><b>${n}</b>${tx}</div></div>`).join("")}</div>`).join("");
+  $("load").hidden=true;$("out").hidden=false;
+}
+</script>
+</body>
+</html>
