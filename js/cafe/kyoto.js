@@ -296,7 +296,7 @@ WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Kissa",short:"Kissa",sv:()=>
   optNew:"Touche « Crème », au bout du plateau, pour en mettre sur un hōjicha ou un cheesecake.",
   guest:"kyubi",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",
   reg:()=>[...KYF_REG,...KYF_REG,...KYF_REG,...(S.ky.read[15]?[FOX.hoji]:[])],
-  music:d=>d%2?"matsuri":"taiko",mapMusic:"torii",
+  music:d=>d%2?"matsuri2":"taiko", // le Matsuri « plus rapide », choisi par Joffray le 09/11/2026 ; les tambours sont encore à choisirmapMusic:"torii",
   isOpen:()=>kyOpen(),lockMsg:"Réussis les 20 journées de Paris pour ouvrir Kyoto.",
   layout:()=>kyLayout(),mapSVG:L=>kyMapSVG(L),outside:()=>outsideKy(),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.yuz.x,L.yuz.u)}" data-act="yuzu" type="button" aria-label="Yuzu">${foxSVG(FOX.yuzu,{pose:"happy"})}<em>Yuzu</em></button>`
