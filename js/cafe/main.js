@@ -40,7 +40,7 @@ $("open-menu").onclick=openMap;
 function onAct(a){
   if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="noel"){const yr=new Date().getFullYear();if(S.noelIntro!==yr){S.noelIntro=yr;save();noelIntro(noelSheet)}else noelSheet()}else if(a==="noelintro"){closeSheet();noelIntro(noelSheet)}else if(a==="costumes")costumesSheet();else if(a==="hwintro"){closeSheet();hwIntro(hwSheet)}else if(a==="quests")questsSheet();
   else if(a==="map")openMap();else if(a==="worlds")openWorlds();
-  else if(a==="italie")goWorld("italie");else if(a==="paris")goWorld("paris");else if(a==="anatole")paCarnet();else if(a==="anatoleintro")anatoleIntro();else if(a==="finale")paFinaleSheet();else if(a==="monde1")goWorld("");else if(a==="lorenzo")itCarnet();else if(a==="lorenzointro")lorenzoIntro();else if(a==="nonno")nonnoSheet();
+  else if(a==="italie")goWorld("italie");else if(a==="paris")goWorld("paris");else if(a==="kyoto")goWorld("kyoto");else if(a==="yuzu")kyCarnet();else if(a==="yuzuintro")yuzuIntro();else if(a==="anatole")paCarnet();else if(a==="anatoleintro")anatoleIntro();else if(a==="finale")paFinaleSheet();else if(a==="monde1")goWorld("");else if(a==="lorenzo")itCarnet();else if(a==="lorenzointro")lorenzoIntro();else if(a==="nonno")nonnoSheet();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="tuto"){closeSheet();startTuto()}
   else if(a==="quit"){closeSheet();tuEnd(false);G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}

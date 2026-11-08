@@ -311,6 +311,8 @@ function paMapSVG(L){
   at(290,u18+60,paWallace);at(66,u18+238,paFlowers);at(358,u12+6,paCarousel);at(250,u18+150,(x,y)=>paTree(x,y,.8,"pa-leaf2"));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=paArchSVG(200,Y(60))+paCafeSVG(cafe.x,Y(cafe.u));
+  // le panneau vers Kyoto (kyoto.js), au-dessus du café à droite, une fois les 20 journées réussies
+  if(typeof kyOpen==="function"&&kyOpen()){const px=cafe.x+128,py=Y(cafe.u+136);s+=`<rect x="${px-4}" y="${py-6}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${px-44} ${py-30} H${px+34} L${px+46} ${py-18} L${px+34} ${py-6} H${px-44}Z" fill="#fffaf2" ${BO}/><text x="${px}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">Kyoto</text>`}
   s+=`<rect width="400" height="${H}" fill="url(#pa-vig)" pointer-events="none"/>`;
   return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
 }
@@ -399,7 +401,8 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Kitsune",short:"Café",sv:()=>
   duel:PA_DUEL,duelScore:d=>duelScore(d),duelRow:d=>itRow(icon("croissant","paris"),d===20?"La finale du concours !":"Jour de défi !",`Firmin a fait <b>${duelScore(d)} pièces</b>. Fais mieux que lui${S.pa.duel[d]?" (déjà battu)":""}.`,"background:#fde8ec"),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.ana.x,L.ana.u)}" data-act="anatole" type="button" aria-label="Anatole">${foxSVG(FOX.anatole,{pose:"happy"})}<em>Anatole</em></button>`
     +`<button class="mguest${S.pa.peace?" ok":""}" style="${pc(L.cafe.x+142,L.cafe.u-36)}" data-act="finale" type="button" aria-label="Firmin">${foxSVG(FOX.firmin,{pose:S.pa.peace?"happy":"sit"})}<em>Firmin</em></button>`
-    +`<button class="mnext" style="${pc(200,52)}" data-act="italie" type="button" aria-label="Retour en Petite Italie"></button>`,
+    +`<button class="mnext" style="${pc(200,52)}" data-act="italie" type="button" aria-label="Retour en Petite Italie"></button>`
+    +(typeof kyOpen==="function"&&kyOpen()?`<button class="mnext" style="${pc(L.cafe.x+128,L.cafe.u+150)}" data-act="kyoto" type="button" aria-label="Kyoto"></button>`:""),
   arrive:()=>{if(!S.pa.intro)anatoleIntro();else paStory()},
   scenes:done=>paScenes(done),
   news:(d,st,prev,news,e)=>{

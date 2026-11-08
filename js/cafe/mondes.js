@@ -7,7 +7,9 @@ const MONDES=[
   {id:"italie",name:"Petite Italie",sub:"Le Caffè de Lorenzo",host:"lorenzo",max:()=>IT_LAST*3,
     stars:()=>Object.values(S.it.stars).reduce((a,b)=>a+b,0),day:()=>Math.min(S.it.day,IT_LAST),last:()=>IT_LAST,open:()=>itOpen(),art:()=>mondeArtIt()},
   {id:"paris",name:"Paris",sub:"Le Café d'Anatole",host:"anatole",max:()=>PA_DAYS.length*3,
-    stars:()=>Object.values(S.pa.stars).reduce((a,b)=>a+b,0),day:()=>Math.min(S.pa.day,PA_DAYS.length),last:()=>PA_DAYS.length,open:()=>paOpen(),art:()=>mondeArtPa()}
+    stars:()=>Object.values(S.pa.stars).reduce((a,b)=>a+b,0),day:()=>Math.min(S.pa.day,PA_DAYS.length),last:()=>PA_DAYS.length,open:()=>paOpen(),art:()=>mondeArtPa()},
+  {id:"kyoto",name:"Kyoto",sub:"Le Kitsune Kissa de Yuzu",host:"yuzu",max:()=>KY_DAYS.length*3,
+    stars:()=>Object.values(S.ky.stars).reduce((a,b)=>a+b,0),day:()=>Math.min(S.ky.day,KY_DAYS.length),last:()=>KY_DAYS.length,open:()=>kyOpen(),art:()=>mondeArtKy()}
 ];
 const mSky=(id,a,b)=>`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
 // les quatre saisons côte à côte, chacune avec son arbre, et le petit café au milieu
@@ -34,6 +36,14 @@ function mondeArtPa(){
   s+=paEiffel(70,132,124)+paTree(26,134,.9)+paTree(122,136,.8)+paTree(300,134,.9);
   s+=`<g transform="translate(212 136) scale(.48)">${paCafeSVG(0,0)}</g>`;
   return `<defs>${PA_DEFS}${mSky("mw3","#bcd6ee","#f3eee6")}</defs>`+s;
+}
+// le chemin des torii, la pagode et le salon de thé au soir du Matsuri
+function mondeArtKy(){
+  let s=`<rect width="320" height="150" fill="url(#mw4)"/><circle cx="60" cy="50" r="18" fill="#fff2c8" opacity=".95"/>`;
+  s+=`<path d="M0 108 Q90 82 180 100 T320 92 V150 H0Z" fill="#a9c79a" ${BO}/><path d="M0 132 Q120 120 220 130 T320 128 V150 H0Z" fill="#e6dccb" ${BO}/>`;
+  s+=kyPagoda(272,124,.62)+kyTorii(52,138,.95)+kyTorii(92,134,.8)+kySakura(20,136,.7);
+  s+=`<g transform="translate(176 138) scale(.5)">${kyCafeSVG(0,0)}</g>`;
+  return `<defs>${KY_DEFS}${mSky("mw4","#eaa6b6","#fde6d4")}</defs>`+s;
 }
 function openWorlds(){
   closeSheet();closeMap();$("worlds").hidden=false;document.body.style.overflow="hidden";

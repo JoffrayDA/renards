@@ -15,6 +15,7 @@ Usage     : python tools/balance-bot.py [jours...]   (par défaut : une sélecti
             python tools/balance-bot.py --noel           (propose la table NOEL_NIGHTS des 24 Nuits de Noël)
             python tools/balance-bot.py --italie         (propose la table IT_DAYS des 20 journées de la Petite Italie)
             python tools/balance-bot.py --paris          (propose la table PA_DAYS des 20 journées de Paris ; --paris --economie aussi)
+            python tools/balance-bot.py --kyoto          (propose la table KY_DAYS des 20 journées de Kyoto ; --kyoto --economie aussi)
 
 Une journée tire ses commandes avec une graine propre au jour : le même jour se rejoue à l'identique,
 donc une seule partie par vitesse suffit pour le calibrage.
@@ -105,8 +106,9 @@ ECO = "--economie" in sys.argv
 NUITS = "--nuits" in sys.argv
 NOEL = "--noel" in sys.argv
 PARIS = "--paris" in sys.argv
-ITALIE = "--italie" in sys.argv or PARIS
-WN = "paris" if PARIS else "italie"   # le quartier calibré (--italie ou --paris : même règle, mêmes recettes et même kit)
+KYOTO = "--kyoto" in sys.argv
+ITALIE = "--italie" in sys.argv or PARIS or KYOTO
+WN = "kyoto" if KYOTO else "paris" if PARIS else "italie"   # le quartier calibré (--italie ou --paris : même règle, mêmes recettes et même kit)
 PERFECT = 0.25   # réaction du bot « parfait » : ★★★ demande environ 94 % de son score
 STAR3 = 1.8
 GOOD, PASS = 0.8, 1.08   # le bon joueur doit toujours réussir (★), avec un peu de marge
@@ -157,7 +159,7 @@ with sync_playwright() as p:
             e, k = min(r, key=lambda x: abs(goal(x) - t / STAR3) + .25 * abs(x[0] - t) / STAR3)
             out.append(f"{{base:{bases[d - 1]},seed:{k},goal:{goal((e, k))}}}")
             print(f"jour {d:>2} (rythme du jour {bases[d - 1]}) : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {good[k]}, objectif {goal((e, k))}", file=sys.stderr, flush=True)
-        print(f"const {'PA' if PARIS else 'IT'}_DAYS=[" + ",".join(out) + "];")
+        print(f"const {'KY' if KYOTO else 'PA' if PARIS else 'IT'}_DAYS=[" + ",".join(out) + "];")
         browser.close(); sys.exit()
     if CALIB:
         # Pour chaque jour, on joue plusieurs graines en « parfait ». On lisse la médiane des scores en une courbe

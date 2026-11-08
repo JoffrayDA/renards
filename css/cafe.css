@@ -425,7 +425,7 @@ button.home{padding:0;cursor:pointer}
 .worlds{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;background:var(--bg);background-image:radial-gradient(var(--dot) 2px,transparent 2.5px);background-size:22px 22px}
 .worlds[hidden]{display:none}
 .wlist{flex:1;overflow-y:auto;display:grid;gap:14px;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px));align-content:start;grid-auto-rows:max-content;max-width:560px;width:100%;margin:0 auto;box-sizing:border-box}
-.wcard{display:block;width:100%;padding:0;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:3px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:0 5px 0 rgba(91,66,80,.22);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s}
+.wcard{display:block;box-sizing:border-box;width:100%;padding:0;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:3px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:0 5px 0 rgba(91,66,80,.22);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s}
 .wcard:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(91,66,80,.22)}
 .wcard.cur{box-shadow:0 0 0 4px var(--coral),0 5px 0 rgba(91,66,80,.22)}
 .wart{position:relative;display:block;aspect-ratio:320/150;border-bottom:3px solid var(--ink);overflow:hidden}

@@ -1,7 +1,7 @@
 /* Musique du Kitsune Café, partagée par les trois pages. Tout est synthétisé (Web Audio) : aucun fichier, aucune licence.
    Chaque page dit quel morceau elle veut (MUSIC.want) ; il démarre au premier toucher (règle des navigateurs).
    Un bouton [data-sound] coupe ou remet le son, choix mémorisé dans localStorage « renards-son ».
-   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza, tarantella et polka (Petite Italie), musette et galop (Paris), lofi (en réserve). */
+   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza, tarantella et polka (Petite Italie), musette et galop (Paris), torii, matsuri et taiko (Kyoto), lofi (en réserve). */
 const MUSIC=(()=>{
   // Un jeu ouvert dans l'accueil (iframe) n'a pas son propre son : il pilote la musique de l'accueil, qui a déjà eu
   // son toucher de départ et continue de jouer d'une page à l'autre. Le bouton maison referme le jeu.
@@ -202,6 +202,32 @@ const MUSIC=(()=>{
         [0,1,2,3].forEach(x=>{I.bass(c[x%2?2:0]-12,t+x*B,B*.7,.2);c.forEach((m,i)=>I.pluck(m+12,t+x*B+i*.008,x%2?.04:.03,.18,2400))});
         for(let i=0;i<8;i++)I.shaker(t+sw(i/2)*B,i%2?.015:.025);
         melody((m,tt,d)=>I.flute(m,tt,d*.95,.07,.015),this.mel,b,t,B)}},
+    // Kyoto (js/cafe/kyoto.js, 08/11/2026), mélodies originales sur la gamme pentatonique japonaise (ré, mi, sol, la, si) :
+    // le chemin des torii sur la carte (koto et flûte de bambou), le Matsuri et les tambours taiko pendant le service
+    torii:{name:"Le chemin des torii",bpm:84,beats:4,bars:8,
+      ch:[[50,57,62],[55,62,67],[52,59,64],[50,57,62],[55,62,67],[57,64,69],[52,59,64],[50,57,62]],
+      mel:[[[74,1.5],[76,.5],[79,2]],[[81,1],[79,1],[76,2]],[[74,1],[76,1],[71,1],[69,1]],[[74,3],[null,1]],
+           [[79,1.5],[81,.5],[83,2]],[[81,1],[79,.5],[76,.5],[74,2]],[[76,1],[79,1],[81,1],[76,1]],[[74,3],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        [c[0]+12,c[1]+12,c[2]+12,c[1]+12,c[0]+24,c[2]+12,c[1]+12,c[2]+12].forEach((m,i)=>{I.pluck(m,t+i*B/2,.045,1,2600);I.harp(m+12,t+i*B/2,.018)});
+        I.bass(c[0]-12,t,B*3.5,.14);I.pad(c.map(x=>x+12),t,B*4,.018);
+        melody((m,tt,d)=>I.flute(m,tt,d*.95,.07,.04),this.mel,b,t,B)}},
+    matsuri:{name:"Matsuri",bpm:140,beats:4,bars:8,
+      ch:[[50,57,62],[55,62,67],[57,64,69],[50,57,62],[55,62,67],[50,57,62],[52,59,64],[57,64,69]],
+      mel:[[[74,.5],[76,.5],[79,1],[76,.5],[74,.5],[71,1]],[[69,.5],[71,.5],[74,1],[76,2]],[[79,.5],[81,.5],[83,1],[81,.5],[79,.5],[76,1]],[[74,2],[null,1],[69,.5],[71,.5]],
+           [[74,.5],[76,.5],[79,.5],[81,.5],[83,1],[81,1]],[[79,1],[76,.5],[74,.5],[76,2]],[[71,.5],[74,.5],[76,1],[79,.5],[76,.5],[74,1]],[[74,3],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        [0,1.5,2].forEach(x=>I.kick(t+x*B,.4));I.clap(t+3*B,.05);for(let i=0;i<8;i++)I.marimba(i%2?91:96,t+i*B/2,i%2?.03:.05);
+        [.5,1.5,2.5,3.5].forEach(x=>c.forEach((m,i)=>I.pluck(m+12,t+x*B+i*.01,.035,.22,4200)));I.bass(c[0]-12,t,B*.9,.2);I.bass(c[2]-12,t+2*B,B*.9,.16);
+        melody((m,tt,d)=>{I.flute(m,tt,d*.92,.06,.03);I.pluck(m,tt,.03,.3,4400)},this.mel,b,t,B)}},
+    taiko:{name:"Les tambours taiko",bpm:120,beats:4,bars:8,
+      ch:[[50,57,62],[55,62,67],[57,64,69],[52,59,64],[50,57,62],[55,62,67],[52,59,64],[50,57,62]],
+      mel:[[[62,1],[64,.5],[67,.5],[69,1],[67,1]],[[71,1],[69,1],[67,2]],[[69,1],[71,.5],[74,.5],[76,1],[74,1]],[[71,3],[null,1]],
+           [[74,1],[76,.5],[74,.5],[71,1],[69,1]],[[67,1],[69,1],[71,2]],[[69,1],[67,.5],[64,.5],[62,1],[64,1]],[[62,3],[null,1]]],
+      bar(b,t,B){const c=this.ch[b];
+        [0,1.5,2,3].forEach((x,i)=>I.kick(t+x*B,i?.36:.48));[1,3].forEach(x=>I.clap(t+x*B,.035));for(let i=0;i<4;i++)I.marimba(94,t+i*B+B/2,.035);
+        I.bass(c[0]-12,t,B*1.8,.2);I.bass(c[1]-12,t+2*B,B*1.8,.16);[0,2].forEach(x=>c.forEach((m,i)=>I.pluck(m+12,t+x*B+i*.03,.03,.8,2400)));
+        melody((m,tt,d)=>{I.pluck(m+12,tt,.075,Math.max(.5,d*1.2),3000);I.harp(m+24,tt,.02)},this.mel,b,t,B)}},
     // … et « Bonjour Paris », une chanson qui sautille : piano, accordéon en réponse (ré majeur)
     bonjour:{name:"Bonjour Paris",bpm:132,beats:4,bars:8,
       ch:[[50,54,57],[55,59,62],[57,61,64],[50,54,57],[55,59,62],[50,54,57],[52,55,59],[57,61,64,67]],

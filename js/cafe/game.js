@@ -37,7 +37,7 @@ function genOrder(){
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
   const here=new Set(G.cust.map(c=>c.fox));
-  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[]),...(S.noelKeep?[FOX.guimauve]:[]),...(S.it&&S.it.guest?[FOX.donnalimone]:[]),...(S.pa&&S.pa.guest?[FOX.celeste]:[])];
+  const vipCh=G.day>=3?(.07*[1,2,2.5][lv("coussins")]*(G.boost.vip?2:1)):0,guests=[...CHAP.filter(c=>S.guest[c.guest]).map(c=>FOX[c.guest]),...(S.hwKeep?[FOX.feufollet]:[]),...(S.noelKeep?[FOX.guimauve]:[]),...(S.it&&S.it.guest?[FOX.donnalimone]:[]),...(S.pa&&S.pa.guest?[FOX.celeste]:[]),...(S.ky&&S.ky.guest?[FOX.kyubi]:[])];
   let f,vip=false;
   // Math.random (et pas G.rng) pour le choix du client : la journée reste la même, l'équilibrage aussi
   if(G.rng()<vipCh){vip=true;const pool=(G.noel?NOELF:HW&&(G.night||Math.random()<.7)?HWF:guests.length&&Math.random()<.6?guests:[...VIPS,...wildMet()]).filter(x=>!here.has(x.id));f=pool.length?pick(pool):null}
