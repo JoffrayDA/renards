@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kyoto, propositions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Kyoto, propositions à choisir (08/11/2026) : les plats (ceux du jeu et ceux de Joffray) et trois versions des tambours et du Matsuri.
+   Les dessins viennent du jeu (cadre caché sur cafe.html), la musique de js/music.js. */
+:root{--ink:#5b4250;--cream:#fffaf5;--line:#ead9cf;--acc:#e0505a}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#f6ece4;color:var(--ink);font:500 14px "Zen Maru Gothic",system-ui,sans-serif}
+h1,h2{font-family:"Mochiy Pop One",sans-serif;font-weight:400}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:17px;margin:24px 0 8px}
+p{margin:0 0 10px;max-width:720px;line-height:1.45}
+.cmp{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;max-width:1000px}
+.pair{background:var(--cream);border:2px solid var(--line);border-radius:18px;padding:10px 12px}
+.pair h3{margin:0 0 6px;font-size:13px;font-weight:900;opacity:.7}
+.pair .row{display:flex;gap:10px}
+.dish{flex:1;min-width:0;text-align:center;background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px 4px}
+.dish.new{border-color:#f2a8bc;background:#fff6f8}
+.dish svg{width:84px;height:84px;display:block;margin:0 auto}
+.dish b{display:block;font-size:14px}
+.dish span{display:block;font-size:11.5px;opacity:.75}
+.extra{display:flex;flex-wrap:wrap;gap:10px;max-width:1000px}
+.extra .dish{flex:0 0 130px}
+.list{display:grid;gap:10px;max-width:560px}
+button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:var(--cream);border:2.4px solid var(--ink);border-radius:18px;padding:12px 14px;cursor:pointer}
+button b{display:block;font-size:16px}button span{font-size:13px;opacity:.8}
+button i{flex:none;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-style:normal;font-size:15px}
+button.on{background:#ffe3ea}
+#load{font-weight:900}
+</style>
+</head>
+<body>
+<h1>Kyoto · à choisir</h1>
+<p>Les plats : à gauche ceux du jeu, à droite tes idées. Puis les tambours et le Matsuri, trois versions chacun. Touche une musique pour l'écouter, retouche pour l'arrêter.</p>
+<h2>Les plats</h2>
+<p id="load">Chargement des dessins…</p>
+<div class="cmp" id="cmp"></div>
+<h2>Les tambours (pendant le service)</h2>
+<p>Les trois commencent pareil : boum… boum… boum boum… boum boum boum… un roulement, et ça part. L'intro ne se joue qu'une fois.</p>
+<div class="list">
+<button data-t="taiko"><i>A</i><div><b>Les tambours de guerre</b><span>168 bpm. Gros fûts DON, don-DON, DON, petits tambours en continu, flûte et cuivres ensemble, roulement à chaque fin de phrase.</span></div></button>
+<button data-t="taiko2"><i>B</i><div><b>La charge des samouraïs</b><span>178 bpm, la plus rapide. Les tambours roulent sans arrêt (don-doko), les cuivres martèlent, mélodie héroïque.</span></div></button>
+<button data-t="taiko3"><i>C</i><div><b>Le duel</b><span>162 bpm. Rythme boiteux 3-3-2 des gros fûts, les petits répondent, longues notes de flûte qui montent la tension.</span></div></button>
+</div>
+<h2>Le Matsuri (pendant le service)</h2>
+<div class="list">
+<button data-t="matsuri"><i>0</i><div><b>Matsuri, celle du jeu</b><span>150 bpm. Pour comparer.</span></div></button>
+<button data-t="matsuri2"><i>A</i><div><b>Matsuri, plus rapide</b><span>162 bpm. Le même air, plus serré : shamisen en doubles croches, tambour plus présent.</span></div></button>
+<button data-t="matsuri3"><i>B</i><div><b>Le Matsuri du soir</b><span>160 bpm. Nouvel air, plus chantant, clochettes de fête qui tintent sans arrêt.</span></div></button>
+<button data-t="matsuri4"><i>C</i><div><b>La danse du Bon odori</b><span>150 bpm, balancée. La danse en rond des festivals d'été : tambour don-ka, flûte qui chaloupe.</span></div></button>
+</div>
+<iframe id="game" src="../cafe.html" style="position:absolute;left:-9999px;top:0;width:400px;height:800px;border:0" tabindex="-1" aria-hidden="true"></iframe>
+<script src="../js/music.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+document.querySelectorAll("button[data-t]").forEach(b=>b.onclick=()=>{const on=b.classList.contains("on");document.querySelectorAll("button[data-t]").forEach(x=>x.classList.remove("on"));
+  MUSIC.setOn(true);if(on){MUSIC.stop();return}MUSIC.want(b.dataset.t);b.classList.add("on")});
+$("game").addEventListener("load",()=>setTimeout(()=>{
+  const w=$("game").contentWindow,E=x=>w.eval(`(()=>{const o=WORLD,s=SEA;WORLD="kyoto";SEA="kyoto";try{return ${x}}finally{WORLD=o;SEA=s}})()`);
+  const sv=x=>`<svg viewBox="0 0 40 40">${x}</svg>`;
+  const P=[["Pâtisserie du jour 1","croissant","Taiyaki","gâteau en forme de poisson, fourré","onigiri","Onigiri","boule de riz et sa feuille d'algue"],
+    ["Pâtisserie du jour 4","cookie","Mochi fraise","pâte de riz, fraise dedans","tempura","Tempura de crevettes","beignets croustillants"],
+    ["Le plat à composer (jour 9)","smoothie","Brochette de dango","3 boules, de bas en haut","sushi","Plateau de sushis","saumon, thon, tamago, de gauche à droite"],
+    ["Le dessert du jour 13 (avec Crème)","gateau","Cheesecake japonais","tout haut, tout léger","dorayaki","Dorayaki","deux crêpes, haricot rouge"]];
+  $("cmp").innerHTML=P.map(([t,k,n1,d1,a,n2,d2])=>`<div class="pair"><h3>${t}</h3><div class="row"><div class="dish">${E(`icon("${k}","kyoto")`)}<b>${n1}</b><span>${d1}</span></div><div class="dish new">${sv(E(`KY_ALT.${a}`))}<b>${n2}</b><span>${d2}</span></div></div></div>`).join("")
+    +`<div class="pair"><h3>Les boissons (on n'y touche pas)</h3><div class="row">${[["cafe","Matcha"],["the","Ramune"],["choco","Hōjicha"]].map(([k,n])=>`<div class="dish">${E(`icon("${k}","kyoto")`)}<b>${n}</b></div>`).join("")}</div></div>`
+    +`<div class="pair"><h3>Les sushis du plateau</h3><div class="row">${["s","t","o"].map(k=>`<div class="dish new">${sv(E(`nigiriSVG(20,22,1.9,"${k}")`))}<b>${E(`KY_SUSHI.${k}.n`)}</b></div>`).join("")}</div></div>`
+    +`<div class="pair"><h3>Les boules de dango</h3><div class="row">${["r","b","v"].map(k=>`<div class="dish">${sv(E(`WORLDS.kyoto.tubSVG("${k}")`))}<b>${E(`KY_DANGO.${k}.n`)}</b></div>`).join("")}</div></div>`;
+  $("load").hidden=true},400));
+</script>
+</body>
+</html>

@@ -68,6 +68,30 @@ Object.assign(ICON,{
   "chantilly@kyoto":ICON["chantilly@paris"]
 });
 
+/* ---------- recettes proposées par Joffray (08/11/2026), pas encore dans le jeu : on en discute avec lui ----------
+   onigiri, tempura de crevettes, plateau de sushis à composer (saumon, thon, tamago), dorayaki ; montrées sur tools/kyoto-propositions.html */
+const KY_SUSHI={s:{n:"Saumon",c:"#f6a06a"},t:{n:"Thon",c:"#e0505a"},o:{n:"Tamago",c:"#f7d77a"}};
+// un sushi (nigiri) : le riz, et le poisson ou l'omelette dessus ; le tamago a sa bande d'algue
+const nigiriSVG=(x,y,k,top)=>`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fffaf6" ${K2}/>`+(top==="o"
+  ?`<rect x="${x-7.4*k}" y="${y-4*k}" width="${14.8*k}" height="${5.4*k}" rx="${2*k}" fill="#f7d77a" ${K2}/><rect x="${x-2*k}" y="${y-4.4*k}" width="${4*k}" height="${9.4*k}" fill="#2f3a32" ${K2}/>`
+  :`<path d="M${x-7.6*k} ${y+1*k} Q${x-8*k} ${y-4.6*k} ${x} ${y-4.4*k} Q${x+8.4*k} ${y-4.4*k} ${x+7.6*k} ${y+1.4*k} Q${x} ${y+3*k} ${x-7.6*k} ${y+1*k}Z" fill="${KY_SUSHI[top].c}" ${K2}/>`
+    +(top==="s"?[-3.6,0,3.6].map(a=>`<path d="M${x+a*k-1*k} ${y-3.6*k} q${1.6*k} ${2.4*k} ${1*k} ${4.6*k}" fill="none" stroke="#fff" stroke-width="${1.1*k}" opacity=".85"/>`).join(""):`<ellipse cx="${x-2.4*k}" cy="${y-2.6*k}" rx="${2.2*k}" ry="${.8*k}" fill="#fff" opacity=".55"/>`));
+// le plateau de sushis, rempli de gauche à droite (g peut être incomplet : le plateau en cours au comptoir)
+const kySushiSVG=g=>`<path d="M2 25 H38 V30 Q38 32 36 32 H4 Q2 32 2 30Z" fill="#d9a46a" ${K}/><path d="M6 32 V36 M34 32 V36" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M4 27.4 H36" stroke="#eec08a" stroke-width="1.2"/>`
+  +[0,1,2].map(i=>g[i]?nigiriSVG(9+i*11,19,.72,g[i]):`<ellipse cx="${9+i*11}" cy="21" rx="4.4" ry="2.6" fill="none" stroke="#e6c3cf" stroke-width="1.4" stroke-dasharray="2 2"/>`).join("");
+const KY_ALT={
+  onigiri:`<ellipse cx="20" cy="34" rx="14" ry="2.8" fill="#3d2a35" opacity=".12"/><path d="M20 5 Q24.4 5 31 18 Q36 28 33 32 Q31 34 27 34 H13 Q9 34 7 32 Q4 28 9 18 Q15.6 5 20 5Z" fill="#fffaf6" ${K}/>
+    <path d="M13 22.4 H27 V34 H13Z" fill="#2f3a32" ${K}/><path d="M15 24.6 V31.6" stroke="#5a6a5c" stroke-width="1.4" stroke-linecap="round"/><ellipse cx="15.6" cy="12.6" rx="2.6" ry="1.4" fill="#fff" transform="rotate(-40 15.6 12.6)"/>${[[19,15],[23,17.4],[17.4,19]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx=".9" ry=".5" fill="#e6d3b4"/>`).join("")}`,
+  tempura:`<ellipse cx="20" cy="33" rx="16" ry="3.4" fill="#fff" stroke="#e6d3c4" stroke-width="1.4" stroke-dasharray="2.4 1.6"/>`
+    +[[0,0],[3,-8]].map(([dx,dy])=>`<g transform="translate(${dx} ${dy})"><path d="M5 29 C3 22 8 17 17 17 L28 16 Q31 16 31 18.8 Q31 21.6 28 21.6 L18 22.4 C13 22.6 10 25 11 29.6 Q8 31.6 5 29Z" fill="#eab45a" ${K2}/>
+    <path d="M28 16 L35 12 L34 18.8 L35.4 25 L28 21.6Z" fill="#e2546e" ${K2}/><path d="M30 17.4 L33.6 15 M30 20.6 L33.8 22.4" stroke="#b83a52" stroke-width="1"/>
+    ${[[7,26],[9,22.4],[13,19.6],[18,18.6],[23,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.5" fill="#f6d08a" stroke="#c98a32" stroke-width=".8"/>`).join("")}<path d="M7.4 22.6 Q10 18.8 15.6 18.2" fill="none" stroke="#fbe6b4" stroke-width="1.3" stroke-linecap="round"/></g>`).join(""),
+  sushi:kySushiSVG("sto"),
+  dorayaki:`<ellipse cx="20" cy="33.4" rx="16" ry="3.4" fill="#fff" stroke="#e6d3c4" stroke-width="1.4" stroke-dasharray="2.4 1.6"/>
+    <path d="M5 27 Q5 32 20 32 Q35 32 35 27 Q35 24 20 24 Q5 24 5 27Z" fill="#c9783a" ${K}/><path d="M6 24.6 Q20 27.6 34 24.6 L34 22 Q20 25 6 22Z" fill="#7a3a3a" ${K2}/>
+    <path d="M5 19.6 Q5 12 20 12 Q35 12 35 19.6 Q35 23.4 20 23.4 Q5 23.4 5 19.6Z" fill="#d98a42" ${K}/><path d="M8 18 Q12 14 20 14" fill="none" stroke="#f2b46a" stroke-width="2" stroke-linecap="round"/><path d="M8 20.4 Q20 22.4 32 20.4" fill="none" stroke="#a65a24" stroke-width="1.2"/>`
+};
+
 /* ---------- dehors, derrière la vitre : la rue de maisons en bois, la pagode au loin, un cerisier ---------- */
 OUT.kyoto={sky:["#f6c6b4","#fde9d6"],hill:["#a9c79a","#93b585"],cloud:"#fff"};
 function outsideKy(){
