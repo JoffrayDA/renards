@@ -79,6 +79,7 @@ function photos(){bgCache.clear();
   const by={};for(const p of R.photos){if(INC[p.id]&&!incOf(p.id).found&&p.bowl!==undefined)continue;(by[p.id]=by[p.id]||[]).push(p)}
   const ids=Object.keys(by).sort((a,b)=>(R.fav[b]?1:0)-(R.fav[a]?1:0)||Math.max(...by[b].map(p=>p.t))-Math.max(...by[a].map(p=>p.t))); // les favoris d'abord
   const n=R.photos.length;
+  incoBack="photos";
   openSheet(`<h2>Album photos</h2><p class="sub">${n?`${n} photo${n>1?"s":""}. Touche l'appareil photo dans la scène, puis un renard.`:"Aucune photo pour l'instant. Touche l'appareil photo dans la scène, puis un renard. La gamelle prend aussi des photos de ses visiteurs."}</p>${incoCards()}${ids.length?`<h3 class="sec">Par renard</h3><div class="grid">${ids.map(id=>`<button class="card" data-pfold="${id}" type="button"><div class="pic ${RAR[FOX[id].rar].cls}">${foxArt(FOX[id],{expr:"joy",portrait:1})}</div><h3>${R.fav[id]?favStar(1)+" ":""}${nameOf(id)}</h3><p>${by[id].length} photo${by[id].length>1?"s":""}</p></button>`).join("")}</div>`:""}`);
 }
 function photoFolder(id){bgCache.clear();

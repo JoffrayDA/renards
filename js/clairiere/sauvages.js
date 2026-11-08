@@ -167,7 +167,8 @@ const canGuess=id=>{const s=R.inco[id];return !!s&&!s.found&&s.n>=3&&(s.lock!==s
 /* ---------- l'enquête ---------- */
 function incoCards(){const inc=INCO.filter(f=>(R.inco[f.id]||{}).n);if(!inc.length)return "";
   return `<h3 class="sec">Les inconnus de la forêt</h3><p class="sub">Chaque photo donne un indice. Dès trois, devine son prénom.</p><div class="grid">${inc.map(f=>{const s=R.inco[f.id];
-    return `<button class="card${s.found?"":" unseen"}" data-inco="${f.id}" type="button"><div class="pic shot">${s.found?foxArt(FOX[f.id]):photoSVG(R.photos.filter(p=>p.id===f.id).pop())}</div><h3>${s.found?f.name:"???"}</h3><p>${s.found?"Retrouvé !":`${Math.min(5,s.n)} indice${s.n>1?"s":""} sur 5${canGuess(f.id)?"<br><b>Tu peux deviner !</b>":""}`}</p></button>`}).join("")}</div>`}
+    return `<button class="card${s.found?"":" unseen"}" data-inco="${f.id}" type="button">${(ph=>s.found||!ph?`<div class="pic rare">${foxArt(FOX[f.id],{sil:!s.found})}</div>`:`<div class="pic shot">${photoSVG(ph)}</div>`)(R.photos.filter(p=>p.id===f.id).pop())}<h3>${s.found?f.name:"???"}</h3><p>${s.found?"Retrouvé !":`${Math.min(5,s.n)} indice${s.n>1?"s":""} sur 5${canGuess(f.id)?"<br><b>Tu peux deviner !</b>":""}`}</p></button>`}).join("")}</div>`}
+let incoBack="photos"; // la fiche d'un inconnu revient là où on l'a ouverte : l'album ou le carnet
 function incoSheet(id){const f=INC[id],s=incOf(id),ps=R.photos.filter(p=>p.id===id&&p.clue!=null).sort((a,b)=>a.clue-b.clue);
   let act;
   if(s.found)act=`<p>${f.bio}</p>`;
@@ -177,7 +178,7 @@ function incoSheet(id){const f=INC[id],s=incOf(id),ps=R.photos.filter(p=>p.id===
     +(s.n>=5?`<button class="btn ghost" data-ask="${id}" type="button">Demander à Petit Pois</button>`:"");
   const nx=s.n<5&&f.clues[s.n],w=nx&&whenTxt(nx);
   const tip=s.n<5?`<p class="sub">Prochaine photo : ${f.near?`près ${nearName(f.near)}, ou une gamelle de ${BOWLS[f.bowl].name.toLowerCase()}`:f.bowl==="tout"?"n'importe quelle gamelle":`une gamelle de ${BOWLS[f.bowl].name.toLowerCase()}`}${w?`, et seulement ${w}`:""}.</p>`:"";
-  openSheet(`<div class="foxhead"><div class="pic rare">${foxArt(FOX[id],{expr:"joy",portrait:1,sil:!s.found})}</div><div><h2>${s.found?f.name:"Un inconnu"}</h2><span class="chip rare">Sauvage</span></div></div>${act}${tip}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>Indice ${p.clue+1}</b>${f.clues[p.clue].txt}</figcaption></figure>`).join("")}</div>`,"photos")}
+  openSheet(`<div class="foxhead"><div class="pic rare">${foxArt(FOX[id],{expr:"joy",portrait:1,sil:!s.found})}</div><div><h2>${s.found?f.name:"Un inconnu"}</h2><span class="chip rare">Sauvage</span></div></div>${act}${tip}<div class="pgrid">${ps.map(p=>`<figure class="photo">${photoSVG(p)}<figcaption><b>Indice ${p.clue+1}</b>${f.clues[p.clue].txt}</figcaption></figure>`).join("")}</div>`,incoBack)}
 function guessInco(id,name){const f=INC[id],s=incOf(id);if(!canGuess(id))return;
   if(name!==f.name){s.lock=s.n;save();toast(`Il ne réagit pas à « ${name} ». Ce n'est pas ça.`);incoSheet(id);return}
   s.found=1;R.glands+=20;bip("cheer");save();renderHud();closeSheet();
