@@ -309,7 +309,7 @@ const MUSIC=(()=>{
         for(let i=0;i<16;i++)I.taiko(t+i*B/4,(.05+(b%2?i:0)*.012)*(lift?1.3:1),220,.06);
         [.5,1.5,2.75].forEach(x=>I.ka(t+x*B,.13));if(b===3||b===7)[2,2.5,3,3.25,3.5,3.75].forEach((x,i)=>I.taiko(t+x*B,.3+i*.06,80+i*10,.4));
         melody((m,tt,d)=>{I.flute(m,tt,d*.96,.075,.07);if(lift)I.fue(m+12,tt,d,.035)},this.mel,b,t,B)}},
-    taiko6:{name:"F · L'assaut",bpm:172,beats:4,bars:8,intro:6,introBar(i,t,B){const H=[[0],[0],[0,1],[0,1],[0,.75,1.5],[0,.5,1,1.5]][i];
+    taiko6:{name:"F · L'assaut",bpm:162,beats:4,bars:8,intro:6,introBar(i,t,B){const H=[[0],[0],[0,1],[0,1],[0,.75,1.5],[0,.5,1,1.5]][i];
         H.forEach(x=>I.taiko(t+x*B,.7,48,1.4));I.pad([38,45,50],t,B*4,.012+i*.006);
         if(i===5){for(let k=0;k<8;k++)I.taiko(t+(2+k/4)*B,.18+k*.06,90+k*8,.25);I.brass(62,t+3.5*B,B*.5,.06);I.brass(50,t+3.5*B,B*.5,.06)}},
       ch:[[50,57,62],[51,58,63],[50,57,62],[46,53,58],[50,57,62],[51,58,63],[55,62,67],[50,57,62]],
