@@ -1,7 +1,7 @@
 /* Musique du Kitsune Café, partagée par les trois pages. Tout est synthétisé (Web Audio) : aucun fichier, aucune licence.
    Chaque page dit quel morceau elle veut (MUSIC.want) ; il démarre au premier toucher (règle des navigateurs).
    Un bouton [data-sound] coupe ou remet le son, choix mémorisé dans localStorage « renards-son ».
-   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza, tarantella et polka (Petite Italie), musette et galop (Paris), torii, matsuri et taiko (Kyoto), lofi (en réserve). */
+   Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza, tarantella et polka (Petite Italie), musette et galop (Paris), torii, matsuri et taiko (Kyoto : la carte, la fête, les tambours de guerre), lofi (en réserve). */
 const MUSIC=(()=>{
   // Un jeu ouvert dans l'accueil (iframe) n'a pas son propre son : il pilote la musique de l'accueil, qui a déjà eu
   // son toucher de départ et continue de jouer d'une page à l'autre. Le bouton maison referme le jeu.
@@ -61,6 +61,10 @@ const MUSIC=(()=>{
     clap(t,v=.1){[0,.012,.025].forEach(o=>{const bp=filt("bandpass",1300,1),g=gain(t+o,.001,v,.08);noiseSrc(t+o,t+o+.12).connect(bp);bp.connect(g);out(g,.3)})},
     wood(t,v=.12){const g=gain(t,.001,v,.07);osc("sine",880,t,t+.1).connect(g);const g2=gain(t,.001,v*.5,.04);osc("sine",1420,t,t+.08).connect(g2);g2.connect(g);out(g,.2)},
     // cuivres (le thème de la bande) : deux dents de scie, le filtre s'ouvre à l'attaque
+    // taiko (Kyoto, 08/11/2026, Joffray : « des gros tambours comme si c'était la guerre ») : le fût grave qui résonne, et le coup de baguette
+    taiko(t,v=.5,f=62,d=.7){const o=osc("sine",f*2.2,t,t+d+.2);o.frequency.exponentialRampToValueAtTime(f,t+.09);const g=gain(t,.002,v,d);o.connect(g);out(g,.18);
+      const o2=osc("triangle",f*3.1,t,t+.25);o2.frequency.exponentialRampToValueAtTime(f*1.4,t+.12);const g2=gain(t,.002,v*.35,.18);o2.connect(g2);out(g2,.1);
+      const lp=filt("lowpass",900),g3=gain(t,.001,v*.55,.06);noiseSrc(t,t+.1).connect(lp);lp.connect(g3);out(g3,.15)},
     brass(m,t,dur,v=.07){const f=hz(m),lp=filt("lowpass",700,2);lp.frequency.setValueAtTime(700,t);lp.frequency.linearRampToValueAtTime(2800,t+.04);lp.frequency.exponentialRampToValueAtTime(1300,t+.25);
       const g=C.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.025);g.gain.setValueAtTime(v*.8,t+Math.max(.05,dur-.05));g.gain.linearRampToValueAtTime(0,t+dur+.06);
       [-8,8].forEach(dt=>osc("sawtooth",f,t,t+dur+.1,dt).connect(lp));lp.connect(g);out(g,.15)},
@@ -212,22 +216,35 @@ const MUSIC=(()=>{
         [c[0]+12,c[1]+12,c[2]+12,c[1]+12,c[0]+24,c[2]+12,c[1]+12,c[2]+12].forEach((m,i)=>{I.pluck(m,t+i*B/2,.045,1,2600);I.harp(m+12,t+i*B/2,.018)});
         I.bass(c[0]-12,t,B*3.5,.14);I.pad(c.map(x=>x+12),t,B*4,.018);
         melody((m,tt,d)=>I.flute(m,tt,d*.95,.07,.04),this.mel,b,t,B)}},
-    matsuri:{name:"Matsuri",bpm:140,beats:4,bars:8,
-      ch:[[50,57,62],[55,62,67],[57,64,69],[50,57,62],[55,62,67],[50,57,62],[52,59,64],[57,64,69]],
-      mel:[[[74,.5],[76,.5],[79,1],[76,.5],[74,.5],[71,1]],[[69,.5],[71,.5],[74,1],[76,2]],[[79,.5],[81,.5],[83,1],[81,.5],[79,.5],[76,1]],[[74,2],[null,1],[69,.5],[71,.5]],
-           [[74,.5],[76,.5],[79,.5],[81,.5],[83,1],[81,1]],[[79,1],[76,.5],[74,.5],[76,2]],[[71,.5],[74,.5],[76,1],[79,.5],[76,.5],[74,1]],[[74,3],[null,1]]],
+    // le Matsuri, refait le 08/11/2026 (Joffray : « tu peux l'améliorer ») : la fête de quartier, flûte qui sautille (sol majeur pentatonique),
+    // cloche « chan-chiki » sur les contretemps, tambour, battements de mains, shamisen qui gratte en doubles croches, question-réponse
+    matsuri:{name:"Matsuri",bpm:150,beats:4,bars:8,
+      ch:[[55,62,67],[52,59,64],[55,62,67],[50,57,62],[55,62,67],[52,59,64],[50,57,62],[55,62,67]],
+      mel:[[[79,.5],[81,.5],[83,.5],[81,.5],[79,1],[76,1]],[[74,.5],[76,.5],[79,1],[76,.5],[74,.5],[71,1]],
+           [[79,.5],[81,.5],[83,.5],[86,.5],[88,1],[86,1]],[[83,1],[81,.5],[79,.5],[81,2]],
+           [[86,.5],[88,.5],[86,.5],[83,.5],[81,1],[79,1]],[[76,.5],[79,.5],[81,1],[83,1],[81,1]],
+           [[79,.5],[76,.5],[74,.5],[76,.5],[79,1],[81,.5],[83,.5]],[[79,2],[null,1],[74,.5],[76,.5]]],
       bar(b,t,B){const c=this.ch[b];
-        [0,1.5,2].forEach(x=>I.kick(t+x*B,.4));I.clap(t+3*B,.05);for(let i=0;i<8;i++)I.marimba(i%2?91:96,t+i*B/2,i%2?.03:.05);
-        [.5,1.5,2.5,3.5].forEach(x=>c.forEach((m,i)=>I.pluck(m+12,t+x*B+i*.01,.035,.22,4200)));I.bass(c[0]-12,t,B*.9,.2);I.bass(c[2]-12,t+2*B,B*.9,.16);
-        melody((m,tt,d)=>{I.flute(m,tt,d*.92,.06,.03);I.pluck(m,tt,.03,.3,4400)},this.mel,b,t,B)}},
-    taiko:{name:"Les tambours taiko",bpm:120,beats:4,bars:8,
-      ch:[[50,57,62],[55,62,67],[57,64,69],[52,59,64],[50,57,62],[55,62,67],[52,59,64],[50,57,62]],
-      mel:[[[62,1],[64,.5],[67,.5],[69,1],[67,1]],[[71,1],[69,1],[67,2]],[[69,1],[71,.5],[74,.5],[76,1],[74,1]],[[71,3],[null,1]],
-           [[74,1],[76,.5],[74,.5],[71,1],[69,1]],[[67,1],[69,1],[71,2]],[[69,1],[67,.5],[64,.5],[62,1],[64,1]],[[62,3],[null,1]]],
-      bar(b,t,B){const c=this.ch[b];
-        [0,1.5,2,3].forEach((x,i)=>I.kick(t+x*B,i?.36:.48));[1,3].forEach(x=>I.clap(t+x*B,.035));for(let i=0;i<4;i++)I.marimba(94,t+i*B+B/2,.035);
-        I.bass(c[0]-12,t,B*1.8,.2);I.bass(c[1]-12,t+2*B,B*1.8,.16);[0,2].forEach(x=>c.forEach((m,i)=>I.pluck(m+12,t+x*B+i*.03,.03,.8,2400)));
-        melody((m,tt,d)=>{I.pluck(m+12,tt,.075,Math.max(.5,d*1.2),3000);I.harp(m+24,tt,.02)},this.mel,b,t,B)}},
+        [0,1.5,2,2.75].forEach((x,i)=>I.taiko(t+x*B,i?.26:.36,82,.35));[1,3].forEach(x=>I.clap(t+x*B,.07));
+        [.5,1.5,2.5,3.5].forEach(x=>{I.box(100,t+x*B,.05,.25);I.box(96,t+x*B+B/4,.03,.2)});
+        for(let i=0;i<8;i++){const m=[c[0],c[2],c[1],c[2]][i%4]+12;I.pluck(m,t+i*B/2,.04,.16,4600);I.pluck(m+12,t+i*B/2+B/4,.02,.1,5000)}
+        I.bass(c[0]-12,t,B*.45,.24);I.bass(c[0]-12,t+B,B*.45,.2);I.bass(c[2]-12,t+2*B,B*.45,.22);I.bass(c[1]-12,t+3*B,B*.45,.2);
+        melody((m,tt,d)=>{I.flute(m,tt,d*.9,.075,.02);if(d>=1)I.flute(m+12,tt+.03,.08,.02,.01)},this.mel,b,t,B)}},
+    // les tambours de guerre, refaits le 08/11/2026 (Joffray : « trop lent ! mets des gros tambours comme si c'était la guerre ») : 168 bpm,
+    // gamme miyako-bushi (ré, mi bémol, sol, la, si bémol), gros taiko, roulements, shamisen en ostinato, flûte et cuivres à l'unisson
+    taiko:{name:"Les tambours de guerre",bpm:168,beats:4,bars:8,
+      ch:[[50,57,62],[50,57,62],[46,53,58],[50,57,62],[55,62,67],[46,53,58],[48,55,63],[50,57,62]],
+      mel:[[[74,1],[75,.5],[74,.5],[70,1],[69,1]],[[67,1.5],[69,.5],[70,1],[74,1]],[[75,1],[74,.5],[70,.5],[69,1],[67,1]],[[62,3],[null,1]],
+           [[74,.5],[75,.5],[79,1],[81,1],[82,1]],[[81,1],[79,.5],[75,.5],[74,2]],[[70,1],[69,.5],[67,.5],[69,1],[70,1]],[[74,3],[null,1]]],
+      bar(b,t,B){const c=this.ch[b],fill=b===3||b===7;
+        // le gros fût : DON, don-DON, DON ; la caisse claire en bois qui claque ; un roulement qui monte à la fin des phrases
+        [0,1.5,2,3].forEach((x,i)=>I.taiko(t+x*B,i===0||i===2?.62:.45,52,.9));
+        for(let i=0;i<8;i++)I.taiko(t+i*B/2,i%2?.09:.14,150,.12);
+        [1,3].forEach(x=>{I.snare(t+x*B,.12);I.clap(t+x*B,.05)});
+        if(fill)[3,3.25,3.5,3.75].forEach((x,i)=>I.taiko(t+x*B,.3+i*.1,70+i*12,.4));
+        for(let i=0;i<8;i++)I.pluck([c[0],c[0],c[2],c[0]][i%4]+12,t+i*B/2,.05,.14,3600);
+        I.bass(c[0]-12,t,B*1.8,.26);I.bass(c[0]-12,t+2*B,B*1.8,.24);I.pad(c,t,B*4,.02);
+        melody((m,tt,d)=>{I.flute(m,tt,d*.92,.07,.05);I.brass(m-12,tt,d*.85,.05)},this.mel,b,t,B)}},
     // … et « Bonjour Paris », une chanson qui sautille : piano, accordéon en réponse (ré majeur)
     bonjour:{name:"Bonjour Paris",bpm:132,beats:4,bars:8,
       ch:[[50,54,57],[55,59,62],[57,61,64],[50,54,57],[55,59,62],[50,54,57],[52,55,59],[57,61,64,67]],
