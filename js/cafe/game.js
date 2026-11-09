@@ -25,7 +25,7 @@ function newDay(d){
     for(const id of WD().sumo[d]){const sp=freeSpot(),pat=G.cfg.pat*patMult()*1.3;G.cust.push({id:++uid,fox:id,spot:sp,order:sumoOrder(),pat,patMax:pat,state:"walkin",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:""});S.seen[id]=(S.seen[id]||0)+1}}
   // à Paris, les jours de défi : le score de Firmin, à battre (paris.js)
   if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
-  $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
+  $("closed").hidden=true;closeMap();renderDecor();dirty=true;(MUSIC.again||MUSIC.want)(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
 function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0))))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}

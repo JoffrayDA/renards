@@ -13,7 +13,7 @@ const MUSIC=(()=>{
       const a=e.target.closest("a.home");if(a){e.preventDefault();host.closeGame()}});
     const st=document.createElement("style");st.textContent=H.css;document.head.appendChild(st);
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-    return{want:id=>H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),sfx:(k,n)=>H.sfx&&H.sfx(k,n),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
+    return{want:id=>H.want(id),again:id=>H.again?H.again(id):H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),sfx:(k,n)=>H.sfx&&H.sfx(k,n),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
   }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
   const MUSIC_GREL="B"; // le grelot choisi par Joffray (sfx, plus bas)
@@ -648,6 +648,8 @@ const MUSIC=(()=>{
   let on=true,wanted=null,unlocked=false;
   try{on=localStorage.getItem(SKEY)!=="0"}catch(e){}
   function want(id){wanted=id;if(unlocked&&on&&cur!==id)play(id)}
+  // relancer depuis le début, même si ce morceau joue déjà (une nouvelle journée du Café, Joffray : « la musique ne se relance pas »)
+  function again(id){wanted=id;if(unlocked&&on)play(id)}
   // le son n'est permis qu'après un vrai toucher (doigt relevé, clic ou touche) : pas sur « pointerdown » au doigt
   // iPhone (06/11/2026, la copine de Joffray n'avait aucun son) : en mode silencieux, iOS coupe le Web Audio ;
   // la session « playback » le laisse passer (iOS 16.4+), sinon un petit <audio> muet joué au toucher fait pareil.
@@ -673,7 +675,7 @@ const MUSIC=(()=>{
   const css=".snd{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fffaf2;border:2px solid #ead9cc;box-shadow:0 3px 0 #ead9cc;flex:none;cursor:pointer;padding:0;touch-action:manipulation}.snd svg{display:block}";
   st.textContent=css;document.head.appendChild(st);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-  return{play,stop,volume,want,setOn,paint,icon,css,unlock,jingle,jingleEnd,note,sfx,tracks:TRACKS,get current(){return cur},get on(){return on}};
+  return{play,stop,volume,want,again,setOn,paint,icon,css,unlock,jingle,jingleEnd,note,sfx,tracks:TRACKS,get current(){return cur},get on(){return on}};
 })();
 // visible par les jeux ouverts dans le cadre de l'accueil (une const n'est pas une propriété de window)
 window.MUSIC=MUSIC;
