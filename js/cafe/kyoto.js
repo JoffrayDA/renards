@@ -321,7 +321,10 @@ function yuzuIntro(){
 }
 function kyScenes(done){
   const d=Object.keys(KY_SCENES).map(Number).find(kySceneDue);
-  if(d){itTalk(KY_SCENES[d],()=>{S.ky.read[d]=1;if(d===19)toast("Sensei Hōji viendra maintenant au Shokudō.");save();kyScenes(done)});return}
+  if(d){itTalk(KY_SCENES[d],()=>{S.ky.read[d]=1;if(d===19)toast("Sensei Hōji viendra maintenant au Shokudō.");save();
+    // après la scène du jour 25, le défilé du Matsuri (matsuri.js), une seule fois
+    if(d===25&&!S.ky.parade){S.ky.parade=1;save();kyParade(()=>kyScenes(done));return}
+    kyScenes(done)});return}
   done();
 }
 function kyStory(){kyScenes(()=>{renderMapIt();dailyBonus()})}
@@ -332,6 +335,7 @@ function kyCarnet(){
   openSheet(`<h2>Le carnet du Matsuri</h2><div style="width:120px;margin:0 auto">${foxSVG(FOX.yuzu,{pose:"happy"})}</div>
   <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis ton arrivée au Kitsune Shokudō. Touche une scène pour la revoir.</p>${rows}
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="kyreset" type="button">Recommencer Kyoto depuis le jour 1</button></div>
+  ${S.ky.read[25]?`<div class="col" style="margin-top:10px"><button class="btn wide" data-act="kyparade" type="button">Revoir le défilé du Matsuri</button></div>`:""}
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="yuzuintro" type="button">Revoir l'accueil de Yuzu</button></div>`);
   $("sheet-in").querySelectorAll("[data-kyscene]").forEach(b=>b.onclick=()=>itTalk(KY_SCENES[+b.dataset.kyscene],kyCarnet));
 }

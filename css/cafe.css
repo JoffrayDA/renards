@@ -463,3 +463,46 @@ button.home{padding:0;cursor:pointer}
 .wcard.soon b{font-family:var(--display);font-weight:400;font-size:16px;color:var(--ink-soft)}
 .wcard.soon small{font-size:13px;color:var(--ink-soft);font-weight:700}
 @media (min-width:700px){.wlist{max-width:720px;grid-template-columns:1fr 1fr}.wcard.soon{grid-column:1/-1}}
+
+/* le défilé du Matsuri (js/cafe/matsuri.js) */
+#kyparade{--u:1vmin;position:fixed;inset:0;z-index:40;overflow:hidden;background:#140f33;cursor:pointer;animation:hi-in .5s ease-out}
+#kyparade.kp-out{opacity:0;transition:opacity .4s}
+@media (orientation:portrait){#kyparade{--u:1.5vmin}}
+.kp-world{position:absolute;inset:0}
+#kyparade.kp-quake .kp-world{animation:kp-quake .32s ease-out}
+@keyframes kp-quake{0%{transform:translate(0,0)}25%{transform:translate(-3px,4px)}50%{transform:translate(3px,-2px)}75%{transform:translate(-1px,2px)}100%{transform:none}}
+.kp-bg{position:absolute;inset:0;width:100%;height:100%}
+.kp-star{animation:kp-twinkle 2.4s ease-in-out infinite;opacity:0}
+@keyframes kp-twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+.kp-lan{opacity:.18;animation:kp-light .5s ease-out forwards}
+@keyframes kp-light{0%{opacity:.18}60%{opacity:1;filter:brightness(1.6)}100%{opacity:1}}
+.kp-road{position:absolute;left:0;right:0;bottom:9%;height:0}
+.kp-m{position:absolute;left:0;bottom:0;width:var(--w);transform:translateX(calc(-1 * var(--w) - 4vw));animation:kp-cross linear forwards}
+@keyframes kp-cross{to{transform:translateX(104vw)}}
+.kp-w{position:relative;aspect-ratio:1}
+.kp-f{position:absolute;inset:0}.kp-f svg{width:100%;height:100%;overflow:visible}
+.kp-step{animation:kp-bob .38s ease-in-out infinite alternate}
+@keyframes kp-bob{from{transform:translateY(0)}to{transform:translateY(-4%)}}
+.kp-hop{animation:kp-hop .38s ease-out infinite alternate}
+@keyframes kp-hop{from{transform:translateY(0)}to{transform:translateY(-12%)}}
+.kp-ninja{animation:kp-ninja .76s infinite}
+@keyframes kp-ninja{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-70%) rotate(-8deg)}55%{transform:translateY(-70%) rotate(8deg)}}
+.kp-heavy{animation:kp-heavy .76s ease-in infinite}
+@keyframes kp-heavy{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-5%) rotate(-3deg)}50%{transform:translateY(0) rotate(0)}75%{transform:translateY(-5%) rotate(3deg)}}
+.kp-pair{display:flex;align-items:flex-end;gap:0}
+.kp-load{position:absolute;left:4%;right:4%;bottom:62%;z-index:2;animation:kp-heavy .76s ease-in infinite}
+.kp-mik{width:100%;display:block}
+.kp-kyubi{filter:drop-shadow(0 0 3vmin rgba(255,230,160,.85));animation:kp-bob .76s ease-in-out infinite alternate}
+.kp-crane{position:absolute;left:30%;bottom:80%;width:7vmin;opacity:0;animation:kp-crane 3.4s ease-out forwards}
+.kp-crane svg{width:100%}
+@keyframes kp-crane{0%{opacity:0;transform:translate(0,0) rotate(-10deg)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-55vh) rotate(14deg)}}
+.kp-petal{position:absolute;top:-4%;width:10px;height:7px;border-radius:70% 0 70% 0;background:#f9c4d2;box-shadow:inset -1px -1px 0 #f2a8bc;opacity:0;animation:kp-petal linear forwards}
+@keyframes kp-petal{0%{opacity:0;transform:translate(0,0) rotate(0)}10%{opacity:1}100%{opacity:.9;transform:translate(var(--dx),105vh) rotate(540deg)}}
+.kp-fw{position:absolute;width:34vmin;margin:-17vmin 0 0 -17vmin;opacity:0;transform:scale(.1);animation:kp-fw 1.6s ease-out forwards}
+@keyframes kp-fw{0%{opacity:1;transform:scale(.1)}55%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15) translateY(3vmin)}}
+.kp-title{position:absolute;left:0;right:0;top:15%;text-align:center;opacity:0;animation:kp-title 1s cubic-bezier(.3,1.5,.5,1) 21.4s forwards;pointer-events:none}
+.kp-title b{display:block;font-family:"Mochiy Pop One",sans-serif;font-weight:400;font-size:min(16vmin,92px);color:#fff3c8;letter-spacing:.04em;text-shadow:0 4px 0 #e0503c,0 8px 0 #5b4250,0 0 30px rgba(255,210,122,.7)}
+.kp-title span{display:inline-block;margin-top:10px;padding:4px 14px;border-radius:14px;background:rgba(91,66,80,.85);color:#fff;font-size:15px}
+@keyframes kp-title{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+.kp-tap{position:absolute;left:0;right:0;bottom:3%;text-align:center;color:#fff6dc;font-size:13px;opacity:0;animation:hi-in-kp .6s ease-out 23s forwards}
+@keyframes hi-in-kp{from{opacity:0}to{opacity:.85}}
