@@ -79,11 +79,13 @@ function renderKitchen(){
 }
 // Kyoto sur téléphone : la salle garde sa hauteur normale s'il y a la place, et ne s'aplatit que de ce qui dépasse
 // (09/11/2026, Joffray : avec les deux fours, la salle aplatie d'office laissait du vide en bas et devenait trop petite)
-function fitScene(){const sc=$("scene"),k=$("kitchen");sc.style.height="";
+function fitScene(){const sc=$("scene"),k=$("kitchen");sc.style.height="";sc.classList.remove("short");
   if(!k.classList.contains("gel2")||innerWidth>520)return;
   const w=sc.clientWidth,full=w*5/7;sc.style.height=full+"px";
   const over=document.documentElement.scrollHeight-innerHeight;
-  if(over>0)sc.style.height=Math.max(w*.5,full-over)+"px"}
+  if(over>0){const h=Math.max(w*.5,full-over);sc.style.height=h+"px";
+    // salle aplatie : les clients s'assoient plus bas derrière le comptoir, sinon les grosses commandes sortaient par le haut (Joffray, 09/11/2026)
+    if(h<full-6)sc.classList.add("short")}}
 addEventListener("resize",()=>{if($("kitchen").classList.contains("gel2"))fitScene()});
 function updateBars(){
   if(!G||!G.run)return;

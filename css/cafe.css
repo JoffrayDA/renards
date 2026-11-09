@@ -168,6 +168,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .hint:empty{display:none}
 /* au téléphone, pas de trait qui tremble sur les clients : ils bougent sans cesse et le filtre #wobble était recalculé à chaque image
    (le jeu ramait et la musique grésillait à Kyoto, 09/11/2026) ; le décor, immobile, le garde */
+.scene.short .cust{bottom:28%}.scene.short .bub{bottom:76%}.scene.short .oi{width:26px}.scene.short .oi-row{max-width:58px}
 @media (pointer:coarse){#custs [filter="url(#wobble)"],#helper [filter="url(#wobble)"]{filter:none}}
 #htoast{position:absolute;inset:auto auto 8px 50%;height:auto;transform:translate(-50%,6px);z-index:30;width:max-content;max-width:92%;box-sizing:border-box;padding:6px 12px;border-radius:14px;background:rgba(91,66,80,.93);color:#fff;font-size:13px;line-height:1.3;text-align:center;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s}
 #htoast.on{opacity:1;transform:translate(-50%,0)}
