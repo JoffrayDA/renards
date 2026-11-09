@@ -30,7 +30,7 @@ onTap($("kitchen"),e=>{const b=e.target.closest("button");if(!b||!G||!G.run)retu
   if(b.dataset.cone2!==undefined){if(G.cone2){G.cone2="";dirty=true}else hint(WD().gel2.coneHint);return}
   if(b.dataset.st)tapStation(b.dataset.st,b);else if(b.dataset.bake)bake(b.dataset.bake);
   else if(b.dataset.oven!==undefined){const o=G.ovens[+b.dataset.oven||0];if(o.state==="ready")unload(+b.dataset.oven||0);else if(o.state==="idle")hint("Touche une <b>pâtisserie</b> pour lancer une fournée.")}
-  else if(b.dataset.pa){const k=b.dataset.pa;if(G.vit[k])fromVit(k,b);else if(ovenIdle())bake(k);else{shake(b);hint(ovenReady()?"<b>Touche le four</b> pour sortir la fournée d'abord.":G.ovens.length>1?"Les deux fours sont occupés : attends la fin d'une cuisson.":"Le four est occupé : attends la fin de la cuisson.")}}});
+  else if(b.dataset.pa){const k=b.dataset.pa,o=ovenFor(k);if(G.vit[k])fromVit(k,b);else if(o.state==="idle")bake(k);else{shake(b);const n=G.ovens.length>1?` ${ovenOf(k)+1}`:"";hint(o.state==="ready"?`<b>Touche le four${n}</b> pour sortir la fournée d'abord.`:`Le four${n} est occupé : attends la fin de la cuisson.`)}}});
 onTap($("tray"),e=>{const p=e.target.closest("[data-opt]");if(p&&G&&G.run){applyOpt(p.dataset.opt,p);return}
   const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;const i=+b.dataset.tray,now=performance.now();
   if(G.pick&&G.pick.until>now){const o=G.pick.o;G.pick=null;if(optFits(o).includes(i))applyOpt(o,b,i);dirty=true;return}

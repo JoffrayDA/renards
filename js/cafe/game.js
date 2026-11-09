@@ -145,8 +145,10 @@ function scoop2(f){
   if(G.cone2.length===2&&G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}
   G.cone2+=f;bip("plic",G.cone2.length*3);if(G.cone2.length===3){G.tray.push("dango~"+G.cone2);G.popI=G.tray.length-1;G.cone2="";G.arm=null}dirty=true;
 }
-// une fournée part dans le premier four libre ; on sort la fournée d'un four (i), ou du premier qui est prêt
+// chaque four a sa rangée de vitrine (Kyoto, 09/11/2026, Joffray : « le four 1 pour les plats 1, 2, 3, le four 2 pour les autres ») :
+// WD().ovenOf[k] dit quel four cuit k ; avec un seul four, il cuit tout. On sort la fournée d'un four (i), ou du premier qui est prêt.
+const ovenOf=k=>G.ovens.length>1&&WORLD&&WD().ovenOf?WD().ovenOf[k]||0:0,ovenFor=k=>G.ovens[ovenOf(k)];
 const ovenIdle=()=>G.ovens.find(o=>o.state==="idle"),ovenReady=()=>G.ovens.find(o=>o.state==="ready");
-function bake(k){const o=ovenIdle();if(!o)return;bip("tap");Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
+function bake(k){const o=ovenFor(k);if(o.state!=="idle")return;bip("tap");Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
 function unload(i){const o=i!=null?G.ovens[i]:ovenReady();if(!o||o.state!=="ready")return;G.vit[o.r]=Math.min(OWN().four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";bip("pop",-3);dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;bip("pop");G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}

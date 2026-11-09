@@ -2,10 +2,11 @@
    refait le 09/11/2026 en vrai défi de fin (Joffray : « faut que ça se complique ! ») : 25 journées plus dures, la petite cantine
    de Yuzu, le Kitsune Shokudō, et le menu le plus riche du jeu, choisi avec Joffray :
    - boissons : matcha (+ Lait = matcha latte), ramune, hōjicha (+ Crème) ;
-   - au four, en vitrine : onigiri, tempura de crevettes, taiyaki, mochi fraise, dorayaki (+ Crème), avec DEUX fours dès le jour 8
+   - au four, en vitrine : onigiri, tempura de crevettes, taiyaki, mochi fraise, dorayaki (+ Crème), avec DEUX fours dès le jour 14
      (WD().ovens), chacun en tête d'une rangée de vitrine ;
    - à composer, sur DEUX comptoirs : la brochette de dango (sakura, blanc, matcha, de bas en haut, recette « dango », WD().gel2)
-     et le plateau de sushis (saumon, thon, tamago, de gauche à droite, la clé « smoothie » comme le gelato).
+     et le plateau de sushis (saumon, maki au concombre, tamago, de gauche à droite, la clé « smoothie » comme le gelato).
+     Le premier four cuit onigiri, tempura et taiyaki, le deuxième (dès le jour 14, avec le mochi) mochi et dorayaki (WD().ovenOf).
    On commence avec deux boissons et deux plats (Joffray : « les gens comprennent maintenant »), le reste se gagne (KY_REC).
    Taiyaki, mochi et dango sont des recettes propres au quartier (REC avec w:"kyoto", data.js).
    Histoire (choix de Joffray) : le Matsuri. Yuzu monte une équipe pour le stand du festival d'été ; à chaque étape, un renard
@@ -29,7 +30,7 @@ const KYF_REG=KYF.filter(f=>f.rar==="commun");
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde, de 24 à 40, puis au-delà (hard : plus de clients, plus serrés, moins patients) ;
 // graine et objectif par `python tools/balance-bot.py --kyoto`
-const KY_DAYS=[{base:24,seed:8,goal:186},{base:25,seed:3,goal:199},{base:26,seed:0,goal:204},{base:27,seed:12,goal:222},{base:28,seed:2,goal:234},{base:29,seed:2,goal:247},{base:30,seed:1,goal:256},{base:31,seed:13,goal:301},{base:32,seed:12,goal:282},{base:33,seed:8,goal:342},{base:34,seed:13,goal:362},{base:35,seed:12,goal:367},{base:36,seed:4,goal:375},{base:37,seed:2,goal:383},{base:38,seed:14,goal:385},{base:39,seed:5,goal:384},{base:40,seed:7,goal:409},{base:40,hard:1.05,seed:2,goal:437},{base:40,hard:1.1,seed:7,goal:453},{base:40,hard:1.15,seed:12,goal:474},{base:40,hard:1.2,seed:12,goal:497},{base:40,hard:1.25,seed:2,goal:524},{base:40,hard:1.3,seed:12,goal:552},{base:40,hard:1.35,seed:14,goal:551},{base:40,hard:1.4,seed:6,goal:561}];
+const KY_DAYS=[{base:24,seed:8,goal:186},{base:25,seed:3,goal:199},{base:26,seed:0,goal:204},{base:27,seed:12,goal:222},{base:28,seed:2,goal:234},{base:29,seed:2,goal:247},{base:30,seed:1,goal:256},{base:31,seed:13,goal:294},{base:32,seed:5,goal:299},{base:33,seed:15,goal:333},{base:34,seed:11,goal:364},{base:35,seed:12,goal:365},{base:36,seed:7,goal:386},{base:37,seed:9,goal:385},{base:38,seed:10,goal:405},{base:39,seed:5,goal:413},{base:40,seed:2,goal:418},{base:40,hard:1.05,seed:9,goal:442},{base:40,hard:1.1,seed:12,goal:482},{base:40,hard:1.15,seed:12,goal:509},{base:40,hard:1.2,seed:0,goal:539},{base:40,hard:1.25,seed:3,goal:565},{base:40,hard:1.3,seed:3,goal:581},{base:40,hard:1.35,seed:14,goal:592},{base:40,hard:1.4,seed:0,goal:597}];
 const KY_S3=Array(KY_DAYS.length).fill(1.7);
 // l'équipement prévu pour chaque journée : celui de l'Italie, étalé sur 25 journées
 const KY_KIT=IT_KIT.map(([k,n,d])=>[k,n,Math.max(1,Math.round(d*1.25))]);
@@ -72,9 +73,12 @@ Object.assign(ICON,{
 });
 
 /* ---------- les idées de Joffray (08/11/2026), au menu depuis le 09/11/2026 : onigiri, tempura de crevettes, plateau de sushis, dorayaki ---------- */
-const KY_SUSHI={s:{n:"Saumon",c:"#f6a06a"},t:{n:"Thon",c:"#e0505a"},o:{n:"Tamago",c:"#f7d77a"}};
+// saumon (orange, rayé de blanc), maki au concombre (rond, algue noire, cœur vert), tamago (jaune, bande d'algue) :
+// le thon rouge ressemblait trop au saumon en petit (Joffray, 09/11/2026), le maki change de couleur ET de forme
+const KY_SUSHI={s:{n:"Saumon",c:"#f8935e"},t:{n:"Maki",c:"#7cc45a"},o:{n:"Tamago",c:"#ffd84a"}};
 // un sushi (nigiri) : le riz, et le poisson ou l'omelette dessus ; le tamago a sa bande d'algue
-const nigiriSVG=(x,y,k,top)=>`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fffaf6" ${K2}/>`+(top==="o"
+const nigiriSVG=(x,y,k,top)=>top==="t"?`<ellipse cx="${x}" cy="${y+1.4*k}" rx="${6.8*k}" ry="${6.4*k}" fill="#2f3a32" ${K2}/><ellipse cx="${x}" cy="${y+.6*k}" rx="${5*k}" ry="${4.4*k}" fill="#fffaf6"/><circle cx="${x}" cy="${y+.6*k}" r="${2.4*k}" fill="#7cc45a" ${K2}/>`
+  :`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fffaf6" ${K2}/>`+(top==="o"
   ?`<rect x="${x-7.4*k}" y="${y-4*k}" width="${14.8*k}" height="${5.4*k}" rx="${2*k}" fill="#f7d77a" ${K2}/><rect x="${x-2*k}" y="${y-4.4*k}" width="${4*k}" height="${9.4*k}" fill="#2f3a32" ${K2}/>`
   :`<path d="M${x-7.6*k} ${y+1*k} Q${x-8*k} ${y-4.6*k} ${x} ${y-4.4*k} Q${x+8.4*k} ${y-4.4*k} ${x+7.6*k} ${y+1.4*k} Q${x} ${y+3*k} ${x-7.6*k} ${y+1*k}Z" fill="${KY_SUSHI[top].c}" ${K2}/>`
     +(top==="s"?[-3.6,0,3.6].map(a=>`<path d="M${x+a*k-1*k} ${y-3.6*k} q${1.6*k} ${2.4*k} ${1*k} ${4.6*k}" fill="none" stroke="#fff" stroke-width="${1.1*k}" opacity=".85"/>`).join(""):`<ellipse cx="${x-2.4*k}" cy="${y-2.6*k}" rx="${2.2*k}" ry="${.8*k}" fill="#fff" opacity=".55"/>`));
@@ -251,12 +255,14 @@ const KY_SCENES={
      ["origami","shy","Ce n'est pas moi. Moi, je plie. Je ne répare pas."],["yuzu","open","Un mystère…"]],
   7:[["yuzu","joy","Les dango ! Au Matsuri, c'est LA douceur : trois boules sur une brochette."],
      ["yuzu","open","Chaque client veut son ordre à lui : sakura, blanc, matcha… On les enfile de bas en haut. Raté ? Touche la brochette pour la vider."],
-     ["yuzu","surprise","Et j'ai fait installer un deuxième four ! Deux fournées à la fois… mais deux fois plus de choses à surveiller."]],
+     ["daifuku","joy","Trois petites boules sur un bâton… C'est moi en brochette !"]],
   9:[["kage","open","…"],["yuzu","surprise","Kyaa ! D'où tu sors, toi ?"],
      ["kage","shy","Je suis là depuis une heure. Les lanternes, c'est moi. Je peux aider… en silence."],["yuzu","joy","Kage, le renard ninja, rejoint l'équipe !"]],
   10:[["yuzu","joy","Les sushis ! Pour le Matsuri, ce sera notre grande spécialité : un plateau de trois."],
-      ["yuzu","open","Saumon, thon, tamago, chacun dans son ordre. On les pose de gauche à droite. Raté ? Touche le plateau pour le vider."],
-      ["daifuku","surprise","Deux comptoirs, deux fours… On est une vraie cantine, maintenant !"]],
+      ["yuzu","open","Saumon, maki, tamago, chacun dans son ordre. On les pose de gauche à droite. Raté ? Touche le plateau pour le vider."],
+      ["daifuku","surprise","Deux comptoirs à composer… On est une vraie cantine, maintenant !"]],
+  13:[["yuzu","joy","Le mochi fraise arrive au menu… avec un deuxième four, rien que pour lui et les douceurs !"],
+      ["yuzu","surprise","Le premier four cuit les onigiris, la tempura et les taiyakis ; le deuxième, les mochis et les dorayakis. Deux fournées à la fois… mais deux fours à surveiller !"]],
   14:[["hoji","open","Hmm. Alors c'est vous, la cantine qui veut servir du matcha au Matsuri."],["hoji","open","Je suis Hōji. Je sers le thé dans ce quartier depuis soixante ans."],
       ["yuzu","shy","Sensei… vous goûteriez le nôtre ?"],["hoji","surprise","… Pas mal. Revenez me voir quand il sera parfait."]],
   16:[["yuzu","joy","La crème ! Sur un hōjicha… et bientôt dans nos dorayakis."],["daifuku","joy","Je vérifie que c'est bon. … C'est bon."]],
@@ -300,7 +306,7 @@ function kyCarnet(){
 
 /* ---------- le quartier dans le registre des mondes (data.js) ---------- */
 WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Shokudō",short:"Shokudō",sv:()=>S.ky,days:KY_DAYS,s3:KY_S3,kit:KY_KIT,
-  recDays:KY_REC,ovens:d=>d>=8?2:1,
+  recDays:KY_REC,ovens:d=>d>=14?2:1,ovenOf:{croissant:0,cookie:0,taiyaki:0,mochi:1,gateau:1},
   opt:{lait:"Lait",chantilly:"Crème"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Matcha latte":`${REC[r].name} à la crème`,optWord:"la crème",optWords:{lait:"le lait",chantilly:"la crème"},
   optNews:{lait:"Touche « Lait », au bout du plateau, pour transformer un matcha en matcha latte."},
   // le plateau de sushis (clé « smoothie », comme le gelato)…
@@ -312,11 +318,12 @@ WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Shokudō",short:"Shokudō",s
   gel2:{t:KY_DANGO,svg:kyDangoSVG,tub:x=>ballSVG(20,21,KY_DANGO[x].c,12),label:"Une boule",cone:"la brochette",
     coneHint:"Touche les boules <b>dans l'ordre de la commande</b>, de bas en haut.",
     hint:g=>`Dango : touche les boules <b>dans l'ordre, de bas en haut</b> (${g.split("").map(x=>KY_DANGO[x].n.toLowerCase()).join(" › ")}). Raté ? Touche la brochette.`,
-    new:"Dès la prochaine journée, les dango, et un deuxième four ! Chaque client veut sa brochette dans son ordre : touche les boules de bas en haut."},
+    new:"Dès la prochaine journée, les dango ! Chaque client veut sa brochette dans son ordre : touche les boules de bas en haut."},
   optNew:"Touche « Crème », au bout du plateau, pour en mettre sur un hōjicha ou un dorayaki.",
   guest:"kyubi",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",
   reg:()=>[...KYF_REG,...KYF_REG,...KYF_REG,...(S.ky.read[19]?[FOX.hoji]:[])],
-  music:d=>d%2?"matsuri2":"taiko5", // choix de Joffray le 09/11/2026 : le Matsuri « plus rapide » et le grand odaiko (accéléré à 158 bpm)mapMusic:"torii",
+  // musique du service, choix de Joffray le 09/11/2026 : le Matsuri « plus rapide » et le grand odaiko (accéléré à 158 bpm)
+  music:d=>d%2?"matsuri2":"taiko5",mapMusic:"torii",
   isOpen:()=>kyOpen(),lockMsg:"Réussis les 20 journées de Paris pour ouvrir Kyoto.",
   layout:()=>kyLayout(),mapSVG:L=>kyMapSVG(L),outside:()=>outsideKy(),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.yuz.x,L.yuz.u)}" data-act="yuzu" type="button" aria-label="Yuzu">${foxSVG(FOX.yuzu,{pose:"happy"})}<em>Yuzu</em></button>`

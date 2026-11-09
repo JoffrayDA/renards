@@ -5,7 +5,8 @@
 import re, sys, pathlib
 
 # code après un « ; » ou une accolade, ou une déclaration collée au texte (« refugeconst s=… »)
-CODE = re.compile(r"(;|\{|\})\s*(const |let |var |if\(|for\(|return[ ;]|s\+=|[A-Za-z_$][\w$]*(\.[\w$]+)*\()|(const|let|var) [A-Za-z_$][\w$]*\s*=[^=]|s\+=`|\.push\(|=>")
+# 09/11/2026 : aussi une clé d'objet collée au commentaire (« …158 bpm)mapMusic:"torii", » : la carte de Kyoto n'avait plus de musique)
+CODE = re.compile(r"(;|\{|\})\s*(const |let |var |if\(|for\(|return[ ;]|s\+=|[A-Za-z_$][\w$]*(\.[\w$]+)*\()|(const|let|var) [A-Za-z_$][\w$]*\s*=[^=]|s\+=`|\.push\(|=>|[A-Za-z_$][\w$]*:(\"|`|\[|\{)")
 bad = 0
 for p in sorted(pathlib.Path("js").rglob("*.js")):
     for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):

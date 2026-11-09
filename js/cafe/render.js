@@ -61,13 +61,13 @@ function renderKitchen(){
     dr+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span><span class="slots">${sl.map((s,i)=>`<span class="sl${s.ready?" ready":""}"><i id="sp-${k}-${i}"></i></span>`).join("")}</span>`,`data-st="${k}" aria-label="${REC[k].name}${rd?", prêt":""}"`,rd?"rdy":"");
   }
   // les fours (deux à Kyoto à partir du jour 8 : chacun en tête d'une rangée de vitrine) ; « Sortir » sur celui qui est prêt
-  const bakes=Object.keys(REC).filter(k=>REC[k].kind==="bake"&&onMenu(k)).sort((a,b)=>recDay(a)-recDay(b)),ovs=on?G.ovens:[{state:"idle"}],two=ovs.length>1,idle=ovs.some(o=>o.state==="idle");
+  const bakes=Object.keys(REC).filter(k=>REC[k].kind==="bake"&&onMenu(k)).sort((a,b)=>recDay(a)-recDay(b)),ovs=on?G.ovens:[{state:"idle"}],two=ovs.length>1;
   const ovTile=(o,i)=>{const sx=i?"-"+i:"",ot=o.state==="bake"?"Cuisson…":o.state==="ready"?`Sortir ×${batchOf(o.r)}`:o.state==="burnt"?"Brûlé…":two?`Four ${i+1}`:"Four";
     return tile(`<span class="ki">${icon("four")}${o.state!=="idle"?`<span class="mini">${icon(o.state==="burnt"?"burnt":o.r)}</span>`:""}</span><span class="kn">${ot}</span>${o.state==="bake"?`<span class="obar"><i id="ov-p${sx}"></i></span>`:o.state==="ready"?`<span class="obar"><i id="ov-b${sx}" style="background:#fff"></i></span>`:""}`,`data-oven="${i}" id="unl${sx}" aria-label="Four${two?" "+(i+1):""}"`,`oven ${o.state}`)};
   const paT=k=>{const n=on?G.vit[k]:0;
     return tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span>`,`data-pa="${k}" aria-label="${REC[k].name} : ${n} en vitrine"`,n?"":"empty",
-      `<span class="badge${n?"":" zero"}">${n}</span>${on&&n&&idle?`<button class="kbake" data-bake="${k}" type="button" aria-label="En cuire ${batchOf(k)} de plus">${icon("four")}</button>`:""}`)};
-  const half=Math.ceil(bakes.length/2),rows=two?[ovTile(ovs[0],0)+bakes.slice(0,half).map(paT).join(""),ovTile(ovs[1],1)+bakes.slice(half).map(paT).join("")]:[ovTile(ovs[0],0)+bakes.map(paT).join("")];
+      `<span class="badge${n?"":" zero"}">${n}</span>${on&&n&&ovenFor(k).state==="idle"?`<button class="kbake" data-bake="${k}" type="button" aria-label="En cuire ${batchOf(k)} de plus">${icon("four")}</button>`:""}`)};
+  const rows=two?[0,1].map(i=>ovTile(ovs[i],i)+bakes.filter(k=>ovenOf(k)===i).map(paT).join("")):[ovTile(ovs[0],0)+bakes.map(paT).join("")];
   // un comptoir à composer : le cornet (ou la boîte, la brochette…) en cours, puis un bac par parfum
   const comp=(T,cur,svg,tub,lab,cone,dc,dg)=>`<div class="krow gelrow"><button class="gcone${cur?" on":""}" type="button" ${dc} aria-label="${cur?`Jeter ${cone}`:"Vide"}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${svg(cur)}</svg>${cur?`<span class="gx">${icon("bin")}</span>`:""}</button>${Object.keys(T).map(x=>`<button class="kb gtub" type="button" ${dg}="${x}" aria-label="${lab} ${T[x].n}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${tub(x)}</svg><span class="kn">${T[x].n}</span></button>`).join("")}</div>`;
   // le comptoir à glaces de la Petite Italie, la boîte de macarons de Paris, le plateau de sushis de Kyoto ; et à Kyoto, la brochette de dango

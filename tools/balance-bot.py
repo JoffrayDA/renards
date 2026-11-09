@@ -62,12 +62,12 @@ BOT = """(args) => {
         if (sl.some(s => !s.busy && !s.ready)) { tapStation(r, null); return; }
       } else {
         if (G.vit[r] > 0 && G.tray.length < trayCap()) { fromVit(r, null); return; }
-        if (ovenIdle()) { bake(r); return; }
+        if (ovenFor(r).state === "idle") { bake(r); return; }
       }
     }
     if (G.tray.length >= trayCap()) { G.tray.shift(); return; }
-    const low = Object.keys(G.vit).sort((a, b) => G.vit[a] - G.vit[b])[0];
-    if (ovenIdle() && G.vit[low] < 2) bake(low);
+    const low = Object.keys(G.vit).filter(k => ovenFor(k).state === "idle").sort((a, b) => G.vit[a] - G.vit[b])[0];
+    if (low && G.vit[low] < 2) bake(low);
   };
   while (G && G.run && t < 600) { update(.05); t += .05; if (G && G.run && t >= next) { act(); next = t + react; } }
   endDay = origEnd; G = null;
