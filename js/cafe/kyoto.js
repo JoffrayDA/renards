@@ -20,6 +20,11 @@ const KYF=[
   {id:"daifuku",name:"Daifuku",rar:"commun",acc:"mochi",scale:1.06,c:{b:"#f6e4e6",ch:"#ffffff",e:"#c99aa4",s:"#b8848e",t:"#ffffff"},bio:"Rond comme un mochi, et il les aime tous. Il goûte tout. Pour vérifier."},
   {id:"origami",name:"Origami",rar:"commun",acc:"grue",c:{b:"#a9c2e0",ch:"#f6fbff",e:"#5f7fa6",s:"#4f6f96",t:"#f6fbff"},bio:"Il plie des grues en papier en attendant sa commande. Il en a mille. Presque."},
   {id:"kage",name:"Kage",rar:"commun",acc:"ninja",c:{b:"#4c5270",ch:"#a6acc4",e:"#2a2d40",s:"#22243a",t:"#a6acc4"},bio:"Le renard ninja. On ne le voit jamais arriver. Il répare les lanternes la nuit, sans rien dire."},
+  // quatre clients de plus (09/11/2026, Joffray : « j'adore les 4 ») : deux sumos, tout larges (wide), et deux samouraïs
+  {id:"chanko",name:"Chanko",rar:"commun",acc:"sumo",scale:1.14,wide:1.22,c:{b:"#d99a6a",ch:"#fff2e4",e:"#8a5a3a",s:"#7a4a2e",t:"#fff2e4"},bio:"Lutteur de sumo. Il mange trois plateaux de sushis d'affilée, puis demande le dessert."},
+  {id:"oyama",name:"Ōyama",rar:"commun",acc:"sumob",scale:1.18,wide:1.26,c:{b:"#e8d2b8",ch:"#fffaf2",e:"#a88a6a",s:"#8a6e52",t:"#fffaf2"},bio:"Le grand champion de sumo, corde blanche à la taille. Quand il s'assoit, tout le Shokudō tremble un peu."},
+  {id:"tsuba",name:"Tsuba",rar:"commun",acc:"samourai",c:{b:"#c45a3a",ch:"#fff2e8",e:"#7a2e1e",s:"#6a2618",t:"#fff2e8"},bio:"Samouraï au casque à cornes dorées. Il ne l'enlève jamais, même pour boire son matcha."},
+  {id:"hayate",name:"Hayate",rar:"commun",acc:"samouraib",c:{b:"#8a7a9a",ch:"#f6f2fa",e:"#4a3e5a",s:"#3e3450",t:"#f6f2fa"},bio:"Un rōnin, samouraï sans maître. Il ne parle pas : il s'incline, il paie, il repart."},
   // le maître de thé : ne vient au Shokudō qu'une fois son matcha jugé parfait (scène du jour 19, S.ky.read[19])
   {id:"hoji",name:"Sensei Hōji",rar:"rare",acc:"sensei",c:{b:"#b8957a",ch:"#f6efe6",e:"#7a5a44",s:"#6a4c38",t:"#f6efe6"},bio:"Maître de la cérémonie du thé depuis soixante ans. Il ne sourit qu'aux matchas parfaits."},
   {id:"kyubi",name:"Kyūbi",rar:"legend",acc:"inari",tail:"neuf",c:{b:"#fbf4ea",ch:"#ffffff",e:"#e0b860",s:"#d4a84a",t:"#f7d77a"},bio:"La Dame aux neuf queues, gardienne du chemin des torii. Elle ne descend que pour les fêtes les plus lumineuses."}

@@ -23,7 +23,7 @@ p{margin:0 0 12px;opacity:.8}
   <filter id="wobble" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
 <h1>Kyoto · un sumo et un samouraï</h1>
-<p>Essais du 09/11/2026, deux versions chacun, toutes les poses, les portraits et la silhouette. Dis-moi lesquels tu gardes, et je les fais entrer au Kitsune Shokudō.</p>
+<p>Essais du 09/11/2026, deux versions chacun, toutes les poses, les portraits et la silhouette. Joffray a gardé les quatre (09/11/2026) : Chanko, Ōyama, Tsuba et Hayate viennent au Kitsune Shokudō.</p>
 <div id="out"></div>
 <script src="../js/cafe/foxes.js"></script>
 <script src="../js/foxart.js"></script>
@@ -31,8 +31,8 @@ p{margin:0 0 12px;opacity:.8}
 const POSES=[["sit","assis"],["happy","content"],["walk","marche"],["eat","mange"],["groom","toilette"],["up","regarde en l'air"],["lie","allongé"],["sleep","dort"]];
 const EXPR=[["open","normal"],["joy","joie"],["shy","timide"],["surprise","surpris"],["sad","triste"]];
 const XF=[
-  {id:"ky-s1",name:"Sumo A · le lutteur",acc:"sumo",scale:1.16,bio:"Ceinture mawashi bleu nuit et ses cordelettes, petit chignon noir. Tout rond, il mange trois plateaux de sushis d'affilée.",c:{b:"#d99a6a",ch:"#fff2e4",e:"#8a5a3a",s:"#7a4a2e",t:"#fff2e4"}},
-  {id:"ky-s2",name:"Sumo B · le grand champion",acc:"sumob",scale:1.2,bio:"Le yokozuna : mawashi violet, grosse corde blanche tressée et ses papiers en zigzag, chignon en feuille de ginkgo.",c:{b:"#e8d2b8",ch:"#fffaf2",e:"#a88a6a",s:"#8a6e52",t:"#fffaf2"}},
+  {id:"ky-s1",name:"Sumo A · le lutteur",acc:"sumo",scale:1.14,wide:1.22,bio:"Ceinture mawashi bleu nuit et ses cordelettes, petit chignon noir. Tout rond, il mange trois plateaux de sushis d'affilée.",c:{b:"#d99a6a",ch:"#fff2e4",e:"#8a5a3a",s:"#7a4a2e",t:"#fff2e4"}},
+  {id:"ky-s2",name:"Sumo B · le grand champion",acc:"sumob",scale:1.18,wide:1.26,bio:"Le yokozuna : mawashi violet, grosse corde blanche tressée et ses papiers en zigzag, chignon en feuille de ginkgo.",c:{b:"#e8d2b8",ch:"#fffaf2",e:"#a88a6a",s:"#8a6e52",t:"#fffaf2"}},
   {id:"ky-k1",name:"Samouraï A · le casque",acc:"samourai",bio:"Casque kabuto bleu nuit à cornes dorées en croissant, protège-nuque, et son sabre au côté.",c:{b:"#c45a3a",ch:"#fff2e8",e:"#7a2e1e",s:"#6a2618",t:"#fff2e8"}},
   {id:"ky-k2",name:"Samouraï B · le rōnin",acc:"samouraib",bio:"Chignon, bandeau blanc au soleil rouge, haori bleu nuit au blason blanc, sabre au côté. Il ne parle pas, il s'incline.",c:{b:"#8a7a9a",ch:"#f6f2fa",e:"#4a3e5a",s:"#3e3450",t:"#f6f2fa"}}];
 document.getElementById("out").innerHTML=XF.map(f=>`<div class="fox"><strong>${f.name}</strong><em>${f.bio||""}</em>

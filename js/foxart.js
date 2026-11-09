@@ -343,8 +343,9 @@ function foxArt(f,o={}){
     +(f.bauble&&!sil?`<circle cx="60" cy="${(geo.top-11).toFixed(1)}" r="4.4" fill="none" stroke="#c9952f" stroke-width="2.6"/><rect x="52" y="${(geo.top-7).toFixed(1)}" width="16" height="9" rx="2.4" fill="#f2c45a"/><path d="M55 ${(geo.top-6).toFixed(1)} v7 M60 ${(geo.top-6).toFixed(1)} v7 M65 ${(geo.top-6).toFixed(1)} v7" stroke="#c9952f" stroke-width="1.4"/>`:"");
   const fxG=fx?`<g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${fx}</g>`:"";
   const zz=pose==="sleep"?`<text class="zz" x="70" y="42" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="80" y="32" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
-  if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}"${f.tail==="neuf"?' style="overflow:visible"':""} aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}</g></svg>`;
-  return `<svg viewBox="0 -16 120 116" class="${o.cls||""}${gh?" ghosty":""}"${f.tail==="neuf"?' style="overflow:visible"':""} aria-hidden="true"><g transform="translate(${60-60*sc} ${92-92*sc}) scale(${sc})"${gh?' opacity=".82"':""}>
+  const wd=f.wide||1; // les sumos de Kyoto : plus larges que hauts (09/11/2026, Joffray : « un peu plus gros »)
+  if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}"${f.tail==="neuf"||f.wide?' style="overflow:visible"':""} aria-hidden="true"><g transform="translate(${60-60*sc*wd} ${92-92*sc}) scale(${sc*wd} ${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}</g></svg>`;
+  return `<svg viewBox="0 -16 120 116" class="${o.cls||""}${gh?" ghosty":""}"${f.tail==="neuf"||f.wide?' style="overflow:visible"':""} aria-hidden="true"><g transform="translate(${60-60*sc*wd} ${92-92*sc}) scale(${sc*wd} ${sc})"${gh?' opacity=".82"':""}>
   <ellipse cx="60" cy="${gh?99:92}" rx="${gh?26:40}" ry="${gh?3.5:5}" fill="#3d2a35" opacity="${gh?.09:.14}"/>
   <g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}${zz}</g></svg>`;
 }
