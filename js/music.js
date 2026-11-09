@@ -20,7 +20,10 @@ const MUSIC=(()=>{
   const hz=m=>440*Math.pow(2,(m-69)/12);
   function init(){
     if(C)return;
-    C=new (window.AudioContext||window.webkitAudioContext)();
+    // sur Android, un tampon un peu plus long : avec le plus court (« interactive », par défaut), la musique grésillait
+    // dès que le jeu chargeait le téléphone (Kyoto, 09/11/2026, Joffray) ; les bruitages arrivent à peine plus tard
+    const AC=window.AudioContext||window.webkitAudioContext;
+    try{C=/Android/i.test(navigator.userAgent)?new AC({latencyHint:"playback"}):new AC()}catch(e){C=new AC()}
     const comp=C.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=3;
     master=C.createGain();master.gain.value=vol;master.connect(comp);comp.connect(C.destination);
     rev=C.createConvolver();const n=C.sampleRate*2.6,b=C.createBuffer(2,n,C.sampleRate);
