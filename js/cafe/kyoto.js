@@ -21,8 +21,8 @@ const KYF=[
   {id:"origami",name:"Origami",rar:"commun",acc:"grue",c:{b:"#a9c2e0",ch:"#f6fbff",e:"#5f7fa6",s:"#4f6f96",t:"#f6fbff"},bio:"Il plie des grues en papier en attendant sa commande. Il en a mille. Presque."},
   {id:"kage",name:"Kage",rar:"commun",acc:"ninja",c:{b:"#4c5270",ch:"#a6acc4",e:"#2a2d40",s:"#22243a",t:"#a6acc4"},bio:"Le renard ninja. On ne le voit jamais arriver. Il répare les lanternes la nuit, sans rien dire."},
   // quatre clients de plus (09/11/2026, Joffray : « j'adore les 4 ») : deux sumos, tout larges (wide), et deux samouraïs
-  {id:"chanko",name:"Chanko",rar:"commun",acc:"sumo",scale:1.14,wide:1.22,c:{b:"#d99a6a",ch:"#fff2e4",e:"#8a5a3a",s:"#7a4a2e",t:"#fff2e4"},bio:"Lutteur de sumo. Il mange trois plateaux de sushis d'affilée, puis demande le dessert."},
-  {id:"oyama",name:"Ōyama",rar:"commun",acc:"sumob",scale:1.18,wide:1.26,c:{b:"#e8d2b8",ch:"#fffaf2",e:"#a88a6a",s:"#8a6e52",t:"#fffaf2"},bio:"Le grand champion de sumo, corde blanche à la taille. Quand il s'assoit, tout le Shokudō tremble un peu."},
+  {id:"chanko",name:"Chanko",rar:"commun",big:1,acc:"sumo",scale:1.14,wide:1.22,c:{b:"#d99a6a",ch:"#fff2e4",e:"#8a5a3a",s:"#7a4a2e",t:"#fff2e4"},bio:"Lutteur de sumo. Il mange trois plateaux de sushis d'affilée, puis demande le dessert."},
+  {id:"oyama",name:"Ōyama",rar:"commun",big:1,acc:"sumob",scale:1.18,wide:1.26,c:{b:"#e8d2b8",ch:"#fffaf2",e:"#a88a6a",s:"#8a6e52",t:"#fffaf2"},bio:"Le grand champion de sumo, corde blanche à la taille. Quand il s'assoit, tout le Shokudō tremble un peu."},
   {id:"tsuba",name:"Tsuba",rar:"commun",acc:"samourai",c:{b:"#c45a3a",ch:"#fff2e8",e:"#7a2e1e",s:"#6a2618",t:"#fff2e8"},bio:"Samouraï au casque à cornes dorées. Il ne l'enlève jamais, même pour boire son matcha."},
   {id:"hayate",name:"Hayate",rar:"commun",acc:"samouraib",c:{b:"#8a7a9a",ch:"#f6f2fa",e:"#4a3e5a",s:"#3e3450",t:"#f6f2fa"},bio:"Un rōnin, samouraï sans maître. Il ne parle pas : il s'incline, il paie, il repart."},
   // le maître de thé : ne vient au Shokudō qu'une fois son matcha jugé parfait (scène du jour 19, S.ky.read[19])
@@ -30,12 +30,13 @@ const KYF=[
   {id:"kyubi",name:"Kyūbi",rar:"legend",acc:"inari",tail:"neuf",c:{b:"#fbf4ea",ch:"#ffffff",e:"#e0b860",s:"#d4a84a",t:"#f7d77a"},bio:"La Dame aux neuf queues, gardienne du chemin des torii. Elle ne descend que pour les fêtes les plus lumineuses."}
 ];
 KYF.forEach(f=>{f.world="kyoto";FOX[f.id]=f});
-const KYF_REG=KYF.filter(f=>f.rar==="commun");
+// les sumos (big) ne viennent pas comme les autres : seulement après leur premier défi, et rarement (Joffray, 09/11/2026)
+const KYF_REG=KYF.filter(f=>f.rar==="commun"&&!f.big);
 
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde, de 24 à 40, puis au-delà (hard : plus de clients, plus serrés, moins patients) ;
 // graine et objectif par `python tools/balance-bot.py --kyoto`
-const KY_DAYS=[{base:24,seed:8,goal:186},{base:25,seed:3,goal:199},{base:26,seed:9,goal:214},{base:27,seed:12,goal:222},{base:28,seed:10,goal:232},{base:29,seed:15,goal:261},{base:30,seed:1,goal:256},{base:31,seed:13,goal:294},{base:32,seed:5,goal:299},{base:33,seed:15,goal:333},{base:34,seed:11,goal:355},{base:35,seed:12,goal:365},{base:36,seed:0,goal:378},{base:37,seed:9,goal:385},{base:38,seed:10,goal:405},{base:39,seed:5,goal:413},{base:40,seed:15,goal:420},{base:40,hard:1.05,seed:9,goal:442},{base:40,hard:1.1,seed:12,goal:482},{base:40,hard:1.15,seed:12,goal:509},{base:40,hard:1.2,seed:0,goal:539},{base:40,hard:1.25,seed:3,goal:565},{base:40,hard:1.3,seed:3,goal:581},{base:40,hard:1.35,seed:14,goal:592},{base:40,hard:1.4,seed:0,goal:597}];
+const KY_DAYS=[{base:24,seed:8,goal:186},{base:25,seed:3,goal:199},{base:26,seed:1,goal:212},{base:27,seed:12,goal:222},{base:28,seed:9,goal:161},{base:29,seed:2,goal:247},{base:30,seed:1,goal:256},{base:31,seed:13,goal:294},{base:32,seed:5,goal:299},{base:33,seed:15,goal:333},{base:34,seed:7,goal:354},{base:35,seed:12,goal:365},{base:36,seed:0,goal:378},{base:37,seed:9,goal:385},{base:38,seed:10,goal:405},{base:39,seed:5,goal:413},{base:40,seed:1,goal:419},{base:40,hard:1.05,seed:3,goal:447},{base:40,hard:1.1,seed:12,goal:482},{base:40,hard:1.15,seed:12,goal:509},{base:40,hard:1.2,seed:0,goal:539},{base:40,hard:1.25,seed:3,goal:565},{base:40,hard:1.3,seed:3,goal:581},{base:40,hard:1.35,seed:14,goal:592},{base:40,hard:1.4,seed:0,goal:597}];
 const KY_S3=Array(KY_DAYS.length).fill(1.7);
 // l'équipement prévu pour chaque journée : celui de l'Italie, étalé sur 25 journées
 const KY_KIT=IT_KIT.map(([k,n,d])=>[k,n,Math.max(1,Math.round(d*1.25))]);
@@ -353,7 +354,7 @@ ovens:d=>d>=14?2:1,ovenOf:{croissant:0,cookie:0,taiyaki:0,mochi:1,gateau:1},
     new:"Dès la prochaine journée, les dango ! Chaque client veut sa brochette dans son ordre : touche les boules de bas en haut."},
   optNew:"Touche « Crème », au bout du plateau, pour en mettre sur un hōjicha ou un dorayaki.",
   guest:"kyubi",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",
-  reg:()=>[...KYF_REG,...KYF_REG,...KYF_REG,...(S.ky.read[19]?[FOX.hoji]:[])],
+  reg:()=>[...KYF_REG,...KYF_REG,...KYF_REG,...(S.ky.read[19]?[FOX.hoji]:[]),...(S.ky.sumo[5]||S.ky.read[5]?[FOX.chanko,FOX.oyama]:[])],
   // musique du service, choix de Joffray le 09/11/2026 : le Matsuri « plus rapide » et le grand odaiko (accéléré à 158 bpm)
   // les jours des sumos, toujours les gros tambours (Joffray)
   music:d=>KY_SUMO[d]||d%2===0?"taiko5":"matsuri2",mapMusic:"torii",

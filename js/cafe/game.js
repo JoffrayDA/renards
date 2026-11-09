@@ -22,7 +22,7 @@ function newDay(d){
   // Kyoto, les défis des sumos (WD().sumo) : deux gros clients entrent lentement, s'installent pour toute la journée
   // et recommandent dès qu'ils sont servis (Joffray, 09/11/2026) ; il vient moins d'autres clients ces jours-là
   if(it&&WD().sumo&&WD().sumo[d]){G.cfg={...G.cfg,c:Math.round(G.cfg.c*.6)};G.sumo=1;
-    for(const id of WD().sumo[d]){const sp=freeSpot(),pat=G.cfg.pat*patMult()*1.15;G.cust.push({id:++uid,fox:id,spot:sp,order:sumoOrder(),pat,patMax:pat,state:"walkin",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:""});S.seen[id]=(S.seen[id]||0)+1}}
+    for(const id of WD().sumo[d]){const sp=freeSpot(),pat=G.cfg.pat*patMult()*1.3;G.cust.push({id:++uid,fox:id,spot:sp,order:sumoOrder(),pat,patMax:pat,state:"walkin",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:""});S.seen[id]=(S.seen[id]||0)+1}}
   // à Paris, les jours de défi : le score de Firmin, à battre (paris.js)
   if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
@@ -43,8 +43,8 @@ function genOrder(){
     return{r,g,o:op&&roll<.35?op:undefined,done:0}});
 }
 const quake=()=>{const e=$("scene");if(!e)return;e.classList.remove("quake");void e.offsetWidth;e.classList.add("quake")};
-// une commande de sumo : deux ou trois plats
-function sumoOrder(){const m=G.cfg.max;G.cfg.max=3;let o=genOrder();while(o.length<2)o=o.concat(genOrder()).slice(0,3);G.cfg.max=m;return o}
+// une commande de sumo : toujours quatre plats (Joffray, 09/11/2026 : « 4 choses minimum s'ils sont là »)
+function sumoOrder(){let o=[];while(o.length<4)o=o.concat(genOrder());return o.slice(0,4)}
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
   const here=new Set(G.cust.map(c=>c.fox));
@@ -58,7 +58,9 @@ function spawn(){
   const pat=G.cfg.pat*patMult()*(vip?.5:1)*(G.boost.patience?1.3:1);
   const costume=HW&&!G.noel&&!vip&&(G.night||Math.random()<.5)?pick(COSTUMES):""; // la nuit, tout le monde est déguisé
   // dans la file, il patiente aussi, mais plus longtemps (il voit qu'on s'active)
-  G.cust.push({id:++uid,fox:f.id,spot:-1,order:genOrder(),pat,patMax:pat,state:"queue",qp:pat*1.2,vip,born:G.t,costume});
+  // un sumo venu en client ordinaire commande aussi quatre plats, et patiente un peu plus
+  const big=!!f.big,pt=big?pat*1.3:pat;
+  G.cust.push({id:++uid,fox:f.id,spot:-1,order:big?sumoOrder():genOrder(),pat:pt,patMax:pt,state:"queue",qp:pat*1.2,vip,born:G.t,costume});
   if(costume){const ck=f.id+":"+costume;if(!S.costSeen[ck]&&S.seen[f.id])toast(`Nouveau déguisement : ${f.name} ${COSTNAME[costume]} !`);S.costSeen[ck]=(S.costSeen[ck]||0)+1}
   if(vip)toast(f.event==="noel"?`${f.name} est là ! Sers-le vite : il paie ×3 et donne un sucre d'orge.`:f.event?`${f.name} est là ! Sers-le vite : il paie ×3 et donne 5 bonbons.`:`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
   if(!S.seen[f.id])G.newFox.push(f.name);
