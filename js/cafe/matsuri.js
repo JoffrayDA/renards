@@ -71,3 +71,5 @@ function kyParade(done){
   // un toucher trop tôt ne coupe pas tout de suite (on vient de toucher pour fermer la scène d'avant)
   el.addEventListener("click",()=>{if(performance.now()-T0>900)end()});
 }
+// cafe.html?defile=1 : voir le défilé tout de suite, sans finir Kyoto
+if(new URLSearchParams(location.search).get("defile")==="1")addEventListener("load",()=>setTimeout(()=>kyParade(),600));
