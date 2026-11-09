@@ -43,6 +43,11 @@ const KY_KIT=IT_KIT.map(([k,n,d])=>[k,n,Math.max(1,Math.round(d*1.25))]);
 const KY_REC={cafe:0,the:0,croissant:0,cookie:0,taiyaki:2,lait:3,choco:5,dango:7,smoothie:10,mochi:13,chantilly:16,gateau:19};
 S.ky=S.ky||{day:1,stars:{},best:{},own:{},intro:0,guest:0,read:{}};
 S.ky.read=S.ky.read||{};S.ky.sumo=S.ky.sumo||{};
+// les parties commencées avant la refonte (09/11/2026) : une journée déjà réussie donne sa recette (taiyaki, lait, dango, mochi…)
+for(const k in KY_REC)if(KY_REC[k]&&S.ky.stars[KY_REC[k]]&&!S.ky.own[k])S.ky.own[k]=1;
+// recommencer le quartier depuis le jour 1 (bouton du carnet de Yuzu) : journées, étoiles, recettes, équipement et scènes ;
+// les pièces, les clochettes et le reste du jeu ne bougent pas
+function kyReset(){S.ky={day:1,stars:{},best:{},own:{},intro:0,guest:0,read:{},sumo:{}};save();closeSheet();WLAY.kyoto=null;toast("Kyoto recommence au jour 1 !");openMapIt()}
 // les défis des sumos (09/11/2026, idée de Joffray) : ces jours-là, Chanko et Ōyama passent toute la journée au comptoir ;
 // la scène de fin dit qui a gagné le concours : Chanko, puis Ōyama, puis égalité
 const KY_SUMO={5:["chanko","oyama"],11:["oyama","chanko"],17:["chanko","oyama"]};
@@ -323,6 +328,7 @@ function kyCarnet(){
     :`<div style="opacity:.55">${itRow(foxSVG(FOX.yuzu,{sil:1}),d===25?"Le soir du Matsuri":"Scène à découvrir",`Réussis le jour ${d} du quartier.`)}</div>`).join("");
   openSheet(`<h2>Le carnet du Matsuri</h2><div style="width:120px;margin:0 auto">${foxSVG(FOX.yuzu,{pose:"happy"})}</div>
   <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis ton arrivée au Kitsune Shokudō. Touche une scène pour la revoir.</p>${rows}
+  <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="kyreset" type="button">Recommencer Kyoto depuis le jour 1</button></div>
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="yuzuintro" type="button">Revoir l'accueil de Yuzu</button></div>`);
   $("sheet-in").querySelectorAll("[data-kyscene]").forEach(b=>b.onclick=()=>itTalk(KY_SCENES[+b.dataset.kyscene],kyCarnet));
 }
