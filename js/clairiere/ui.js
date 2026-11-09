@@ -77,7 +77,7 @@ function tapFox(f){
   if(f.wild){const tr=wildTrust(f.id);bubble(f,f.rest?"se prélasse : il se sent chez lui !":tr===0?"se méfie… il recule d'un pas.":tr===1?(known(f.id)?"mange en te surveillant du coin de l'œil.":"un inconnu… il mange en te surveillant."):"n'a plus peur de toi !");return}
   if(snowballTap(f))return; // Boule-de-Neige propose sa bataille (noel.js)
   if(envieTap(f))return; // une petite envie (envies.js)
-  const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
+  const what=f.walk?"trottine":f.inside?"est à l'intérieur":`${TOYTXT[f.toy]||ACT[f.pose]} ${PLACE[f.spot.id]||"dans l'herbe"}`;
   const r=pet(f.id);
   if(r){f.pose="happy";f.until=Date.now()+3000;if(!f.walk)draw(f);hugFx(f,{big:r===2,p:.7});renderHud();bubble(f,r===2?`ronronne : niveau ${lvOf(R.res[f.id].h)}, ${LV_N[lvOf(R.res[f.id].h)]} !`:"adore les câlins (+1 cœur, +1 gland)")}
   else{bubble(f,what);if(Math.random()<.3)hugFx(f,{p:1,hearts:false})} // déjà câliné aujourd'hui : une figure de temps en temps

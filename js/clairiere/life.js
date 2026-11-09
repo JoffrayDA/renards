@@ -27,14 +27,16 @@ function makeFox(id,spot,o={}){
   if(spot)place(f,spot);else{f.x=EDGE.x;f.y=EDGE.y;el.style.cssText+=";"+pc(EDGE.x,EDGE.y)}
   return f;
 }
-function removeFox(f){f.el.remove();f.badge.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
+function removeFox(f){uncuddle(f);f.el.remove();f.badge.remove();if(f.light)f.light.remove();foxes.splice(foxes.indexOf(f),1);if(f.wild)drawBowl()}
 function draw(f){
-  const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0,expr:f.walk?undefined:f.expr};
+  if(f.cuddle&&(f.pose!=="sleep"||f.walk))uncuddle(f); // une scène d'histoire le réveille
+  const art=FOX[f.id],o={pose:f.walk?"walk":f.pose,frame:0,expr:f.walk?undefined:f.expr,toy:f.toy};
   const ob=!f.walk&&objOf(f.spot);f.el.style.width=ob&&ob.k?13.5*ob.k+"%":""; // les grands objets (potager, tunnel)
   if(f.walk&&f.walk.climb)f.el.innerHTML=`<div class="flip"><div class="bob">${foxArt(art,{pose:"up"})}</div></div>`; // il grimpe à l'échelle
   else if(f.walk)f.el.innerHTML=`<div class="flip"><div class="bob"><div class="w0">${foxArt(art,o)}</div><div class="w1">${foxArt(art,{pose:"walk",frame:1})}</div></div></div>`;
   else if(objOf(f.spot)){f.el.innerHTML=`<div class="flip">${objOf(f.spot).svg(f.id)}</div>`;f.el.classList.toggle("left",!!(R.objAt[f.spot.obj]||{}).f)} // dans un objet du refuge (objets.js)
-  else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`;
+  else f.el.innerHTML=`<div class="flip">${foxArt(art,o)}</div>`+(f.cuddle&&f.cuddle.heart?CUD_HEART:"");
+  f.el.classList.toggle("cuddle-r",!f.walk&&!!f.cuddle&&f.cuddle.dir>0);f.el.classList.toggle("cuddle-l",!f.walk&&!!f.cuddle&&f.cuddle.dir<0);
   setBadge(f); // « ! » de l'histoire, « … » d'une petite envie ou cœur du câlin (envies.js)
   f.el.classList.toggle("walking",!!f.walk);f.glowAt=o.glowAt;moveLight(f);drawObjs();
 }
@@ -49,7 +51,10 @@ function moveLight(f,dur){moveBadge(f,dur);if(!f.light)return;const L=f.light,g=
 function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="0s";f.badge.style.transitionDuration="0s";if(f.light)f.light.style.transitionDuration="0s";f.el.style.cssText+=";"+pc(sp.x,sp.y);f.el.style.zIndex=Math.round(sp.z||sp.y);settle(f)}
 // choisit une pose qui va avec l'endroit, l'heure et la pluie
 function settle(f){
+  uncuddle(f);
   const sp=f.spot;let poses=sp.poses.slice();
+  // le ventre en l'air et les jouets : de jour, au sec (10/11/2026, Joffray : « j'ai jamais vu ! »)
+  if(phaseNow()==="nuit"||scn.rain)poses=poses.filter(p=>p!=="belly"&&p!=="play");if(!poses.length)poses=["sit"];
   if(phaseNow()==="nuit")poses=poses.concat(poses.filter(p=>p==="sleep"||p==="lie"),["sleep","sleep"].filter(()=>sp.poses.includes("sleep")));
   if(scn.rain&&sp.cov)poses=poses.concat(["up","up","sleep"]);
   if(FOX[f.id].sleepy&&sp.poses.includes("sleep"))poses=poses.concat(["sleep","sleep","sleep"]);
@@ -62,8 +67,24 @@ function settle(f){
   f.walk=null;f.until=Date.now()+(f.pose==="sleep"?16000:7000)+Math.random()*12000;
   if(f.wild)f.until=Date.now()+(f.rest?18000:[9000,14000,16000][wildTrust(f.id)]);
   if(objOf(sp)){f.pose=objOf(sp).pose;f.until=Date.now()+30000+Math.random()*30000} // un long moment dans un objet du refuge
+  if(f.pose==="belly")f.until=Date.now()+9000+Math.random()*6000;
+  f.toy=f.pose==="play"?TOYS[Math.floor(Math.random()*TOYS.length)]:undefined;
   draw(f);
+  tryCuddle(f);
 }
+// deux amis collés pour la sieste (10/11/2026, Joffray) : sous le porche (p1-p2, p3-p4) ou sur le banc, quand le voisin se repose aussi
+const TOYS=["pelote","balle","papillon"],CUD_PAIRS={p1:"p2",p2:"p1",p3:"p4",p4:"p3",bench1:"bench2",bench2:"bench1"};
+const CUD_HEART=`<i class="cudheart"><svg viewBox="-12 -12 24 22" aria-hidden="true"><path d="M0 -3 c-4 -7 -12 0 0 9 c12 -9 4 -16 0 -9Z" fill="#f6a5b4" stroke="#5b4250" stroke-width="2"/></svg></i>`;
+function tryCuddle(f){
+  const sp=f.spot,mate=sp&&CUD_PAIRS[sp.id];if(!mate||f.wild||(typeof meF==="object"&&f===meF)||f.cuddle)return;
+  const g=foxes.find(o=>o!==f&&!o.wild&&!o.walk&&!o.inside&&o.spot&&o.spot.id===mate&&!o.cuddle&&!o.watch&&!o.shock);if(!g)return;
+  const rest=p=>p==="sleep"||p==="lie";
+  if(!(rest(f.pose)||rest(g.pose))||Math.random()>(phaseNow()==="nuit"?.8:.55))return;
+  const until=Date.now()+30000+Math.random()*25000,l=f.x<g.x?f:g,r=l===f?g:f;
+  for(const o of [f,g]){o.pose="sleep";o.expr=undefined;o.toy=undefined;o.until=until}
+  l.cuddle={with:r,dir:1,heart:1};r.cuddle={with:l,dir:-1};draw(l);draw(r);
+}
+function uncuddle(f){const c=f.cuddle;if(!c)return;f.cuddle=null;const g=c.with;if(g&&g.cuddle&&g.cuddle.with===f){g.cuddle=null;if(!g.walk&&g.spot)draw(g)}}
 // les obstacles posés par terre (la boule géante, le tas de neige : noelObst dans noel.js), en ellipses au sol ;
 // on ne s'assoit pas dessous, et on en fait le tour (Joffray : des renards passaient au travers de la boule)
 const obst=()=>typeof noelObst==="function"?noelObst():[];
@@ -89,6 +110,8 @@ function aroundObst(a,b){const o=crossObst(a,b);if(!o)return [];
 const taken=sp=>inObst(sp)||[...foxes,...(typeof meF==="object"?[meF]:[])].some(o=>(o.spot===sp&&!o.walk)||(o.walk&&o.walk.to===sp));
 // un trajet se fait par étapes : pour la cabane (via), on passe par le pied de l'échelle et on grimpe (climb)
 function goTo(f,sp){
+  if(f.cuddle){const c=f.cuddle;uncuddle(f);c.with.until=Math.min(c.with.until,Date.now()+4000+Math.random()*6000)}
+  f.toy=undefined;
   const legs=[];
   if(f.spot&&f.spot.via&&f.spot!==sp)legs.push(f.spot.via[1],{...f.spot.via[0],climb:1});
   if(sp&&sp.via)legs.push(sp.via[0],{...sp.via[1],climb:1});

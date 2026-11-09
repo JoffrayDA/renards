@@ -473,3 +473,22 @@ h1 .la{font-style:normal}
 .favbtn{margin-top:6px;padding:5px 12px}.favbtn .favstar{width:18px;height:18px}.favbtn.on{background:#fff3c4}
 .card.on{border-color:var(--ink);background:#fff3e2}
 .mecard.bud{background:linear-gradient(90deg,#dff0e2,#fffaf2)}
+/* ventre en l'air et petits jouets (pose belly et play de foxArt, 10/11/2026) */
+.bpaw{animation:bpaw .5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes bpaw{to{transform:rotate(12deg)}}
+.toyroll{animation:toyroll 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}
+@keyframes toyroll{0%,100%{transform:translateX(0)}20%{transform:translateX(9px) rotate(70deg)}45%{transform:translateX(3px) rotate(30deg)}}
+.toybat{animation:toybat 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:0 100%}
+@keyframes toybat{0%,10%,100%{transform:translate(0,0)}5%{transform:translate(5px,-2px) rotate(20deg)}50%{transform:translate(-3px,-7px) rotate(-14deg)}}
+.toyfly{animation:toyfly 3s ease-in-out infinite}
+@keyframes toyfly{0%,100%{transform:translate(0,0)}25%{transform:translate(6px,-4px)}50%{transform:translate(-2px,-7px)}75%{transform:translate(-7px,-2px)}}
+.wingl,.wingr{animation:wing .22s ease-in-out infinite alternate;transform-box:fill-box}
+.wingl{transform-origin:100% 50%}.wingr{transform-origin:0 50%}
+@keyframes wing{to{transform:scaleX(.3)}}
+/* deux amis collés pour la sieste (life.js, maison.js) : ils penchent l'un vers l'autre, un petit cœur au-dessus */
+.fox.cuddle-r>.flip{transform-origin:50% 90%;rotate:7deg}
+.fox.cuddle-l>.flip{transform-origin:50% 90%;rotate:-7deg}
+.cudheart{position:absolute;left:98%;top:4%;width:28%;pointer-events:none;animation:cudheart 2.4s ease-in-out infinite}
+@keyframes cudheart{0%,100%{transform:translate(-50%,0) scale(.9);opacity:.85}50%{transform:translate(-50%,-25%) scale(1.08);opacity:1}}
+.cudh{animation:cudh 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%;pointer-events:none}
+@keyframes cudh{50%{transform:translateY(-6px) scale(1.1)}}

@@ -262,17 +262,22 @@ function enterHouse(){
   houseEl=document.createElement("div");houseEl.className="play house";
   houseEl.innerHTML=`<svg viewBox="0 0 400 ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${houseSVG()}<g id="hfox"></g></svg>${out?`<div class="psay">${out} renard${out>1?"s":""} reste${out>1?"nt":""} dehors : il manque de la place.</div>`:""}
     <div class="hbtns"><button class="btn ghost hgrow" type="button"${storyDone("copeau")?"":" hidden"}>Aménager</button><button class="btn ghost hdeco" type="button"${Object.keys(DECO).some(k=>DECO[k].home&&(R.deco.inv[k]||R.deco.home.some(d=>d.k===k)))?"":" hidden"}>Décorer</button></div><button class="btn pclose" type="button">Sortir</button>`;
-  const box=houseEl.querySelector("#hfox"),POSES=["sit","lie","groom","happy","sleep"];
+  const box=houseEl.querySelector("#hfox"),POSES=["sit","lie","groom","happy","sleep","play","belly"];
   // les objets sans personne (la nuit, le thé et la musique s'arrêtent), puis ceux où un renard s'est installé : le toucher prend la photo
   for(const k of hobjs())if(k!=="guirlandes"&&!inObj.some(([o])=>o===k))grp(box,HOBJ[k].art(null),{transform:hPlace(k)});
   for(const [k,id] of inObj){const g=grp(box,HOBJ[k].art(id),{transform:hPlace(k)});g.style.cursor="pointer";
     g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,obj:k});return}
       const r=pet(id);if(r)bip("purr");toast(r?`${nameOf(id)} est ravi (+1 cœur, +1 gland).`:`${nameOf(id)} : ${HOBJ[k].in.toLowerCase()}.`);if(r)renderHud()}}
   // les plus hauts d'abord, pour que ceux de devant passent par-dessus
-  here.map((id,i)=>[id,pl[i]]).sort((a,b)=>a[1][1]-b[1][1]).forEach(([id,[x,y]])=>{const up=y<200,w=up?52:60,pose=night?"sleep":POSES[(id.length+i0(id))%POSES.length];
-    const g=grp(box,foxAt(id,x,y,w,{pose})+`<circle cx="${x}" cy="${y-w/2}" r="${w/2}" fill="transparent"/>`);
-    g.style.cursor="pointer";g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,x,y:y+w*.04,pose,w});return}const r=pet(id);if(r)bip("purr");
-      toast(r?`${nameOf(id)} ronronne près du feu (+1 cœur, +1 gland).`:`${nameOf(id)} ${night?"dort, roulé en boule":"se chauffe les pattes"}.`);if(r)renderHud()}});
+  // deux amis collés pour la sieste sur le tapis (10/11/2026, Joffray) : voisins sur la même rangée, ils se rapprochent et penchent l'un vers l'autre
+  const at=here.map((id,i)=>({id,x:pl[i][0],y:pl[i][1],rot:0}));let cud=null;
+  if(Math.random()<(night?.9:.6)){const c=[];for(let a=0;a<at.length;a++)for(let b=a+1;b<at.length;b++)if(at[a].y===at[b].y&&at[a].y>=300&&Math.abs(at[a].x-at[b].x)<=56)c.push(at[a].x<at[b].x?[at[a],at[b]]:[at[b],at[a]]);
+    if(c.length){cud=c[Math.floor(Math.random()*c.length)];cud[0].x+=8;cud[0].rot=7;cud[1].x-=8;cud[1].rot=-7}}
+  at.sort((a,b)=>a.y-b.y).forEach(s=>{const {id,x,y}=s,up=y<200,w=up?52:60,pose=night||s.rot?"sleep":POSES[(id.length+i0(id))%POSES.length],toy=pose==="play"?(i0(id+today())%3?"pelote":"balle"):undefined;
+    const g=grp(box,(s.rot?`<g transform="rotate(${s.rot} ${x} ${y})">`:"")+foxAt(id,x,y,w,{pose,toy})+(s.rot?"</g>":"")+`<circle cx="${x}" cy="${y-w/2}" r="${w/2}" fill="transparent"/>`);
+    g.style.cursor="pointer";g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,x,y:y+w*.04,pose,w,...(toy?{toy}:{})});return}const r=pet(id);if(r)bip("purr");
+      toast(r?`${nameOf(id)} ronronne près du feu (+1 cœur, +1 gland).`:`${nameOf(id)} ${s.rot?"fait la sieste, collé à son ami":night?"dort, roulé en boule":toy?TOYTXT[toy]:"se chauffe les pattes"}.`);if(r)renderHud()}});
+  if(cud){const hx=(cud[0].x+cud[1].x)/2,hy=cud[0].y-48;grp(box,`<g class="cudh"><path transform="translate(${hx} ${hy})" d="M0 -3 c-4 -7 -12 0 0 9 c12 -9 4 -16 0 -9Z" fill="#f6a5b4" stroke="#5b4250" stroke-width="2"/></g>`)}
   houseEl.querySelector(".pclose").onpointerdown=e=>{e.stopPropagation();bip("door");leaveHouse()};
   houseEl.querySelector(".hgrow").onpointerdown=e=>{e.stopPropagation();houseSheet()};
   houseEl.querySelector(".hdeco").onpointerdown=e=>{e.stopPropagation();decoStart(null,"home")};

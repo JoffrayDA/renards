@@ -293,7 +293,7 @@ function foxArt(f,o={}){
   const tailBack=(rot=0,ox=90,oy=82)=>tailG(f.tail==="neuf"?`<g class="tail" style="transform-origin:${ox}px ${oy}px">${[-136,-118,-100,-82,-64,-46,-28,-10,8].map(r=>tail1(rot+r,62,84,1.24)).join("")}</g>`:f.tail==="pompon"?`<g class="tail" style="transform-origin:${ox}px ${oy}px"><circle cx="${ox+5}" cy="${oy-1}" r="8.5" fill="${c.t}"/></g>`
     :`<g class="tail" style="transform-origin:${ox}px ${oy}px"><g transform="rotate(${rot} ${ox} ${oy})${f.tail==="long"?` translate(${ox} ${oy}) scale(1.6) translate(${-ox} ${-oy})`:""}"><path d="M86 87 C108 90 118 72 108 57 C102 66 98 72 89 74Z" fill="${c.b}"/><path d="M108 57 C114 64 114 72 110 77 C106 72 102 67 99 63 C101 61 104 59 108 57Z" fill="${c.t}"/>${glow(107,64,rot,ox,oy)}</g></g>`);
   // pour l'épouvantail : pas d'yeux boutons quand les yeux sont fermés
-  const closedPose=["happy","sleep","groom","eat"].includes(pose);if(closedPose)o.closed=1;
+  const closedPose=["happy","sleep","groom","eat","belly"].includes(pose);if(closedPose)o.closed=1;
   // fx : parties animées, dessinées hors du filtre #wobble (sinon il est recalculé à chaque image)
   let body,fx="",T=35,Y=55,N=74,W=30,lastPaws=null;
   if(pose==="happy"){
@@ -307,6 +307,23 @@ function foxArt(f,o={}){
     const wrap=front&&f.tail!=="pompon"; // un pompon ne fait pas le tour
     body=(wrap?"":tailBack(18,92,86))+ears(14,front?-28:-12)+bun(T,90,41)+faceOf(Y,front?"shut":"open")
       +(wrap?tailG(glow(31,92)+`<path d="M99 86 C106 98 70 100 30 96 C21 95 20 89 29 88 C60 91 88 90 94 82Z" fill="${c.b}"/><path d="M30 96 C21 95 20 89 29 88 C34 88.5 39 89 43 89.4 C42 93 37 96 30 96Z" fill="${c.t}"/>`):paws(91,44,76));
+  }else if(pose==="belly"){
+    // ventre en l'air dans l'herbe : couché sur le dos, gros ventre crème, les quatre pattes en l'air qui gigotent, coussinets roses (10/11/2026)
+    T=52;Y=70;N=86;W=34;
+    body=tailBack(34,92,86)+ears(16,-34)+bun(T,90,41)+(gh?"":`<ellipse cx="60" cy="84" rx="25" ry="8.5" fill="${c.ch}" stroke="none"/>`)+faceOf(Y,"joy");
+    const pad=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="6.4" ry="8.4" fill="${c.s}"/><ellipse cx="${x}" cy="${y+2}" rx="2.8" ry="2.4" fill="#f6a5b4" stroke="none"/><circle cx="${x-2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x}" cy="${y-4.2}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x+2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/></g>`;
+    if(!gh)fx+=[[27,50,-35,0],[93,50,35,.25],[31,86,-25,.4],[89,86,25,.12]].map(([x,y,r,d])=>`<g class="bpaw" style="animation-delay:${d}s">${pad(x,y,r)}</g>`).join("");
+  }else if(pose==="play"){
+    // joue avec un petit jouet (o.toy) : pelote de laine, balle à pois, ou papillon au-dessus du nez (10/11/2026, Joffray : « des trucs trop kawaii »)
+    const toy=o.toy||"pelote",bf=toy==="papillon";
+    if(bf){Y=50;N=70}
+    body=tailBack(-14)+ears(bf?-2:-4,bf?-10:-2)+bun(T,88,36)+faceOf(Y,bf?"up":"open")+`<ellipse cx="48" cy="89" rx="7" ry="4.4" fill="${c.s}"/>`+(bf?`<ellipse cx="72" cy="89" rx="7" ry="4.4" fill="${c.s}"/>`:"");
+    if(!gh){
+      if(toy==="pelote")fx+=`<g class="toyroll"><path d="M86 90 q-10 6 -26 3 q-10 -2 -14 3" fill="none" stroke="#f0a5b8" stroke-width="1.6"/><circle cx="96" cy="83" r="9" fill="#f6b3c4"/><path d="M89 79 q7 2 11 10 M88 84 q7 1 12 8 M92 75 q6 3 10 11" fill="none" stroke="#e0889e" stroke-width="1.3"/></g>`;
+      else if(toy==="balle")fx+=`<g class="toyroll"><circle cx="94" cy="84" r="7.6" fill="#9fd0f0"/><circle cx="91" cy="81" r="1.8" fill="#fff" stroke="none"/><circle cx="97" cy="86" r="1.6" fill="#fff" stroke="none"/><circle cx="96" cy="79.6" r="1.2" fill="#fff" stroke="none"/><circle cx="90" cy="87" r="1.2" fill="#fff" stroke="none"/></g>`;
+      else fx+=`<g class="toyfly"><g stroke-width="1.6"><path class="wingl" d="M60 16 q-11 -9 -13 1 q2 7 13 0Z" fill="#ffd27a"/><path class="wingr" d="M60 16 q11 -9 13 1 q-2 7 -13 0Z" fill="#ffd27a"/></g><path d="M60 11 v10" stroke-width="2.2"/></g>`;
+      if(!bf)fx+=`<g class="toybat"><ellipse cx="76" cy="84" rx="6.6" ry="5" fill="${c.s}"/></g>`;
+    }
   }else if(pose==="eat"){
     // penchée vers la gamelle : la tête descend, les oreilles avancent
     T=42;Y=64;N=82;W=31;

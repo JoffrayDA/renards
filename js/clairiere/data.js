@@ -29,19 +29,20 @@ const SPOTS=[
   {id:"pond",x:174,y:420,poses:["sit","up","lie"]},
   {id:"lampL",x:62,y:264,poses:["up","sit"],lamp:"L"},
   {id:"lampR",x:338,y:264,poses:["up","sit"],lamp:"R"},
-  {id:"g1",x:150,y:328,poses:["sit","happy","groom","lie"]},
-  {id:"g2",x:252,y:318,poses:["sit","happy","groom","lie"]},
-  {id:"g3",x:204,y:372,poses:["sit","happy","up","lie"]},
+  {id:"g1",x:150,y:328,poses:["sit","happy","groom","lie","belly","play"]},
+  {id:"g2",x:252,y:318,poses:["sit","happy","groom","lie","belly","play"]},
+  {id:"g3",x:204,y:372,poses:["sit","happy","up","lie","belly","play"]},
   {id:"g4",x:66,y:372,poses:["sit","groom","sleep"]},
-  {id:"g5",x:350,y:388,poses:["sit","happy","lie"]},
-  {id:"g6",x:236,y:452,poses:["sit","happy","groom"]},
-  {id:"g7",x:120,y:462,poses:["sit","lie","up"]}
+  {id:"g5",x:350,y:388,poses:["sit","happy","lie","belly"]},
+  {id:"g6",x:236,y:452,poses:["sit","happy","groom","play"]},
+  {id:"g7",x:120,y:462,poses:["sit","lie","up","belly"]}
 ];
 // l'herbe en plus (EXT) a aussi ses endroits, au-dessus de la ligne d'objectif
-{const band=EXT-80;if(band>20)[[110,.25],[330,.85],[46,.95]].slice(0,band>60?3:2).forEach(([x,k],i)=>SPOTS.push({id:"g"+(8+i),x,y:Math.round(480+band*k),poses:["sit","happy","groom","lie","sleep"]}))}
+{const band=EXT-80;if(band>20)[[110,.25],[330,.85],[46,.95]].slice(0,band>60?3:2).forEach(([x,k],i)=>SPOTS.push({id:"g"+(8+i),x,y:Math.round(480+band*k),poses:["sit","happy","groom","lie","sleep","belly","play"]}))}
 const SPOT=Object.fromEntries(SPOTS.map(s=>[s.id,s]));
 const DOOR={x:200,y:240},EDGE={x:-40,y:330}; // EDGE : là où les sauvages entrent et repartent, côté forêt
-const ACT={sit:"se repose",happy:"joue",sleep:"dort",lie:"paresse",groom:"fait sa toilette",up:"regarde le ciel",eat:"mange"};
+const ACT={sit:"se repose",happy:"joue",sleep:"dort",lie:"paresse",groom:"fait sa toilette",up:"regarde le ciel",eat:"mange",belly:"se roule le ventre en l'air",play:"s'amuse"};
+const TOYTXT={pelote:"joue avec une pelote de laine",balle:"joue à la balle",papillon:"suit un papillon"};
 const PLACE={p1:"sous le porche",p2:"sous le porche",p3:"sous le porche",p4:"sous le porche",bowl:"à la gamelle",stump:"sur la souche",leaves:"dans les feuilles",bench1:"sur le banc",bench2:"sur le banc",pond:"au bord de la mare",lampL:"près des lanternes",lampR:"près des lanternes"};
 const MAXHERE=10; // renards visibles en même temps dans la scène
 

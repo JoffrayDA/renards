@@ -13,7 +13,7 @@ $("scene").appendChild(camEl);
 function camMode(on){shooting=on;$("scene").classList.toggle("shooting",on);camEl.classList.toggle("on",on);if(on)toast("Touche un renard pour le prendre en photo.")}
 
 // la pose photographiée : une par renard et par clé (les visites de la gamelle gardent chacune leur photo)
-const dkey=p=>p.deco&&(p.deco.k||p.deco),pkey=p=>p.bowl?null:p.obj||(p.deco&&p.at+":"+dkey(p))||p.at+":"+p.pose;
+const dkey=p=>p.deco&&(p.deco.k||p.deco),pkey=p=>p.bowl?null:p.obj||(p.deco&&p.at+":"+dkey(p))||p.at+":"+p.pose+(p.toy?":"+p.toy:"");
 function keepShot(p,host){bip("shutter");const k=pkey(p),old=R.photos.findIndex(q=>q.id===p.id&&!q.bowl&&pkey({at:"out",...q})===k);
   if(old>=0)R.photos.splice(old,1);R.photos.push(p);save();camMode(false);
   const fl=document.createElement("div");fl.className="snapflash";host.appendChild(fl);setTimeout(()=>fl.remove(),700);
@@ -25,6 +25,7 @@ function shootFox(f){
   if(INC[f.id]&&!known(f.id)){bubble(f,"se cache le museau : pas de photo tant que tu ne connais pas son nom !");return}
   if(f.walk){bubble(f,"bouge trop ! Attends qu'il s'arrête.");return}
   const sp=f.spot||{},p={id:f.id,t:Date.now(),h:hourNow(),at:"out",x:Math.round(f.x),y:Math.round(f.y),pose:f.pose,f:f.el.classList.contains("left")?1:0,wet:scn.rain?1:0};
+  if(f.toy)p.toy=f.toy;
   if(sp.obj)p.obj=sp.obj;
   if(sp.deco){const d=R.deco.out.find(d=>"dc"+d.u===sp.id);if(d)p.deco={k:d.k,x:d.x,y:d.y,f:d.f?1:0}}
   keepShot(p,$("scene"))}
@@ -59,7 +60,7 @@ function shotSVG(p){const s=shotOf(p);if(!s)return p.deco&&DECO[p.deco]?decoPhot
   const home=s.at==="home",H0=H;let vw,cx,cy,fox;
   if(home&&HOBJ[s.obj]){const [x,y,k]=HOBJ[s.obj].at;vw=200*k;cx=x+100*k;cy=y+80*k;fox=`<g transform="${hPlace(s.obj)}">${HOBJ[s.obj].art(s.id)}</g>`}
   else{const [w,dy]=SHOT[s.obj]||[120,-24];vw=w;cx=s.x;cy=s.y+dy;
-    const art=s.obj&&OBJS[s.obj]?OBJS[s.obj].svg(s.id):foxArt(FOX[s.id],{pose:s.pose});
+    const art=s.obj&&OBJS[s.obj]?OBJS[s.obj].svg(s.id):foxArt(FOX[s.id],{pose:s.pose,toy:s.toy});
     fox=(s.deco?atDeco(s.deco,"art"):"")+atFox(art,s.x,s.y,s.f,s.w||54*(s.obj&&OBJS[s.obj]&&OBJS[s.obj].k||1))+(s.deco&&DECO[s.deco.k].front?atDeco(s.deco,"front"):"")}
   const vh=vw*5/6,vx=Math.max(0,Math.min(400-vw,cx-vw/2)),vy=Math.max(0,Math.min(H0-vh,cy-vh/2)),pre=`s${++shotN}`;
   const ph=PH[atTime(s,phaseNow)];
@@ -73,7 +74,7 @@ function shotSVG(p){const s=shotOf(p);if(!s)return p.deco&&DECO[p.deco]?decoPhot
   return `<svg viewBox="${f1(vx)} ${f1(vy)} ${f1(vw)} ${f1(vh)}" aria-hidden="true">${svg}${fx}</svg>`}
 
 /* ---------- l'album, rangé par renard ---------- */
-const pcap=p=>`${p.clue!=null&&INC[p.id]?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.bowl!==undefined&&!p.obj&&!p.deco?"À la gamelle, le ":p.obj?`${(HOBJ[p.obj]||OBJS[p.obj]||OBJS.panier).in}, le `:DECO[dkey(p)]?`${DECO[dkey(p)].name}, le `:p.pose?`${ACT[p.pose]?ACT[p.pose][0].toUpperCase()+ACT[p.pose].slice(1):"Pose"}, le `:""}${fmtDate(p.t)}`;
+const pcap=p=>`${p.clue!=null&&INC[p.id]?`${INC[p.id].clues[p.clue].txt}<br>`:""}${p.bowl!==undefined&&!p.obj&&!p.deco?"À la gamelle, le ":p.obj?`${(HOBJ[p.obj]||OBJS[p.obj]||OBJS.panier).in}, le `:DECO[dkey(p)]?`${DECO[dkey(p)].name}, le `:p.pose?`${(t=>t?t[0].toUpperCase()+t.slice(1):"Pose")(TOYTXT[p.toy]||ACT[p.pose])}, le `:""}${fmtDate(p.t)}`;
 function photos(){bgCache.clear();
   // les visites à la gamelle d'un inconnu sont dans l'enquête ; ses photos à l'appareil (la bande de Balafre au refuge) vont ici, sous « ??? »
   const by={};for(const p of R.photos){if(INC[p.id]&&!incOf(p.id).found&&p.bowl!==undefined)continue;(by[p.id]=by[p.id]||[]).push(p)}
