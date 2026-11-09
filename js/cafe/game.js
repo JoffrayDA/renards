@@ -19,6 +19,10 @@ function newDay(d){
   G.ovens=Array.from({length:it&&WD().ovens?WD().ovens(d):1},()=>({state:"idle"}));G.oven=G.ovens[0];
   // pas de deuxième four sans un plat de sa rangée à la carte
   if(G.ovens.length>1&&!Object.keys(vit).some(k=>(WD().ovenOf||{})[k]===1))G.ovens.length=1;
+  // Kyoto, les défis des sumos (WD().sumo) : deux gros clients entrent lentement, s'installent pour toute la journée
+  // et recommandent dès qu'ils sont servis (Joffray, 09/11/2026) ; il vient moins d'autres clients ces jours-là
+  if(it&&WD().sumo&&WD().sumo[d]){G.cfg={...G.cfg,c:Math.round(G.cfg.c*.6)};G.sumo=1;
+    for(const id of WD().sumo[d]){const sp=freeSpot(),pat=G.cfg.pat*patMult()*1.15;G.cust.push({id:++uid,fox:id,spot:sp,order:sumoOrder(),pat,patMax:pat,state:"walkin",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:""});S.seen[id]=(S.seen[id]||0)+1}}
   // à Paris, les jours de défi : le score de Firmin, à battre (paris.js)
   if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
@@ -38,6 +42,9 @@ function genOrder(){
     const T=r==="smoothie"&&gelOn()?gelT():r==="dango"?gel2T():null,g=T?Object.keys(T).map(x=>[G.rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(""):undefined;
     return{r,g,o:op&&roll<.35?op:undefined,done:0}});
 }
+const quake=()=>{const e=$("scene");if(!e)return;e.classList.remove("quake");void e.offsetWidth;e.classList.add("quake")};
+// une commande de sumo : deux ou trois plats
+function sumoOrder(){const m=G.cfg.max;G.cfg.max=3;let o=genOrder();while(o.length<2)o=o.concat(genOrder()).slice(0,3);G.cfg.max=m;return o}
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
   const here=new Set(G.cust.map(c=>c.fox));
@@ -62,11 +69,15 @@ function update(dt){
   G.t+=dt;
   if(G.spawned<G.cfg.c&&G.t>=G.next){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
   for(const c of G.cust){
-    if(c.state==="wait"){c.pat-=dt;if(c.pat<=0){c.state="angry";c.leave=.9;G.lost++;G.combo=0;dirty=true;bip("angry")}
+    // un sumo qui marche : boum à chaque pas, et la salle tremble
+    if(c.slow&&(c.state==="walkin"||c.state==="walkout")){c.stepT=(c.stepT||0)-dt;if(c.stepT<=0){c.stepT=.62;bip("stomp");quake()}}
+    if(c.state==="wait"){c.pat-=dt;if(c.pat<=0&&c.stay){G.lost++;G.combo=0;bip("angry");floatAt(custEl(c),"Grrr !");c.order=sumoOrder();c.pat=c.patMax;c.low=0;dirty=true}
+      else if(c.pat<=0){c.state="angry";c.leave=.9;G.lost++;G.combo=0;dirty=true;bip("angry")}
       else if(c.pat/c.patMax<.3&&!c.low){c.low=1;dirty=true}}
     else if(c.state==="queue"){c.qp-=dt;if(c.qp<=0){c.state="angry";c.leave=.9;c.gave=1;G.lost++;G.combo=0;dirty=true;bip("angry")}}
     else if(c.state==="walkin"){c.walk-=dt;if(c.walk<=0){c.state="wait";c.born=G.t;dirty=true}}
     else if(c.state==="walkout"){c.walk-=dt;if(c.walk<=0){c.gone=1;dirty=true}}
+    else if(c.stay&&c.state==="happy"){c.leave-=dt;if(c.leave<=0){c.state="wait";c.order=sumoOrder();c.pat=c.patMax;c.low=0;c.born=G.t;dirty=true}}
     else{c.leave-=dt;if(c.leave<=0){if(c.gave)c.gone=1;else{c.state="walkout";c.walk=WALK};dirty=true}}
   }
   G.cust=G.cust.filter(c=>!c.gone);
@@ -87,6 +98,8 @@ function update(dt){
         flyPastry(itemKey(it),custEl(c),got+1,k);G.tray.splice(k,1);it.done=1;got++;G.arm=null;G.pick=null}
       if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);bip("pop");buddyHop();buddyTip();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
 }}
+  // les sumos ne repartent qu'une fois tous les autres clients partis
+  if(G.sumo&&G.spawned>=G.cfg.c&&G.cust.length&&!G.cust.some(c=>!c.stay))for(const c of G.cust){c.stay=0;c.state="walkout";c.walk=WALK*2.4;dirty=true}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
 const custEl=c=>document.querySelector(`[data-cust="${c.id}"]`);

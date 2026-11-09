@@ -619,6 +619,8 @@ const MUSIC=(()=>{
     else if(k==="burn"){nz(5200,.5,.7,.07);tone("triangle",300,140,.4,.07,.1)} // ça a brûlé
     else if(k==="angry"){tone("triangle",280,200,.16,.07);tone("triangle",240,160,.22,.07,.14)} // un client part fâché
     else if(k==="toss"){nz(500,1.2,.2,.07,0,2200)} // à la poubelle
+    // un pas de sumo (Kyoto, 09/11/2026, Joffray : « d'énormes bruits de pas ») : un boum très grave, la poussière du plancher
+    else if(k==="stomp"){tone("sine",110,34,.5,.5);tone("triangle",70,30,.3,.22);nz(220,.8,.18,.35)}
     else if(k==="buy"){[0,4,7].forEach((d,i)=>bell(84+d,.07,i*.07,.5));bell(91,.06,.21,.6)} // un achat
   }
   function jingleEnd(){if(!jtimer)return;clearTimeout(jtimer);jtimer=null;if(cur&&cur.startsWith("jingle:")){stop();if(on&&wanted)play(wanted)}}

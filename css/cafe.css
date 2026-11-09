@@ -159,6 +159,9 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .kit.ov2 .krow:nth-last-child(-n+2) .kn{min-height:1.2em;font-size:11px}
 @media (min-width:521px){body:has(#kitchen.gel2) .scene{aspect-ratio:16/8.2}}
 @media (max-width:520px) and (max-height:800px){body:has(#kitchen.gel2) .scene{aspect-ratio:7/4.3}}
+/* la salle tremble sous les pas des sumos (Kyoto) */
+.scene.quake{animation:quake .32s ease-out}
+@keyframes quake{0%{translate:0 0}15%{translate:0 4px}35%{translate:-3px -1px}55%{translate:3px 1px}75%{translate:-1px 0}100%{translate:0 0}}
 @keyframes shake{0%,100%{translate:0}25%{translate:-5px 0}75%{translate:5px 0}}
 .hint{margin:0;font-size:13.5px;color:var(--ink-soft);min-height:1.5em}
 .hint b{color:var(--ink)}

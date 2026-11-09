@@ -27,7 +27,7 @@ function render(){
     const inner=bub+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit"});
     let el=custEl(c);
     // un nouveau client apparaît hors champ à gauche, puis la transition CSS le fait marcher jusqu'à sa place
-    if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);el.style.left="-14%";box.appendChild(el);void el.offsetWidth}
+    if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);el.style.left="-14%";if(c.slow)el.style.transition="left 3.8s linear,opacity .5s";box.appendChild(el);void el.offsetWidth}
     if(el.dataset.c!==cls){el.className=cls;el.dataset.c=cls}
     if(el._l!==left){el.style.left=left+"%";el._l=left}
     if(el._h!==inner){el.innerHTML=inner;el._h=inner}

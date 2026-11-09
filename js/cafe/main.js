@@ -45,6 +45,9 @@ function onAct(a){
   else if(a==="italie")goWorld("italie");else if(a==="paris")goWorld("paris");else if(a==="kyoto")goWorld("kyoto");else if(a==="yuzu")kyCarnet();else if(a==="yuzuintro")yuzuIntro();else if(a==="anatole")paCarnet();else if(a==="anatoleintro")anatoleIntro();else if(a==="finale")paFinaleSheet();else if(a==="monde1")goWorld("");else if(a==="lorenzo")itCarnet();else if(a==="lorenzointro")lorenzoIntro();else if(a==="nonno")nonnoSheet();
   else if(a==="resume"){closeSheet();G.paused=0}
   else if(a==="tuto"){closeSheet();startTuto()}
+  // recommencer (09/11/2026, Joffray : « un bouton recommencer ») : la même journée (ou nuit, ou leçon) depuis le début, avec les mêmes bonus
+  else if(a==="restart"){closeSheet();const g=G;if(g.tuto){tuEnd(false);G=null;startTuto();return}
+    G=null;if(g.noel)newNoel(g.noel);else if(g.night)newNight(g.night);else newDay(g.day);if(G)G.boost=g.boost;dirty=true}
   else if(a==="quit"){closeSheet();tuEnd(false);G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
 }
 $("map").addEventListener("click",e=>{
@@ -79,12 +82,26 @@ $("sheet").addEventListener("click",e=>{
 });
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&G&&G.run&&!G.paused)pauseMenu()});
 
+/* ---------- le bouton retour du téléphone (09/11/2026, Joffray : « je reviens sur l'accueil, je veux revenir sur la map ») ----------
+   Tant qu'une fiche, une journée ou une carte est ouverte, on garde une entrée d'historique en réserve : le retour la consomme
+   et recule d'un cran (fermer la fiche, mettre en pause, revenir à l'écran des mondes) au lieu de quitter le jeu. */
+let backGuard=false;
+const backDeep=()=>!$("sheet").hidden||!!(G&&G.run)||!$("map").hidden;
+function armBack(){if(!backGuard&&backDeep()){try{history.pushState({kc:1},"")}catch(e){return}backGuard=true}}
+addEventListener("popstate",()=>{if(!backGuard)return;backGuard=false;
+  // le jeu vient d'être refermé par le bouton maison de l'accueil : on laisse l'accueil reculer aussi
+  try{if(window.frameElement&&window.frameElement.hidden){history.back();return}}catch(e){}
+  if(!$("sheet").hidden){if(!$("sheet").dataset.lock)closeSheet();else if(G&&G.run&&G.paused&&!G.tuto){closeSheet();G.paused=0}} // en pause, le retour reprend la partie
+  else if(G&&G.run){if(!G.paused)pauseMenu()}
+  else if(!$("map").hidden)openWorlds();
+  setTimeout(armBack,50)});
 /* ---------- boucle ---------- */
 function loop(ts){
   const dt=Math.min(.1,(ts-(last||ts))/1000);last=ts;
   if(G&&G.run&&!G.paused)update(dt);
   if(G&&G.tuto)tuTick(); // la leçon de Petit Pois (tuto.js)
   if(dirty)render();else if(G&&G.run)updateBars();
+  if(!backGuard)armBack();
   requestAnimationFrame(loop);
 }
 $("ic-c").innerHTML=coinSVG;$("ic-c2").innerHTML=coinSVG;$("ic-b").innerHTML=bellSVG;

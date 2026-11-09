@@ -35,14 +35,17 @@ const KYF_REG=KYF.filter(f=>f.rar==="commun");
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde, de 24 à 40, puis au-delà (hard : plus de clients, plus serrés, moins patients) ;
 // graine et objectif par `python tools/balance-bot.py --kyoto`
-const KY_DAYS=[{base:24,seed:8,goal:186},{base:25,seed:3,goal:199},{base:26,seed:0,goal:204},{base:27,seed:12,goal:222},{base:28,seed:2,goal:234},{base:29,seed:2,goal:247},{base:30,seed:1,goal:256},{base:31,seed:13,goal:294},{base:32,seed:5,goal:299},{base:33,seed:15,goal:333},{base:34,seed:11,goal:364},{base:35,seed:12,goal:365},{base:36,seed:7,goal:386},{base:37,seed:9,goal:385},{base:38,seed:10,goal:405},{base:39,seed:5,goal:413},{base:40,seed:2,goal:418},{base:40,hard:1.05,seed:9,goal:442},{base:40,hard:1.1,seed:12,goal:482},{base:40,hard:1.15,seed:12,goal:509},{base:40,hard:1.2,seed:0,goal:539},{base:40,hard:1.25,seed:3,goal:565},{base:40,hard:1.3,seed:3,goal:581},{base:40,hard:1.35,seed:14,goal:592},{base:40,hard:1.4,seed:0,goal:597}];
+const KY_DAYS=[{base:24,seed:8,goal:186},{base:25,seed:3,goal:199},{base:26,seed:9,goal:214},{base:27,seed:12,goal:222},{base:28,seed:10,goal:232},{base:29,seed:15,goal:261},{base:30,seed:1,goal:256},{base:31,seed:13,goal:294},{base:32,seed:5,goal:299},{base:33,seed:15,goal:333},{base:34,seed:11,goal:355},{base:35,seed:12,goal:365},{base:36,seed:0,goal:378},{base:37,seed:9,goal:385},{base:38,seed:10,goal:405},{base:39,seed:5,goal:413},{base:40,seed:15,goal:420},{base:40,hard:1.05,seed:9,goal:442},{base:40,hard:1.1,seed:12,goal:482},{base:40,hard:1.15,seed:12,goal:509},{base:40,hard:1.2,seed:0,goal:539},{base:40,hard:1.25,seed:3,goal:565},{base:40,hard:1.3,seed:3,goal:581},{base:40,hard:1.35,seed:14,goal:592},{base:40,hard:1.4,seed:0,goal:597}];
 const KY_S3=Array(KY_DAYS.length).fill(1.7);
 // l'équipement prévu pour chaque journée : celui de l'Italie, étalé sur 25 journées
 const KY_KIT=IT_KIT.map(([k,n,d])=>[k,n,Math.max(1,Math.round(d*1.25))]);
 // la journée qui fait gagner chaque recette ou option (elle arrive à la suivante) ; 0 = dès le jour 1
 const KY_REC={cafe:0,the:0,croissant:0,cookie:0,taiyaki:2,lait:3,choco:5,dango:7,smoothie:10,mochi:13,chantilly:16,gateau:19};
 S.ky=S.ky||{day:1,stars:{},best:{},own:{},intro:0,guest:0,read:{}};
-S.ky.read=S.ky.read||{};
+S.ky.read=S.ky.read||{};S.ky.sumo=S.ky.sumo||{};
+// les défis des sumos (09/11/2026, idée de Joffray) : ces jours-là, Chanko et Ōyama passent toute la journée au comptoir ;
+// la scène de fin dit qui a gagné le concours : Chanko, puis Ōyama, puis égalité
+const KY_SUMO={5:["chanko","oyama"],11:["oyama","chanko"],17:["chanko","oyama"]};
 if(new URLSearchParams(location.search).get("kyoto")==="1"){S.kyOpen=1;save()} // pour tester sans avoir fini Paris
 const kyOpen=()=>S.pa.day>PA_DAYS.length||!!S.kyOpen;
 
@@ -256,23 +259,36 @@ const KY_SCENES={
   3:[["origami","open","Tu vois cette grue en papier ? Je l'ai pliée en attendant mon onigiri."],
      ["origami","joy","Pour un stand, il faut des décorations. Mille grues et des lanternes : je m'en occupe !"],["yuzu","joy","Origami fait partie de l'équipe !"]],
   4:[["daifuku","joy","Des beignets de crevettes ! Croustillants dehors, tout doux dedans. Comme moi."],["yuzu","open","Il en a mangé six. Pour vérifier."]],
+  5:[["chanko","joy","Encore un plateau ! … Et un autre !"],["oyama","surprise","Il a mangé plus que moi ?! Impossible !"],
+     ["chanko","joy","Victoire ! Le ventre de Chanko est le plus grand du quartier !"],["oyama","open","Je veux ma revanche. Même comptoir, dans six jours."],
+     ["yuzu","shy","Ils ont vidé toute la vitrine… mais quelle journée !"]],
   6:[["yuzu","surprise","Ce matin, toutes les lanternes de la rue étaient réparées. Personne n'a rien vu…"],
      ["origami","shy","Ce n'est pas moi. Moi, je plie. Je ne répare pas."],["yuzu","open","Un mystère…"]],
   7:[["yuzu","joy","Les dango ! Au Matsuri, c'est LA douceur : trois boules sur une brochette."],
      ["yuzu","open","Chaque client veut son ordre à lui : sakura, blanc, matcha… On les enfile de bas en haut. Raté ? Touche la brochette pour la vider."],
      ["daifuku","joy","Trois petites boules sur un bâton… C'est moi en brochette !"]],
+  8:[["hayate","open","…"],["tsuba","open","Tiens, Hayate. Toujours sans maître ? Un samouraï sans maître, ce n'est qu'un vagabond."],
+     ["hayate","shy","… Je cherche."],["yuzu","open","Il vient tous les jours. Il s'incline, il paie, il repart. Je l'aime bien, moi."]],
   9:[["kage","open","…"],["yuzu","surprise","Kyaa ! D'où tu sors, toi ?"],
      ["kage","shy","Je suis là depuis une heure. Les lanternes, c'est moi. Je peux aider… en silence."],["yuzu","joy","Kage, le renard ninja, rejoint l'équipe !"]],
   10:[["yuzu","joy","Les sushis ! Pour le Matsuri, ce sera notre grande spécialité : un plateau de trois."],
       ["yuzu","open","Saumon, maki, tamago, chacun dans son ordre. On les pose de gauche à droite. Raté ? Touche le plateau pour le vider."],
       ["daifuku","surprise","Deux comptoirs à composer… On est une vraie cantine, maintenant !"]],
+  11:[["oyama","joy","Hmm hmm. Un dernier plateau de sushis ? Non… deux."],["chanko","sad","Je… n'en peux plus…"],
+      ["oyama","joy","Le grand champion reprend son titre !"],["chanko","open","Une belle, alors. Dans six jours."]],
   13:[["yuzu","joy","Le mochi fraise arrive au menu… avec un deuxième four, rien que pour lui et les douceurs !"],
       ["yuzu","surprise","Le premier four cuit les onigiris, la tempura et les taiyakis ; le deuxième, les mochis et les dorayakis. Deux fournées à la fois… mais deux fours à surveiller !"]],
   14:[["hoji","open","Hmm. Alors c'est vous, la cantine qui veut servir du matcha au Matsuri."],["hoji","open","Je suis Hōji. Je sers le thé dans ce quartier depuis soixante ans."],
       ["yuzu","shy","Sensei… vous goûteriez le nôtre ?"],["hoji","surprise","… Pas mal. Revenez me voir quand il sera parfait."]],
+  15:[["hayate","open","Yuzu-san. Votre stand, au Matsuri. Il lui faut quelqu'un pour veiller."],["yuzu","surprise","Tu veux… nous protéger ?"],
+      ["hayate","joy","Un rōnin peut choisir ce qu'il sert. Je choisis ce Shokudō."],["tsuba","sad","Servir une cantine ? Quelle honte pour un samouraï…"]],
   16:[["yuzu","joy","La crème ! Sur un hōjicha… et bientôt dans nos dorayakis."],["daifuku","joy","Je vérifie que c'est bon. … C'est bon."]],
+  17:[["yuzu","surprise","Ils ont fini… en même temps ?!"],["chanko","shy","Pile le même nombre de plats…"],["oyama","shy","… Égalité."],
+      ["chanko","joy","Et si on faisait équipe au concours de mangeurs du Matsuri ?"],["oyama","joy","Ensemble, personne ne nous battra !"]],
   19:[["hoji","joy","Celui-ci est parfait. Le secret, c'est la patience. Et un fouet en bambou bien souple."],
       ["hoji","open","Je viendrai au Matsuri. Et je prendrai mon thé chez vous, de temps en temps."],["yuzu","joy","Le sensei rejoint l'équipe !"]],
+  20:[["tsuba","surprise","Hier soir, le vent a renversé les lanternes du stand… et c'est Hayate qui les a toutes rattrapées ?"],
+      ["hayate","shy","Une a failli tomber sur le plateau de sushis. Inacceptable."],["tsuba","open","Hmm. Je m'étais peut-être trompé sur toi."]],
   22:[["origami","joy","Les mille grues sont prêtes ! Enfin, neuf cent quatre-vingt-dix-neuf. Daifuku s'est assis sur la dernière."],
       ["hoji","open","On raconte que si les lanternes du chemin des torii brillent assez fort, la Dame aux neuf queues descend de la montagne."],
       ["kage","shy","J'ai… peut-être ajouté quelques lanternes."]],
@@ -281,6 +297,8 @@ const KY_SCENES={
       ["kyubi","open","Que de lumière, cette année… Je n'avais pas vu un stand aussi joyeux depuis cent ans."],
       ["kyubi","joy","Un plateau de sushis, et des dango, s'il te plaît. … Délicieux. On sent l'omotenashi."],
       ["hoji","shy","La Dame aux neuf queues… en personne."],
+      ["tsuba","open","Hayate. Tu as trouvé un maître digne de toi : tout ce quartier."],["tsuba","joy","Je m'incline."],["hayate","joy","… Merci, Tsuba."],
+      ["chanko","joy","Et le concours de mangeurs ? Gagné, à deux !"],
       ["yuzu","joy",`On a réussi, ${ME()} ! Le plus beau stand du Matsuri, c'est le nôtre !`]]
 };
 const kySceneDue=d=>KY_SCENES[d]&&!S.ky.read[d]&&!!S.ky.stars[d];
@@ -311,7 +329,10 @@ function kyCarnet(){
 
 /* ---------- le quartier dans le registre des mondes (data.js) ---------- */
 WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Shokudō",short:"Shokudō",sv:()=>S.ky,days:KY_DAYS,s3:KY_S3,kit:KY_KIT,
-  recDays:KY_REC,ovens:d=>d>=14?2:1,ovenOf:{croissant:0,cookie:0,taiyaki:0,mochi:1,gateau:1},
+  recDays:KY_REC,sumo:KY_SUMO,
+  mark:d=>KY_SUMO[d]&&!S.ky.sumo[d]?foxArt(FOX.chanko,{portrait:1,expr:"joy"}):"",
+  dayRow:d=>KY_SUMO[d]?itRow(foxSVG(FOX.chanko,{pose:"happy"}),"Défi des sumos !",`Chanko et Ōyama s'installent pour toute la journée et recommandent dès qu'ils sont servis. Sers-les vite !${S.ky.sumo[d]?" (déjà réussi)":" +40 pièces la première fois."}`,"background:#e8eefa"):"",
+ovens:d=>d>=14?2:1,ovenOf:{croissant:0,cookie:0,taiyaki:0,mochi:1,gateau:1},
   opt:{lait:"Lait",chantilly:"Crème"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Matcha latte":`${REC[r].name} à la crème`,optWord:"la crème",optWords:{lait:"le lait",chantilly:"la crème"},
   optNews:{lait:"Touche « Lait », au bout du plateau, pour transformer un matcha en matcha latte."},
   // le plateau de sushis (clé « smoothie », comme le gelato)…
@@ -328,7 +349,8 @@ WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Shokudō",short:"Shokudō",s
   guest:"kyubi",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",
   reg:()=>[...KYF_REG,...KYF_REG,...KYF_REG,...(S.ky.read[19]?[FOX.hoji]:[])],
   // musique du service, choix de Joffray le 09/11/2026 : le Matsuri « plus rapide » et le grand odaiko (accéléré à 158 bpm)
-  music:d=>d%2?"matsuri2":"taiko5",mapMusic:"torii",
+  // les jours des sumos, toujours les gros tambours (Joffray)
+  music:d=>KY_SUMO[d]||d%2===0?"taiko5":"matsuri2",mapMusic:"torii",
   isOpen:()=>kyOpen(),lockMsg:"Réussis les 20 journées de Paris pour ouvrir Kyoto.",
   layout:()=>kyLayout(),mapSVG:L=>kyMapSVG(L),outside:()=>outsideKy(),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.yuz.x,L.yuz.u)}" data-act="yuzu" type="button" aria-label="Yuzu">${foxSVG(FOX.yuzu,{pose:"happy"})}<em>Yuzu</em></button>`
@@ -336,7 +358,7 @@ WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Shokudō",short:"Shokudō",s
     +`<button class="mnext" style="${pc(200,52)}" data-act="paris" type="button" aria-label="Retour à Paris"></button>`,
   arrive:()=>{if(!S.ky.intro)yuzuIntro();else kyStory()},
   scenes:done=>kyScenes(done),
-  news:()=>{}
+  news:(d,st,prev,news)=>{if(KY_SUMO[d]&&st&&!S.ky.sumo[d]){S.ky.sumo[d]=1;S.coins+=40;news.push(itRow(foxSVG(FOX.oyama,{pose:"happy"}),"Défi des sumos réussi !","Ils n'ont pas bougé de la journée, et tu les as nourris jusqu'au bout. +40 pièces !","background:#e8eefa"))}}
 };
 // le monde affiché au chargement (le dernier visité, s'il est ouvert)
 WORLD=WORLDS[S.world]&&WORLDS[S.world].isOpen()?S.world:"";

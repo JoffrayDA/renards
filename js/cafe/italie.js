@@ -256,7 +256,7 @@ function renderMapIt(){
   for(let d=1;d<=N;d++){
     const p=P[d],st=V.stars[d]||0,op=d<=V.day,rk=wRecAt(d);
     const cls=!op?"lock":d===cur&&!st?"cur":st===3?"gold":"done";
-    const badge=rk&&!V.own[rk]?`<span class="nb">${icon(rk,WORLD)}</span>`:Q.duel&&Q.duel[d]&&op&&!(V.duel||{})[d]?`<span class="nb">${icon("croissant",WORLD)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
+    const badge=rk&&!V.own[rk]?`<span class="nb">${icon(rk,WORLD)}</span>`:Q.duel&&Q.duel[d]&&op&&!(V.duel||{})[d]?`<span class="nb">${icon("croissant",WORLD)}</span>`:Q.mark&&op&&Q.mark(d)?`<span class="nb">${Q.mark(d)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
     h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-itday="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
   }
   const ok=V.guest,dl=FOX[Q.guest];
@@ -378,6 +378,7 @@ function itDaySheet(d){
   const c=itCfg(d),g=c.goal,st=V.stars[d]||0,rk=wRecAt(d),rw=[];
   if(rk&&!V.own[rk])rw.push(itRow(icon(rk,WORLD),`${OPTS[rk]?"Option":"Recette"} à gagner : ${OPTS[rk]?(Q.optWords&&Q.optWords[rk]||Q.optWord):VAR[WORLD][rk][0]}`,`Réussis cette journée pour l'ajouter à la carte du ${Q.short}.`,"background:#e3f2d6"));
   if(Q.duel&&Q.duel[d])rw.push(Q.duelRow(d,g));
+  if(Q.dayRow){const r=Q.dayRow(d);if(r)rw.push(r)}
   if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que la moitié des pièces. Les nouvelles étoiles restent payées par le coffre."));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★","Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
   if(d===N){const f=FOX[Q.guest],ok=V.guest;rw.push(itRow(foxSVG(f,{sil:!ok}),ok?`Invitée d'honneur : ${f.name}`:"Invitée d'honneur mystère",ok?Q.guestBio:`Obtiens ★★★ sur les ${N} journées du quartier pour l'inviter (${itStarSum()} / ${N*3} ★).`,"background:#fbf0cc"))}
