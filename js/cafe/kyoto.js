@@ -1,22 +1,25 @@
-/* Kitsune Café : Kyoto, troisième quartier de la Ville (08/11/2026, choix de Joffray parmi Japon, Montagne, Plage, Londres).
-   20 journées, comme la Petite Italie et Paris, avec son salon de thé, le Kitsune Kissa, et son équipement (S.ky.own, même prix
-   que l'Italie) ; les pièces, les quêtes, les bonus et le style restent communs.
-   Mêmes clés de recettes, prix et cuissons : seuls le nom et le dessin changent (VAR.kyoto, ICON["clé@kyoto"]) :
-   matcha (+ Lait = matcha latte), taiyaki, ramune, mochi à la fraise, hōjicha à la crème, brochette de dango à composer
-   (comme le gelato : trois boules dans l'ordre du client, de bas en haut), cheesecake japonais. Recettes validées par Joffray.
-   Histoire (choix de Joffray) : le Matsuri. Yuzu, la patronne, prépare le stand du Kissa pour le grand festival d'été ;
-   à chaque étape, un renard du quartier rejoint l'équipe ; le soir du Matsuri (jour 20), Kyūbi, la Dame aux neuf queues,
-   descend du chemin des torii.
-   On y entre depuis l'écran des mondes, ou par le panneau à droite du Café, en haut de la carte de Paris, une fois ses
-   20 journées réussies (?kyoto=1 pour tester). Sauvegarde : S.ky = {day, stars, best, own, intro, guest, read, gtip}. */
+/* Kitsune Café : Kyoto, troisième quartier de la Ville (08/11/2026, choix de Joffray parmi Japon, Montagne, Plage, Londres),
+   refait le 09/11/2026 en vrai défi de fin (Joffray : « faut que ça se complique ! ») : 25 journées plus dures, la petite cantine
+   de Yuzu, le Kitsune Shokudō, et le menu le plus riche du jeu, choisi avec Joffray :
+   - boissons : matcha (+ Lait = matcha latte), ramune, hōjicha (+ Crème) ;
+   - au four, en vitrine : onigiri, tempura de crevettes, taiyaki, mochi fraise, dorayaki (+ Crème), avec DEUX fours dès le jour 8
+     (WD().ovens), chacun en tête d'une rangée de vitrine ;
+   - à composer, sur DEUX comptoirs : la brochette de dango (sakura, blanc, matcha, de bas en haut, recette « dango », WD().gel2)
+     et le plateau de sushis (saumon, thon, tamago, de gauche à droite, la clé « smoothie » comme le gelato).
+   On commence avec deux boissons et deux plats (Joffray : « les gens comprennent maintenant »), le reste se gagne (KY_REC).
+   Taiyaki, mochi et dango sont des recettes propres au quartier (REC avec w:"kyoto", data.js).
+   Histoire (choix de Joffray) : le Matsuri. Yuzu monte une équipe pour le stand du festival d'été ; à chaque étape, un renard
+   du quartier la rejoint ; le soir du Matsuri (jour 25), Kyūbi, la Dame aux neuf queues, descend du chemin des torii.
+   On y entre depuis l'écran des mondes, ou par le panneau au-dessus du Café de Paris, une fois ses 20 journées réussies
+   (?kyoto=1 pour tester). Sauvegarde : S.ky = {day, stars, best, own, intro, guest, read, gtip}. */
 
 /* ---------- les renards du quartier (dans FOX, pas dans FOXES : ni la Clairière, ni le grand portrait) ---------- */
 const KYF=[
-  {id:"yuzu",name:"Yuzu",rar:"commun",acc:"kimono",c:{b:"#f4c060",ch:"#fffaf0",e:"#a87a2a",s:"#946a24",t:"#fffaf0"},bio:"La patronne du Kitsune Kissa. Kimono rose, fleur dans les cheveux, et un matcha toujours prêt."},
+  {id:"yuzu",name:"Yuzu",rar:"commun",acc:"kimono",c:{b:"#f4c060",ch:"#fffaf0",e:"#a87a2a",s:"#946a24",t:"#fffaf0"},bio:"La patronne du Kitsune Shokudō. Kimono rose, fleur dans les cheveux, et un matcha toujours prêt."},
   {id:"daifuku",name:"Daifuku",rar:"commun",acc:"mochi",scale:1.06,c:{b:"#f6e4e6",ch:"#ffffff",e:"#c99aa4",s:"#b8848e",t:"#ffffff"},bio:"Rond comme un mochi, et il les aime tous. Il goûte tout. Pour vérifier."},
   {id:"origami",name:"Origami",rar:"commun",acc:"grue",c:{b:"#a9c2e0",ch:"#f6fbff",e:"#5f7fa6",s:"#4f6f96",t:"#f6fbff"},bio:"Il plie des grues en papier en attendant sa commande. Il en a mille. Presque."},
   {id:"kage",name:"Kage",rar:"commun",acc:"ninja",c:{b:"#4c5270",ch:"#a6acc4",e:"#2a2d40",s:"#22243a",t:"#a6acc4"},bio:"Le renard ninja. On ne le voit jamais arriver. Il répare les lanternes la nuit, sans rien dire."},
-  // le maître de thé : ne vient au Kissa qu'une fois son matcha jugé parfait (scène du jour 15, S.ky.read[15])
+  // le maître de thé : ne vient au Shokudō qu'une fois son matcha jugé parfait (scène du jour 19, S.ky.read[19])
   {id:"hoji",name:"Sensei Hōji",rar:"rare",acc:"sensei",c:{b:"#b8957a",ch:"#f6efe6",e:"#7a5a44",s:"#6a4c38",t:"#f6efe6"},bio:"Maître de la cérémonie du thé depuis soixante ans. Il ne sourit qu'aux matchas parfaits."},
   {id:"kyubi",name:"Kyūbi",rar:"legend",acc:"inari",tail:"neuf",c:{b:"#fbf4ea",ch:"#ffffff",e:"#e0b860",s:"#d4a84a",t:"#f7d77a"},bio:"La Dame aux neuf queues, gardienne du chemin des torii. Elle ne descend que pour les fêtes les plus lumineuses."}
 ];
@@ -24,19 +27,23 @@ KYF.forEach(f=>{f.world="kyoto";FOX[f.id]=f});
 const KYF_REG=KYF.filter(f=>f.rar==="commun");
 
 /* ---------- les journées ---------- */
-// rythme d'un jour de référence du premier monde (un peu plus dur que Paris : le jour 1 se joue comme le jour 22), graine et objectif par
-// `python tools/balance-bot.py --kyoto`
-const KY_DAYS=[{base:22,seed:1,goal:167},{base:23,seed:9,goal:174},{base:24,seed:4,goal:196},{base:25,seed:2,goal:209},{base:26,seed:15,goal:219},{base:27,seed:7,goal:208},{base:28,seed:2,goal:251},{base:29,seed:4,goal:280},{base:30,seed:13,goal:312},{base:31,seed:7,goal:333},{base:32,seed:3,goal:342},{base:33,seed:5,goal:379},{base:34,seed:2,goal:394},{base:35,seed:9,goal:422},{base:36,seed:4,goal:442},{base:37,seed:10,goal:452},{base:38,seed:5,goal:442},{base:39,seed:11,goal:456},{base:40,seed:14,goal:456},{base:40,seed:14,goal:456}];
-const KY_S3=Array(20).fill(1.7);
-const KY_KIT=IT_KIT;
+// rythme d'un jour de référence du premier monde, de 24 à 40, puis au-delà (hard : plus de clients, plus serrés, moins patients) ;
+// graine et objectif par `python tools/balance-bot.py --kyoto`
+const KY_DAYS=[{base:24,seed:8,goal:186},{base:25,seed:3,goal:199},{base:26,seed:0,goal:204},{base:27,seed:12,goal:222},{base:28,seed:2,goal:234},{base:29,seed:2,goal:247},{base:30,seed:1,goal:256},{base:31,seed:13,goal:301},{base:32,seed:12,goal:282},{base:33,seed:8,goal:342},{base:34,seed:13,goal:362},{base:35,seed:12,goal:367},{base:36,seed:4,goal:375},{base:37,seed:2,goal:383},{base:38,seed:14,goal:385},{base:39,seed:5,goal:384},{base:40,seed:7,goal:409},{base:40,hard:1.05,seed:2,goal:437},{base:40,hard:1.1,seed:7,goal:453},{base:40,hard:1.15,seed:12,goal:474},{base:40,hard:1.2,seed:12,goal:497},{base:40,hard:1.25,seed:2,goal:524},{base:40,hard:1.3,seed:12,goal:552},{base:40,hard:1.35,seed:14,goal:551},{base:40,hard:1.4,seed:6,goal:561}];
+const KY_S3=Array(KY_DAYS.length).fill(1.7);
+// l'équipement prévu pour chaque journée : celui de l'Italie, étalé sur 25 journées
+const KY_KIT=IT_KIT.map(([k,n,d])=>[k,n,Math.max(1,Math.round(d*1.25))]);
+// la journée qui fait gagner chaque recette ou option (elle arrive à la suivante) ; 0 = dès le jour 1
+const KY_REC={cafe:0,the:0,croissant:0,cookie:0,taiyaki:2,lait:3,choco:5,dango:7,smoothie:10,mochi:13,chantilly:16,gateau:19};
 S.ky=S.ky||{day:1,stars:{},best:{},own:{},intro:0,guest:0,read:{}};
 S.ky.read=S.ky.read||{};
 if(new URLSearchParams(location.search).get("kyoto")==="1"){S.kyOpen=1;save()} // pour tester sans avoir fini Paris
 const kyOpen=()=>S.pa.day>PA_DAYS.length||!!S.kyOpen;
 
-/* ---------- la carte du salon de thé : noms et dessins (mêmes clés, prix et cuissons) ---------- */
-VAR.kyoto={cafe:["Matcha","matchas"],croissant:["Taiyaki","taiyakis"],the:["Ramune","ramunes"],cookie:["Mochi fraise","mochis fraise"],
-  choco:["Hōjicha","hōjichas"],smoothie:["Brochette de dango","brochettes de dango"],gateau:["Cheesecake japonais","cheesecakes japonais"]};
+/* ---------- la carte de la cantine : noms et dessins (mêmes clés, prix et cuissons que le premier café, plus taiyaki, mochi et dango) ---------- */
+VAR.kyoto={cafe:["Matcha","matchas"],croissant:["Onigiri","onigiris"],the:["Ramune","ramunes"],cookie:["Tempura de crevettes","tempuras de crevettes"],
+  choco:["Hōjicha","hōjichas"],smoothie:["Plateau de sushis","plateaux de sushis"],gateau:["Dorayaki","dorayakis"],
+  taiyaki:["Taiyaki","taiyakis"],mochi:["Mochi fraise","mochis fraise"],dango:["Brochette de dango","brochettes de dango"]};
 const KY_DANGO={r:{n:"Sakura",c:"#f6a8be"},b:{n:"Blanc",c:"#fffaf2"},v:{n:"Matcha",c:"#a9cf7a"}};
 const ballSVG=(x,y,c,r=6)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" ${K2}/><ellipse cx="${x-r*.35}" cy="${y-r*.4}" rx="${r*.32}" ry="${r*.2}" fill="#fff" opacity=".75"/>`;
 // la brochette, remplie de bas en haut (g peut être incomplet : la brochette en cours au comptoir)
@@ -47,29 +54,24 @@ Object.assign(ICON,{
   "cafe@kyoto":`<ellipse cx="20" cy="33" rx="13" ry="3" fill="#3d2a35" opacity=".12"/><path d="M6 18 H34 Q33 32 20 33 Q7 32 6 18Z" fill="#7a6a96" ${K}/><path d="M8.4 24 Q20 28 31.6 24" fill="none" stroke="#9d8fbc" stroke-width="1.6"/><ellipse cx="20" cy="18" rx="14" ry="3.6" fill="#9cc46a" ${K}/><ellipse cx="16" cy="17.4" rx="5" ry="1.2" fill="#c9e6a4"/><circle cx="24" cy="18.4" r="1" fill="#c9e6a4"/>
     <path d="M30 4 L27 15" stroke="#c99a5a" stroke-width="2.6" stroke-linecap="round"/><path d="M25.4 14 Q27 19 29 15 M27.4 15 Q28.4 19.6 30.4 15.6" fill="none" stroke="#d9b07a" stroke-width="1.3"/>`,
   // taiyaki : le gâteau en forme de poisson, doré, écailles et petit œil
-  "croissant@kyoto":`<path d="M8 22 Q10 12 22 12 Q30 12 32 18 L38 13 Q37 20 38 27 L32 23 Q29 31 20 31 Q10 31 8 22Z" fill="#e0a050" ${K}/><path d="M11 20 Q13 15 21 14.4" fill="none" stroke="#f6cf88" stroke-width="2" stroke-linecap="round"/>
+  "taiyaki@kyoto":`<path d="M8 22 Q10 12 22 12 Q30 12 32 18 L38 13 Q37 20 38 27 L32 23 Q29 31 20 31 Q10 31 8 22Z" fill="#e0a050" ${K}/><path d="M11 20 Q13 15 21 14.4" fill="none" stroke="#f6cf88" stroke-width="2" stroke-linecap="round"/>
     ${[[17,21],[22,19],[22,25],[27,22],[17,26]].map(([x,y])=>`<path d="M${x-2.4} ${y-1.6} q2.4 3 4.8 0" fill="none" stroke="#b8742e" stroke-width="1.3"/>`).join("")}<circle cx="12.6" cy="19.6" r="1.6" fill="${INK}"/><path d="M8.6 23.6 q2 1 3.4 .2" fill="none" stroke="#b8742e" stroke-width="1.3"/><path d="M33 16 L36 18.6 M33 24 L36 22" stroke="#b8742e" stroke-width="1.1"/>`,
   // ramune : la bouteille de soda bleue et sa bille de verre dans le goulot
   "the@kyoto":`<path d="M15 36 Q12 36 12 32 V21 Q12 17 15.5 15 Q17 14 17 12 V6 H23 V12 Q23 14 24.5 15 Q28 17 28 21 V32 Q28 36 25 36Z" fill="#bfe6f2" ${K}/><path d="M13.4 24 H26.6 V32 Q26.6 34.6 24.6 34.6 H15.4 Q13.4 34.6 13.4 32Z" fill="#8fd0e8"/>
     <circle cx="20" cy="13.6" r="2.8" fill="#e8f7fb" stroke="${INK}" stroke-width="1.4"/><rect x="16.4" y="3.4" width="7.2" height="3.4" rx="1.2" fill="#e2546e" stroke="${INK}" stroke-width="1.4"/><path d="M15.4 19 V30" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
     <path d="M15 36 Q12 36 12 32 V21 Q12 17 15.5 15 Q17 14 17 12 V6 H23 V12 Q23 14 24.5 15 Q28 17 28 21 V32 Q28 36 25 36Z" fill="none" ${K}/>`,
   // mochi à la fraise : une boule blanche, la fraise qui dépasse
-  "cookie@kyoto":`<ellipse cx="20" cy="33" rx="15" ry="3.4" fill="#3d2a35" opacity=".12"/><path d="M5.4 27 Q5 16 20 15 Q35 16 34.6 27 Q34 33 20 33 Q6 33 5.4 27Z" fill="#fffaf6" ${K}/><ellipse cx="13" cy="21" rx="3.6" ry="1.8" fill="#fff"/><ellipse cx="9" cy="27" rx="2.2" ry="1.2" fill="#f6c3cf"/><ellipse cx="31" cy="27" rx="2.2" ry="1.2" fill="#f6c3cf"/>
+  "mochi@kyoto":`<ellipse cx="20" cy="33" rx="15" ry="3.4" fill="#3d2a35" opacity=".12"/><path d="M5.4 27 Q5 16 20 15 Q35 16 34.6 27 Q34 33 20 33 Q6 33 5.4 27Z" fill="#fffaf6" ${K}/><ellipse cx="13" cy="21" rx="3.6" ry="1.8" fill="#fff"/><ellipse cx="9" cy="27" rx="2.2" ry="1.2" fill="#f6c3cf"/><ellipse cx="31" cy="27" rx="2.2" ry="1.2" fill="#f6c3cf"/>
     <path d="M14 17 Q20 3 26 17 Q20 19.4 14 17Z" fill="#e2546e" ${K}/>${[[18,12],[22,12.4],[20,15],[17,15.4],[23,15.6]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx=".6" ry=".9" fill="#ffe08a"/>`).join("")}<path d="M16.4 8 L20 5.4 L23.6 8 L20 7.2Z" fill="#8fca7a" ${K2}/>`,
   // hōjicha : le thé grillé au lait, dans un verre, couleur caramel
   "choco@kyoto":`<path d="M11 13 H29 L27 36 H13Z" fill="#eef7fb" ${K}/><path d="M11.8 19 H28.2 L27 35 H13Z" fill="#b97a4e"/><path d="M12 17 H28 L27.8 20 H12.2Z" fill="#e8c9a6"/><path d="M14.4 22 V32" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M11 13 H29 L27 36 H13Z" fill="none" ${K}/>
     <path d="M17 9 q-2 -3 0 -6 M23 9 q-2 -3 0 -6" fill="none" stroke="#c9b3a8" stroke-width="1.8" stroke-linecap="round"/>`,
-  "smoothie@kyoto":kyDangoSVG("rbv"),
-  // cheesecake japonais : tout haut, tout doux, le dessus doré, un peu de sucre glace
-  "gateau@kyoto":`<ellipse cx="20" cy="33.4" rx="16" ry="3.4" fill="#fff" stroke="#e6d3c4" stroke-width="1.4" stroke-dasharray="2.4 1.6"/><path d="M6 17 V29 Q6 33 20 33 Q34 33 34 29 V17Z" fill="#fbe7b8" ${K}/><path d="M6 23 Q20 27 34 23" fill="none" stroke="#f1d39a" stroke-width="1.4"/>
-    <ellipse cx="20" cy="17" rx="14" ry="4.6" fill="#d99a4a" ${K}/><ellipse cx="16" cy="15.8" rx="5" ry="1.4" fill="#eebc72"/>${[[12,16.6],[20,15],[26,17.4],[23,15.6],[16,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".8" fill="#fff"/>`).join("")}
-    <path d="M9 20 V28" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>`,
+  "dango@kyoto":kyDangoSVG("rbv"),
   "lait@kyoto":ICON["lait@paris"],
   "chantilly@kyoto":ICON["chantilly@paris"]
 });
 
-/* ---------- recettes proposées par Joffray (08/11/2026), pas encore dans le jeu : on en discute avec lui ----------
-   onigiri, tempura de crevettes, plateau de sushis à composer (saumon, thon, tamago), dorayaki ; montrées sur tools/kyoto-propositions.html */
+/* ---------- les idées de Joffray (08/11/2026), au menu depuis le 09/11/2026 : onigiri, tempura de crevettes, plateau de sushis, dorayaki ---------- */
 const KY_SUSHI={s:{n:"Saumon",c:"#f6a06a"},t:{n:"Thon",c:"#e0505a"},o:{n:"Tamago",c:"#f7d77a"}};
 // un sushi (nigiri) : le riz, et le poisson ou l'omelette dessus ; le tamago a sa bande d'algue
 const nigiriSVG=(x,y,k,top)=>`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fffaf6" ${K2}/>`+(top==="o"
@@ -79,7 +81,7 @@ const nigiriSVG=(x,y,k,top)=>`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry=
 // le plateau de sushis, rempli de gauche à droite (g peut être incomplet : le plateau en cours au comptoir)
 const kySushiSVG=g=>`<path d="M2 25 H38 V30 Q38 32 36 32 H4 Q2 32 2 30Z" fill="#d9a46a" ${K}/><path d="M6 32 V36 M34 32 V36" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M4 27.4 H36" stroke="#eec08a" stroke-width="1.2"/>`
   +[0,1,2].map(i=>g[i]?nigiriSVG(9+i*11,19,.72,g[i]):`<ellipse cx="${9+i*11}" cy="21" rx="4.4" ry="2.6" fill="none" stroke="#e6c3cf" stroke-width="1.4" stroke-dasharray="2 2"/>`).join("");
-const KY_ALT={
+const KY_ALT={ // gardé pour tools/kyoto-propositions.html
   onigiri:`<ellipse cx="20" cy="34" rx="14" ry="2.8" fill="#3d2a35" opacity=".12"/><path d="M20 5 Q24.4 5 31 18 Q36 28 33 32 Q31 34 27 34 H13 Q9 34 7 32 Q4 28 9 18 Q15.6 5 20 5Z" fill="#fffaf6" ${K}/>
     <path d="M13 22.4 H27 V34 H13Z" fill="#2f3a32" ${K}/><path d="M15 24.6 V31.6" stroke="#5a6a5c" stroke-width="1.4" stroke-linecap="round"/><ellipse cx="15.6" cy="12.6" rx="2.6" ry="1.4" fill="#fff" transform="rotate(-40 15.6 12.6)"/>${[[19,15],[23,17.4],[17.4,19]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx=".9" ry=".5" fill="#e6d3b4"/>`).join("")}`,
   tempura:`<ellipse cx="20" cy="33" rx="16" ry="3.4" fill="#fff" stroke="#e6d3c4" stroke-width="1.4" stroke-dasharray="2.4 1.6"/>`
@@ -91,6 +93,10 @@ const KY_ALT={
     <path d="M5 27 Q5 32 20 32 Q35 32 35 27 Q35 24 20 24 Q5 24 5 27Z" fill="#c9783a" ${K}/><path d="M6 24.6 Q20 27.6 34 24.6 L34 22 Q20 25 6 22Z" fill="#7a3a3a" ${K2}/>
     <path d="M5 19.6 Q5 12 20 12 Q35 12 35 19.6 Q35 23.4 20 23.4 Q5 23.4 5 19.6Z" fill="#d98a42" ${K}/><path d="M8 18 Q12 14 20 14" fill="none" stroke="#f2b46a" stroke-width="2" stroke-linecap="round"/><path d="M8 20.4 Q20 22.4 32 20.4" fill="none" stroke="#a65a24" stroke-width="1.2"/>`
 };
+
+Object.assign(ICON,{"croissant@kyoto":KY_ALT.onigiri,"cookie@kyoto":KY_ALT.tempura,"smoothie@kyoto":KY_ALT.sushi,"gateau@kyoto":KY_ALT.dorayaki});
+// les recettes propres au quartier ont aussi un dessin hors de Kyoto (planches, carnet)
+Object.assign(ICON,{taiyaki:ICON["taiyaki@kyoto"],mochi:ICON["mochi@kyoto"],dango:ICON["dango@kyoto"]});
 
 /* ---------- dehors, derrière la vitre : la rue de maisons en bois, la pagode au loin, un cerisier ---------- */
 OUT.kyoto={sky:["#f6c6b4","#fde9d6"],hill:["#a9c79a","#93b585"],cloud:"#fff"};
@@ -117,14 +123,14 @@ function outsideKy(){
   return {defs,st,an};
 }
 
-/* ---------- la carte du quartier : de la grande porte en bas au Kitsune Kissa en haut ---------- */
-// la rue de Gion (jours 1-5), la rivière Kamo et ses pierres de gué (entre 5 et 6), les bambous et le pavillon d'or (7-12),
-// le chemin des torii de Fushimi Inari (13-18), la pagode, les stands du Matsuri et le salon de thé (19-20)
-const KY_X=[200,290,300,210,110,100,190,290,300,220,120,110,200,290,290,200,110,120,210,200];
+/* ---------- la carte du quartier : de la grande porte en bas au Kitsune Shokudō en haut ---------- */
+// la rue de Gion (jours 1-6), la rivière Kamo et ses pierres de gué (entre 6 et 7), les bambous et le pavillon d'or (8-14),
+// le chemin des torii de Fushimi Inari (15-22), la pagode, les stands du Matsuri et la cantine (23-25)
+const KY_X=[200,290,300,210,110,100,190,290,300,220,120,100,150,250,300,290,200,110,100,170,260,300,230,140,200];
 function kyLayout(){
   const P=[];for(let d=1;d<=KY_DAYS.length;d++)P[d]={d,x:KY_X[d-1],u:230+(d-1)*96};
   const top=P[KY_DAYS.length].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
-  return {P,way,H,guest:{x:322,u:P[18].u+60},yuz:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},river:(P[5].u+P[6].u)/2};
+  return {P,way,H,guest:{x:340,u:P[22].u+60},yuz:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},river:(P[6].u+P[7].u)/2};
 }
 const KY_DEFS=`<linearGradient id="ky-wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9a6a46"/><stop offset="1" stop-color="#6e4630"/></linearGradient>
   <linearGradient id="ky-roof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7486a0"/><stop offset="1" stop-color="#4c5a72"/></linearGradient>
@@ -172,7 +178,7 @@ function kyCafeSVG(x,y){
   for(let i=0;i<10;i++){s+=`<path d="M${x-96+i*6} ${y-74} V${y-6}" stroke="#5a3624" stroke-width="2"/><path d="M${x+42+i*6} ${y-74} V${y-6}" stroke="#5a3624" stroke-width="2"/>`}
   s+=`<path d="M${x-126} ${y-96} Q${x-112} ${y-102} ${x-102} ${y-108} H${x+102} Q${x+112} ${y-102} ${x+126} ${y-96} L${x+112} ${y-128} H${x-112}Z" fill="url(#ky-roof)" ${BO}/>`+Array.from({length:22},(_,i)=>`<path d="M${x-104+i*10} ${y-125} V${y-108}" stroke="#3e4a5e" stroke-width="1.3"/>`).join("");
   // l'enseigne, la porte et son noren indigo au renard blanc
-  s+=`<rect x="${x-62}" y="${y-92}" width="124" height="20" rx="3" fill="#f4e8cf" ${BO}/><text x="${x}" y="${y-77}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Kitsune Kissa</text>`;
+  s+=`<rect x="${x-72}" y="${y-92}" width="144" height="20" rx="3" fill="#f4e8cf" ${BO}/><text x="${x}" y="${y-77}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Kitsune Shokudō</text>`;
   s+=`<rect x="${x-24}" y="${y-64}" width="48" height="64" fill="#3a2a24" ${BO}/>`+[0,1,2].map(i=>`<rect x="${x-28+i*19}" y="${y-66}" width="18" height="28" fill="#3d4e7a" ${K2}/>`).join("")+`<circle cx="${x}" cy="${y-52}" r="7" fill="#fffaf2" ${K2}/><path d="M${x-5} ${y-56} l1 -5 l3 3 M${x+5} ${y-56} l-1 -5 l-3 3" fill="#fffaf2" ${K2}/>`;
   s+=kyLantern(x-74,y-64,1.1)+kyLantern(x+74,y-64,1.1);
   // dehors, un banc sous une ombrelle rouge
@@ -183,7 +189,7 @@ function kyCafeSVG(x,y){
 function kyArchSVG(x,y){return kyTorii(x,y+24,2.4)}
 function kyMapSVG(L){
   const {P,way,H,cafe}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
-  const u7=P[7].u,u12=P[12].u,u13=P[13].u,u18=P[18].u;
+  const u7=P[8].u,u12=P[14].u,u13=P[15].u,u18=P[22].u;
   const defs=KY_DEFS+`<pattern id="ky-grav" width="40" height="34" patternUnits="userSpaceOnUse"><g fill="#d9ceb6"><circle cx="6" cy="8" r="1.6"/><circle cx="24" cy="4" r="1.2"/><circle cx="32" cy="20" r="1.6"/><circle cx="14" cy="26" r="1.2"/></g></pattern>
     <linearGradient id="ky-gnd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}"><stop offset="0" stop-color="#ece4d0"/><stop offset=".5" stop-color="#efe8d8"/><stop offset="1" stop-color="#ebe3d2"/></linearGradient>
     <linearGradient id="ky-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9a4b4"/><stop offset=".55" stop-color="#f8cfc2"/><stop offset="1" stop-color="#fdeedd"/></linearGradient>
@@ -212,13 +218,13 @@ function kyMapSVG(L){
   // ce qui est posé, chaque chose une fois
   const it=[];const at=(x,u,f)=>it.push({x,u,f});
   // la rue de Gion : maisons en bois des deux côtés, lanternes de pierre, un cerisier
-  [[0,150,66,92],[334,190,66,88],[0,370,60,84],[340,430,60,80],[0,536,58,70]].forEach(([x,u,w,h])=>at(x+w/2,u,(cx,y)=>kyMachiya(x,y,w,h)));
-  at(300,282,kyToro);at(110,250,kyToro);at(300,520,(x,y)=>kySakura(x,y,.9));at(40,250,(x,y)=>kySakura(x,y,.8));
+  [[0,150,66,92],[334,190,66,88],[0,370,60,84],[340,430,60,80],[0,536,58,70],[338,640,60,78],[0,700,58,70]].forEach(([x,u,w,h])=>at(x+w/2,u,(cx,y)=>kyMachiya(x,y,w,h)));
+  at(300,282,kyToro);at(110,250,kyToro);at(250,610,kyToro);at(300,520,(x,y)=>kySakura(x,y,.9));at(40,250,(x,y)=>kySakura(x,y,.8));
   // les bambous et le pavillon d'or
   at(60,u7+90,(x,y)=>kyBamboo(x,y,1));at(26,u7+40,(x,y)=>kyBamboo(x,y,.8));at(160,u7+160,(x,y)=>kyBamboo(x,y,.9));at(36,u12-60,(x,y)=>kyBamboo(x,y,1.1));at(380,u7+60,(x,y)=>kyPine(x,y,.8));
   at(110,u12-180,(x,y)=>kyKinkaku(x,y));at(370,u12-40,(x,y)=>kyPine(x,y,.9));at(380,u12+30,kyToro);
   // la montagne d'Inari : renards de pierre, le sanctuaire en haut ; les torii sont posés sur le chemin plus bas
-  at(250,u13+60,(x,y)=>kyFoxStatue(x,y,1));at(340,u13+40,(x,y)=>kyFoxStatue(x,y,-1));at(320,u18-40,kyShrine);at(372,u13+200,(x,y)=>kyPine(x,y,.8));at(40,u13+120,(x,y)=>kySakura(x,y,.9));at(30,u18-60,(x,y)=>kyPine(x,y,.8));at(160,u13+230,kyToro);
+  at(250,u13+60,(x,y)=>kyFoxStatue(x,y,1));at(340,u13+40,(x,y)=>kyFoxStatue(x,y,-1));at(100,u18+20,kyShrine);at(372,u13+200,(x,y)=>kyPine(x,y,.8));at(40,u13+120,(x,y)=>kySakura(x,y,.9));at(30,u18-60,(x,y)=>kyPine(x,y,.8));at(160,u13+230,kyToro);
   // devant le salon de thé : les stands du Matsuri, une guirlande de lanternes
   at(70,cafe.u-90,(x,y)=>kyYatai(x,y,"#e0503c"));at(330,cafe.u-96,(x,y)=>kyYatai(x,y,"#7a9ad8"));at(60,cafe.u-200,(x,y)=>kySakura(x,y,1));at(350,u18+150,(x,y)=>kySakura(x,y,.8));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
@@ -233,74 +239,88 @@ function kyMapSVG(L){
 /* ---------- l'histoire : le Matsuri ---------- */
 // une scène se joue à la fin de la journée, à sa première réussite (Q.scenes, comme Paris)
 const KY_SCENES={
-  1:[["yuzu","joy","Ton premier service au Kitsune Kissa ! Les clients ont adoré le matcha."],
-     ["yuzu","open","Dans vingt jours, c'est le Matsuri, le grand festival d'été. Chaque année, le Kissa y tient un stand…"],
+  1:[["yuzu","joy","Ton premier service au Kitsune Shokudō ! Les clients ont adoré."],
+     ["yuzu","open","Dans vingt-cinq jours, c'est le Matsuri, le grand festival d'été. Chaque année, on y tient un stand…"],
      ["yuzu","shy","Mais cette année, je suis toute seule. Tu m'aides à monter une équipe ?"]],
   2:[["daifuku","joy","Une ramune ! J'adore le petit bruit de la bille."],["daifuku","surprise","Un stand au Matsuri ? Je veux en être ! Je goûterai tout. Pour vérifier."],
      ["yuzu","joy","Daifuku rejoint l'équipe ! Surtout côté dégustation…"]],
-  3:[["origami","open","Tu vois cette grue en papier ? Je l'ai pliée en attendant mon taiyaki."],
+  3:[["origami","open","Tu vois cette grue en papier ? Je l'ai pliée en attendant mon onigiri."],
      ["origami","joy","Pour un stand, il faut des décorations. Mille grues et des lanternes : je m'en occupe !"],["yuzu","joy","Origami fait partie de l'équipe !"]],
-  4:[["daifuku","joy","Le mochi à la fraise… On dirait moi, mais en meilleur."],["yuzu","open","Il en a mangé six. Pour vérifier."]],
+  4:[["daifuku","joy","Des beignets de crevettes ! Croustillants dehors, tout doux dedans. Comme moi."],["yuzu","open","Il en a mangé six. Pour vérifier."]],
   6:[["yuzu","surprise","Ce matin, toutes les lanternes de la rue étaient réparées. Personne n'a rien vu…"],
      ["origami","shy","Ce n'est pas moi. Moi, je plie. Je ne répare pas."],["yuzu","open","Un mystère…"]],
-  7:[["kage","open","…"],["yuzu","surprise","Kyaa ! D'où tu sors, toi ?"],
+  7:[["yuzu","joy","Les dango ! Au Matsuri, c'est LA douceur : trois boules sur une brochette."],
+     ["yuzu","open","Chaque client veut son ordre à lui : sakura, blanc, matcha… On les enfile de bas en haut. Raté ? Touche la brochette pour la vider."],
+     ["yuzu","surprise","Et j'ai fait installer un deuxième four ! Deux fournées à la fois… mais deux fois plus de choses à surveiller."]],
+  9:[["kage","open","…"],["yuzu","surprise","Kyaa ! D'où tu sors, toi ?"],
      ["kage","shy","Je suis là depuis une heure. Les lanternes, c'est moi. Je peux aider… en silence."],["yuzu","joy","Kage, le renard ninja, rejoint l'équipe !"]],
-  9:[["yuzu","joy","Les dango ! Au Matsuri, c'est LA spécialité : trois boules sur une brochette."],
-     ["yuzu","open","Chaque client veut son ordre à lui : sakura, blanc, matcha… On les enfile de bas en haut. Raté ? Touche la brochette pour la vider."]],
-  11:[["yuzu","joy","La crème ! Sur un hōjicha, ou sur un cheesecake."],["daifuku","joy","Je vérifie que c'est bon. … C'est bon."]],
-  13:[["hoji","open","Hmm. Alors c'est vous, le salon qui veut servir du matcha au Matsuri."],["hoji","open","Je suis Hōji. Je sers le thé dans ce quartier depuis soixante ans."],
+  10:[["yuzu","joy","Les sushis ! Pour le Matsuri, ce sera notre grande spécialité : un plateau de trois."],
+      ["yuzu","open","Saumon, thon, tamago, chacun dans son ordre. On les pose de gauche à droite. Raté ? Touche le plateau pour le vider."],
+      ["daifuku","surprise","Deux comptoirs, deux fours… On est une vraie cantine, maintenant !"]],
+  14:[["hoji","open","Hmm. Alors c'est vous, la cantine qui veut servir du matcha au Matsuri."],["hoji","open","Je suis Hōji. Je sers le thé dans ce quartier depuis soixante ans."],
       ["yuzu","shy","Sensei… vous goûteriez le nôtre ?"],["hoji","surprise","… Pas mal. Revenez me voir quand il sera parfait."]],
-  15:[["hoji","joy","Celui-ci est parfait. Le secret, c'est la patience. Et un fouet en bambou bien souple."],
+  16:[["yuzu","joy","La crème ! Sur un hōjicha… et bientôt dans nos dorayakis."],["daifuku","joy","Je vérifie que c'est bon. … C'est bon."]],
+  19:[["hoji","joy","Celui-ci est parfait. Le secret, c'est la patience. Et un fouet en bambou bien souple."],
       ["hoji","open","Je viendrai au Matsuri. Et je prendrai mon thé chez vous, de temps en temps."],["yuzu","joy","Le sensei rejoint l'équipe !"]],
-  17:[["origami","joy","Les mille grues sont prêtes ! Enfin, neuf cent quatre-vingt-dix-neuf. Daifuku s'est assis sur la dernière."],
+  22:[["origami","joy","Les mille grues sont prêtes ! Enfin, neuf cent quatre-vingt-dix-neuf. Daifuku s'est assis sur la dernière."],
       ["hoji","open","On raconte que si les lanternes du chemin des torii brillent assez fort, la Dame aux neuf queues descend de la montagne."],
       ["kage","shy","J'ai… peut-être ajouté quelques lanternes."]],
-  20:[["yuzu","surprise","C'est le soir du Matsuri ! Regarde notre stand !"],["daifuku","joy","Les dango partent comme des petits pains !"],
+  25:[["yuzu","surprise","C'est le soir du Matsuri ! Regarde notre stand !"],["daifuku","joy","Les sushis partent comme des petits pains !"],
       ["kage","surprise","… Là-haut. Sur le chemin des torii."],
       ["kyubi","open","Que de lumière, cette année… Je n'avais pas vu un stand aussi joyeux depuis cent ans."],
-      ["kyubi","joy","Une brochette de dango, s'il te plaît. … Délicieux. Ce salon porte bien son nom."],
+      ["kyubi","joy","Un plateau de sushis, et des dango, s'il te plaît. … Délicieux. On sent l'omotenashi."],
       ["hoji","shy","La Dame aux neuf queues… en personne."],
       ["yuzu","joy",`On a réussi, ${ME()} ! Le plus beau stand du Matsuri, c'est le nôtre !`]]
 };
 const kySceneDue=d=>KY_SCENES[d]&&!S.ky.read[d]&&!!S.ky.stars[d];
+// l'accueil de Yuzu (09/11/2026, Joffray : expliquer qu'au Japon on respecte les clients, et pourquoi on sert du salé et du chaud)
 function yuzuIntro(){
   itTalk([["yuzu","joy",`Irasshaimase ! Bienvenue à Kyoto, ${ME()} ! Moi, c'est Yuzu.`],
-    ["yuzu","open","Ce salon de thé, c'est le Kitsune Kissa. Ici, les renards sont chez eux : le chemin des torii monte jusqu'au sanctuaire d'Inari."],
-    ["yuzu","joy","Pour commencer : le matcha, et le taiyaki, un petit gâteau en forme de poisson. Avec l'option Lait, le matcha devient un matcha latte."],
-    ["yuzu","open","Et dans vingt jours, c'est le Matsuri, le grand festival d'été…"]],
+    ["yuzu","open","Ici, on dit omotenashi : chaque client est reçu comme un invité d'honneur. On le sert vite, avec le sourire, et on ne le fait jamais attendre."],
+    ["yuzu","shy","Et les gens du quartier adorent manger chaud et salé : onigiri, tempura, sushis… Alors mon salon de thé est devenu un shokudō, une petite cantine."],
+    ["yuzu","joy","On commence avec deux boissons, le matcha et la ramune, et deux plats : l'onigiri et la tempura de crevettes. Le reste viendra vite !"],
+    ["yuzu","open","Et dans vingt-cinq jours, c'est le Matsuri, le grand festival d'été…"]],
     ()=>{if(!S.ky.intro){S.ky.intro=1;save();dailyBonus()}});
 }
 function kyScenes(done){
   const d=Object.keys(KY_SCENES).map(Number).find(kySceneDue);
-  if(d){itTalk(KY_SCENES[d],()=>{S.ky.read[d]=1;if(d===15)toast("Sensei Hōji viendra maintenant au Kissa.");save();kyScenes(done)});return}
+  if(d){itTalk(KY_SCENES[d],()=>{S.ky.read[d]=1;if(d===19)toast("Sensei Hōji viendra maintenant au Shokudō.");save();kyScenes(done)});return}
   done();
 }
 function kyStory(){kyScenes(()=>{renderMapIt();dailyBonus()})}
 function kyCarnet(){
   const rows=Object.keys(KY_SCENES).map(Number).map(d=>S.ky.read[d]
-    ?`<div data-kyscene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[KY_SCENES[d][0][0]],{pose:"happy"}),d===20?"Le soir du Matsuri":`Jour ${d}`,KY_SCENES[d][0][2],"background:#fde8ec")}</div>`
-    :`<div style="opacity:.55">${itRow(foxSVG(FOX.yuzu,{sil:1}),d===20?"Le soir du Matsuri":"Scène à découvrir",`Réussis le jour ${d} du quartier.`)}</div>`).join("");
+    ?`<div data-kyscene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[KY_SCENES[d][0][0]],{pose:"happy"}),d===25?"Le soir du Matsuri":`Jour ${d}`,KY_SCENES[d][0][2],"background:#fde8ec")}</div>`
+    :`<div style="opacity:.55">${itRow(foxSVG(FOX.yuzu,{sil:1}),d===25?"Le soir du Matsuri":"Scène à découvrir",`Réussis le jour ${d} du quartier.`)}</div>`).join("");
   openSheet(`<h2>Le carnet du Matsuri</h2><div style="width:120px;margin:0 auto">${foxSVG(FOX.yuzu,{pose:"happy"})}</div>
-  <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis ton arrivée au Kitsune Kissa. Touche une scène pour la revoir.</p>${rows}
+  <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis ton arrivée au Kitsune Shokudō. Touche une scène pour la revoir.</p>${rows}
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="yuzuintro" type="button">Revoir l'accueil de Yuzu</button></div>`);
   $("sheet-in").querySelectorAll("[data-kyscene]").forEach(b=>b.onclick=()=>itTalk(KY_SCENES[+b.dataset.kyscene],kyCarnet));
 }
 
 /* ---------- le quartier dans le registre des mondes (data.js) ---------- */
-WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Kissa",short:"Kissa",sv:()=>S.ky,days:KY_DAYS,s3:KY_S3,kit:KY_KIT,
-  opt:{lait:"Lait",chantilly:"Crème"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Matcha latte":`${REC[r].name} à la crème`,optWord:"la crème",
-  gel:KY_DANGO,gelSVG:kyDangoSVG,tubSVG:x=>ballSVG(20,21,KY_DANGO[x].c,12),tubLabel:"Une boule",cone:"la brochette",
-  coneHint:"Touche les boules <b>dans l'ordre de la commande</b>, de bas en haut.",
-  gelHint:g=>`Dango : touche les boules <b>dans l'ordre, de bas en haut</b> (${gelName(g)}). Raté ? Touche la brochette.`,
-  gelNew:"Dès la prochaine journée, les dango : chaque client veut sa brochette de trois boules dans son ordre à lui. Touche les boules de bas en haut.",
-  optNew:"Touche « Crème », au bout du plateau, pour en mettre sur un hōjicha ou un cheesecake.",
+WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Shokudō",short:"Shokudō",sv:()=>S.ky,days:KY_DAYS,s3:KY_S3,kit:KY_KIT,
+  recDays:KY_REC,ovens:d=>d>=8?2:1,
+  opt:{lait:"Lait",chantilly:"Crème"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Matcha latte":`${REC[r].name} à la crème`,optWord:"la crème",optWords:{lait:"le lait",chantilly:"la crème"},
+  optNews:{lait:"Touche « Lait », au bout du plateau, pour transformer un matcha en matcha latte."},
+  // le plateau de sushis (clé « smoothie », comme le gelato)…
+  gel:KY_SUSHI,gelSVG:kySushiSVG,tubSVG:x=>nigiriSVG(20,22,1.9,x),tubLabel:"Un sushi",cone:"le plateau",
+  coneHint:"Touche les sushis <b>dans l'ordre de la commande</b>, de gauche à droite.",
+  gelHint:g=>`Sushis : touche-les <b>dans l'ordre, de gauche à droite</b> (${gelName(g)}). Raté ? Touche le plateau.`,
+  gelNew:"Dès la prochaine journée, les sushis : chaque client veut son plateau de trois dans son ordre à lui. Touche les sushis de gauche à droite.",
+  // … et la brochette de dango, sur un deuxième comptoir (recette « dango »)
+  gel2:{t:KY_DANGO,svg:kyDangoSVG,tub:x=>ballSVG(20,21,KY_DANGO[x].c,12),label:"Une boule",cone:"la brochette",
+    coneHint:"Touche les boules <b>dans l'ordre de la commande</b>, de bas en haut.",
+    hint:g=>`Dango : touche les boules <b>dans l'ordre, de bas en haut</b> (${g.split("").map(x=>KY_DANGO[x].n.toLowerCase()).join(" › ")}). Raté ? Touche la brochette.`,
+    new:"Dès la prochaine journée, les dango, et un deuxième four ! Chaque client veut sa brochette dans son ordre : touche les boules de bas en haut."},
+  optNew:"Touche « Crème », au bout du plateau, pour en mettre sur un hōjicha ou un dorayaki.",
   guest:"kyubi",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",
-  reg:()=>[...KYF_REG,...KYF_REG,...KYF_REG,...(S.ky.read[15]?[FOX.hoji]:[])],
+  reg:()=>[...KYF_REG,...KYF_REG,...KYF_REG,...(S.ky.read[19]?[FOX.hoji]:[])],
   music:d=>d%2?"matsuri2":"taiko5", // choix de Joffray le 09/11/2026 : le Matsuri « plus rapide » et le grand odaiko (accéléré à 158 bpm)mapMusic:"torii",
   isOpen:()=>kyOpen(),lockMsg:"Réussis les 20 journées de Paris pour ouvrir Kyoto.",
   layout:()=>kyLayout(),mapSVG:L=>kyMapSVG(L),outside:()=>outsideKy(),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.yuz.x,L.yuz.u)}" data-act="yuzu" type="button" aria-label="Yuzu">${foxSVG(FOX.yuzu,{pose:"happy"})}<em>Yuzu</em></button>`
-    +(S.ky.read[15]?`<button class="mguest ok" style="${pc(L.cafe.x-142,L.cafe.u-36)}" data-act="yuzu" type="button" aria-label="Sensei Hōji">${foxSVG(FOX.hoji,{pose:"sit"})}<em>Hōji</em></button>`:"")
+    +(S.ky.read[19]?`<button class="mguest ok" style="${pc(L.cafe.x-142,L.cafe.u-36)}" data-act="yuzu" type="button" aria-label="Sensei Hōji">${foxSVG(FOX.hoji,{pose:"sit"})}<em>Hōji</em></button>`:"")
     +`<button class="mnext" style="${pc(200,52)}" data-act="paris" type="button" aria-label="Retour à Paris"></button>`,
   arrive:()=>{if(!S.ky.intro)yuzuIntro();else kyStory()},
   scenes:done=>kyScenes(done),

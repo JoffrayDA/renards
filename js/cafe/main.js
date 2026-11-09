@@ -26,9 +26,11 @@ onTap($("custs"),e=>{const b=e.target.closest("[data-cust]");if(!b||!G||!G.run)r
 onTap($("kitchen"),e=>{const b=e.target.closest("button");if(!b||!G||!G.run)return;
   if(b.dataset.gel){scoop(b.dataset.gel,b);return}
   if(b.dataset.cone!==undefined){if(G.cone){G.cone="";dirty=true}else hint(WD().coneHint);return}
+  if(b.dataset.gel2){scoop2(b.dataset.gel2);return}
+  if(b.dataset.cone2!==undefined){if(G.cone2){G.cone2="";dirty=true}else hint(WD().gel2.coneHint);return}
   if(b.dataset.st)tapStation(b.dataset.st,b);else if(b.dataset.bake)bake(b.dataset.bake);
-  else if(b.dataset.oven!==undefined){if(G.oven.state==="ready")unload();else if(G.oven.state==="idle")hint("Touche une <b>pâtisserie</b> pour lancer une fournée.")}
-  else if(b.dataset.pa){const k=b.dataset.pa;if(G.vit[k])fromVit(k,b);else if(G.oven.state==="idle")bake(k);else{shake(b);hint(G.oven.state==="ready"?"<b>Touche le four</b> pour sortir la fournée d'abord.":"Le four est occupé : attends la fin de la cuisson.")}}});
+  else if(b.dataset.oven!==undefined){const o=G.ovens[+b.dataset.oven||0];if(o.state==="ready")unload(+b.dataset.oven||0);else if(o.state==="idle")hint("Touche une <b>pâtisserie</b> pour lancer une fournée.")}
+  else if(b.dataset.pa){const k=b.dataset.pa;if(G.vit[k])fromVit(k,b);else if(ovenIdle())bake(k);else{shake(b);hint(ovenReady()?"<b>Touche le four</b> pour sortir la fournée d'abord.":G.ovens.length>1?"Les deux fours sont occupés : attends la fin d'une cuisson.":"Le four est occupé : attends la fin de la cuisson.")}}});
 onTap($("tray"),e=>{const p=e.target.closest("[data-opt]");if(p&&G&&G.run){applyOpt(p.dataset.opt,p);return}
   const b=e.target.closest("[data-tray]");if(!b||!G||!G.run)return;const i=+b.dataset.tray,now=performance.now();
   if(G.pick&&G.pick.until>now){const o=G.pick.o;G.pick=null;if(optFits(o).includes(i))applyOpt(o,b,i);dirty=true;return}

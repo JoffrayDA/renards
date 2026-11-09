@@ -14,7 +14,9 @@ function newDay(d){
   for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d)&&!(it&&k==="smoothie"))st[k]=Array.from({length:k==="cafe"?1+lv("double"):OWN().machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?WD().sv().stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p])),cone:""};
+  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?WD().sv().stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p])),cone:"",cone2:""};
+  // les fours : un seul d'habitude, deux à Kyoto à partir du jour 8 (WD().ovens) ; G.oven reste le premier (leçon, conseils)
+  G.ovens=Array.from({length:it&&WD().ovens?WD().ovens(d):1},()=>({state:"idle"}));G.oven=G.ovens[0];
   // à Paris, les jours de défi : le score de Firmin, à battre (paris.js)
   if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;MUSIC.want(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
@@ -31,7 +33,7 @@ function genOrder(){
   // une fois sur trois environ, l'article demande une option gagnée (café crème, chantilly)
   return Array.from({length:n},()=>{const r=un[Math.floor(G.rng()*un.length)],op=Object.keys(OPTS).find(o=>OPTS[o].for.includes(r)&&optOn(o)),roll=G.rng();
     // un gelato de la Petite Italie (ou une boîte de macarons à Paris) : les trois parfums dans un ordre tiré au sort
-    const g=r==="smoothie"&&gelOn()?Object.keys(gelT()).map(x=>[G.rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(""):undefined;
+    const T=r==="smoothie"&&gelOn()?gelT():r==="dango"?gel2T():null,g=T?Object.keys(T).map(x=>[G.rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(""):undefined;
     return{r,g,o:op&&roll<.35?op:undefined,done:0}});
 }
 function spawn(){
@@ -70,10 +72,11 @@ function update(dt){
   for(const c of G.cust)if(c.state==="queue"){const sp=freeSpot();if(sp<0)break;c.spot=sp;c.state="walkin";c.walk=WALK;dirty=true}
   const sp=[1,1.15,1.22,1.3][lv("barista")];
   for(const k in G.st)for(const s of G.st[k])if(s.busy){s.t+=dt*sp;if(s.t>=REC[k].time){s.busy=0;s.ready=1;dirty=true}}
-  const o=G.oven;
+  for(const o of G.ovens){
   if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,5.2,6][lv("fourpro")];dirty=true;bip("ding")}}
   else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;bip("burn");S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
+  }
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte au client le plus pressé ce qui l'attend sur le plateau
   // (la « vitrine » de Joffray) ; il ne touche jamais au plan de travail : sinon c'est de la triche, et on ne comprend plus
   if(OWN().serveur&&!G.tuto){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
@@ -137,6 +140,13 @@ function scoop(f,el){
   if(G.cone.length===2&&G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}
   G.cone+=f;bip("plic",G.cone.length*3);if(G.cone.length===3){G.tray.push("smoothie~"+G.cone);G.popI=G.tray.length-1;G.cone="";G.arm=null}dirty=true;
 }
-function bake(k){const o=G.oven;if(o.state!=="idle")return;bip("tap");Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
-function unload(){const o=G.oven;if(o.state!=="ready")return;G.vit[o.r]=Math.min(OWN().four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";bip("pop",-3);dirty=true}
+function scoop2(f){
+  if(!G||!G.run||typeof G.cone2!=="string")return;
+  if(G.cone2.length===2&&G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein ! Sers un client ou jette un article.");return}
+  G.cone2+=f;bip("plic",G.cone2.length*3);if(G.cone2.length===3){G.tray.push("dango~"+G.cone2);G.popI=G.tray.length-1;G.cone2="";G.arm=null}dirty=true;
+}
+// une fournée part dans le premier four libre ; on sort la fournée d'un four (i), ou du premier qui est prêt
+const ovenIdle=()=>G.ovens.find(o=>o.state==="idle"),ovenReady=()=>G.ovens.find(o=>o.state==="ready");
+function bake(k){const o=ovenIdle();if(!o)return;bip("tap");Object.assign(o,{state:"bake",r:k,t:0,dur:REC[k].time*[1,.88,.8][lv("fourpro")]*(G.boost.four?.5:1)});dirty=true}
+function unload(i){const o=i!=null?G.ovens[i]:ovenReady();if(!o||o.state!=="ready")return;G.vit[o.r]=Math.min(OWN().four2?14:9,(G.vit[o.r]||0)+batchOf(o.r));o.state="idle";bip("pop",-3);dirty=true}
 function fromVit(k,el){if(!G.vit[k])return;if(G.tray.length>=trayCap()){shake($("tray"));toast("Plateau plein !");return}G.vit[k]--;bip("pop");G.tray.push(k);G.popI=G.tray.length-1;G.arm=null;dirty=true}

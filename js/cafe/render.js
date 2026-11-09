@@ -37,7 +37,7 @@ function render(){
   renderKitchen();renderTray();updateBars();
   // gelato (ou macarons à Paris) : on explique le comptoir aux trois premières commandes (gtip du quartier)
   if(G.it&&(WD().sv().gtip||0)<3){const c=G.cust.find(c=>c.state==="wait"&&!c.gt&&c.order.some(o=>o.g));
-    if(c){c.gt=1;const V=WD().sv();V.gtip=(V.gtip||0)+1;const g=c.order.find(o=>o.g).g;hint(WD().gelHint(g))}}
+    if(c){c.gt=1;const V=WD().sv();V.gtip=(V.gtip||0)+1;const o=c.order.find(o=>o.g);hint(o.r==="dango"?WD().gel2.hint(o.g):WD().gelHint(o.g))}}
 }
 function renderTray(){
   const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;
@@ -60,24 +60,29 @@ function renderKitchen(){
     const sl=on?G.st[k]:[{}],rd=sl.some(s=>s.ready);
     dr+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span><span class="slots">${sl.map((s,i)=>`<span class="sl${s.ready?" ready":""}"><i id="sp-${k}-${i}"></i></span>`).join("")}</span>`,`data-st="${k}" aria-label="${REC[k].name}${rd?", prêt":""}"`,rd?"rdy":"");
   }
-  const bakes=Object.keys(REC).filter(k=>REC[k].kind==="bake"&&onMenu(k)),o=on?G.oven:{state:"idle"};
-  const ot=o.state==="bake"?"Cuisson…":o.state==="ready"?`Sortir ×${batchOf(o.r)}`:o.state==="burnt"?"Brûlé…":"Four";
-  let pa=tile(`<span class="ki">${icon("four")}${o.state!=="idle"?`<span class="mini">${icon(o.state==="burnt"?"burnt":o.r)}</span>`:""}</span><span class="kn">${ot}</span>${o.state==="bake"?`<span class="obar"><i id="ov-p"></i></span>`:o.state==="ready"?`<span class="obar"><i id="ov-b" style="background:#fff"></i></span>`:""}`,`data-oven id="unl" aria-label="Four"`,`oven ${o.state}`);
-  for(const k of bakes){const n=on?G.vit[k]:0;
-    pa+=tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span>`,`data-pa="${k}" aria-label="${REC[k].name} : ${n} en vitrine"`,n?"":"empty",
-      `<span class="badge${n?"":" zero"}">${n}</span>${on&&n&&o.state==="idle"?`<button class="kbake" data-bake="${k}" type="button" aria-label="En cuire ${batchOf(k)} de plus">${icon("four")}</button>`:""}`);
-  }
-  // un quartier : le comptoir à glaces de la Petite Italie (le cornet en cours, puis un bac par parfum), ou la boîte de macarons de Paris
-  const cn=on?G.cone:"",gr=gel?`<div class="krow gelrow"><button class="gcone${cn?" on":""}" type="button" data-cone aria-label="${cn?`Jeter ${WD().cone||"le cornet"}`:"Vide"}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${gelSVG(cn)}</svg>${cn?`<span class="gx">${icon("bin")}</span>`:""}</button>${Object.keys(gelT()).map(x=>`<button class="kb gtub" type="button" data-gel="${x}" aria-label="${WD().tubLabel||"Une boule"} ${gelT()[x].n}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${WD().tubSVG?WD().tubSVG(x):`<path d="M7 20 H33 L30 35 H10Z" fill="#dfeef6" ${K}/><path d="M7 20 Q8 9 20 10 Q32 9 33 20Z" fill="${gelT()[x].c}" ${K}/><circle cx="15" cy="15" r="1.6" fill="#fff"/>`}</svg><span class="kn">${gelT()[x].n}</span></button>`).join("")}</div>`:"";
-  const h=`<div class="krow">${dr}</div>${gr}<div class="krow">${pa}</div>`;
-  if($("kitchen")._h!==h){$("kitchen").classList.toggle("gel",!!gel);$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars()}
+  // les fours (deux à Kyoto à partir du jour 8 : chacun en tête d'une rangée de vitrine) ; « Sortir » sur celui qui est prêt
+  const bakes=Object.keys(REC).filter(k=>REC[k].kind==="bake"&&onMenu(k)).sort((a,b)=>recDay(a)-recDay(b)),ovs=on?G.ovens:[{state:"idle"}],two=ovs.length>1,idle=ovs.some(o=>o.state==="idle");
+  const ovTile=(o,i)=>{const sx=i?"-"+i:"",ot=o.state==="bake"?"Cuisson…":o.state==="ready"?`Sortir ×${batchOf(o.r)}`:o.state==="burnt"?"Brûlé…":two?`Four ${i+1}`:"Four";
+    return tile(`<span class="ki">${icon("four")}${o.state!=="idle"?`<span class="mini">${icon(o.state==="burnt"?"burnt":o.r)}</span>`:""}</span><span class="kn">${ot}</span>${o.state==="bake"?`<span class="obar"><i id="ov-p${sx}"></i></span>`:o.state==="ready"?`<span class="obar"><i id="ov-b${sx}" style="background:#fff"></i></span>`:""}`,`data-oven="${i}" id="unl${sx}" aria-label="Four${two?" "+(i+1):""}"`,`oven ${o.state}`)};
+  const paT=k=>{const n=on?G.vit[k]:0;
+    return tile(`<span class="ki">${icon(k)}</span><span class="kn">${REC[k].name}</span>`,`data-pa="${k}" aria-label="${REC[k].name} : ${n} en vitrine"`,n?"":"empty",
+      `<span class="badge${n?"":" zero"}">${n}</span>${on&&n&&idle?`<button class="kbake" data-bake="${k}" type="button" aria-label="En cuire ${batchOf(k)} de plus">${icon("four")}</button>`:""}`)};
+  const half=Math.ceil(bakes.length/2),rows=two?[ovTile(ovs[0],0)+bakes.slice(0,half).map(paT).join(""),ovTile(ovs[1],1)+bakes.slice(half).map(paT).join("")]:[ovTile(ovs[0],0)+bakes.map(paT).join("")];
+  // un comptoir à composer : le cornet (ou la boîte, la brochette…) en cours, puis un bac par parfum
+  const comp=(T,cur,svg,tub,lab,cone,dc,dg)=>`<div class="krow gelrow"><button class="gcone${cur?" on":""}" type="button" ${dc} aria-label="${cur?`Jeter ${cone}`:"Vide"}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${svg(cur)}</svg>${cur?`<span class="gx">${icon("bin")}</span>`:""}</button>${Object.keys(T).map(x=>`<button class="kb gtub" type="button" ${dg}="${x}" aria-label="${lab} ${T[x].n}" ${on?"":"disabled"}><svg viewBox="0 0 40 40" aria-hidden="true">${tub(x)}</svg><span class="kn">${T[x].n}</span></button>`).join("")}</div>`;
+  // le comptoir à glaces de la Petite Italie, la boîte de macarons de Paris, le plateau de sushis de Kyoto ; et à Kyoto, la brochette de dango
+  const gr=gel?comp(gelT(),on?G.cone:"",gelSVG,x=>WD().tubSVG?WD().tubSVG(x):`<path d="M7 20 H33 L30 35 H10Z" fill="#dfeef6" ${K}/><path d="M7 20 Q8 9 20 10 Q32 9 33 20Z" fill="${gelT()[x].c}" ${K}/><circle cx="15" cy="15" r="1.6" fill="#fff"/>`,WD().tubLabel||"Une boule",WD().cone||"le cornet","data-cone","data-gel"):"";
+  const g2=WORLD&&WD().gel2&&onMenu("dango"),Q2=g2&&WD().gel2;
+  const gr2=g2?comp(Q2.t,on?G.cone2:"",Q2.svg,Q2.tub,Q2.label,Q2.cone,"data-cone2","data-gel2"):"";
+  const h=`<div class="krow">${dr}</div>${gr2}${gr}${rows.map(r=>`<div class="krow">${r}</div>`).join("")}`;
+  if($("kitchen")._h!==h){const kc=$("kitchen").classList;kc.toggle("gel",!!(gel||g2));kc.toggle("gel2",!!(gel&&g2));kc.toggle("ov2",two);$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars()}
 }
 function updateBars(){
   if(!G||!G.run)return;
   for(const c of G.cust){const e=$("pb-"+c.id);if(e){const r=c.pat/c.patMax;e.style.width=(r*100).toFixed(1)+"%";e.style.background=r<.3?"var(--bad)":r<.6?"var(--warn)":"var(--good)"}}
   for(const k in G.st)G.st[k].forEach((s,i)=>{const e=$(`sp-${k}-${i}`);if(e)e.style.width=s.busy?(s.t/REC[k].time*100)+"%":"0"});
-  const o=G.oven;if(o.state==="bake"){const e=$("ov-p");if(e)e.style.width=(o.t/o.dur*100)+"%"}
-  if(o.state==="ready"){const e=$("ov-b");if(e)e.style.width=(o.burn/o.burnMax*100)+"%";const u=$("unl");if(u)u.classList.toggle("danger",o.burn<2)}
+  G.ovens.forEach((o,i)=>{const sx=i?"-"+i:"";if(o.state==="bake"){const e=$("ov-p"+sx);if(e)e.style.width=(o.t/o.dur*100)+"%"}
+    if(o.state==="ready"){const e=$("ov-b"+sx);if(e)e.style.width=(o.burn/o.burnMax*100)+"%";const u=$("unl"+sx);if(u)u.classList.toggle("danger",o.burn<2)}});
   const gf=$("gfill");if(gf)gf.style.width=Math.min(100,G.earned/(G.cfg.goal*(G.night||G.noel?1.7:cuts(G.day)[2]))*100)+"%";
   if(G.tuto&&!(TU&&TU_STEPS[TU.i]&&TU_STEPS[TU.i].free)){if($("hint").innerHTML)$("hint").innerHTML=""}else if(G.day<=2&&!hintLock)autoHint(); // pendant la leçon, Petit Pois parle à la place
 }

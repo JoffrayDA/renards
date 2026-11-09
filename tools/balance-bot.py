@@ -40,16 +40,17 @@ BOT = """(args) => {
   const act = () => {
     const w = G.cust.filter(c => c.state === "wait").sort((a, b) => a.pat - b.pat);
     for (const c of w) if (c.order.some(o => !o.done && G.tray.includes(itemKey(o)))) { deliver(c, null); return; }
-    if (G.oven.state === "ready") { unload(); return; }
+    { const o = G.ovens.findIndex(x => x.state === "ready"); if (o >= 0) { unload(o); return; } }
     const need = []; w.forEach(c => c.order.forEach(o => { if (!o.done) need.push(itemKey(o)); }));
     const onTray = {}; G.tray.forEach(k => onTray[k] = (onTray[k] || 0) + 1);
     for (const k of need) {
       if (onTray[k]) { onTray[k]--; continue; }
       // gelato de la Petite Italie : une boule par toucher, dans l'ordre ; un cornet mal parti est jeté
+      // (à Kyoto, deux comptoirs : le plateau de sushis sur G.cone, la brochette de dango sur G.cone2)
       if (k.includes("~")) {
-        const g = k.split("~")[1];
-        if (g.startsWith(G.cone)) { if (G.cone.length < 2 || G.tray.length < trayCap()) { scoop(g[G.cone.length], null); return; } continue; }
-        if (!need.some(n => n.includes("~") && n.split("~")[1].startsWith(G.cone))) { G.cone = ""; return; }
+        const [b, g] = k.split("~"), d2 = b === "dango", cur = d2 ? G.cone2 : G.cone;
+        if (g.startsWith(cur)) { if (cur.length < 2 || G.tray.length < trayCap()) { d2 ? scoop2(g[cur.length]) : scoop(g[cur.length], null); return; } continue; }
+        if (!need.some(n => n.startsWith(b + "~") && n.split("~")[1].startsWith(cur))) { if (d2) G.cone2 = ""; else G.cone = ""; return; }
         continue;
       }
       const [r, op] = k.split("+");
@@ -61,12 +62,12 @@ BOT = """(args) => {
         if (sl.some(s => !s.busy && !s.ready)) { tapStation(r, null); return; }
       } else {
         if (G.vit[r] > 0 && G.tray.length < trayCap()) { fromVit(r, null); return; }
-        if (G.oven.state === "idle") { bake(r); return; }
+        if (ovenIdle()) { bake(r); return; }
       }
     }
     if (G.tray.length >= trayCap()) { G.tray.shift(); return; }
     const low = Object.keys(G.vit).sort((a, b) => G.vit[a] - G.vit[b])[0];
-    if (G.oven.state === "idle" && G.vit[low] < 2) bake(low);
+    if (ovenIdle() && G.vit[low] < 2) bake(low);
   };
   while (G && G.run && t < 600) { update(.05); t += .05; if (G && G.run && t >= next) { act(); next = t + react; } }
   endDay = origEnd; G = null;
@@ -93,7 +94,7 @@ IT_KIT = []
 
 
 def own_it(day):
-    own = {k: 1 for k, d in IT_RECIPES.items() if d < day}
+    own = {k: 1 for k, d in IT_RECIPES.items() if 0 < d < day}
     for k, n, d in IT_KIT:
         if d <= day:
             own[k] = max(own.get(k, 0), n)
@@ -123,6 +124,8 @@ with sync_playwright() as p:
     page.wait_for_timeout(500)
     KIT = [tuple(x) for x in page.evaluate("() => KIT")]
     IT_KIT = [tuple(x) for x in page.evaluate(f"() => WORLDS.{WN}.kit")]
+    # les recettes du quartier (Kyoto a sa propre table, WORLDS.kyoto.recDays)
+    IT_RECIPES = page.evaluate(f"() => WORLDS.{WN}.recDays || IT_DAY")
     if ITALIE and ECO:
         # Petite Italie, --italie --economie : comme --economie, sur les 20 journées du quartier, avec l'équipement à racheter
         # (prix ×IT_PRICE arrondis à la dizaine, comme upPrice dans data.js) et le coffre au rythme du jour de référence
@@ -146,6 +149,7 @@ with sync_playwright() as p:
         # Petite Italie : même règle que --calibrer, sur les 20 journées du quartier (rythme d'un jour de référence,
         # recettes et équipement du quartier)
         bases = page.evaluate(f"() => WORLDS.{WN}.days.map(x => x.base)")
+        hards = page.evaluate(f"() => WORLDS.{WN}.days.map(x => x.hard || 0)")
         ids = list(range(1, len(bases) + 1))
         runs = [[(page.evaluate(BOT, [d, own_it(d), PERFECT, k, WN])[0], k) for k in range(SEEDS_TRIED)] for d in ids]
         med = [sorted(x for x, _ in r)[len(r) // 2] for r in runs]
@@ -157,7 +161,8 @@ with sync_playwright() as p:
             good = {k: page.evaluate(BOT, [d, own_it(d), GOOD, k, WN])[0] for _, k in r}
             goal = lambda x: round(min(x[0] / STAR3, good[x[1]] / PASS))
             e, k = min(r, key=lambda x: abs(goal(x) - t / STAR3) + .25 * abs(x[0] - t) / STAR3)
-            out.append(f"{{base:{bases[d - 1]},seed:{k},goal:{goal((e, k))}}}")
+            hd = hards[d - 1]
+            out.append(f"{{base:{bases[d - 1]}," + (f"hard:{hd}," if hd else "") + f"seed:{k},goal:{goal((e, k))}}}")
             print(f"jour {d:>2} (rythme du jour {bases[d - 1]}) : médiane {med[d - 1]}, visé {t:.0f}, graine {k} -> parfait {e}, bon {good[k]}, objectif {goal((e, k))}", file=sys.stderr, flush=True)
         print(f"const {'KY' if KYOTO else 'PA' if PARIS else 'IT'}_DAYS=[" + ",".join(out) + "];")
         browser.close(); sys.exit()

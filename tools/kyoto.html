@@ -63,7 +63,7 @@ h2{font-size:17px;margin:26px 0 10px}
 <div id="out" hidden>
   <div class="wrap">
     <div><h2>La carte</h2><div class="phone mapbox" id="map"></div></div>
-    <div><h2>La salle du Kitsune Kissa</h2><div class="room" id="room"></div>
+    <div><h2>La salle du Kitsune Shokudō</h2><div class="room" id="room"></div>
       <h2>La musique</h2><div class="mus" id="mus"></div></div>
   </div>
   <h2>Les recettes</h2><div class="rec" id="rec"></div>
@@ -87,13 +87,16 @@ function build(){
   [["torii","Le chemin des torii (carte)"],["matsuri","Matsuri (service)"],["taiko","Les tambours taiko (service)"]].forEach(([k,n])=>{const b=document.createElement("button");b.textContent=n;
     b.onclick=()=>{const on=b.classList.contains("on");document.querySelectorAll(".mus button").forEach(x=>x.classList.remove("on"));MUSIC.setOn(true);if(on)MUSIC.stop();else{MUSIC.want(k);b.classList.add("on")}};$("mus").appendChild(b)});
   // les recettes
-  const base={cafe:"Café",croissant:"Croissant",the:"Thé",cookie:"Cookie",choco:"Chocolat chaud",smoothie:"Smoothie",gateau:"Gâteau"};
-  const rec=E(`Object.entries(VAR.kyoto).map(([k,[n]])=>[k,n,icon(k,"kyoto")])`);
-  let h=rec.map(([k,n,ic])=>`<div class="card">${ic}<b>${n}</b><span>au premier café : ${base[k]}</span></div>`).join("");
-  h+=E(`[["cafe+lait","Matcha latte","Matcha + Lait"],["choco+chantilly","Hōjicha à la crème","Hōjicha + Crème"],["gateau+chantilly","Cheesecake à la crème","Cheesecake + Crème"]].map(([k,n,d])=>'<div class="card">'+icon(k,"kyoto")+'<b>'+n+'</b><span>'+d+'</span></div>').join("")`);
-  h+=E(`Object.entries(KY_DANGO).map(([k,v])=>'<div class="card"><svg viewBox="0 0 40 40">'+WORLDS.kyoto.tubSVG(k)+'</svg><b>Boule '+v.n.toLowerCase()+'</b><span>pour la brochette</span></div>').join("")`);
-  h+=E(`["rbv","vvr","brb","rrr"].map(g=>'<div class="card">'+icon("smoothie~"+g,"kyoto")+'<b>Brochette</b><span>'+g.split("").map(x=>KY_DANGO[x].n.toLowerCase()).join(" › ")+'</span></div>').join("")`);
-  $("rec").innerHTML=h+`<div class="card" style="text-align:left"><b>La brochette de dango</b><span>Le client veut ses trois boules dans son ordre. On les enfile de bas en haut, en touchant les boules. Raté ? On touche la brochette pour la vider.</span></div>`;
+  // le menu (09/11/2026) : 3 boissons, 5 plats au four (deux fours), 2 plats à composer (deux comptoirs), et le jour où chacun arrive
+  const rec=E(`Object.entries(VAR.kyoto).sort((a,b)=>KY_REC[a[0]]-KY_REC[b[0]]).map(([k,[n]])=>[k,n,icon(k,"kyoto"),KY_REC[k],REC[k].kind])`);
+  const kind={drink:"boisson",bake:"au four",gel:"à composer"};
+  let h=rec.map(([k,n,ic,d,kd])=>`<div class="card">${ic}<b>${n}</b><span>${k==="smoothie"?"à composer":kind[kd]} · ${d?"dès le jour "+(d+1):"dès le jour 1"}</span></div>`).join("");
+  h+=E(`[["cafe+lait","Matcha latte","Matcha + Lait, dès le jour 4"],["choco+chantilly","Hōjicha à la crème","Hōjicha + Crème, dès le jour 17"],["gateau+chantilly","Dorayaki à la crème","Dorayaki + Crème"]].map(([k,n,d])=>'<div class="card">'+icon(k,"kyoto")+'<b>'+n+'</b><span>'+d+'</span></div>').join("")`);
+  h+=E(`Object.entries(KY_SUSHI).map(([k,v])=>'<div class="card"><svg viewBox="0 0 40 40">'+WORLDS.kyoto.tubSVG(k)+'</svg><b>Sushi '+v.n.toLowerCase()+'</b><span>pour le plateau</span></div>').join("")`);
+  h+=E(`Object.entries(KY_DANGO).map(([k,v])=>'<div class="card"><svg viewBox="0 0 40 40">'+WORLDS.kyoto.gel2.tub(k)+'</svg><b>Boule '+v.n.toLowerCase()+'</b><span>pour la brochette</span></div>').join("")`);
+  h+=E(`["sto","tos","oss"].map(g=>'<div class="card">'+icon("smoothie~"+g,"kyoto")+'<b>Plateau</b><span>'+g.split("").map(x=>KY_SUSHI[x].n.toLowerCase()).join(" › ")+'</span></div>').join("")`);
+  h+=E(`["rbv","vvr","brb"].map(g=>'<div class="card">'+icon("dango~"+g,"kyoto")+'<b>Brochette</b><span>'+g.split("").map(x=>KY_DANGO[x].n.toLowerCase()).join(" › ")+'</span></div>').join("")`);
+  $("rec").innerHTML=h+`<div class="card" style="text-align:left"><b>Deux comptoirs, deux fours</b><span>Le plateau de sushis se remplit de gauche à droite, la brochette de dango de bas en haut. Raté ? On touche le plateau ou la brochette pour le vider. Dès le jour 8, deux fours : deux fournées à la fois.</span></div>`;
   // les renards
   $("foxes").innerHTML=E(`KYF.map(f=>{const r={commun:"",rare:" rare",legend:" legend"}[f.rar],lab={commun:"Habitué",rare:"Rare",legend:"Légendaire"}[f.rar];
     const poses=["sit","happy","walk","eat","sleep"].map(p=>'<div>'+foxSVG(f,{pose:p})+p+'</div>').join("")+["open","joy","sad","surprise","shy"].map(x=>'<div>'+foxArt(f,{expr:x,portrait:1})+x+'</div>').join("");

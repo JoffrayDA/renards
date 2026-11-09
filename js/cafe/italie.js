@@ -39,7 +39,12 @@ const itOpen=()=>S.day>LASTDAY||!!S.itOpen;
 const itStarSum=()=>Object.values(WD().sv().stars).reduce((a,b)=>a+b,0);
 const itLast=()=>WD().days.length;
 const itCur=()=>Math.min(WD().sv().day,itLast());
-function itCfg(d){const N=WD().days[d-1];return{...cfgOf(N.base),goal:Math.round(N.goal*(1+equipBonus(d)))}}
+function itCfg(d){const N=WD().days[d-1],c={...cfgOf(N.base),goal:Math.round(N.goal*(1+equipBonus(d)))};
+  // au-delà du jour 40 (Kyoto, 09/11/2026) : hard = plus de clients, plus serrés, moins patients
+  if(N.hard){c.c=Math.round(c.c*N.hard);c.gap/=N.hard;c.pat/=1+(N.hard-1)*.6}
+  return c}
+// la recette (ou l'option) qui se gagne en réussissant la journée d du quartier
+const wRecAt=d=>Object.keys(WD().recDays||IT_DAY).find(k=>(WD().recDays||IT_DAY)[k]===d);
 const seaNow=()=>WORLD||chapOf(curDay()).sea;
 
 WORLDS.italie={id:"italie",name:"Petite Italie",cafe:"Caffè Kitsune",short:"Caffè",sv:()=>S.it,days:IT_DAYS,s3:IT_S3,kit:IT_KIT,
@@ -249,7 +254,7 @@ function renderMapIt(){
   const Q=WD(),V=Q.sv(),L=WLAY[WORLD]||(WLAY[WORLD]=Q.layout()),{P,H}=L,pc=(x,u)=>`left:${x/ITW*100}%;top:${(H-u)/H*100}%`,cur=itCur(),N=itLast();
   let h=Q.mapSVG(L);
   for(let d=1;d<=N;d++){
-    const p=P[d],st=V.stars[d]||0,op=d<=V.day,rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d);
+    const p=P[d],st=V.stars[d]||0,op=d<=V.day,rk=wRecAt(d);
     const cls=!op?"lock":d===cur&&!st?"cur":st===3?"gold":"done";
     const badge=rk&&!V.own[rk]?`<span class="nb">${icon(rk,WORLD)}</span>`:Q.duel&&Q.duel[d]&&op&&!(V.duel||{})[d]?`<span class="nb">${icon("croissant",WORLD)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
     h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-itday="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
@@ -370,8 +375,8 @@ function nonnoSheet(){itTalk(IT_NONNO,itCarnet)}
 function itDaySheet(d){
   const Q=WD(),V=Q.sv(),N=itLast();
   if(d>V.day){toast("Réussis la journée précédente pour ouvrir celle-ci.");return}
-  const c=itCfg(d),g=c.goal,st=V.stars[d]||0,rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d&&k!=="lait"),rw=[];
-  if(rk&&!V.own[rk])rw.push(itRow(icon(rk,WORLD),`${OPTS[rk]?"Option":"Recette"} à gagner : ${OPTS[rk]?Q.optWord:VAR[WORLD][rk][0]}`,`Réussis cette journée pour l'ajouter à la carte du ${Q.short}.`,"background:#e3f2d6"));
+  const c=itCfg(d),g=c.goal,st=V.stars[d]||0,rk=wRecAt(d),rw=[];
+  if(rk&&!V.own[rk])rw.push(itRow(icon(rk,WORLD),`${OPTS[rk]?"Option":"Recette"} à gagner : ${OPTS[rk]?(Q.optWords&&Q.optWords[rk]||Q.optWord):VAR[WORLD][rk][0]}`,`Réussis cette journée pour l'ajouter à la carte du ${Q.short}.`,"background:#e3f2d6"));
   if(Q.duel&&Q.duel[d])rw.push(Q.duelRow(d,g));
   if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que la moitié des pièces. Les nouvelles étoiles restent payées par le coffre."));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★","Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
@@ -400,8 +405,8 @@ function endIt(){
   let chest=0;if(st>prev){chest=rnd(5,12)*(st-prev)+(st===3?15+2*base:0);S.coins+=chest}
   const bl=st>prev?st-prev+(st===3?2:0):0;if(bl)addBells(bl);
   if(st&&d===V.day)V.day++; // V.day passe à 21 quand le quartier est fini (itCur le borne à 20)
-  const rk=Object.keys(IT_DAY).find(k=>IT_DAY[k]===d&&k!=="lait");
-  if(st&&rk&&!V.own[rk]){V.own[rk]=1;news.push(itRow(icon(rk,WORLD),`Nouvelle ${OPTS[rk]?"option":"recette"} : ${OPTS[rk]?Q.optWord:VAR[WORLD][rk][0]}`,OPTS[rk]?Q.optNew:rk==="smoothie"?Q.gelNew:`Elle arrive sur la carte du ${Q.short} dès la prochaine journée.`,"background:#e3f2d6"))}
+  const rk=wRecAt(d);
+  if(st&&rk&&!V.own[rk]){V.own[rk]=1;news.push(itRow(icon(rk,WORLD),`Nouvelle ${OPTS[rk]?"option":"recette"} : ${OPTS[rk]?(Q.optWords&&Q.optWords[rk]||Q.optWord):VAR[WORLD][rk][0]}`,OPTS[rk]?(Q.optNews&&Q.optNews[rk]||Q.optNew):rk==="smoothie"?Q.gelNew:rk==="dango"?Q.gel2.new:`Elle arrive sur la carte du ${Q.short} dès la prochaine journée.`,"background:#e3f2d6"))}
   Q.news(d,st,prev,news,e);
   if(itStarSum()>=N*3&&!V.guest){V.guest=1;const f=FOX[Q.guest];news.push(itRow(foxSVG(f,{pose:"happy"}),`${f.name} rejoint tes cafés !`,`Tout le quartier (${Q.name}) en ★★★ : sa légende vient désormais en invitée d'honneur, dans tous tes cafés.`,"background:#fbf0cc"))}
   const bRow=buddyRow(),qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));

@@ -13,7 +13,8 @@ const WD=()=>WORLDS[WORLD];
 const OWN=()=>WORLD?WD().sv().own:S.own;
 // journée où une recette ou une option se gagne, dans le monde affiché (0 = dès le départ)
 const IT_DAY={the:2,cookie:4,choco:6,smoothie:9,chantilly:11,gateau:13,lait:0};
-const recDay=k=>WORLD?IT_DAY[k]||0:(REC[k]||OPTS[k]).day||0;
+// un quartier peut avoir sa propre table (WD().recDays : Kyoto, 09/11/2026)
+const recDay=k=>WORLD?(WD().recDays||IT_DAY)[k]||0:(REC[k]||OPTS[k]).day||0;
 // Halloween, la Nuit des citrouilles : du 17 octobre au 2 novembre inclus (?halloween=1 ou =0 pour forcer, pour tester)
 const HW=(()=>{const q=new URLSearchParams(location.search).get("halloween");if(q)return q==="1";const d=new Date(),m=d.getMonth(),j=d.getDate();return(m===9&&j>=17)||(m===10&&j<=2)})();
 const REC={
@@ -23,7 +24,12 @@ const REC={
   cookie:{name:"Cookie",pl:"cookies",price:6,cost:5.1,kind:"bake",time:5,batch:4,day:5,desc:"Au four, par fournées de 4."},
   choco:{name:"Chocolat chaud",pl:"chocolats chauds",price:8,cost:6.8,kind:"drink",time:3,day:7,stn:"Chocolatière",desc:"Avec une guimauve qui flotte."},
   smoothie:{name:"Smoothie",pl:"smoothies",price:10,cost:8.5,kind:"drink",time:3.4,day:11,stn:"Blender",desc:"Aux baies des bois, bien mixé."},
-  gateau:{name:"Gâteau aux baies",pl:"parts de gâteau",price:14,cost:11.9,kind:"bake",time:7,batch:2,day:16,desc:"Le plus cher de la carte. Par fournées de 2 parts."}
+  gateau:{name:"Gâteau aux baies",pl:"parts de gâteau",price:14,cost:11.9,kind:"bake",time:7,batch:2,day:16,desc:"Le plus cher de la carte. Par fournées de 2 parts."},
+  // recettes propres à un quartier (w) : Kyoto en a trois de plus (09/11/2026, Joffray : « faut que ça se complique ») ;
+  // ailleurs, has() les écarte. La brochette de dango se compose comme le plateau de sushis (kind "gel", deuxième comptoir, WD().gel2).
+  taiyaki:{name:"Taiyaki",pl:"taiyakis",price:7,cost:6,kind:"bake",time:5.5,batch:3,w:"kyoto"},
+  mochi:{name:"Mochi fraise",pl:"mochis fraise",price:9,cost:7.7,kind:"bake",time:6,batch:3,w:"kyoto"},
+  dango:{name:"Brochette de dango",pl:"brochettes de dango",price:9,cost:7.7,kind:"gel",w:"kyoto"}
 };
 // Options : un supplément qu'on ajoute à un article déjà sur le plateau (tuiles rondes au bout du plateau).
 // Elles se gagnent comme les recettes, en réussissant leur journée. Un article du plateau s'écrit "cafe" ou "cafe+lait".
@@ -43,7 +49,8 @@ const gelOn=()=>!!(WORLD&&WD().gel);
 const itemKey=o=>o.r+(o.g?"~"+o.g:"")+(o.o?"+"+o.o:"");
 const baseOf=k=>k.split("+")[0].split("~")[0];
 const gelName=g=>g.split("").map(x=>gelT()[x].n.toLowerCase()).join(" › ");
-const itemName=k=>{if(k.includes("~"))return `${REC.smoothie.name} ${gelName(k.split("~")[1])}`;const [r,o]=k.split("+");if(WORLD&&o)return WD().optItem(r,o);return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
+const gel2T=()=>WORLD&&WD().gel2?WD().gel2.t:{};
+const itemName=k=>{if(k.includes("~")){const [b,g]=k.split("~");return b==="dango"?`${REC.dango.name} ${g.split("").map(x=>gel2T()[x].n.toLowerCase()).join(" › ")}`:`${REC.smoothie.name} ${gelName(g)}`}const [r,o]=k.split("+");if(WORLD&&o)return WD().optItem(r,o);return REC[r].name+(o?` ${o==="lait"?"crème":"chantilly"}`:"")};
 const itemPrice=k=>{const [r0,o]=k.split("+"),r=baseOf(r0);return REC[r].price+(o?OPTS[o].price:0)};
 const itemCost=k=>{const [r0,o]=k.split("+"),r=baseOf(r0);return REC[r].cost+(o?OPTS[o].cost:0)};
 // La carte du café change avec la saison : REC[k].name et REC[k].pl suivent SEA (la saison affichée).
@@ -154,7 +161,7 @@ const QUESTS=[
   {k:"candy",n:80,t:"Récolte 80 bonbons",g:30,cdy:1,hw:1},{k:"night",n:2,t:"Réussis 2 Nuits d'Halloween",g:40,cdy:1,hw:1}
 ];
 const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
-const has=k=>!recDay(k)||!!OWN()[k];
+const has=k=>{const r=REC[k];if(r&&r.w&&r.w!==WORLD)return false;return !recDay(k)||!!OWN()[k]};
 // au menu d'une journée : les recettes gagnées avant elle seulement, même quand on rejoue une ancienne journée
 const onMenu=(k,d=G&&G.run?G.day:curDay())=>has(k)&&!(recDay(k)>=d);
 const optOn=(o,d=G&&G.run?G.day:curDay())=>has(o)&&recDay(o)<d;

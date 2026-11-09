@@ -38,9 +38,7 @@ button.on{background:#ffe3ea}
 <body>
 <h1>Kyoto · à choisir</h1>
 <p>Les plats : à gauche ceux du jeu, à droite tes idées. Puis les tambours et le Matsuri, trois versions chacun. Touche une musique pour l'écouter, retouche pour l'arrêter.</p>
-<h2>Les plats</h2>
-<p id="load">Chargement des dessins…</p>
-<div class="cmp" id="cmp"></div>
+<p><b>Les plats sont choisis</b> (onigiri, tempura, taiyaki, mochi, dorayaki, dango et sushis à composer) : ils sont sur la <a href="kyoto.html">planche de Kyoto</a>.</p>
 <h2>Les tambours (pendant le service)</h2>
 <p>Ton intro est gardée : boum… boum… boum boum… boum boum boum… un roulement, et ça part. Ensuite, du vrai taiko japonais : gros fût (don), coup sur le bord en bois (ka), petits tambours tendus, cloche en laiton, flûte de bambou, shamisen. Plus de cuivres ni de batterie.</p>
 <div class="list">
@@ -61,24 +59,11 @@ button.on{background:#ffe3ea}
 <button data-t="matsuri3"><i>B</i><div><b>Le Matsuri du soir</b><span>160 bpm. Nouvel air, plus chantant, clochettes de fête qui tintent sans arrêt.</span></div></button>
 <button data-t="matsuri4"><i>C</i><div><b>La danse du Bon odori</b><span>150 bpm, balancée. La danse en rond des festivals d'été : tambour don-ka, flûte qui chaloupe.</span></div></button>
 </div>
-<iframe id="game" src="../cafe.html" style="position:absolute;left:-9999px;top:0;width:400px;height:800px;border:0" tabindex="-1" aria-hidden="true"></iframe>
 <script src="../js/music.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 document.querySelectorAll("button[data-t]").forEach(b=>b.onclick=()=>{const on=b.classList.contains("on");document.querySelectorAll("button[data-t]").forEach(x=>x.classList.remove("on"));
   MUSIC.setOn(true);if(on){MUSIC.stop();return}MUSIC.want(b.dataset.t);b.classList.add("on")});
-$("game").addEventListener("load",()=>setTimeout(()=>{
-  const w=$("game").contentWindow,E=x=>w.eval(`(()=>{const o=WORLD,s=SEA;WORLD="kyoto";SEA="kyoto";try{return ${x}}finally{WORLD=o;SEA=s}})()`);
-  const sv=x=>`<svg viewBox="0 0 40 40">${x}</svg>`;
-  const P=[["Pâtisserie du jour 1","croissant","Taiyaki","gâteau en forme de poisson, fourré","onigiri","Onigiri","boule de riz et sa feuille d'algue"],
-    ["Pâtisserie du jour 4","cookie","Mochi fraise","pâte de riz, fraise dedans","tempura","Tempura de crevettes","beignets croustillants"],
-    ["Le plat à composer (jour 9)","smoothie","Brochette de dango","3 boules, de bas en haut","sushi","Plateau de sushis","saumon, thon, tamago, de gauche à droite"],
-    ["Le dessert du jour 13 (avec Crème)","gateau","Cheesecake japonais","tout haut, tout léger","dorayaki","Dorayaki","deux crêpes, haricot rouge"]];
-  $("cmp").innerHTML=P.map(([t,k,n1,d1,a,n2,d2])=>`<div class="pair"><h3>${t}</h3><div class="row"><div class="dish">${E(`icon("${k}","kyoto")`)}<b>${n1}</b><span>${d1}</span></div><div class="dish new">${sv(E(`KY_ALT.${a}`))}<b>${n2}</b><span>${d2}</span></div></div></div>`).join("")
-    +`<div class="pair"><h3>Les boissons (on n'y touche pas)</h3><div class="row">${[["cafe","Matcha"],["the","Ramune"],["choco","Hōjicha"]].map(([k,n])=>`<div class="dish">${E(`icon("${k}","kyoto")`)}<b>${n}</b></div>`).join("")}</div></div>`
-    +`<div class="pair"><h3>Les sushis du plateau</h3><div class="row">${["s","t","o"].map(k=>`<div class="dish new">${sv(E(`nigiriSVG(20,22,1.9,"${k}")`))}<b>${E(`KY_SUSHI.${k}.n`)}</b></div>`).join("")}</div></div>`
-    +`<div class="pair"><h3>Les boules de dango</h3><div class="row">${["r","b","v"].map(k=>`<div class="dish">${sv(E(`WORLDS.kyoto.tubSVG("${k}")`))}<b>${E(`KY_DANGO.${k}.n`)}</b></div>`).join("")}</div></div>`;
-  $("load").hidden=true},400));
 </script>
 </body>
 </html>
