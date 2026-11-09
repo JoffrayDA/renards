@@ -95,7 +95,13 @@ function updateBars(){
   if(G.tuto&&!(TU&&TU_STEPS[TU.i]&&TU_STEPS[TU.i].free)){if($("hint").innerHTML)$("hint").innerHTML=""}else if(G.day<=2&&!hintLock)autoHint(); // pendant la leçon, Petit Pois parle à la place
 }
 let hintLock=0;
-function hint(h){$("hint").innerHTML=h;hintLock=1;clearTimeout(hint.t);hint.t=setTimeout(()=>hintLock=0,3500)}
+// un conseil ponctuel (« le four est occupé »…) passe dans une petite bulle en bas de la salle, qui s'efface :
+// plus de phrase sous les tuiles (09/11/2026, Joffray : « pas besoin de la phrase tout en bas ») ;
+// la ligne du bas ne reste que pour les conseils guidés des jours 1 et 2 du premier café (autoHint)
+function hint(h){hintLock=1;clearTimeout(hint.t);hint.t=setTimeout(()=>{hintLock=0;const t=$("htoast");if(t)t.classList.remove("on")},3500);
+  if(G&&G.tuto)return;
+  let t=$("htoast");if(!t){t=document.createElement("div");t.id="htoast";$("scene").appendChild(t)}
+  t.innerHTML=h;t.classList.add("on")}
 function autoHint(){
   const w=G.cust.filter(c=>c.state==="wait");let h="";
   if(!w.length)h=`Les clients arrivent. <b>Touche « ${REC.croissant.name} »</b> pour en cuire d'avance.`;

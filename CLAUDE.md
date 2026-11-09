@@ -70,6 +70,8 @@ Halloween, la **Nuit des citrouilles** (branche `halloween`, octobre 2026) : act
 
 **Boutique : un seul onglet Améliorations** (07/11/2026) : Équipement et Déco réunis (le pote de Joffray : « la déco, je m'en fiche », alors que pourboires, patience et VIP sont des améliorations), avec deux titres, « Au comptoir : préparer plus vite » (`UPG.equip`) et « Dans la salle : patience, pourboires, VIP » (`UPG.deco`). Puis Bonus et Style.
 
+**Plus de phrase sous les tuiles** (09/11/2026, Joffray : « pas besoin de la phrase tout en bas ») : un conseil ponctuel (`hint`) passe dans une petite bulle en bas de la salle qui s'efface après 3,5 s (`#htoast`) ; la ligne `#hint` ne sert plus qu'aux conseils guidés des jours 1 et 2 du premier café (`autoHint`), et se cache vide.
+
 **Bouton Recommencer** dans la pause (`data-act="restart"`, la même journée, nuit ou leçon, avec les mêmes bonus, 09/11/2026). **Bouton retour du téléphone** (`armBack`, `popstate` dans main.js) : tant qu'une fiche, une journée ou une carte est ouverte, une entrée d'historique est gardée en réserve ; le retour ferme la fiche, met en pause (ou reprend depuis la pause), ramène de la carte à l'écran des mondes ; depuis l'écran des mondes, il quitte le jeu (Joffray revenait à l'accueil en voulant revenir à la carte).
 
 **Le nom du joueur** (`S.name`, lu par `ME()` dans les deux jeux, « Roussette » par défaut) : au premier lancement du Café, Petit Pois présente Roussette (« Ce petit renard, c'est toi ») et demande son nom (`welcome`). Les parties déjà commencées voient aussi cet écran une fois (`S.named`), avec « Roussette » prérempli. Dans les textes, écrire `${ME()}` plutôt que « Roussette » quand on s'adresse au joueur, et rester neutre en genre (le joueur choisit son nom).
