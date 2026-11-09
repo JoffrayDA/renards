@@ -18,7 +18,7 @@
 const KYF=[
   {id:"yuzu",name:"Yuzu",rar:"commun",acc:"kimono",c:{b:"#f4c060",ch:"#fffaf0",e:"#a87a2a",s:"#946a24",t:"#fffaf0"},bio:"La patronne du Kitsune Shokudō. Kimono rose, fleur dans les cheveux, et un matcha toujours prêt."},
   {id:"daifuku",name:"Daifuku",rar:"commun",acc:"mochi",scale:1.06,c:{b:"#f6e4e6",ch:"#ffffff",e:"#c99aa4",s:"#b8848e",t:"#ffffff"},bio:"Rond comme un mochi, et il les aime tous. Il goûte tout. Pour vérifier."},
-  {id:"origami",name:"Origami",rar:"commun",acc:"grue",c:{b:"#a9c2e0",ch:"#f6fbff",e:"#5f7fa6",s:"#4f6f96",t:"#f6fbff"},bio:"Il plie des grues en papier en attendant sa commande. Il en a mille. Presque."},
+  {id:"origami",name:"Origami",rar:"commun",acc:"grue",c:{b:"#a9c2e0",ch:"#f6fbff",e:"#5f7fa6",s:"#4f6f96",t:"#f6fbff"},bio:"Il plie des oiseaux en papier (des grues, l'origami porte-bonheur du Japon) en attendant sa commande. Il en a mille. Presque."},
   {id:"kage",name:"Kage",rar:"commun",acc:"ninja",c:{b:"#4c5270",ch:"#a6acc4",e:"#2a2d40",s:"#22243a",t:"#a6acc4"},bio:"Le renard ninja. On ne le voit jamais arriver. Il répare les lanternes la nuit, sans rien dire."},
   // quatre clients de plus (09/11/2026, Joffray : « j'adore les 4 ») : deux sumos, tout larges (wide), et deux samouraïs
   {id:"chanko",name:"Chanko",rar:"commun",big:1,acc:"sumo",scale:1.14,wide:1.22,c:{b:"#d99a6a",ch:"#fff2e4",e:"#8a5a3a",s:"#7a4a2e",t:"#fff2e4"},bio:"Lutteur de sumo. Il mange trois plateaux de sushis d'affilée, puis demande le dessert."},
@@ -262,8 +262,8 @@ const KY_SCENES={
      ["yuzu","shy","Mais cette année, je suis toute seule. Tu m'aides à monter une équipe ?"]],
   2:[["daifuku","joy","Une ramune ! J'adore le petit bruit de la bille."],["daifuku","surprise","Un stand au Matsuri ? Je veux en être ! Je goûterai tout. Pour vérifier."],
      ["yuzu","joy","Daifuku rejoint l'équipe ! Surtout côté dégustation…"]],
-  3:[["origami","open","Tu vois cette grue en papier ? Je l'ai pliée en attendant mon onigiri."],
-     ["origami","joy","Pour un stand, il faut des décorations. Mille grues et des lanternes : je m'en occupe !"],["yuzu","joy","Origami fait partie de l'équipe !"]],
+  3:[["origami","open","Tu vois l'oiseau en papier, sur ma tête ? C'est une grue, l'origami le plus célèbre du Japon. Je l'ai plié en attendant mon onigiri."],
+     ["origami","joy","Ici, on dit que plier mille grues porte bonheur. Pour le stand du Matsuri, je vais en plier mille, et des lanternes : je m'en occupe !"],["yuzu","joy","Origami fait partie de l'équipe !"]],
   4:[["daifuku","joy","Des beignets de crevettes ! Croustillants dehors, tout doux dedans. Comme moi."],["yuzu","open","Il en a mangé six. Pour vérifier."]],
   5:[["chanko","joy","Encore un plateau ! … Et un autre !"],["oyama","surprise","Il a mangé plus que moi ?! Impossible !"],
      ["chanko","joy","Victoire ! Le ventre de Chanko est le plus grand du quartier !"],["oyama","open","Je veux ma revanche. Même comptoir, dans six jours."],
@@ -295,7 +295,7 @@ const KY_SCENES={
       ["hoji","open","Je viendrai au Matsuri. Et je prendrai mon thé chez vous, de temps en temps."],["yuzu","joy","Le sensei rejoint l'équipe !"]],
   20:[["tsuba","surprise","Hier soir, le vent a renversé les lanternes du stand… et c'est Hayate qui les a toutes rattrapées ?"],
       ["hayate","shy","Une a failli tomber sur le plateau de sushis. Inacceptable."],["tsuba","open","Hmm. Je m'étais peut-être trompé sur toi."]],
-  22:[["origami","joy","Les mille grues sont prêtes ! Enfin, neuf cent quatre-vingt-dix-neuf. Daifuku s'est assis sur la dernière."],
+  22:[["origami","joy","Les mille oiseaux en papier sont prêts ! Enfin, neuf cent quatre-vingt-dix-neuf. Daifuku s'est assis sur le dernier."],
       ["hoji","open","On raconte que si les lanternes du chemin des torii brillent assez fort, la Dame aux neuf queues descend de la montagne."],
       ["kage","shy","J'ai… peut-être ajouté quelques lanternes."]],
   25:[["yuzu","surprise","C'est le soir du Matsuri ! Regarde notre stand !"],["daifuku","joy","Les sushis partent comme des petits pains !"],
