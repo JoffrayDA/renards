@@ -1,4 +1,4 @@
-/* Kitsune Café : la leçon de Petit Pois (07/11/2026).
+/* Café Frimousse : la leçon de Petit Pois (07/11/2026).
    Un pote de Joffray ne comprenait rien au jeu : une séance guidée, hors des 40 journées (pas d'étoiles, pas de quêtes),
    où Petit Pois explique dans une bulle posée sur le comptoir et montre du doigt (une pattoune) ce qu'il faut toucher.
    Elle suit le premier écran de bienvenue ; on la revoit depuis la fiche des jours 1 et 2.
@@ -12,7 +12,7 @@ function tuSpawn(order,pat){if(!spawn())return null;const c=G.cust[G.cust.length
 const tuServed=c=>!!c&&c.order.every(o=>o.done);
 const tuGone=c=>!c||!G.cust.includes(c)||c.state==="happy"||c.state==="angry"||c.state==="walkout";
 const TU_STEPS=[
-  {info:1,expr:"joy",say:()=>`Bienvenue au Kitsune Café, ${ME()} ! Je vais te montrer comment on sert les clients. Regarde, en voilà un !`,exit:()=>{TU.c1=tuSpawn(["cafe"],600)}},
+  {info:1,expr:"joy",say:()=>`Bienvenue au Café Frimousse, ${ME()} ! Je vais te montrer comment on sert les clients. Regarde, en voilà un !`,exit:()=>{TU.c1=tuSpawn(["cafe"],600)}},
   {expr:"open",say:"Il arrive…",done:()=>TU.c1.state==="wait"},
   {info:1,expr:"open",say:"Ce qu'il veut est dans sa bulle : un café. La petite barre verte, c'est sa patience.",focus:()=>custEl(TU.c1)},
   {expr:"joy",say:"Touche le café pour le préparer.",focus:()=>tuQ('[data-st="cafe"]'),done:()=>G.st.cafe.some(s=>s.busy||s.ready)||G.tray.includes("cafe")||tuServed(TU.c1)},

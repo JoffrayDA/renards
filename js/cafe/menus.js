@@ -1,11 +1,11 @@
-/* Kitsune Café : feuilles (fiche du jour, Halloween, boutique, carnet). */
+/* Café Frimousse : feuilles (fiche du jour, Halloween, boutique, carnet). */
 /* ---------- menus ---------- */
 function openSheet(h,lock){$("sheet-in").innerHTML=h+(lock?"":`<button class="btn ghost wide" data-close type="button" style="margin-top:10px">Fermer</button>`);$("sheet").hidden=false;$("sheet").dataset.lock=lock?1:"";$("sheet-in").scrollTop=0}
 function closeSheet(){$("sheet").hidden=true}
 /* ---------- accueil : la première fois, Petit Pois présente Roussette et demande son nom ---------- */
 function welcome(){
   const say=(expr,txt,extra="")=>`<div style="width:150px;margin:0 auto">${foxSVG(FOX.roussette,{pose:"happy"})}</div><div class="talk"><div class="pic">${foxArt(FOX.petitpois,{expr,portrait:1})}</div><div class="txt"><b>Petit Pois</b><span>${txt}</span>${extra||"<small>Touche pour continuer</small>"}</div></div>`;
-  const steps=[()=>say("joy","Coucou ! Ce petit renard, c'est toi ! C'est toi qui tiens le Kitsune Café."),
+  const steps=[()=>say("joy","Coucou ! Ce petit renard, c'est toi ! C'est toi qui tiens le Café Frimousse."),
     ()=>say("shy","Euh… tu t'appelles comment, déjà ?",`<form class="name" id="wname"><input id="wname-in" maxlength="14" value="${ME()}" autocomplete="off" aria-label="Ton nom"><button class="btn" type="submit">C'est moi !</button></form>`),
     ()=>say("joy",S.total?`${ME()} ! Je ne l'oublierai plus. Allez, les clients t'attendent !`:`${ME()} ! Je ne l'oublierai plus. Viens, je vais te montrer comment on tient le café !`)];
   let i=0;const show=()=>{openSheet(steps[i](),1);

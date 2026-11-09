@@ -1,4 +1,4 @@
-/* Kitsune Café : Kyoto, troisième quartier de la Ville (08/11/2026, choix de Joffray parmi Japon, Montagne, Plage, Londres),
+/* Café Frimousse : Kyoto, troisième quartier de la Ville (08/11/2026, choix de Joffray parmi Japon, Montagne, Plage, Londres),
    refait le 09/11/2026 en vrai défi de fin (Joffray : « faut que ça se complique ! ») : 25 journées plus dures, la petite cantine
    de Yuzu, le Kitsune Shokudō, et le menu le plus riche du jeu, choisi avec Joffray :
    - boissons : matcha (+ Lait = matcha latte), ramune, hōjicha (+ Crème) ;

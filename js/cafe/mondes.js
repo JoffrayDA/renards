@@ -1,4 +1,4 @@
-/* Kitsune Café : le choix du monde (08/11/2026, Joffray : « des carrés avec les différents mondes, genre saisons, Petite Italie, Paris »).
+/* Café Frimousse : le choix du monde (08/11/2026, Joffray : « des carrés avec les différents mondes, genre saisons, Petite Italie, Paris »).
    En entrant dans le Café, une carte illustrée par monde ; un monde fermé se montre en gris avec ce qu'il faut faire pour l'ouvrir.
    La flèche de retour d'une carte ramène ici ; celle de cet écran ramène à l'accueil. */
 const MONDES=[

@@ -1,7 +1,7 @@
 // Cache hors ligne : tout vient du réseau quand il y en a (mises à jour visibles tout de suite), le cache sert hors ligne.
 // GitHub Pages autorise 10 min de cache HTTP : on le contourne (cache "reload" / "no-cache"), sinon un téléphone
 // peut recevoir l'ancienne page juste après une mise à jour.
-const CACHE = "renards-v304";
+const CACHE = "renards-v305";
 const FILES = ["./", "index.html", "cafe.html", "clairiere.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "img/cafe.jpg", "img/clairiere.jpg", "css/cafe.css", "css/clairiere.css", "js/music.js", "js/foxart.js", "js/push.js", "js/cloud.js", "js/bourse.js", "js/tenues.js", "js/moi.js", "js/avent.js",
   ...["foxes", "data", "state", "draw", "game", "render", "end", "menus", "map", "hwintro", "noelintro", "noelnuits", "italie", "paris", "kyoto", "matsuri", "mondes", "tuto", "main"].map(n => `js/cafe/${n}.js`),
@@ -30,7 +30,7 @@ self.addEventListener("fetch", e => {
 // Notifications (js/push.js, tools/push-send.mjs) : le serveur envoie { t: titre, b: texte, k: genre, u: page à ouvrir }
 self.addEventListener("push", e => {
   let d = {}; try { d = e.data.json(); } catch (x) {}
-  e.waitUntil(self.registration.showNotification(d.t || "Kitsune Café", { body: d.b || "", icon: "icons/icon-192.png", badge: "icons/icon-192.png", tag: d.k || "renards", data: { u: d.u || "./" } }));
+  e.waitUntil(self.registration.showNotification(d.t || "Café Frimousse", { body: d.b || "", icon: "icons/icon-192.png", badge: "icons/icon-192.png", tag: d.k || "renards", data: { u: d.u || "./" } }));
 });
 self.addEventListener("notificationclick", e => {
   e.notification.close();

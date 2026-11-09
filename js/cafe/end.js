@@ -1,4 +1,4 @@
-/* Kitsune Café : fin de journée et de nuit, quêtes affichées. */
+/* Café Frimousse : fin de journée et de nuit, quêtes affichées. */
 /* ---------- fin de journée ---------- */
 // le compagnon dans l'écran de fin : une journée ensemble par jour réel fait grandir l'amitié au refuge
 function buddyRow(){if(!OWN().serveur)return "";const id=buddy(),f=FOX[id],td=todayStr(),t=S.together[id]||(S.together[id]={n:0,last:""}),first=t.last!==td;

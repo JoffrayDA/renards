@@ -1,4 +1,4 @@
-/* Kitsune Café : la journée en cours (G) : arrivées, service, cuisine. */
+/* Café Frimousse : la journée en cours (G) : arrivées, service, cuisine. */
 /* ---------- jeu ---------- */
 const spotsN=()=>2+lv("comptoir1");
 const trayCap=()=>3+lv("plateau");

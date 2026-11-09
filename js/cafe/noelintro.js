@@ -1,4 +1,4 @@
-/* Kitsune Café : animation d'ouverture des Nuits de Noël (9 s environ, demande de Joffray : « comme pour Halloween »), montrée une
+/* Café Frimousse : animation d'ouverture des Nuits de Noël (9 s environ, demande de Joffray : « comme pour Halloween »), montrée une
    fois par an avant la feuille des nuits de Noël, et à revoir depuis cette feuille. On touche pour passer.
    Nuit bleue et aurore, la lune se lève, le traîneau de Barbe-Neige et Ramure passe devant elle, le café enneigé s'allume, le sapin
    s'illumine guirlande après guirlande, les invités de Noël sautent dans la neige, puis le titre et une pluie de sucres d'orge et
@@ -36,7 +36,7 @@ function noelIntro(done){
       <g class="hi-stars">${stars}</g></svg>
     <svg class="hi-moon" viewBox="-80 -80 160 160" aria-hidden="true"><circle r="72" fill="#fff6d0" opacity=".25"/><circle r="46" fill="#fff8dc"/><circle cx="-16" cy="-12" r="8" fill="#efe2b8" opacity=".7"/><circle cx="14" cy="16" r="5" fill="#efe2b8" opacity=".7"/></svg>
     ${sleigh}
-    <div class="hi-title ni-title"><b>Les nuits<br>de Noël</b><span>Au Kitsune Café, jusqu'au 6 janvier</span><small class="hi-tap">Touche pour continuer</small></div>
+    <div class="hi-title ni-title"><b>Les nuits<br>de Noël</b><span>Au Café Frimousse, jusqu'au 6 janvier</span><small class="hi-tap">Touche pour continuer</small></div>
     ${gifts}
     <div class="hi-ground ni-ground">${ground}<div class="hi-crew ni-crew">${crew}</div></div>
     <div class="ni-snow">${flakes}</div>`;

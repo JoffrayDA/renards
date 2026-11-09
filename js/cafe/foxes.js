@@ -1,4 +1,4 @@
-/* Kitsune Café : les renards (FOXES) et leur dessin (foxSVG). */
+/* Café Frimousse : les renards (FOXES) et leur dessin (foxSVG). */
 const $=id=>document.getElementById(id);
 const INK="#5b4250";
 const RAR={commun:{w:10,label:"Commun",cls:""},discret:{w:5,label:"Discret",cls:"discret"},rare:{w:2,label:"Rare",cls:"rare"},legend:{w:.6,label:"Légendaire",cls:"legend"}};

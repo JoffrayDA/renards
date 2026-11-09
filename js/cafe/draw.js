@@ -1,4 +1,4 @@
-/* Kitsune Café : icônes, pièce, bonbon, la salle (véranda) et le comptoir. */
+/* Café Frimousse : icônes, pièce, bonbon, la salle (véranda) et le comptoir. */
 /* ---------- dessins ---------- */
 const K=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
 // pendant une Nuit de Noël, pas de décor d'Halloween même si les deux fêtes se chevauchent (noelnuits.js)

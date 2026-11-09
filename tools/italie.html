@@ -148,7 +148,7 @@ function mapSVG(){
   // le café du quartier en haut : store rayé vert et blanc, tables en terrasse
   s+=`<rect x="110" y="52" width="180" height="100" rx="6" fill="#fbe0a0" ${K}/><path d="M100 54 L200 14 L300 54Z" fill="#d9774e" ${K}/><rect x="182" y="104" width="36" height="48" rx="6" fill="#a8664a" ${K}/><circle cx="211" cy="130" r="2" fill="#ffd36a"/>`;
   let aw=`<path d="M112 82 H288 L296 102 H104Z" fill="#fff" ${K}/>`;for(let i=0;i<8;i++)aw+=`<path d="M${113+i*22} 82 h11 l${3} 20 h-11Z" fill="#7fb48a"/>`;aw+=`<path d="M104 102 ${Array.from({length:8},(_,i)=>`q${12} 9 ${24}`).join(" ")}" fill="#fff" ${K}/><path d="M112 82 H288 L296 102 H104Z" fill="none" ${K}/>`;
-  s+=aw+`<rect x="138" y="58" width="124" height="20" rx="8" fill="#fff" ${K}/><text x="200" y="73" text-anchor="middle" font-family="Mochiy Pop One" font-size="11" fill="${INK}">Caffè Kitsune</text>`;
+  s+=aw+`<rect x="138" y="58" width="124" height="20" rx="8" fill="#fff" ${K}/><text x="200" y="73" text-anchor="middle" font-family="Mochiy Pop One" font-size="11" fill="${INK}">Caffè Frimousse</text>`;
   s+=[130,270].map(x=>`<path d="M${x} 168 V146" ${K}/><path d="M${x-16} 150 Q${x} 136 ${x+16} 150Z" fill="#f47f9a" ${K}/><ellipse cx="${x}" cy="168" rx="13" ry="4" fill="#fff" ${K}/>`).join("")+lemon(318,150)+lemon(84,150);
   // les journées
   const st=[3,3,0,0,0,0,0,0,0,0];

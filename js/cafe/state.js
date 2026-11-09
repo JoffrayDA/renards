@@ -1,4 +1,4 @@
-/* Kitsune Café : sauvegarde (S), migrations, portes, quêtes. */
+/* Café Frimousse : sauvegarde (S), migrations, portes, quêtes. */
 /* ---------- état ---------- */
 let S;
 deliverGifts(); // les cadeaux du calendrier de l'Avent (bourse.js), avant de lire la sauvegarde

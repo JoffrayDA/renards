@@ -1,4 +1,4 @@
-/* Kitsune Café : le défilé du Matsuri, petite cinématique de fin de Kyoto (09/11/2026, idée de Joffray : « tout le monde qui
+/* Café Frimousse : le défilé du Matsuri, petite cinématique de fin de Kyoto (09/11/2026, idée de Joffray : « tout le monde qui
    défile devant l'écran de gauche à droite, un peu stylé »). Jouée une fois après la scène du jour 25 (S.ky.parade), à revoir
    depuis le carnet de Yuzu. On touche pour passer.
    La nuit tombe sur la rue de Gion, les lanternes s'allument une à une sur l'intro des gros tambours (taiko5 : « boum… boum…

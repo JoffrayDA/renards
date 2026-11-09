@@ -1,4 +1,4 @@
-/* Kitsune Café : données du jeu (recettes, saisons, boutique, quêtes, difficulté). */
+/* Café Frimousse : données du jeu (recettes, saisons, boutique, quêtes, difficulté). */
 /* ---------- données ---------- */
 const KEY="cafe-renards-v1";
 // un bruitage (js/music.js) ; à la fin d'une journée, des clochettes si c'est réussi

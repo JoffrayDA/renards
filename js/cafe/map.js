@@ -1,4 +1,4 @@
-/* Kitsune Café : la carte des journées et sa déco. */
+/* Café Frimousse : la carte des journées et sa déco. */
 /* ---------- carte ---------- */
 // Coordonnées en unités de carte : 400 de large, u compté depuis le bas (le jour 1 est en bas, on monte comme sur un chemin).
 const MW=400;
@@ -166,7 +166,7 @@ function mapLabel(){
 }
 function openMap(){
   if(WORLD)return openMapIt(); // la Petite Italie (italie.js)
-  document.querySelector(".mtt b").textContent="Kitsune Café";
+  document.querySelector(".mtt b").textContent="Café Frimousse";
   MUSIC.want(HW?"fantomes":xmasDay()?"noel":"ukulele");
   closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";
   if(!G||!G.run){const se=chapOf(curDay()).sea;if(se!==SEA){SEA=se;renderDecor();dirty=true}}

@@ -1,4 +1,4 @@
-/* Kitsune Café : les Nuits de Noël (01/11/2026, demande de Joffray : « beaucoup plus de niveaux que 5 », une carte toute de Noël).
+/* Café Frimousse : les Nuits de Noël (01/11/2026, demande de Joffray : « beaucoup plus de niveaux que 5 », une carte toute de Noël).
    24 nuits, du 1er décembre au 6 janvier (xmasDay, js/tenues.js) : chacune reprend le rythme d'un jour de référence (base) avec
    d'autres commandes (graine), objectifs calculés par `python tools/balance-bot.py --noel`. Une nuit s'ouvre quand son jour de
    référence est réussi et la nuit précédente a ★. Les recettes y changent de nom et de dessin (VAR.noel, ICON["clé@noel"]) : vin chaud,

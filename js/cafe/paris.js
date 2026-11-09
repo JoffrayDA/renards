@@ -1,5 +1,5 @@
-/* Kitsune Café : Paris, deuxième quartier de la Ville (04/11/2026, maquette validée par Joffray : tools/paris.html,
-   renards sur tools/parisiens.html). 20 journées, comme la Petite Italie, avec son café, le Café Kitsune, et son équipement
+/* Café Frimousse : Paris, deuxième quartier de la Ville (04/11/2026, maquette validée par Joffray : tools/paris.html,
+   renards sur tools/parisiens.html). 20 journées, comme la Petite Italie, avec son café, le Café Frimousse, et son équipement
    (S.pa.own, même prix que l'Italie) ; les pièces, les quêtes, les bonus et le style restent communs.
    Mêmes clés de recettes, prix et cuissons : seuls le nom et le dessin changent (VAR.paris, ICON["clé@paris"]) :
    petit noir (+ Crème = café crème), pain au chocolat (le croissant reste celui du premier café, Joffray), diabolo grenadine,
@@ -104,7 +104,7 @@ function outsidePa(){
   return {defs,st,an};
 }
 
-/* ---------- la carte du quartier : de l'entrée en bas au Café Kitsune en haut, chaque lieu une fois ---------- */
+/* ---------- la carte du quartier : de l'entrée en bas au Café Frimousse en haut, chaque lieu une fois ---------- */
 // la rue (jours 1-5), la Seine et Notre-Dame (entre 5 et 6), le Champ-de-Mars et la tour Eiffel (7-12), Montmartre (13-18), le café (19-20)
 const PA_X=[200,120,110,200,290,300,210,110,100,150,110,190,280,300,230,290,300,220,130,200];
 function paLayout(){
@@ -250,7 +250,7 @@ function paCafeSVG(x,y){
   let s=shadow(x,y+4,104)+`<path d="M${x-114} ${y-110} L${x-102} ${y-134} H${x+102} L${x+114} ${y-110}Z" fill="#a9b6c6" ${BO}/>`+[0,1,2,3,4,5,6].map(i=>`<rect x="${x-86+i*26}" y="${y-129}" width="10" height="13" rx="4" fill="#e6eef6" ${K2}/>`).join("");
   s+=`<rect x="${x-110}" y="${y-110}" width="220" height="110" fill="#f6e8d0" ${BO}/>`+[0,1,2,3,4,5,6,7].map(i=>`<rect x="${x-98+i*26}" y="${y-102}" width="12" height="20" rx="2" fill="#bcd8ea" ${K2}/><path d="M${x-100+i*26} ${y-88} H${x-84+i*26}" stroke="${INK}" stroke-width="1.3"/>`).join("");
   s+=`<rect x="${x-110}" y="${y-68}" width="220" height="68" fill="#2f5a48" ${BO}/><rect x="${x-94}" y="${y-52}" width="70" height="48" rx="4" fill="#bcd8ea" ${K2}/><rect x="${x+24}" y="${y-52}" width="70" height="48" rx="4" fill="#bcd8ea" ${K2}/><rect x="${x-16}" y="${y-52}" width="32" height="52" rx="4" fill="#a8664a" ${BO}/><circle cx="${x+10}" cy="${y-24}" r="2" fill="#ffd36a"/>`;
-  s+=`<rect x="${x-80}" y="${y-78}" width="160" height="20" rx="4" fill="#2f5a48" ${BO}/><text x="${x}" y="${y-63}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="#f2cf6a">Café Kitsune</text>`;
+  s+=`<rect x="${x-80}" y="${y-78}" width="160" height="20" rx="4" fill="#2f5a48" ${BO}/><text x="${x}" y="${y-63}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="#f2cf6a">Café Frimousse</text>`;
   let aw=`<path d="M${x-102} ${y-54} H${x+102} L${x+110} ${y-36} H${x-110}Z" fill="#fff" ${BO}/>`;for(let i=0;i<10;i++)aw+=`<path d="M${x-101+i*20.6} ${y-54} h10 l2 18 h-10Z" fill="#c0485a"/>`;
   aw+=`<path d="M${x-110} ${y-36} ${Array.from({length:10},()=>"q11 8 22 0").join(" ")}" fill="#c0485a" ${K}/><path d="M${x-102} ${y-54} H${x+102} L${x+110} ${y-36} H${x-110}Z" fill="none" ${BO}/>`;
   return s+aw+paTable(x-80,y+32)+paTable(x+80,y+32);
@@ -346,7 +346,7 @@ const PA_SCENES={
       ["leon","shy","On dit qu'elle reconnaît un bon pain au chocolat à son bruit, quand on le croque."]],
   20:[["anatole","surprise","C'est le jour de la finale ! Céleste est là !"],
       ["celeste","open","Deux pains au chocolat. Un seul gagnant."],
-      ["celeste","joy","Celui du Café Kitsune. Croustillant, fondant, et servi avec le sourire."],
+      ["celeste","joy","Celui du Café Frimousse. Croustillant, fondant, et servi avec le sourire."],
       ["firmin","sad","…"],["firmin","shy","Il est meilleur que le mien. Bravo. Vraiment."],
       ["firmin","open","Et si je venais prendre mon petit noir chez toi, le matin ? Entre voisins."],
       ["anatole","joy",`On a gagné, ${ME()} ! Le meilleur pain au chocolat de Paris, c'est le tien !`]]
@@ -354,7 +354,7 @@ const PA_SCENES={
 const paSceneDue=d=>PA_SCENES[d]&&!S.pa.read[d]&&(PA_DUEL[d]?!!S.pa.duel[d]:!!S.pa.stars[d]);
 function anatoleIntro(){
   itTalk([["anatole","joy",`Bonjour, bonjour ! Anatole, garçon de café. Bienvenue à Paris, ${ME()} !`],
-    ["anatole","open","Le Café Kitsune vient d'ouvrir au coin de la rue. Et juste en face… la boulangerie de Firmin."],
+    ["anatole","open","Le Café Frimousse vient d'ouvrir au coin de la rue. Et juste en face… la boulangerie de Firmin."],
     ["firmin","open","Hmpf. Encore un café. Le meilleur pain au chocolat de Paris, c'est le mien. Tout le monde le sait."],
     ["anatole","surprise","Il organise un grand concours : à la finale, la Diva de l'Opéra goûtera vos deux pains au chocolat !"],
     ["anatole","joy","Pour commencer : le petit noir, et le pain au chocolat. Avec l'option Crème, le petit noir devient un café crème."],
@@ -373,7 +373,7 @@ function paCarnet(){
     ?`<div data-pascene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[PA_SCENES[d][0][0]],{pose:"happy"}),PA_DUEL[d]?(d===20?"La finale":`Défi du jour ${d}`):`Jour ${d}`,PA_SCENES[d][0][2],"background:#fbf3dc")}</div>`
     :`<div style="opacity:.55">${itRow(foxSVG(FOX.anatole,{sil:1}),PA_DUEL[d]?(d===20?"La finale":`Défi du jour ${d}`):"Scène à découvrir",PA_DUEL[d]?`Bats Firmin au jour ${d}.`:`Réussis le jour ${d} du quartier.`)}</div>`).join("");
   openSheet(`<h2>Le journal du concours</h2><div style="width:120px;margin:0 auto">${foxSVG(FOX.anatole,{pose:"happy"})}</div>
-  <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis l'ouverture du Café Kitsune. Touche une scène pour la revoir.</p>${rows}
+  <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis l'ouverture du Café Frimousse. Touche une scène pour la revoir.</p>${rows}
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="anatoleintro" type="button">Revoir l'accueil d'Anatole</button></div>`);
   $("sheet-in").querySelectorAll("[data-pascene]").forEach(b=>b.onclick=()=>itTalk(PA_SCENES[+b.dataset.pascene],paCarnet));
 }
@@ -381,12 +381,12 @@ function paCarnet(){
 function paFinaleSheet(){
   const n=Object.keys(PA_DUEL).filter(d=>S.pa.duel[d]).length,f=FOX.firmin;
   openSheet(`<h2>${f.name}, le rival</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:S.pa.peace?"happy":"sit"})}</div>
-  <p class="sub" style="text-align:center">${S.pa.peace?"Depuis la finale, il vient prendre son petit noir au Café Kitsune tous les matins.":`« Le meilleur pain au chocolat de Paris, c'est le mien. » Les jours de défi (${Object.keys(PA_DUEL).join(", ")}), il annonce son score : fais mieux que lui.`}</p>
+  <p class="sub" style="text-align:center">${S.pa.peace?"Depuis la finale, il vient prendre son petit noir au Café Frimousse tous les matins.":`« Le meilleur pain au chocolat de Paris, c'est le mien. » Les jours de défi (${Object.keys(PA_DUEL).join(", ")}), il annonce son score : fais mieux que lui.`}</p>
   ${Object.keys(PA_DUEL).map(Number).map(d=>itRow(icon("croissant","paris"),d===20?"La finale (jour 20)":`Défi du jour ${d}`,S.pa.duel[d]?`Gagné ! Ton record : ${S.pa.best[d]} pièces, Firmin : ${duelScore(d)}.`:`Firmin a fait ${duelScore(d)} pièces.${S.pa.best[d]?` Ton record : ${S.pa.best[d]}.`:""}`,S.pa.duel[d]?"background:#e3f2d6":"")).join("")}`);
 }
 
 /* ---------- le quartier dans le registre des mondes (data.js) ---------- */
-WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Kitsune",short:"Café",sv:()=>S.pa,days:PA_DAYS,s3:PA_S3,kit:PA_KIT,
+WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Frimousse",short:"Café",sv:()=>S.pa,days:PA_DAYS,s3:PA_S3,kit:PA_KIT,
   opt:{lait:"Crème",chantilly:"Chantilly"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Café crème":`${REC[r].name} chantilly`,optWord:"la chantilly",
   gel:PA_MAC,gelSVG:paBoxSVG,tubSVG:x=>macSVG(20,21,PA_MAC[x].c,1.6),tubLabel:"Un macaron",cone:"la boîte",
   coneHint:"Touche les macarons <b>dans l'ordre de la commande</b>, de gauche à droite.",

@@ -1,4 +1,4 @@
-/* Kitsune Café : effets, événements (touchers) et boucle de jeu. Chargé en dernier. */
+/* Café Frimousse : effets, événements (touchers) et boucle de jeu. Chargé en dernier. */
 /* ---------- effets ---------- */
 let toastT;
 function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600)}

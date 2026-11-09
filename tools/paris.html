@@ -189,11 +189,11 @@ function mapSVG(){
   s+=`<path d="M276 802 V886 M324 802 V886" stroke="#ead2bb" stroke-width="2" stroke-dasharray="3 6"/>`;
   // l'entrée (depuis le premier café) en bas
   s+=`<path d="M140 1244 V1224 Q200 1188 260 1224 V1244" fill="none" stroke="${INK}" stroke-width="16" stroke-linecap="round"/><path d="M140 1244 V1224 Q200 1188 260 1224 V1244" fill="none" stroke="#a9b6c6" stroke-width="10" stroke-linecap="round"/><rect x="156" y="1206" width="88" height="22" rx="8" fill="#fff" ${K}/><text x="200" y="1222" text-anchor="middle" font-family="Mochiy Pop One" font-size="12" fill="${INK}">Paris</text>`;
-  // en haut : le Café Kitsune au coin de la rue, et la boulangerie de Firmin en face
+  // en haut : le Café Frimousse au coin de la rue, et la boulangerie de Firmin en face
   s+=`<path d="M86 54 L98 30 H302 L314 54Z" fill="#a9b6c6" ${K}/>`+[0,1,2,3,4,5,6].map(i=>`<rect x="${114+i*26}" y="35" width="10" height="13" rx="4" fill="#e6eef6" ${K2}/>`).join("");
   s+=`<rect x="90" y="54" width="220" height="110" fill="#f6e8d0" ${K}/>`+[0,1,2,3,4,5,6,7].map(i=>`<rect x="${102+i*26}" y="62" width="12" height="20" rx="2" fill="#bcd8ea" ${K2}/><path d="M${100+i*26} ${76} H${116+i*26}" stroke="${INK}" stroke-width="1.3"/>`).join("");
   s+=`<rect x="90" y="96" width="220" height="68" fill="#2f5a48" ${K}/><rect x="106" y="112" width="70" height="48" rx="4" fill="#bcd8ea" ${K2}/><rect x="224" y="112" width="70" height="48" rx="4" fill="#bcd8ea" ${K2}/><rect x="184" y="112" width="32" height="52" rx="4" fill="#a8664a" ${K}/><circle cx="210" cy="140" r="2" fill="#ffd36a"/>`;
-  s+=`<rect x="120" y="86" width="160" height="20" rx="4" fill="#2f5a48" ${K}/><text x="200" y="101" text-anchor="middle" font-family="Mochiy Pop One" font-size="12" fill="#f2cf6a">Café Kitsune</text>`;
+  s+=`<rect x="120" y="86" width="160" height="20" rx="4" fill="#2f5a48" ${K}/><text x="200" y="101" text-anchor="middle" font-family="Mochiy Pop One" font-size="12" fill="#f2cf6a">Café Frimousse</text>`;
   let aw=`<path d="M98 110 H302 L310 128 H90Z" fill="#fff" ${K}/>`;for(let i=0;i<10;i++)aw+=`<path d="M${99+i*20.6} 110 h10 l2 18 h-10Z" fill="#c0485a"/>`;aw+=`<path d="M90 128 ${Array.from({length:10},()=>"q11 8 22 0").join(" ")}" fill="#c0485a" ${K}/><path d="M98 110 H302 L310 128 H90Z" fill="none" ${K}/>`;s+=aw;
   s+=table(120,196)+table(280,196);
   s+=`<rect x="326" y="96" width="78" height="80" fill="#5f7fb0" ${K}/><path d="M322 96 H408" stroke="${INK}" stroke-width="3"/><rect x="332" y="104" width="66" height="14" rx="3" fill="#fff4dc" ${K2}/><text x="365" y="114.5" text-anchor="middle" font-size="8.4" font-weight="900" fill="#5f7fb0">BOULANGERIE</text><rect x="334" y="126" width="40" height="34" rx="3" fill="#fff4dc" ${K2}/>${[[344,148],[358,150],[350,138]].map(([a,b])=>`<g transform="translate(${a-10} ${b-8}) scale(.5)">${IC.pac}</g>`).join("")}<rect x="380" y="126" width="18" height="50" rx="3" fill="#a8664a" ${K2}/>`;
@@ -254,7 +254,7 @@ document.getElementById("info").innerHTML=`
 <div class="card"><h2>Les renards du quartier</h2>
 <div class="foxes">${LOC.map(f=>`<div class="fx">${fx(f)}<span class="tag${f.rar==="legend"?" l":f.id==="pa3"?" r":""}">${f.id==="pa3"?"le rival":{commun:"commun",discret:"discret",legend:"légendaire"}[f.rar]}</span><b>${f.name}</b><span>${f.bio}</span></div>`).join("")}</div></div>
 <div class="card"><h2>L'histoire : le grand concours</h2><ul>
-<li><b>À l'arrivée</b>, Anatole t'accueille : le Café Kitsune vient d'ouvrir juste en face de la boulangerie de Firmin, qui jure faire le meilleur pain au chocolat de Paris.</li>
+<li><b>À l'arrivée</b>, Anatole t'accueille : le Café Frimousse vient d'ouvrir juste en face de la boulangerie de Firmin, qui jure faire le meilleur pain au chocolat de Paris.</li>
 <li><b>Les jours de défi</b> (5, 10, 15, en rose sur la carte) : Firmin annonce son score, affiché en haut pendant la journée. Le battre en plus de l'objectif donne une scène et un petit cadeau ; perdre ne bloque rien.</li>
 <li><b>Entre deux défis</b>, quelques scènes : Firmin vient espionner en lunettes noires, Bobine photographie la vitrine, Musette joue devant la porte, Léon raconte le concours d'autrefois, un client de passage réclame « une chocolatine ! ».</li>
 <li><b>La finale, au jour 20</b> : Céleste, la Diva de l'Opéra, goûte les deux pains au chocolat. Tu gagnes, Firmin te serre la patte, et les deux boutiques font la paix (il vient ensuite comme client).</li>
@@ -263,7 +263,7 @@ document.getElementById("info").innerHTML=`
 <li><b>On y entre</b> depuis la carte de la Petite Italie (panneau en haut), une fois son jour 20 réussi.</li>
 <li><b>20 journées</b>, comme l'Italie : rythme repris d'un jour de référence du premier café, objectifs calculés par le bot, ★★★ atteignable tout équipé sans bonus.</li>
 <li><b>Un nouveau café</b>, sa boutique à racheter (même règle de prix que l'Italie). Pièces, clochettes, quêtes et style restent communs.</li>
-<li><b>La carte</b> : un seul paysage, chaque lieu une fois : la rue avec le métro et la colonne Morris, les quais et les bouquinistes, Notre-Dame sur son île, le pont, la péniche, la tour Eiffel au Champ-de-Mars, Montmartre, le Sacré-Cœur et les chevalets, puis le Café Kitsune face à la boulangerie.</li>
+<li><b>La carte</b> : un seul paysage, chaque lieu une fois : la rue avec le métro et la colonne Morris, les quais et les bouquinistes, Notre-Dame sur son île, le pont, la péniche, la tour Eiffel au Champ-de-Mars, Montmartre, le Sacré-Cœur et les chevalets, puis le Café Frimousse face à la boulangerie.</li>
 </ul></div>`;
 </script>
 </body>

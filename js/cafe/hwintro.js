@@ -1,4 +1,4 @@
-/* Kitsune Café : animation d'ouverture de la Nuit des citrouilles (9 s environ), montrée une fois par an
+/* Café Frimousse : animation d'ouverture de la Nuit des citrouilles (9 s environ), montrée une fois par an
    avant la feuille Halloween, et à revoir depuis cette feuille. On touche pour passer.
    Les mouvements sont en CSS (les « begin » SMIL partent du chargement de la page, pas de l'insertion) ;
    seuls les battements d'ailes et le flottement des fantômes, qui tournent en boucle, sont en SMIL. */
@@ -41,7 +41,7 @@ function hwIntro(done){
       <rect width="400" height="700" fill="url(#hi-sky)"/><g class="hi-stars">${stars}</g></svg>
     <svg class="hi-moon" viewBox="-80 -80 160 160" aria-hidden="true"><circle r="72" fill="#fff1b8" opacity=".28" filter="url(#soft)"/><circle r="46" fill="#fff1c4"/><circle cx="-16" cy="-12" r="8" fill="#f2dea0" opacity=".7"/><circle cx="14" cy="16" r="5" fill="#f2dea0" opacity=".7"/><circle cx="18" cy="-18" r="4" fill="#f2dea0" opacity=".6"/></svg>
     ${bats}
-    <div class="hi-title"><b>Nuit des<br>citrouilles</b><span>Au Kitsune Café, jusqu'au 3 novembre</span><small class="hi-tap">Touche pour continuer</small></div>
+    <div class="hi-title"><b>Nuit des<br>citrouilles</b><span>Au Café Frimousse, jusqu'au 3 novembre</span><small class="hi-tap">Touche pour continuer</small></div>
     ${candies}
     <div class="hi-ground">
       <svg viewBox="0 0 400 200" aria-hidden="true">${tree(30,.9)}${tree(384,.8,1)}${tree(100,.55,1)}${house}

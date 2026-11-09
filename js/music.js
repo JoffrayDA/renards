@@ -1,4 +1,4 @@
-/* Musique du Kitsune Café, partagée par les trois pages. Tout est synthétisé (Web Audio) : aucun fichier, aucune licence.
+/* Musique du Café Frimousse, partagée par les trois pages. Tout est synthétisé (Web Audio) : aucun fichier, aucune licence.
    Chaque page dit quel morceau elle veut (MUSIC.want) ; il démarre au premier toucher (règle des navigateurs).
    Un bouton [data-sound] coupe ou remet le son, choix mémorisé dans localStorage « renards-son ».
    Morceaux : boite (accueil), ukulele (carte du café), service (en jeu), foret (Clairière), fantomes (Halloween), piazza, tarantella et polka (Petite Italie), musette et galop (Paris), torii, matsuri et taiko (Kyoto : la carte, la fête, les tambours de guerre), lofi (en réserve). */
@@ -397,7 +397,7 @@ const MUSIC=(()=>{
         I.bass(c[0]-12,t,B*2.6,.14);I.pad(c.map(x=>x+12),t,B*3,.02);
         melody((m,tt,d)=>{I.accord([m],tt,d*.95,.035);I.keys(m+12,tt,.04,d*1.2)},this.mel,b,t,B)}},
     // … et un galop endiablé pour le service (fa majeur), au même entrain que la tarentelle
-    galop:{name:"Galop du Café Kitsune",bpm:300,beats:4,bars:8,
+    galop:{name:"Galop du Café Frimousse",bpm:300,beats:4,bars:8,
       ch:[[53,57,60],[48,52,55,58],[53,57,60],[53,57,60],[46,50,53],[53,57,60],[48,52,55,58],[53,57,60]],
       mel:[[[72,1],[77,1],[81,1],[77,1]],[[79,1],[76,1],[72,2]],[[72,1],[77,1],[81,1],[84,1]],[[86,1],[84,1],[81,2]],
            [[82,1],[81,1],[79,1],[77,1]],[[81,1],[79,1],[77,1],[76,1]],[[74,1],[76,1],[79,1],[82,1]],[[77,3],[null,1]]],

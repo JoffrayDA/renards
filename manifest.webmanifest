@@ -1,7 +1,7 @@
 {
   "id": "/renards/app",
-  "name": "Kitsune Café",
-  "short_name": "Kitsune Café",
+  "name": "Café Frimousse",
+  "short_name": "Café Frimousse",
   "description": "Un café kawaii tenu par des renards, et une clairière pour souffler.",
   "lang": "fr",
   "start_url": "./",

@@ -1,5 +1,5 @@
-/* Kitsune Café : la Petite Italie, Monde 2 (03/11/2026, maquette validée par Joffray : tools/italie.html).
-   20 journées (Joffray : « avec autant de produits, on peut faire 20 niveaux »), un nouveau café, le Caffè Kitsune, avec son propre
+/* Café Frimousse : la Petite Italie, Monde 2 (03/11/2026, maquette validée par Joffray : tools/italie.html).
+   20 journées (Joffray : « avec autant de produits, on peut faire 20 niveaux »), un nouveau café, le Caffè Frimousse, avec son propre
    équipement (S.it.own, prix ×IT_PRICE) ; les pièces, les quêtes, les bonus et le style restent communs. Les gestes ne changent pas :
    mêmes clés de recettes, mêmes prix et cuissons, seuls le nom et le dessin changent (VAR.italie, ICON["clé@italie"]).
    Chaque journée reprend le rythme d'un jour de référence du premier monde (base), avec sa graine et son objectif calculés par
@@ -15,7 +15,7 @@ const ITF=[
   {id:"tito",name:"Tito",rar:"commun",acc:"paille",scale:.8,c:{b:"#c98552",ch:"#fff3e2",e:"#7a4a2c",s:"#6a3c26",t:"#fff3e2"},bio:"Le plus petit du quartier. Pêche des pièces au fond de la fontaine."},
   {id:"donnalimone",name:"Donna Limone",rar:"legend",acc:"citrons",c:{b:"#f7d46a",ch:"#fffbe8",e:"#c99a3a",s:"#b88a2a",t:"#fffbe8"},bio:"L'invitée d'honneur du quartier. Ses citronniers donnent la meilleure granita du monde."},
   // le grand-père de Lorenzo (histoire du carnet, choix de Joffray) : ne vient au Caffè qu'après le jour 20 (S.it.nonno)
-  {id:"nonno",name:"Nonno",rar:"rare",acc:"garcon",mark:"vieux",c:{b:"#d4a684",ch:"#fbf5ec",e:"#8a6a54",s:"#7d5e4a",t:"#fbf5ec"},bio:"Le grand-père de Lorenzo. Il tenait le Caffè Kitsune autrefois, et son carnet de recettes s'était envolé dans tout le quartier."}
+  {id:"nonno",name:"Nonno",rar:"rare",acc:"garcon",mark:"vieux",c:{b:"#d4a684",ch:"#fbf5ec",e:"#8a6a54",s:"#7d5e4a",t:"#fbf5ec"},bio:"Le grand-père de Lorenzo. Il tenait le Caffè Frimousse autrefois, et son carnet de recettes s'était envolé dans tout le quartier."}
 ];
 ITF.forEach(f=>{f.world="italie";FOX[f.id]=f});
 const ITF_REG=ITF.filter(f=>f.rar==="commun");
@@ -47,7 +47,7 @@ function itCfg(d){const N=WD().days[d-1],c={...cfgOf(N.base),goal:Math.round(N.g
 const wRecAt=d=>Object.keys(WD().recDays||IT_DAY).find(k=>(WD().recDays||IT_DAY)[k]===d);
 const seaNow=()=>WORLD||chapOf(curDay()).sea;
 
-WORLDS.italie={id:"italie",name:"Petite Italie",cafe:"Caffè Kitsune",short:"Caffè",sv:()=>S.it,days:IT_DAYS,s3:IT_S3,kit:IT_KIT,
+WORLDS.italie={id:"italie",name:"Petite Italie",cafe:"Caffè Frimousse",short:"Caffè",sv:()=>S.it,days:IT_DAYS,s3:IT_S3,kit:IT_KIT,
   opt:{lait:"Mousse",chantilly:"Panna"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Cappuccino":`${REC[r].name} panna`,optWord:"la panna",
   gel:GEL,cone:"le cornet",coneHint:"Touche les bacs de gelato <b>dans l'ordre de la commande</b>, de bas en haut.",gelHint:g=>`Gelato : touche les bacs <b>dans l'ordre, de bas en haut</b> (${gelName(g)}). Raté ? Touche le cornet.`,
   gelNew:"Dès la prochaine journée, un comptoir à glaces : chaque client veut ses trois parfums dans son ordre à lui. Touche les bacs de bas en haut.",
@@ -110,7 +110,7 @@ function outsideIt(){
   return {defs,st,an};
 }
 
-/* ---------- la carte du quartier : 20 journées, de l'arche d'entrée au Caffè Kitsune, la tour au milieu ---------- */
+/* ---------- la carte du quartier : 20 journées, de l'arche d'entrée au Caffè Frimousse, la tour au milieu ---------- */
 const ITW=400;
 let ITL=null;
 function itLayout(){
@@ -196,7 +196,7 @@ function pisaSVG(x,y,k=1){
 function itCafeSVG(x,y){
   let s=shadow(x,y+4,100)+`<rect x="${x-90}" y="${y-92}" width="180" height="92" rx="6" fill="#fbe0a0" ${BO}/><path d="M${x-100} ${y-90} L${x} ${y-130} L${x+100} ${y-90}Z" fill="#d9774e" ${BO}/><rect x="${x-18}" y="${y-48}" width="36" height="48" rx="6" fill="#a8664a" ${BO}/><circle cx="${x+11}" cy="${y-22}" r="2.4" fill="#ffd36a"/>`;
   s+=`<path d="M${x-88} ${y-62} H${x+88} L${x+96} ${y-42} H${x-96}Z" fill="#fff" ${BO}/>`+Array.from({length:8},(_,i)=>`<path d="M${x-87+i*22} ${y-62} h11 l3 20 h-11Z" fill="#7fb48a"/>`).join("")+`<path d="M${x-96} ${y-42} ${Array.from({length:8},()=>"q12 9 24 0").join(" ")}" fill="#fff" ${K}/><path d="M${x-88} ${y-62} H${x+88} L${x+96} ${y-42} H${x-96}Z" fill="none" ${BO}/>`;
-  s+=`<rect x="${x-62}" y="${y-86}" width="124" height="20" rx="8" fill="#fff" ${BO}/><text x="${x}" y="${y-71}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Caffè Kitsune</text>`;
+  s+=`<rect x="${x-74}" y="${y-86}" width="148" height="20" rx="8" fill="#fff" ${BO}/><text x="${x}" y="${y-71}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Caffè Frimousse</text>`;
   s+=[x-70,x+70].map(t=>`<path d="M${t} ${y+18} V${y-4}" ${K}/><path d="M${t-16} ${y} Q${t} ${y-14} ${t+16} ${y}Z" fill="#f47f9a" ${K}/><ellipse cx="${t}" cy="${y+18}" rx="13" ry="4" fill="#fff" ${K}/>`).join("");
   return s;
 }
@@ -240,7 +240,7 @@ function itMapSVG(L){
   // la campagne : la ferme, les oliviers, la vigne, les tournesols, la paille
   at(290,1522,itCasale);at(310,1662,itOlive);at(364,1722,(x,y)=>itOlive(x,y,.85));at(104,1722,itVines);
   at(110,1852,itSunflowers);at(100,1952,itBales);
-  // les collines : cyprès, le puits, la lavande, et le Caffè Kitsune tout en haut
+  // les collines : cyprès, le puits, la lavande, et le Caffè Frimousse tout en haut
   at(30,2006,itCypress);at(164,2012,(x,y)=>itCypress(x,y,.9));at(300,2062,itWell);at(300,2142,itLavRow);
   at(52,2170,(x,y)=>itCypress(x,y,.85));at(76,2160,(x,y)=>itCypress(x,y,.75));at(356,2180,(x,y)=>itCypress(x,y,.8));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
@@ -304,7 +304,7 @@ function lorenzoIntro(){
     ["lorenzo","joy","Je les cherche ! Chaque page retrouvée, c'est une recette de plus pour le Caffè."],
     ["lorenzo","open","Pour commencer : l'espresso, tout petit, très fort. Avec de la mousse de lait, ça devient un cappuccino : touche « Mousse », au bout du plateau."],
     ["lorenzo","surprise","Et pour manger, le cornetto, notre croissant. Les gens du quartier sont pressés, hein. Mais ils laissent de beaux pourboires."],
-    ["lorenzo","joy","Ah, et au milieu du quartier, il y a une tour qui penche. Elle ne tombe jamais, promis ! Allez, le Caffè Kitsune t'attend."]],
+    ["lorenzo","joy","Ah, et au milieu du quartier, il y a une tour qui penche. Elle ne tombe jamais, promis ! Allez, le Caffè Frimousse t'attend."]],
     ()=>{if(!S.it.intro){S.it.intro=1;save();dailyBonus()}});
 }
 
@@ -342,7 +342,7 @@ const IT_PAGES={
 };
 const IT_NONNO=[
   ["lorenzo","surprise","Nonno ?! Tu es descendu des collines !"],
-  ["nonno","joy","Ciao, piccolo. On m'a dit que le Caffè Kitsune avait rouvert. Je voulais voir ça de mes yeux."],
+  ["nonno","joy","Ciao, piccolo. On m'a dit que le Caffè Frimousse avait rouvert. Je voulais voir ça de mes yeux."],
   ["nonno","open","Ce tiramisù… c'est le mien. Non. Il est meilleur."],
   ["lorenzo","joy",`C'est grâce à ${ME()} ! On a retrouvé toutes les pages de ton carnet !`],
   ["nonno","shy","Tu veux savoir un secret ? La petite D., c'est une renarde aux citrons à qui j'ai appris la granita. Aujourd'hui, on l'appelle Donna Limone."],

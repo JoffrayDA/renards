@@ -1,4 +1,4 @@
-/* Kitsune Café : affichage de la salle, du plateau et de la cuisine. */
+/* Café Frimousse : affichage de la salle, du plateau et de la cuisine. */
 /* ---------- rendu ---------- */
 function renderHud(){
   $("coins").textContent=S.coins;$("coins2").textContent=S.coins;$("bells").textContent=bellsN();
