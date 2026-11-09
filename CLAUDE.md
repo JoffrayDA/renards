@@ -70,6 +70,8 @@ Halloween, la **Nuit des citrouilles** (branche `halloween`, octobre 2026) : act
 
 **Choix du monde** (`js/cafe/mondes.js`, 08/11/2026, Joffray : « des carrés avec les différents mondes ») : en entrant dans le Café, une carte illustrée par monde (`MONDES` : les quatre saisons, Petite Italie, Paris ; dessin `mondeArt…`, renard hôte, étoiles et journée), les mondes fermés en gris avec leur condition (`lockMsg`), plus une carte « Bientôt ». Toucher un monde = `goWorld`. La flèche d'une carte ramène à cet écran (`data-act="worlds"`), la sienne à l'accueil. Une partie neuve (`!S.named`) va droit à la carte (bienvenue, leçon). Un nouveau quartier = une entrée de `MONDES` (Kyoto ajouté le 08/11/2026).
 
+**Carnet des clients** (`carnet`, menus.js) : rangé par monde (Le café, Petite Italie, Paris, Kyoto, chacun avec son compte), un quartier n'y apparaît qu'une fois ouvert ; Kyoto ajouté le 09/11/2026 (Joffray : « mets le carnet du café à jour »). Un nouveau quartier = une ligne de plus dans `groups` et dans `WHERE`.
+
 **Boutique : un seul onglet Améliorations** (07/11/2026) : Équipement et Déco réunis (le pote de Joffray : « la déco, je m'en fiche », alors que pourboires, patience et VIP sont des améliorations), avec deux titres, « Au comptoir : préparer plus vite » (`UPG.equip`) et « Dans la salle : patience, pourboires, VIP » (`UPG.deco`). Puis Bonus et Style.
 
 **Plus de phrase sous les tuiles** (09/11/2026, Joffray : « pas besoin de la phrase tout en bas ») : un conseil ponctuel (`hint`) passe dans une petite bulle en bas de la salle qui s'efface après 3,5 s (`#htoast`) ; la ligne `#hint` ne sert plus qu'aux conseils guidés des jours 1 et 2 du premier café (`autoHint`), et se cache vide.

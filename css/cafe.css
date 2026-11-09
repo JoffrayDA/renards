@@ -166,6 +166,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .hint{margin:0;font-size:13.5px;color:var(--ink-soft);min-height:1.5em}
 .hint b{color:var(--ink)}
 .hint:empty{display:none}
+.fgh{margin:14px 0 6px;font-size:16px}.fgh small{font-weight:400;color:var(--ink-soft);font-size:13px}
 /* au téléphone, pas de trait qui tremble sur les clients : ils bougent sans cesse et le filtre #wobble était recalculé à chaque image
    (le jeu ramait et la musique grésillait à Kyoto, 09/11/2026) ; le décor, immobile, le garde */
 .scene.short .cust{bottom:28%}.scene.short .bub{bottom:76%}.scene.short .oi{width:26px}.scene.short .oi-row{max-width:58px}
