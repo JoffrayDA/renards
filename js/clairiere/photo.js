@@ -58,7 +58,7 @@ function shotOf(p){if(p.at)return p;
   return null}
 function shotSVG(p){const s=shotOf(p);if(!s)return p.deco&&DECO[p.deco]?decoPhoto(p):wildPhoto(p,FOX[p.id]);
   const home=s.at==="home",H0=H;let vw,cx,cy,fox;
-  if(home&&HOBJ[s.obj]){const [x,y,k]=HOBJ[s.obj].at;vw=200*k;cx=x+100*k;cy=y+80*k;fox=`<g transform="${hPlace(s.obj)}">${HOBJ[s.obj].art(s.id)}</g>`}
+  if(home&&HOBJ[s.obj]){const [x,y,k]=HOBJ[s.obj].at;vw=200*k;cx=x+100*k;cy=y+80*k;fox=`<g transform="${hPlace(s.obj)}">${HOBJ[s.obj].art(s.id,s.more||[],!!s.nt)}</g>`}
   else{const [w,dy]=SHOT[s.obj]||[120,-24];vw=w;cx=s.x;cy=s.y+dy;
     const art=s.obj&&OBJS[s.obj]?OBJS[s.obj].svg(s.id):foxArt(FOX[s.id],{pose:s.pose,toy:s.toy});
     fox=(s.deco?atDeco(s.deco,"art"):"")+atFox(art,s.x,s.y,s.f,s.w||54*(s.obj&&OBJS[s.obj]&&OBJS[s.obj].k||1))+(s.deco&&DECO[s.deco.k].front?atDeco(s.deco,"front"):"")}

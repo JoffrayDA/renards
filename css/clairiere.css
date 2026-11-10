@@ -492,3 +492,12 @@ h1 .la{font-style:normal}
 @keyframes cudheart{0%,100%{transform:translate(-50%,0) scale(.9);opacity:.85}50%{transform:translate(-50%,-25%) scale(1.08);opacity:1}}
 .cudh{animation:cudh 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%;pointer-events:none}
 @keyframes cudh{50%{transform:translateY(-6px) scale(1.1)}}
+.toyhug{animation:toyhug 1.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}
+@keyframes toyhug{50%{transform:translateY(-3px) rotate(-14deg)}}
+.toynose{animation:toynose 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes toynose{0%,100%{transform:translateX(-2px) rotate(-8deg)}50%{transform:translateX(2px) rotate(8deg)}}
+/* le coin des jeux de la maison (maison.js) : veilleuse qui respire, « chut… » qui flotte */
+.vglow{animation:vglow 3s ease-in-out infinite}
+@keyframes vglow{50%{opacity:.55}}
+.shh{animation:shh 3.2s ease-in-out infinite}
+@keyframes shh{0%{opacity:0;transform:translate(0,4px)}25%,70%{opacity:.95}100%{opacity:0;transform:translate(6px,-8px)}}

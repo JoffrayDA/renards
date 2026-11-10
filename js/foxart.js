@@ -313,14 +313,18 @@ function foxArt(f,o={}){
     body=tailBack(34,92,86)+ears(16,-34)+bun(T,90,41)+(gh?"":`<ellipse cx="60" cy="84" rx="25" ry="8.5" fill="${c.ch}" stroke="none"/>`)+faceOf(Y,"joy");
     const pad=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="6.4" ry="8.4" fill="${c.s}"/><ellipse cx="${x}" cy="${y+2}" rx="2.8" ry="2.4" fill="#f6a5b4" stroke="none"/><circle cx="${x-2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x}" cy="${y-4.2}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x+2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/></g>`;
     if(!gh)fx+=[[27,50,-35,0],[93,50,35,.25],[31,86,-25,.4],[89,86,25,.12]].map(([x,y,r,d])=>`<g class="bpaw" style="animation-delay:${d}s">${pad(x,y,r)}</g>`).join("");
+    // o.toy : un jouet serré sur le ventre (le coin des jeux de la maison)
+    if(!gh&&o.toy==="pelote")fx+=`<g class="toyhug"><circle cx="60" cy="88" r="9" fill="#f6b3c4"/><path d="M53 84 q7 2 11 10 M52 89 q7 1 12 8 M56 80 q6 3 10 11" fill="none" stroke="#e0889e" stroke-width="1.3"/></g>`;
+    if(!gh&&o.toy==="balle")fx+=`<g class="toyhug"><circle cx="60" cy="88" r="8.4" fill="#9fd0f0"/><circle cx="57" cy="85" r="1.8" fill="#fff" stroke="none"/><circle cx="63" cy="91" r="1.6" fill="#fff" stroke="none"/><circle cx="63" cy="84" r="1.2" fill="#fff" stroke="none"/></g>`;
   }else if(pose==="play"){
     // joue avec un petit jouet (o.toy) : pelote de laine, balle à pois, ou papillon au-dessus du nez (10/11/2026, Joffray : « des trucs trop kawaii »)
-    const toy=o.toy||"pelote",bf=toy==="papillon";
+    const toy=o.toy||"pelote",bf=toy==="papillon"||toy==="nez"; // nez : une balle en équilibre sur le nez
     if(bf){Y=50;N=70}
     body=tailBack(-14)+ears(bf?-2:-4,bf?-10:-2)+bun(T,88,36)+faceOf(Y,bf?"up":"open")+`<ellipse cx="48" cy="89" rx="7" ry="4.4" fill="${c.s}"/>`+(bf?`<ellipse cx="72" cy="89" rx="7" ry="4.4" fill="${c.s}"/>`:"");
     if(!gh){
       if(toy==="pelote")fx+=`<g class="toyroll"><path d="M86 90 q-10 6 -26 3 q-10 -2 -14 3" fill="none" stroke="#f0a5b8" stroke-width="1.6"/><circle cx="96" cy="83" r="9" fill="#f6b3c4"/><path d="M89 79 q7 2 11 10 M88 84 q7 1 12 8 M92 75 q6 3 10 11" fill="none" stroke="#e0889e" stroke-width="1.3"/></g>`;
       else if(toy==="balle")fx+=`<g class="toyroll"><circle cx="94" cy="84" r="7.6" fill="#9fd0f0"/><circle cx="91" cy="81" r="1.8" fill="#fff" stroke="none"/><circle cx="97" cy="86" r="1.6" fill="#fff" stroke="none"/><circle cx="96" cy="79.6" r="1.2" fill="#fff" stroke="none"/><circle cx="90" cy="87" r="1.2" fill="#fff" stroke="none"/></g>`;
+      else if(toy==="nez")fx+=`<g class="toynose"><circle cx="60" cy="24" r="11" fill="#f2c45a"/><path d="M50.5 21.5 Q60 16 69.5 21.5" fill="none" stroke="#e48a8a" stroke-width="2.6"/><circle cx="56" cy="19.4" r="2" fill="#fff" stroke="none"/></g>`;
       else fx+=`<g class="toyfly"><g stroke-width="1.6"><path class="wingl" d="M60 16 q-11 -9 -13 1 q2 7 13 0Z" fill="#ffd27a"/><path class="wingr" d="M60 16 q11 -9 13 1 q-2 7 -13 0Z" fill="#ffd27a"/></g><path d="M60 11 v10" stroke-width="2.2"/></g>`;
       if(!bf)fx+=`<g class="toybat"><ellipse cx="76" cy="84" rx="6.6" ry="5" fill="${c.s}"/></g>`;
     }

@@ -14,14 +14,18 @@ const HOUSE={
   couverture:{name:"Couverture tricotée",price:45,desc:"Tricotée par Mamie Brindille. Quelqu'un dort toujours dessous : on ne voit que ses oreilles."},
   fauteuil:{name:"Fauteuil près du feu",price:60,desc:"Un gros fauteuil moelleux. Le premier arrivé s'y roule en boule."},
   theiere:{name:"Théière et tasses",price:70,desc:"Une petite table, une théière, des tasses. L'après-midi, on y souffle sur son thé."},
-  disque:{name:"Tourne-disque",price:90,desc:"Un vieux tourne-disque. Dès qu'il tourne, quelqu'un se met à danser."}
+  disque:{name:"Tourne-disque",price:90,desc:"Un vieux tourne-disque. Dès qu'il tourne, quelqu'un se met à danser."},
+  jeux:{name:"Coin des jeux",price:110,desc:"Un tapis en mousse, un coffre à jouets et une veilleuse. On y joue même la nuit… mais sans bruit, les autres dorment !"}
 };
 // l'objet et son renard, dessinés dans un cadre 200 × 160 (le même pour la maison et pour la photo) ; id vide = l'objet seul
 const HOBJ={
   fauteuil:{in:"Dans le fauteuil",night:1,at:[4,226,.7],pose:"sleep"},
   couverture:{in:"Sous la couverture",night:1,at:[-10,380,.62],pose:"sleep"},
   theiere:{in:"À l'heure du thé",at:[262,238,.68],pose:"sit"},
-  disque:{in:"En train de danser",at:[314,352,.5],pose:"happy"}
+  disque:{in:"En train de danser",at:[314,352,.5],pose:"happy"},
+  // le coin des jeux (10/11/2026, Joffray : « un endroit où les renards pourraient jouer dans des poses marrantes, mais en silence pour les autres qui dorment ») :
+  // trois renards (n), même la nuit ; sur le plancher sous le tapis, ou plus petit devant le tapis quand l'écran est court
+  jeux:{in:"Au coin des jeux",night:1,n:3,at:H>=600?[110,Math.min(490,H-170),.9]:[130,H-102,.62],pose:"belly"}
 };
 const hobjs=()=>Object.keys(HOBJ).filter(k=>R.hup[k]);
 const hPlace=k=>{const [x,y,s]=HOBJ[k].at;return `translate(${x} ${y}) scale(${s})`};
@@ -39,7 +43,9 @@ function moreSeats(n,pl){const busy=hobjs().map(k=>{const [x,y,s]=HOBJ[k].at;ret
   const rows=[];for(let y=500,r=0;y<=H-20;y+=46,r++)rows.push([y,r]);if(H<560)rows.push([440,1],[400,0]); // sans plancher en plus : sur les côtés du tapis
   for(const [y,r] of rows)for(let i=0;i<8&&out.length<n;i++){const x=48+i*44+(r%2?22:0);
     if(x>360||(y<470&&x>70&&x<330)||(y>H-70&&x>280))continue; // le tapis reste dégagé, et le bouton Sortir
-    if(pl.concat(out).some(([a,b])=>Math.hypot(a-x,b-y)<34)||busy.some(([a,b])=>Math.hypot(a-x,b-y)<60))continue;out.push([x,y])}
+    if(pl.concat(out).some(([a,b])=>Math.hypot(a-x,b-y)<34)||busy.some(([a,b])=>Math.hypot(a-x,b-y)<60))continue;
+    if(R.hup.jeux){const [jx,jy,js]=HOBJ.jeux.at;if(x>jx-20&&x<jx+200*js+20&&y>jy+40*js&&y<jy+160*js+40)continue}
+    out.push([x,y])}
   return out}
 
 // la porte, touchable une fois la maison ouverte
@@ -257,16 +263,18 @@ HOBJ.couverture.art=id=>(id?foxAt(id,100,140,92,{pose:"sleep"}):"")+`<g filter="
 // qui est à l'intérieur : les renards de la clairière ; la nuit, ils dorment tous
 function enterHouse(){
   const all=[...new Set([...foxes.filter(f=>!f.wild).map(f=>f.id),...Object.keys(R.res).filter(id=>FOX[id]&&!noelAway(id))])].sort((a,b)=>i0(a+today())%97-i0(b+today())%97),night=phaseNow()==="nuit"; // d'autres têtes chaque jour
-  const objs=hobjs().filter(k=>k!=="guirlandes"&&(!night||HOBJ[k].night)),inObj=objs.map((k,i)=>[k,all[i]]).filter(([,id])=>id);
-  const hd=houseDecoSeats(all.slice(inObj.length),night),ids=hd.rest,pl0=seats(),pl=pl0.concat(moreSeats(ids.length-pl0.length,pl0)),here=ids.slice(0,pl.length),out=ids.length-here.length; // les objets de la déco d'abord (deco.js)
+  const objs=hobjs().filter(k=>k!=="guirlandes"&&(!night||HOBJ[k].night)),inObj=[];{let j=0;for(const k of objs){const n=HOBJ[k].n||1,ids=all.slice(j,j+n);j+=ids.length;if(ids.length)inObj.push([k,ids[0],ids.slice(1)])}}
+  const hd=houseDecoSeats(all.slice(inObj.reduce((a,[,,m])=>a+1+m.length,0)),night),ids=hd.rest,pl0=seats(),pl=pl0.concat(moreSeats(ids.length-pl0.length,pl0)),here=ids.slice(0,pl.length),out=ids.length-here.length; // les objets de la déco d'abord (deco.js)
   houseEl=document.createElement("div");houseEl.className="play house";
   houseEl.innerHTML=`<svg viewBox="0 0 400 ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${houseSVG()}<g id="hfox"></g></svg>${out?`<div class="psay">${out} renard${out>1?"s":""} reste${out>1?"nt":""} dehors : il manque de la place.</div>`:""}
     <div class="hbtns"><button class="btn ghost hgrow" type="button"${storyDone("copeau")?"":" hidden"}>Aménager</button><button class="btn ghost hdeco" type="button"${Object.keys(DECO).some(k=>DECO[k].home&&(R.deco.inv[k]||R.deco.home.some(d=>d.k===k)))?"":" hidden"}>Décorer</button></div><button class="btn pclose" type="button">Sortir</button>`;
   const box=houseEl.querySelector("#hfox"),POSES=["sit","lie","groom","happy","sleep","play","belly"];
   // les objets sans personne (la nuit, le thé et la musique s'arrêtent), puis ceux où un renard s'est installé : le toucher prend la photo
-  for(const k of hobjs())if(k!=="guirlandes"&&!inObj.some(([o])=>o===k))grp(box,HOBJ[k].art(null),{transform:hPlace(k)});
-  for(const [k,id] of inObj){const g=grp(box,HOBJ[k].art(id),{transform:hPlace(k)});g.style.cursor="pointer";
-    g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,obj:k});return}
+  for(const k of hobjs())if(k!=="guirlandes"&&!inObj.some(([o])=>o===k))grp(box,HOBJ[k].art(null,[],night),{transform:hPlace(k)});
+  for(const [k,id,more] of inObj){const g=grp(box,HOBJ[k].art(id,more,night),{transform:hPlace(k)});g.style.cursor="pointer";
+    g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,obj:k,...(more.length?{more}:{}),...(night?{nt:1}:{})});return}
+      if(k==="jeux"){const r=[id,...more].map(pet).some(Boolean);if(r){bip("purr");renderHud()}
+        toast(r?`Câlins au coin des jeux (+1 cœur chacun). Chut, ils ne font pas de bruit !`:night?`${nameOf(id)} joue sur la pointe des pattes : les autres dorment.`:`${[id,...more].map(nameOf).join(", ").replace(/, ([^,]*)$/," et $1")} jouent au coin des jeux.`);return}
       const r=pet(id);if(r)bip("purr");toast(r?`${nameOf(id)} est ravi (+1 cœur, +1 gland).`:`${nameOf(id)} : ${HOBJ[k].in.toLowerCase()}.`);if(r)renderHud()}}
   // les plus hauts d'abord, pour que ceux de devant passent par-dessus
   // deux amis collés pour la sieste sur le tapis (10/11/2026, Joffray) : voisins sur la même rangée, ils se rapprochent et penchent l'un vers l'autre
@@ -285,6 +293,31 @@ function enterHouse(){
   if(!decoMode)ppTip("maison");
 }
 const i0=id=>[...id].reduce((a,c)=>a+c.charCodeAt(0),0);
+// le coin des jeux : tapis en mousse, coffre à jouets, panneau « Chut ! », veilleuse champignon ; jusqu'à trois renards dans des poses marrantes :
+// ventre en l'air avec une pelote serrée, une balle en équilibre sur le nez, un qui sort la tête du coffre
+HOBJ.jeux.art=(id,more=[],night)=>{const [b,c]=more,T=["#f6b8c4","#9ec3ef","#f2d27a","#b9e0a8"];
+  const tile=(i,j)=>{const y0=108+j*21,y1=y0+21,sx=t=>34-14*(t-108)/42,ex=t=>166+14*(t-108)/42,X=(t,u)=>sx(t)+(ex(t)-sx(t))*u/4;
+    return `<path d="M${f1(X(y0,i))} ${y0} L${f1(X(y0,i+1))} ${y0} L${f1(X(y1,i+1))} ${y1} L${f1(X(y1,i))} ${y1}Z" fill="${T[(i+j)%4]}"/>`};
+  const f1=v=>Math.round(v*10)/10;
+  return `<ellipse cx="100" cy="152" rx="84" ry="6" fill="#3d2a35" opacity=".16"/>
+  <g class="vglow"><circle cx="172" cy="84" r="${night?30:20}" fill="#fff1b0" opacity="${night?.5:.28}"/></g>
+  <g filter="url(#wobble)">
+  <g ${hL(2.4)}>${[0,1,2,3].map(i=>[0,1].map(j=>tile(i,j)).join("")).join("")}</g>
+  <path d="M28 106 V60" ${hL(5)}/><path d="M28 106 V60" stroke="#c08a5c" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M8 52 H48 Q52 52 52 56 V70 Q52 74 48 74 H8 Q4 74 4 70 V56 Q4 52 8 52Z" fill="#fff4e4" ${hL(2.4)}/>
+  <text x="28" y="67.5" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="10" fill="${INK}" stroke="none">Chut !</text>
+  <path d="M164 102 q-2 -10 8 -10 q10 0 8 10Z" fill="#fff4e4" ${hL(2.2)}/><path d="M154 92 Q154 72 172 72 Q190 72 190 92Z" fill="#f6a5b4" ${hL(2.4)}/>
+  <circle cx="164" cy="84" r="2.6" fill="#fff" stroke="none"/><circle cx="176" cy="80" r="2.2" fill="#fff" stroke="none"/><circle cx="182" cy="88" r="1.8" fill="#fff" stroke="none"/>
+  <path d="M74 84 L80 58 L124 58 L126 84" fill="#a8724c" ${hL(2.4)}/><path d="M80 62 H122" stroke="#d9a46e" stroke-width="2"/>
+  </g>
+  ${c?foxAt(c,100,100,48,{pose:"happy"}):`<circle cx="92" cy="80" r="7" fill="#9fd0f0" ${hL(2)}/><path d="M104 84 l4 -12 l6 12Z" fill="#f2d27a" ${hL(2)}/>`}
+  <g filter="url(#wobble)"><path d="M72 84 H128 V112 Q100 116 72 112Z" fill="url(#hjC)" ${hL(2.6)}/><path d="M72 94 H128" stroke="#7a4a31" stroke-width="2"/><circle cx="100" cy="100" r="4" fill="#f2c45a" ${hL(1.6)}/>
+  ${b?"":`<circle cx="148" cy="138" r="8" fill="#f2c45a" ${hL(2)}/><path d="M140.5 136 Q148 132 155.5 136" fill="none" stroke="#e48a8a" stroke-width="2"/>`}
+  ${id?"":`<circle cx="58" cy="138" r="8" fill="#f6b3c4" ${hL(2)}/><path d="M52 134 q6 2 10 9" fill="none" stroke="#e0889e" stroke-width="1.3"/>`}</g>
+  <defs>${hG("hjC","#c98a5a","#9a6a44")}</defs>`
+  +(id?foxAt(id,60,154,66,{pose:"belly",toy:i0(id)%2?"pelote":"balle"}):"")
+  +(b?foxAt(b,146,150,58,{pose:"play",toy:"nez"}):"")
+  +(night&&id?`<g font-family="Mochiy Pop One,sans-serif" fill="#fff4e4" stroke="${INK}" stroke-width="2.4" paint-order="stroke"><text class="shh" x="96" y="44" font-size="12">chut…</text><text class="shh" style="animation-delay:1.6s" x="128" y="58" font-size="9">chhh</text></g>`:"")};
 function leaveHouse(){if(houseEl){if(decoMode)decoEnd();houseEl.remove();houseEl=null}}
 // (05/11/2026, Joffray : « trop de texte ») : en grille comme la boutique, la description au toucher de l'image
 const HICON={
@@ -295,7 +328,7 @@ const HICON={
     <path d="M150 50 L170 146 M178 50 L196 146" stroke-width="4"/>${[70,92,114,136].map(y=>`<path d="M${150+(y-50)*.21} ${y} H${178+(y-50)*.19}" stroke-width="4"/>`).join("")}</g>`,
   guirlandes:`<path d="M10 40 Q100 100 190 40" fill="none" stroke="${INK}" stroke-width="3"/>${[[34,56,"#f6a5b4"],[66,72,"#f2d27a"],[100,78,"#9ec3ef"],[134,72,"#b9e0a8"],[166,56,"#c9a8ec"]].map(([x,y,c])=>`<path d="M${x-12} ${y-4} L${x+12} ${y-4} L${x} ${y+20}Z" fill="${c}" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>`).join("")}${[50,84,118,150].map(x=>`<circle cx="${x}" cy="${40+Math.sin((x-10)/180*Math.PI)*42}" r="4.5" fill="#fff3a8" stroke="${INK}" stroke-width="2"/>`).join("")}`};
 function houseSheet(){
-  const pic=k=>`<svg viewBox="${{coussins:"20 62 160 72",etagere:"26 52 148 76",couverture:"22 96 160 62",theiere:"78 62 116 92",disque:"52 24 150 128",fauteuil:"20 36 156 120",mezzanine:"14 40 186 110",guirlandes:"6 30 190 76"}[k]}" aria-hidden="true">${HOBJ[k]?HOBJ[k].art(null):HICON[k]||""}</svg>`;
+  const pic=k=>`<svg viewBox="${{coussins:"20 62 160 72",etagere:"26 52 148 76",couverture:"22 96 160 62",theiere:"78 62 116 92",disque:"52 24 150 128",fauteuil:"20 36 156 120",jeux:"8 40 184 116",mezzanine:"14 40 186 110",guirlandes:"6 30 190 76"}[k]}" aria-hidden="true">${HOBJ[k]?HOBJ[k].art(null):HICON[k]||""}</svg>`;
   openSheet(`<h2>Aménager la maison</h2><p class="sub">Copeau construit contre des glands.</p><div class="dgrid">${Object.entries(HOUSE).map(([k,o])=>dTile("",pic(k),o.name,o.desc,"",
     `<button class="btn" data-house="${k}" type="button" ${R.hup[k]||R.glands<o.price?"disabled":""}>${R.hup[k]?"Fait":`${acornSVG()} ${o.price}`}</button>`)).join("")}</div>`)}
 function buildHouse(k){const o=HOUSE[k];if(R.hup[k]||R.glands<o.price)return;
