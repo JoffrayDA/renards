@@ -67,12 +67,12 @@ const VAR={
 const vName=(k,sea=SEA)=>(typeof G!=="undefined"&&G&&G.noel&&VAR.noel&&VAR.noel[k])||(HW&&!WORLDS[sea]&&VAR.halloween[k])||(VAR[sea]||{})[k]||[REC[k].nm,REC[k].npl];
 for(const k in REC){const r=REC[k];r.nm=r.name;r.npl=r.pl;Object.defineProperty(r,"name",{get:()=>vName(k)[0]});Object.defineProperty(r,"pl",{get:()=>vName(k)[1]})}
 /* La carte : 4 saisons de 10 journées. Une porte demande un total d'étoiles, et un invité d'honneur rejoint le café quand toute la saison est en ★★★. */
-// 03/11/2026, Joffray : saisons décalées de deux (Noisette en Automne, Zaza au Printemps, Flocon en Hiver, Comète la légendaire au jour 40, on finit par l'Été).
+// 03/11/2026, Joffray : saisons décalées de deux (Noisette en Automne, Zaza (Pâquerette depuis le 11/11/2026) au Printemps, Flocon en Hiver, Comète la légendaire au jour 40, on finit par l'Été).
 // id = clé des portes dans la sauvegarde (S.pass), gardée par position ; sea = la saison affichée (décor, carte, recettes).
 const CHAP=[
   {id:"printemps",sea:"automne",name:"Automne",from:1,to:10,gate:0,guest:"noisette"},
   {id:"ete",sea:"hiver",name:"Hiver",from:11,to:20,gate:24,guest:"flocon"},
-  {id:"automne",sea:"printemps",name:"Printemps",from:21,to:30,gate:50,guest:"paquerette"}, // Pâquerette (saisons.js) remplace Zaza le 11/11/2026
+  {id:"automne",sea:"printemps",name:"Printemps",from:21,to:30,gate:50,guest:"zaza"}, // Zaza, devenue Pâquerette le 11/11/2026 (foxes.js)
   {id:"hiver",sea:"ete",name:"Été",from:31,to:40,gate:78,guest:"comete"}
 ];
 const LASTDAY=40;

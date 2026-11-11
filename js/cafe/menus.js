@@ -109,7 +109,7 @@ function shop(){
 }
 function carnet(){
   // Copeau et Sésame ne vivent qu'à la Clairière ; les gens d'un quartier une fois le quartier ouvert, rangés par monde (Kyoto ajouté le 09/11/2026)
-  const groups=[["Le café",[...FOXES.filter(f=>f.id!=="roussette"&&!f.refuge),FOX.paquerette]],["Petite Italie",itOpen()?ITF:[]],["Paris",paOpen()?PAF:[]],["Kyoto",kyOpen()?KYF:[]]].filter(g=>g[1].length);
+  const groups=[["Le café",FOXES.filter(f=>f.id!=="roussette"&&!f.refuge)],["Petite Italie",itOpen()?ITF:[]],["Paris",paOpen()?PAF:[]],["Kyoto",kyOpen()?KYF:[]]].filter(g=>g[1].length);
   const list=groups.flatMap(g=>g[1]),WHERE={italie:"en Petite Italie",paris:"à Paris",kyoto:"à Kyoto"};
   const card=f=>{const n=S.seen[f.id]||0,c=CHAP.find(c=>c.guest===f.id),ok=!c||S.guest[f.id]||n;
     const show=n||(f.event==="halloween"&&HW)||(c&&S.guest[f.id]); // invités d'Halloween pendant l'événement, invités d'honneur débloqués : montrés même pas encore venus

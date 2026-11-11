@@ -159,16 +159,16 @@ const itDuomo=(x,y)=>shadow(x,y,64)+`<rect x="${x-56}" y="${y-40}" width="112" h
   `<path d="M${x-58} ${y-40} L${x-28} ${y-66} L${x+2} ${y-40}Z" fill="#fbf4e6" ${BO}/><circle cx="${x-28}" cy="${y-50}" r="6" fill="#bfe1f0" ${K}/><rect x="${x-36}" y="${y-22}" width="16" height="22" rx="7" fill="#a8664a" ${BO}/>`;
 // l'église du quartier (11/11/2026, Joffray : « fais-moi une église quelque part », en Italie) : façade toscane en marbre
 // blanc et vert, fronton, rosace, trois portails, marches, et son campanile à arcades au toit de tuiles
-const itChiesa=(x,y)=>{let g=shadow(x+6,y,70);
-  g+=`<rect x="${x+38}" y="${y-118}" width="26" height="118" fill="#fbf4e6" ${BO}/>`+[0,1,2,3,4,5].map(i=>`<path d="M${x+38} ${y-12-i*18} H${x+64}" stroke="#6f9a7a" stroke-width="3"/>`).join("")
-    +`<path d="M${x+42} ${y-100} v-10 q9 -9 18 0 v10Z" fill="#5a4a52" stroke="${INK}" stroke-width="1.6"/><path d="M${x+51} ${y-106} v5" stroke="#f2c75c" stroke-width="3" stroke-linecap="round"/><circle cx="${x+51}" cy="${y-100}" r="2.6" fill="#f2c75c" stroke="${INK}" stroke-width="1"/>`
-    +`<path d="M${x+35} ${y-118} L${x+51} ${y-142} L${x+67} ${y-118}Z" fill="#d9774e" ${BO}/><path d="M${x+51} ${y-142} v-9 M${x+47} ${y-147} h8" stroke="${INK}" stroke-width="2"/>`;
-  g+=Array.from({length:3},(_,i)=>`<rect x="${x-52+i*4}" y="${y-5-i*4}" width="${104-i*8}" height="5" fill="#efe4d0" stroke="${INK}" stroke-width="1.4"/>`).join("");
-  g+=`<path d="M${x-44} ${y-12} V${y-74} H${x+44} V${y-12}Z" fill="#fbf4e6" ${BO}/>`+[-44,-22,22,44].map(o=>`<path d="M${x+o} ${y-74} V${y-12}" stroke="#6f9a7a" stroke-width="4"/>`).join("")
-    +`<path d="M${x-44} ${y-44} H${x+44}" stroke="#6f9a7a" stroke-width="3"/><path d="M${x-44} ${y-48} H${x+44}" stroke="#6f9a7a" stroke-width="1.4"/>`
-    +`<path d="M${x-48} ${y-74} L${x} ${y-104} L${x+48} ${y-74}Z" fill="#fbf4e6" ${BO}/><path d="M${x-36} ${y-78} L${x} ${y-99} L${x+36} ${y-78}Z" fill="none" stroke="#6f9a7a" stroke-width="2.4"/><path d="M${x} ${y-104} v-10 M${x-4} ${y-110} h8" stroke="${INK}" stroke-width="2.2"/>`
-    +`<circle cx="${x}" cy="${y-60}" r="11" fill="url(#it-rose)" ${BO}/>`+Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<path d="M${x} ${y-60} L${(x+11*Math.cos(a)).toFixed(1)} ${(y-60+11*Math.sin(a)).toFixed(1)}" stroke="${INK}" stroke-width="1"/>`}).join("")+`<circle cx="${x}" cy="${y-60}" r="3" fill="#ffd36a" stroke="${INK}" stroke-width="1"/>`
-    +[[-30,9],[0,12],[30,9]].map(([o,w])=>`<path d="M${x+o-w} ${y-12} V${y-28} Q${x+o-w} ${y-36-w*.4} ${x+o} ${y-37-w*.4} Q${x+o+w} ${y-36-w*.4} ${x+o+w} ${y-28} V${y-12}Z" fill="#8a5a4a" ${BO2}/><path d="M${x+o} ${y-12} V${y-30}" stroke="#6a4036" stroke-width="1.2"/>`).join("");
+const itChiesa=(x,y)=>{let g=shadow(x+6,y,62);const T=86; // campanile moins haut (Joffray, 11/11/2026 : « un peu trop haute »)
+  g+=`<rect x="${x+38}" y="${y-T}" width="24" height="${T}" fill="#fbf4e6" ${BO}/>`+[0,1,2,3].map(i=>`<path d="M${x+38} ${y-12-i*18} H${x+62}" stroke="#6f9a7a" stroke-width="3"/>`).join("")
+    +`<path d="M${x+42} ${y-T+18} v-10 q8 -8 16 0 v10Z" fill="#5a4a52" stroke="${INK}" stroke-width="1.6"/><circle cx="${x+50}" cy="${y-T+17}" r="2.6" fill="#f2c75c" stroke="${INK}" stroke-width="1"/>`
+    +`<path d="M${x+35} ${y-T} L${x+50} ${y-T-20} L${x+65} ${y-T}Z" fill="#d9774e" ${BO}/><path d="M${x+50} ${y-T-20} v-7 M${x+46.5} ${y-T-24} h7" stroke="${INK}" stroke-width="2"/>`;
+  g+=Array.from({length:3},(_,i)=>`<rect x="${x-46+i*4}" y="${y-4-i*4}" width="${92-i*8}" height="4" fill="#efe4d0" stroke="${INK}" stroke-width="1.3"/>`).join("");
+  g+=`<path d="M${x-38} ${y-12} V${y-60} H${x+38} V${y-12}Z" fill="#fbf4e6" ${BO}/>`+[-38,-19,19,38].map(o=>`<path d="M${x+o} ${y-60} V${y-12}" stroke="#6f9a7a" stroke-width="3.4"/>`).join("")
+    +`<path d="M${x-38} ${y-36} H${x+38}" stroke="#6f9a7a" stroke-width="2.6"/>`
+    +`<path d="M${x-42} ${y-60} L${x} ${y-84} L${x+42} ${y-60}Z" fill="#fbf4e6" ${BO}/><path d="M${x-31} ${y-63} L${x} ${y-80} L${x+31} ${y-63}Z" fill="none" stroke="#6f9a7a" stroke-width="2.2"/><path d="M${x} ${y-84} v-8 M${x-3.5} ${y-89} h7" stroke="${INK}" stroke-width="2"/>`
+    +`<circle cx="${x}" cy="${y-48}" r="9" fill="url(#it-rose)" ${BO}/>`+Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<path d="M${x} ${y-48} L${(x+9*Math.cos(a)).toFixed(1)} ${(y-48+9*Math.sin(a)).toFixed(1)}" stroke="${INK}" stroke-width="1"/>`}).join("")+`<circle cx="${x}" cy="${y-48}" r="2.6" fill="#ffd36a" stroke="${INK}" stroke-width="1"/>`
+    +[[-26,7],[0,10],[26,7]].map(([o,w])=>`<path d="M${x+o-w} ${y-12} V${y-24} Q${x+o-w} ${y-30-w*.4} ${x+o} ${y-31-w*.4} Q${x+o+w} ${y-30-w*.4} ${x+o+w} ${y-24} V${y-12}Z" fill="#8a5a4a" ${BO2}/><path d="M${x+o} ${y-12} V${y-26}" stroke="#6a4036" stroke-width="1.2"/>`).join("");
   return g};
 const itBaptistery=(x,y)=>shadow(x,y,40)+`<rect x="${x-34}" y="${y-36}" width="68" height="36" rx="4" fill="#fbf4e6" ${BO}/>`+[-24,-12,0,12,24].map(a=>`<path d="M${x+a-3.5} ${y-6} v-12 a3.5 3.5 0 0 1 7 0 v12" fill="#e3d6c2" stroke="${INK}" stroke-width="1.3"/>`).join("")+`<path d="M${x-38} ${y-36} Q${x} ${y-80} ${x+38} ${y-36}Z" fill="#efe3cf" ${BO}/><path d="M${x-20} ${y-52} Q${x} ${y-74} ${x+10} ${y-66}" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/><rect x="${x-5}" y="${y-66}" width="10" height="9" rx="2" fill="#fbf4e6" ${K}/>`;
 const itPine=(x,y,k=1)=>shadow(x,y,30*k)+`<path d="M${x-3*k} ${y} Q${x-6*k} ${y-30*k} ${x+4*k} ${y-50*k} M${x+1*k} ${y-34*k} q${10*k} -6 ${18*k} -16" fill="none" stroke="#9a6a4a" stroke-width="${5*k}" stroke-linecap="round"/>`+blob([[x-22*k,y-56*k,14*k],[x,y-62*k,18*k],[x+22*k,y-58*k,15*k],[x+36*k,y-54*k,10*k]],"#6fa86e")+`<path d="M${x-28*k} ${y-64*k} q${12*k} -10 ${26*k} -6" stroke="#9fd08a" stroke-width="${3*k}" fill="none" stroke-linecap="round"/>`;
@@ -186,12 +186,29 @@ const itWell=(x,y)=>shadow(x,y,24)+`<path d="M${x-16} ${y-8} V${y-50} M${x+16} $
 const itLavRow=(x,y)=>[-36,-12,12,36].map((a,i)=>lavender(x+a,y-i%2*6,.9)).join("");
 const itFlowerBed=(x,y,c)=>shadow(x,y,30)+`<ellipse cx="${x}" cy="${y-4}" rx="30" ry="9" fill="#a8d88a" ${K}/>`+[[-18,-6],[-8,-9],[2,-5],[12,-9],[20,-5],[-12,-2],[8,-1]].map(([a,b],i)=>`<circle cx="${x+a}" cy="${y+b}" r="3.6" fill="${i%2?"#fff":c}" stroke="${INK}" stroke-width="1.1"/><circle cx="${x+a}" cy="${y+b}" r="1.2" fill="#f7c84a"/>`).join("");
 // au fond, les collines de Toscane et un petit village perché, sous un ciel du soir
+function itBorgo(top){const b=top-58,K1=`stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"`;
+  let g=`<path d="M-10 ${b+18} Q20 ${b-40} 78 ${b-52} Q138 ${b-44} 170 ${b+12} Z" fill="#c7d6a6" ${K1}/>`;
+  g+=[[18,6],[34,-12],[146,-2],[132,-20],[150,10]].map(([x,dy])=>`<circle cx="${x}" cy="${b+dy}" r="4.4" fill="#9cb886" ${K1}/>`).join("");
+  g+=`<path d="M8 ${b+2} Q30 ${b-36} 78 ${b-40} Q128 ${b-34} 150 ${b+2}" fill="none" stroke="#d6c4a0" stroke-width="7" stroke-linecap="round"/><path d="M8 ${b+2} Q30 ${b-36} 78 ${b-40} Q128 ${b-34} 150 ${b+2}" fill="none" stroke="${INK}" stroke-width="1.2" stroke-dasharray="3 3"/>`;
+  // les maisons, de l'arrière vers l'avant
+  const H=[[30,-34,16,16,"#f3d2b0"],[46,-44,18,20,"#f7c99a"],[110,-46,18,18,"#fbe0a0"],[126,-36,16,16,"#f6b7a8"],[20,-22,18,14,"#fde8c0"],[38,-26,16,18,"#f6b7a8"],[56,-30,20,16,"#fbe0a0"],[100,-30,20,16,"#f3d2b0"],[118,-24,18,16,"#f7c99a"],[136,-20,16,14,"#fde8c0"]];
+  const house=([x,dy,w,h,c])=>`<rect x="${x}" y="${b+dy-h}" width="${w}" height="${h}" fill="${c}" ${K1}/><path d="M${x-2} ${b+dy-h} L${x+w/2} ${b+dy-h-6} L${x+w+2} ${b+dy-h}Z" fill="#d9774e" ${K1}/><path d="M${x+2} ${b+dy-h-1.6} H${x+w-2}" stroke="#b85a3a" stroke-width="1" stroke-dasharray="2 2"/><rect x="${x+w/2-2.4}" y="${b+dy-h+4}" width="4.8" height="5.6" rx="2" fill="#6a5560"/>`;
+  g+=H.slice(0,4).map(house).join("");
+  // l'église : nef, dôme, lanterne, campanile
+  g+=`<rect x="70" y="${b-74}" width="12" height="40" fill="#ead6b4" ${K1}/><path d="M68 ${b-74} L76 ${b-84} L84 ${b-74}Z" fill="#d9774e" ${K1}/><rect x="73" y="${b-70}" width="6" height="7" rx="3" fill="#6a5560"/>`
+    +`<rect x="82" y="${b-56}" width="24" height="18" fill="#f6ead4" ${K1}/><path d="M84 ${b-56} Q94 ${b-74} 104 ${b-56}Z" fill="#d9774e" ${K1}/><path d="M94 ${b-70} v-6" stroke="${INK}" stroke-width="1.6"/><circle cx="94" cy="${b-77}" r="1.8" fill="#f6ead4" stroke="${INK}" stroke-width="1.2"/>`;
+  g+=H.slice(4).map(house).join("");
+  // le rempart
+  g+=`<path d="M14 ${b-10} Q78 ${b-26} 150 ${b-8} V${b-2} Q78 ${b-18} 14 ${b-4}Z" fill="#e2cfa8" ${K1}/>`+Array.from({length:12},(_,i)=>{const x=18+i*11.5,t=(x-14)/136,y=b-10-16*4*t*(1-t)*.9;return `<rect x="${x.toFixed(1)}" y="${(y-3).toFixed(1)}" width="5" height="3.4" fill="#e2cfa8" stroke="${INK}" stroke-width="1"/>`}).join("");
+  // les cyprès le long de la route
+  g+=[[10,4],[22,-8],[140,-6],[152,6],[60,10]].map(([x,dy])=>`<path d="M${x} ${b+dy-22} Q${x+4.4} ${b+dy-10} ${x+3.4} ${b+dy} H${x-3.4} Q${x-4.4} ${b+dy-10} ${x} ${b+dy-22}Z" fill="#6f9a72" ${K1}/>`).join("");
+  return g}
 function itSkySVG(H,top){
   return `<rect x="0" y="0" width="400" height="${top+60}" fill="url(#it-sky)"/><circle cx="318" cy="${top-120}" r="70" fill="url(#it-sun)"/><circle cx="318" cy="${top-120}" r="20" fill="#fff4c8" ${BO}/>`+
     `<path d="M0 ${top-30} Q60 ${top-78} 140 ${top-54} Q210 ${top-92} 290 ${top-60} Q350 ${top-82} 400 ${top-58} V${top+40} H0Z" fill="#cfd8b8"/>`+
-    // le village sur la colline de gauche : maisons, clocher
-    [[40,24,"#f3d2b0"],[62,30,"#f7c99a"],[86,22,"#fbe0a0"],[108,28,"#f6b7a8"]].map(([cx,h,c])=>`<rect x="${cx-10}" y="${top-60-h+(cx>90?8:0)}" width="20" height="${h}" fill="${c}" stroke="${INK}" stroke-width="1.8"/><path d="M${cx-12} ${top-60-h+(cx>90?8:0)} L${cx} ${top-70-h+(cx>90?8:0)} L${cx+12} ${top-60-h+(cx>90?8:0)}Z" fill="#d9774e" stroke="${INK}" stroke-width="1.8"/>`).join("")+
-    `<rect x="70" y="${top-128}" width="12" height="46" fill="#ead6b4" stroke="${INK}" stroke-width="1.8"/><path d="M68 ${top-128} L76 ${top-140} L84 ${top-128}Z" fill="#d9774e" stroke="${INK}" stroke-width="1.8"/><rect x="73" y="${top-122}" width="6" height="8" rx="3" fill="#6a5560"/>`+
+    // le village perché sur la colline de gauche (refait le 11/11/2026, Joffray) : la colline et ses oliviers, le rempart,
+    // les maisons serrées aux toits de tuiles qui montent vers l'église (dôme et campanile), la route bordée de cyprès
+    itBorgo(top)+
     [[180,-70],[196,-74],[250,-66],[262,-70],[350,-70]].map(([cx,dy])=>`<path d="M${cx} ${top+dy-26} Q${cx+5} ${top+dy-12} ${cx+4} ${top+dy} H${cx-4} Q${cx-5} ${top+dy-12} ${cx} ${top+dy-26}Z" fill="#7aa87e" stroke="${INK}" stroke-width="1.6"/>`).join("")+
     `<path d="M0 ${top+4} Q90 ${top-36} 200 ${top-14} Q300 ${top-40} 400 ${top-8} V${top+60} H0Z" fill="#e6dca0"/>`+
     [0,1,2,3,4,5,6].map(i=>`<path d="M${-20+i*64} ${top+30} Q${10+i*64} ${top-6-(i%2)*8} ${44+i*64} ${top+30}" fill="none" stroke="#d2c37e" stroke-width="2.2"/>`).join("")+
@@ -257,7 +274,7 @@ function itMapSVG(L){
     const i=n++,w=56+(i*7)%12,h=66+(i*13)%28,x=side?352-(i%3)*3:-10+(i%3)*3;
     at(x+w/2,u,(cx,y)=>itH(x,y-h,w,h,IT_COL[i%IT_COL.length],{sh:IT_SH[i%IT_SH.length],shop:shops[i],balcony:i%4===2,v:i}))}
   at(264,150,itLemonPot);at(306,262,(x,y)=>itScooter(x,y,"#f9b8c6"));at(112,300,itTerrace);at(150,432,itStall);at(116,514,(x,y)=>itScooter(x,y,"#9fd8c4"));
-  at(282,672,itFountain);at(236,808,itChiesa);at(318,930,itGelato);at(312,812,itLamp);
+  at(282,672,itFountain);at(272,740,itChiesa);at(292,884,itGelato);at(206,846,itLamp);
   // le pré des miracles : la cathédrale, la tour qui penche, le baptistère, des pins parasols
   at(112,944,(x,y)=>itFlowerBed(x,y,"#f47f9a"));at(338,1000,itPine);at(100,1030,itDuomo);at(150,1112,(x,y)=>itFlowerBed(x,y,"#ffd36a"));
   at(tower.x,tower.u,(x,y)=>pisaSVG(x,y,1.05));at(352,1262,(x,y)=>itPine(x,y,.85));at(330,1400,itBaptistery);

@@ -224,8 +224,17 @@ function kyCafeSVG(x,y){
   s+=`<rect x="${x-72}" y="${y-92}" width="144" height="20" rx="3" fill="#f4e8cf" ${BO}/><text x="${x}" y="${y-77}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Kitsune Shokudō</text>`;
   s+=`<rect x="${x-24}" y="${y-64}" width="48" height="64" fill="#3a2a24" ${BO}/>`+[0,1,2].map(i=>`<rect x="${x-28+i*19}" y="${y-66}" width="18" height="28" fill="#3d4e7a" ${K2}/>`).join("")+`<circle cx="${x}" cy="${y-52}" r="7" fill="#fffaf2" ${K2}/><path d="M${x-5} ${y-56} l1 -5 l3 3 M${x+5} ${y-56} l-1 -5 l-3 3" fill="#fffaf2" ${K2}/>`;
   s+=kyLantern(x-74,y-64,1.1)+kyLantern(x+74,y-64,1.1);
-  // dehors, un banc sous une ombrelle rouge
-  s+=[x-150,x+150].map(t=>`<path d="M${t} ${y+30} V${y-30}" stroke="${INK}" stroke-width="3"/><path d="M${t-34} ${y-26} Q${t} ${y-56} ${t+34} ${y-26} Q${t} ${y-34} ${t-34} ${y-26}Z" fill="#e0503c" ${BO}/><rect x="${t-26}" y="${y+12}" width="52" height="8" rx="2" fill="#e0503c" ${BO}/><path d="M${t-20} ${y+20} V${y+30} M${t+20} ${y+20} V${y+30}" stroke="${INK}" stroke-width="3"/>`).join("");
+  // la terrasse (refaite le 11/11/2026, Joffray : « refais la terrasse au Japon ») : la véranda de bois (engawa) le long de la
+  // façade, deux bancs à feutre rouge sous leur ombrelle avec un plateau de thé et de dango, une vasque de pierre et son
+  // bambou qui goutte, deux bonsaïs en pot
+  s+=`<rect x="${x-118}" y="${y-2}" width="236" height="12" fill="#b88a5e" ${BO}/>`+Array.from({length:12},(_,i)=>`<path d="M${x-118+i*20} ${y-2} V${y+10}" stroke="#8a6040" stroke-width="1.2"/>`).join("")+`<path d="M${x-112} ${y+10} V${y+18} M${x+112} ${y+10} V${y+18} M${x-40} ${y+10} V${y+18} M${x+40} ${y+10} V${y+18}" stroke="${INK}" stroke-width="3"/>`;
+  const tray=(t,yy)=>`<rect x="${t-10}" y="${yy-3}" width="20" height="3" rx="1" fill="#6e4630" stroke="${INK}" stroke-width="1"/><path d="M${t-7} ${yy-3} q0 -6 4 -6 q4 0 4 6Z" fill="#7a9a6a" stroke="${INK}" stroke-width="1"/><path d="M${t+1} ${yy-7} q2 -1 3 1" fill="none" stroke="${INK}" stroke-width="1"/><path d="M${t+3} ${yy-3} h5 v-4 h-5Z" fill="#f4e8cf" stroke="${INK}" stroke-width="1"/><path d="M${t+9} ${yy-4} l6 -6" stroke="#c99a5a" stroke-width="1.4"/><circle cx="${t+10.5}" cy="${yy-5.6}" r="1.6" fill="#f6a8be"/><circle cx="${t+12.5}" cy="${yy-7.6}" r="1.6" fill="#fffaf2" stroke="${INK}" stroke-width=".6"/><circle cx="${t+14.5}" cy="${yy-9.6}" r="1.6" fill="#a9cf7a"/>`;
+  s+=[x-152,x+152].map(t=>kyNodate(t,y+36)+tray(t-8,y+22)).join("");
+  // la vasque de pierre et son bambou (tsukubai), deux bonsaïs
+  s+=shadow(x-66,y+44,16)+`<ellipse cx="${x-66}" cy="${y+36}" rx="14" ry="9" fill="#a8a29a" ${BO2}/><ellipse cx="${x-66}" cy="${y+33}" rx="9" ry="4.4" fill="url(#ky-water)" stroke="${INK}" stroke-width="1.2"/><path d="M${x-50} ${y+38} V${y+18} M${x-50} ${y+20} L${x-62} ${y+26}" stroke="#7aae5a" stroke-width="3.4" stroke-linecap="round"/><path d="M${x-50} ${y+38} V${y+18} M${x-50} ${y+20} L${x-62} ${y+26}" stroke="${INK}" stroke-width="1" fill="none" opacity=".4"/>`
+    +`<circle cx="${x-63}" cy="${y+30}" r="1.2" fill="#b6e0ee"><animate attributeName="cy" values="${y+28};${y+33};${y+28}" dur="1.4s" repeatCount="indefinite"/></circle>`;
+  const bonsai=(t,yy)=>shadow(t,yy,13)+`<path d="M${t-11} ${yy-7} h22 l-3 7 h-16Z" fill="#3d4e7a" ${BO2}/><path d="M${t-2} ${yy-7} Q${t-6} ${yy-16} ${t+2} ${yy-22} Q${t+6} ${yy-26} ${t+4} ${yy-30}" fill="none" stroke="#6e4630" stroke-width="3" stroke-linecap="round"/>`+[[-8,-24,7],[6,-30,8],[8,-20,6]].map(([a,b,r])=>`<ellipse cx="${t+a}" cy="${yy+b}" rx="${r}" ry="${r*.6}" fill="url(#ky-leaf)" stroke="${INK}" stroke-width="1.3"/>`).join("");
+  s+=bonsai(x+66,y+44)+bonsai(x-112,y+4);
   return s;
 }
 // la grande porte d'entrée : un torii, comme ceux du chemin

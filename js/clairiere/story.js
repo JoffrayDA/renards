@@ -286,12 +286,12 @@ const STORIES={
       ["marquis","shy","Tiens, mon nœud de soie. Un marquis paie toujours ses dettes.",()=>actGive("marquis","me","noeud")]]}
   ]},
   zaza:{title:"Chut",souv:"le grelot qui ne sonne pas",beats:[
-    {at:"zaza",goal:"Zaza vient d'arriver au refuge. Va lui dire bonjour.",lines:[
+    {at:"zaza",goal:"Pâquerette vient d'arriver au refuge. Va lui dire bonjour.",lines:[
       ["zaza","surprise",`${ME()} ! Tu entends ? Non ? Moi, j'entends tout.`,()=>actEmote("zaza","!")],
       ["zaza","sad","Une mouche qui bâille. Une feuille qui tombe. Somnus qui ronfle au fond de la forêt. Je ne dors jamais.",()=>actEmote("zaza","goutte")],
       ["zaza","shy","Juste une fois, je voudrais un vrai silence.",()=>actPose("zaza","lie","shy")]]},
-    {at:"zaza",game:{k:"still",label:"Zaza s'endort…",say:"Zaza ferme les yeux. Chasse les mouches avant qu'elles bourdonnent à ses oreilles !",win:"Plus un bruit…"},goal:"Fais le silence autour de Zaza.",lines:[
-      ["zaza","shy","Mmh… J'ai dormi. Vraiment dormi. J'ai rêvé de mon désert.",()=>{actPose("zaza","happy","joy");actEmote("zaza","note")}],
+    {at:"zaza",game:{k:"still",label:"Pâquerette s'endort…",say:"Pâquerette ferme les yeux. Chasse les mouches avant qu'elles bourdonnent autour d'elle !",win:"Plus un bruit…"},goal:"Fais le silence autour de Zaza.",lines:[
+      ["zaza","shy","Mmh… J'ai dormi. Vraiment dormi. J'ai rêvé de mon pré en fleurs.",()=>{actPose("zaza","happy","joy");actEmote("zaza","note")}],
       ["zaza","joy","Tiens, mon grelot. Je l'ai bouché exprès : il ne sonne pas. Comme ça, tu penseras au silence.",()=>actGive("zaza","me","bell")]]}
   ]},
   flocon:{title:"Une lumière à soi",souv:"le bocal-veilleuse",beats:[
