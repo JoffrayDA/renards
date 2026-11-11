@@ -25,7 +25,7 @@ const ITF_REG=ITF.filter(f=>f.rar==="commun");
 const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:10,goal:162},{base:17,seed:3,goal:173},{base:18,seed:14,goal:191},{base:19,seed:3,goal:211},{base:20,seed:3,goal:219},{base:21,seed:1,goal:242},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:7,goal:304},{base:25,seed:0,goal:319},{base:26,seed:10,goal:337},{base:27,seed:3,goal:357},{base:28,seed:13,goal:383},{base:30,seed:15,goal:414},{base:32,seed:7,goal:433},{base:34,seed:9,goal:450},{base:36,seed:1,goal:459},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
 // ★★★ de chaque journée, en multiple de l'objectif (cuts dans data.js). Baissé le 04/11/2026 puis remis à 1,7 partout le même jour :
 // Joffray croyait avoir tout l'équipement, il lui manquait la déco. Le mécanisme reste pour régler une journée à part si besoin.
-const IT_S3=Array(20).fill(1.7);
+const IT_S3=[2.06,2.11,2.6,1.95,1.94,1.98,1.92,2.43,2.03,1.98,2.11,2.04,1.85,1.87,1.84,1.81,1.87,1.89,1.75,1.82];
 const IT_LAST=IT_DAYS.length;
 // équipement prévu pour chaque journée du quartier (calibrage, et objectif relevé au-delà, comme KIT)
 const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];

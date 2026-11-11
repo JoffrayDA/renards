@@ -151,12 +151,17 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .kit.gel .krow:first-child .kn{min-height:0;justify-content:flex-start}
 .kit.gel .krow:first-child .slots{margin-top:0}
 /* Kyoto (09/11/2026) : deux comptoirs à composer et deux fours ; tout se resserre pour tenir sans défiler */
-.kit.gel2{gap:7px}
+.kit.gel2{gap:5px}
 .kit.gel2 .gcone{flex-basis:50px;border-radius:15px}.kit.gel2 .gcone svg{width:40px;height:40px}
 .kit.gel2 .kb.gtub{padding:3px 2px 4px;border-radius:15px}.kit.gel2 .kb.gtub svg{width:26px;height:26px}
 .kit.ov2 .krow:nth-last-child(-n+2) .kb{padding:4px 3px 5px;border-radius:15px}
 .kit.ov2 .krow:nth-last-child(-n+2) .ki{width:34px;height:34px}
 .kit.ov2 .krow:nth-last-child(-n+2) .kn{min-height:1.2em;font-size:11px}
+/* Kyoto (11/11/2026) : « Sortir ×3 » passait sur deux lignes et grandissait la rangée, l'écran sautait ; plateau de sushis un peu plus gros (la copine de Joffray les voyait mal) */
+.kit.ov2 .oven .kn{white-space:nowrap}
+.kit.ov2 .oven{position:relative}.kit.ov2 .oven .obar{position:absolute;left:10px;right:10px;top:4px;width:auto;height:5px}
+.kit.ov2 .krow:nth-last-child(-n+2) .ki{width:30px;height:30px}
+.kit.gel2 .krow:has([data-gel]) .gtub svg{width:31px;height:31px}.kit.gel2 .krow:has([data-gel]) .gcone svg{width:44px;height:44px}
 @media (min-width:521px){body:has(#kitchen.gel2) .scene{aspect-ratio:16/8.2}}
 /* sur téléphone, la hauteur de la salle de Kyoto est calculée par fitScene (render.js) */
 /* la salle tremble sous les pas des sumos (Kyoto) */

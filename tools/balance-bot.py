@@ -16,6 +16,7 @@ Usage     : python tools/balance-bot.py [jours...]   (par défaut : une sélecti
             python tools/balance-bot.py --italie         (propose la table IT_DAYS des 20 journées de la Petite Italie)
             python tools/balance-bot.py --paris          (propose la table PA_DAYS des 20 journées de Paris ; --paris --economie aussi)
             python tools/balance-bot.py --kyoto          (propose la table KY_DAYS des 20 journées de Kyoto ; --kyoto --economie aussi)
+            python tools/balance-bot.py --etoiles        (propose les tables S3 de ★★★ : tout équipé, pour les quatre mondes)
 
 Une journée tire ses commandes avec une graine propre au jour : le même jour se rejoue à l'identique,
 donc une seule partie par vitesse suffit pour le calibrage.
@@ -103,6 +104,7 @@ def own_it(day):
 
 NOEL_BASES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 30, 33, 36, 39]
 CALIB = "--calibrer" in sys.argv
+STARS = "--etoiles" in sys.argv
 ECO = "--economie" in sys.argv
 NUITS = "--nuits" in sys.argv
 NOEL = "--noel" in sys.argv
@@ -114,7 +116,7 @@ PERFECT = 0.25   # réaction du bot « parfait » : ★★★ demande environ 94
 STAR3 = 1.8
 GOOD, PASS = 0.8, 1.08   # le bon joueur doit toujours réussir (★), avec un peu de marge
 SEEDS_TRIED = 16
-days = list(range(1, 41)) if CALIB or ECO or NUITS or NOEL or ITALIE else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
+days = list(range(1, 41)) if STARS or CALIB or ECO or NUITS or NOEL or ITALIE else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
 with sync_playwright() as p:
     browser = p.chromium.launch()
     page = browser.new_page()
@@ -126,6 +128,27 @@ with sync_playwright() as p:
     IT_KIT = [tuple(x) for x in page.evaluate(f"() => WORLDS.{WN}.kit")]
     # les recettes du quartier (Kyoto a sa propre table, WORLDS.kyoto.recDays)
     IT_RECIPES = page.evaluate(f"() => WORLDS.{WN}.recDays || IT_DAY")
+    if STARS:
+        # ★★★ tout équipé (11/11/2026, Joffray : la copine faisait ★★★ au jour 6 de Kyoto sans rien acheter ; « le but c'est de
+        # galérer aux premiers niveaux et revenir après ») : ★★★ demande 94 % du score du bot parfait avec TOUTES les améliorations
+        # au niveau maximal, sur la graine du jour. Sans améliorations, même un jeu parfait n'y arrive pas.
+        full = {u["id"]: u["n"] for u in page.evaluate("() => ALLUP.map(u => ({id: u.id, n: u.lv.length}))")}
+        for wn, name in [("", "S3"), ("italie", "IT_S3"), ("paris", "PA_S3"), ("kyoto", "KY_S3")]:
+            if wn:
+                rec = page.evaluate(f"() => WORLDS.{wn}.recDays || IT_DAY")
+                tab = page.evaluate(f"() => WORLDS.{wn}.days.map(x => [x.seed, x.goal])")
+            else:
+                rec = RECIPES
+                tab = page.evaluate("() => SEED.map((k, i) => [k, GOALS[i]])")
+            out = []
+            for d, (k, goal) in enumerate(tab, 1):
+                own = {**{r: 1 for r, x in rec.items() if 0 < x < d}, **full}
+                perf = page.evaluate(BOT, [d, own, PERFECT, k, wn])[0]
+                s3 = max(1.7, round(.94 * perf / goal, 2))
+                out.append(s3)
+                print(f"{wn or 'café'} jour {d:>2} : objectif {goal}, parfait tout équipé {perf} -> ★★★ x{s3}", file=sys.stderr, flush=True)
+            print(f"const {name}=[" + ",".join(map(str, out)) + "];", flush=True)
+        browser.close(); sys.exit()
     if ITALIE and ECO:
         # Petite Italie, --italie --economie : comme --economie, sur les 20 journées du quartier, avec l'équipement à racheter
         # (prix ×WPRICE du quartier arrondis à la dizaine, comme upPrice dans data.js) et le coffre au rythme du jour de référence

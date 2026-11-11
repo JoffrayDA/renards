@@ -28,7 +28,7 @@ const PAF_REG=PAF.filter(f=>f.rar==="commun");
 // rythme d'un jour de référence du premier monde (plus dur que l'Italie : le jour 1 se joue comme le jour 18), graine et objectif par
 // `python tools/balance-bot.py --paris`
 const PA_DAYS=[{base:18,seed:7,goal:154},{base:19,seed:9,goal:173},{base:20,seed:2,goal:172},{base:21,seed:6,goal:197},{base:22,seed:7,goal:224},{base:23,seed:2,goal:230},{base:24,seed:7,goal:259},{base:25,seed:12,goal:278},{base:26,seed:5,goal:308},{base:27,seed:6,goal:323},{base:28,seed:14,goal:339},{base:29,seed:15,goal:358},{base:30,seed:13,goal:381},{base:31,seed:13,goal:402},{base:32,seed:7,goal:433},{base:33,seed:15,goal:462},{base:34,seed:9,goal:450},{base:36,seed:13,goal:463},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
-const PA_S3=Array(20).fill(1.7);
+const PA_S3=[2.2,2.02,2.25,2.09,2.39,2.0,2.08,2.21,1.86,1.98,1.96,2.09,1.95,2.12,1.81,1.97,1.87,1.91,1.75,1.82];
 const PA_KIT=IT_KIT;
 // jours de défi de Firmin (le 20 est la finale du concours)
 const PA_DUEL={5:1,10:1,15:1,20:1};
@@ -37,7 +37,7 @@ S.pa.read=S.pa.read||{};S.pa.duel=S.pa.duel||{};
 if(new URLSearchParams(location.search).get("paris")==="1"){S.paOpen=1;save()} // pour tester sans avoir fini la Petite Italie
 const paOpen=()=>S.it.day>IT_LAST||!!S.paOpen;
 // le score de Firmin : celui de ★★ (objectif de base, sans l'ajustement d'équipement) ; plus haut, la finale demandait un jeu presque parfait
-const duelScore=d=>Math.ceil(PA_DAYS[d-1].goal*(1+(PA_S3[d-1]-1)/2));
+const duelScore=d=>Math.ceil(PA_DAYS[d-1].goal*1.35); // ★★ d'avant (★★★ à 1,7), indépendant du ★★★ tout équipé
 
 /* ---------- la carte du café : noms et dessins (mêmes clés, prix et cuissons) ---------- */
 VAR.paris={cafe:["Petit noir","petits noirs"],croissant:["Pain au chocolat","pains au chocolat"],the:["Diabolo grenadine","diabolos grenadine"],cookie:["Madeleine","madeleines"],

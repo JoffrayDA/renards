@@ -39,7 +39,7 @@ const KYF_REG=KYF.filter(f=>f.rar==="commun"&&!f.big);
 // graine et objectif par `python tools/balance-bot.py --kyoto`
 // plus dur partout (09/11/2026, Joffray : « assez facile, surtout avec les améliorations ») : hard de 1,1 au jour 1 à 1,6 au jour 25
 const KY_DAYS=[{base:24,hard:1.1,seed:4,goal:210},{base:25,hard:1.12,seed:3,goal:219},{base:26,hard:1.14,seed:2,goal:233},{base:27,hard:1.16,seed:11,goal:257},{base:28,hard:1.18,seed:0,goal:275},{base:29,hard:1.21,seed:8,goal:304},{base:30,hard:1.23,seed:13,goal:323},{base:31,hard:1.25,seed:14,goal:360},{base:32,hard:1.27,seed:8,goal:382},{base:33,hard:1.29,seed:9,goal:400},{base:34,hard:1.31,seed:2,goal:369},{base:35,hard:1.33,seed:11,goal:459},{base:36,hard:1.35,seed:13,goal:482},{base:37,hard:1.37,seed:6,goal:505},{base:38,hard:1.39,seed:15,goal:547},{base:39,hard:1.42,seed:9,goal:556},{base:40,hard:1.44,seed:2,goal:464},{base:40,hard:1.46,seed:2,goal:603},{base:40,hard:1.48,seed:2,goal:637},{base:40,hard:1.5,seed:14,goal:647},{base:40,hard:1.52,seed:2,goal:649},{base:40,hard:1.54,seed:12,goal:683},{base:40,hard:1.56,seed:12,goal:683},{base:40,hard:1.58,seed:12,goal:676},{base:40,hard:1.6,seed:12,goal:681}];
-const KY_S3=Array(KY_DAYS.length).fill(1.7);
+const KY_S3=[2.02,2.04,2.17,2.35,2.6,2.38,2.5,2.05,2.13,2.6,2.6,2.19,2.24,2.13,2.08,1.97,2.47,1.88,1.82,1.97,1.84,2.0,1.89,1.99,1.94];
 // l'équipement prévu pour chaque journée : celui de l'Italie, étalé sur 25 journées
 const KY_KIT=IT_KIT.map(([k,n,d])=>[k,n,Math.max(1,Math.round(d*1.25))]);
 // la journée qui fait gagner chaque recette ou option (elle arrive à la suivante) ; 0 = dès le jour 1

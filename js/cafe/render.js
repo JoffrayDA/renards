@@ -77,16 +77,10 @@ function renderKitchen(){
   const h=`<div class="krow">${dr}</div>${gr2}${gr}${rows.map(r=>`<div class="krow">${r}</div>`).join("")}`;
   if($("kitchen")._h!==h){const kc=$("kitchen").classList;kc.toggle("gel",!!(gel||g2));kc.toggle("gel2",!!(gel&&g2));kc.toggle("ov2",two);$("kitchen").innerHTML=h;$("kitchen")._h=h;updateBars();fitScene()}
 }
-// Kyoto sur téléphone : la salle garde sa hauteur normale s'il y a la place, et ne s'aplatit que de ce qui dépasse
-// (09/11/2026, Joffray : avec les deux fours, la salle aplatie d'office laissait du vide en bas et devenait trop petite)
-function fitScene(){const sc=$("scene"),k=$("kitchen");sc.style.height="";sc.classList.remove("short");
-  if(!k.classList.contains("gel2")||innerWidth>520)return;
-  const w=sc.clientWidth,full=w*5/7;sc.style.height=full+"px";
-  const over=document.documentElement.scrollHeight-innerHeight;
-  if(over>0){const h=Math.max(w*.5,full-over);sc.style.height=h+"px";
-    // salle aplatie : les clients s'assoient plus bas derrière le comptoir, sinon les grosses commandes sortaient par le haut (Joffray, 09/11/2026)
-    if(h<full-6)sc.classList.add("short")}}
-addEventListener("resize",()=>{if($("kitchen").classList.contains("gel2"))fitScene()});
+// Kyoto sur téléphone : la salle garde toujours sa hauteur normale (11/11/2026, Joffray : l'écran « sautait », zoomait et
+// dézoomait pendant le jeu ; avant, la salle s'aplatissait de ce qui dépassait, recalculé à chaque changement de la cuisine,
+// et passait sans cesse d'une taille à l'autre. Il préfère la grande salle : on la garde, la cuisine se resserre)
+function fitScene(){const sc=$("scene");sc.style.height="";sc.classList.remove("short")}
 function updateBars(){
   if(!G||!G.run)return;
   for(const c of G.cust){const e=$("pb-"+c.id);if(e){const r=c.pat/c.patMax;e.style.width=(r*100).toFixed(1)+"%";e.style.background=r<.3?"var(--bad)":r<.6?"var(--warn)":"var(--good)"}}

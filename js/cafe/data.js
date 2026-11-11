@@ -100,7 +100,12 @@ const lv=id=>+OWN()[id]||0;
 // paliers d'étoiles (multiplicateurs de l'objectif) : ★, ★★, ★★★ ; chaque quartier a son ★★★ à lui par journée (IT_S3, PA_S3)
 // l'objectif relevé par l'équipement (equipBonus, jusqu'à 25 %) ne relève ★★★ que de 12 % au plus : tout équipé, le jeu parfait
 // ne fait que 10 à 25 % de mieux, ★★★ doit rester possible (11/11/2026)
-function cuts(d){const s0=WORLD&&WD().s3[d-1]||1.7,b=equipBonus(d),s=s0*(1+Math.min(b,.12))/(1+b);return[1,1+(s-1)/2,s]}
+// ★★★ tout équipé (11/11/2026, Joffray : « le but c'est de galérer aux premiers niveaux et revenir après ») : S3 et les tables des
+// quartiers sont calculées par tools/balance-bot.py --etoiles (94 % du bot parfait avec toutes les améliorations) ; sans
+// améliorations, ★★★ est hors de portée. Le score de ★★★ ne bouge plus avec l'équipement (l'objectif relevé le compense)
+const S3=[1.98,2.07,2.56,2.6,2.6,2.4,2.25,2.32,2.46,2.6,2.07,2.14,2.53,2.55,1.98,1.9,2.07,1.92,2.27,1.98,2.28,2.42,1.95,1.9,1.98,2.08,1.84,1.86,1.94,2.03,2.08,2.52,1.84,1.99,1.84,2.07,1.76,1.83,1.85,1.76];
+// ★★ reste celui d'avant (1,35 × l'objectif, relevé de 12 % au plus avec l'équipement) : les portes des saisons restent passables ; plafond 2,6
+function cuts(d){const s0=(WORLD?WD().s3[d-1]:S3[d-1])||1.7,b=equipBonus(d),s2=Math.max(1.1,1.35*(1+Math.min(b,.12))/(1+b));return[1,s2,Math.max(s2+.1,s0/(1+b))]}
 // dans un quartier, l'équipement se rachète (moins cher : 20 journées pour tout racheter), et les achats des dernières saisons arrivent plus tôt
 const IT_FROM={21:8,31:12};
 const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ : 10 360 pièces pour le kit, inabordable ; python tools/balance-bot.py --italie --economie)
@@ -108,7 +113,8 @@ const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ :
 // puis de plus en plus cher ; le kit d'un monde demande de rejouer des journées (python tools/balance-bot.py --economie)
 const WPRICE={"":1.5,italie:1,paris:1.1,kyoto:1.2};
 const upPrice=nx=>Math.round(nx.c*(WPRICE[WORLD]||1.5)/10)*10;
-const upLocked=nx=>!!nx.from&&(WORLD?WD().sv().day<IT_FROM[nx.from]:S.day<nx.from);
+// dans les quartiers, tout s'achète dès le début (11/11/2026 : la copine de Joffray ne comprenait pas les achats bloqués à Kyoto)
+const upLocked=nx=>!WORLD&&!!nx.from&&S.day<nx.from;
 // Bonus à usage unique (S.boost[id] = nombre en réserve) : on les choisit avant une journée, ils ne servent qu'une fois.
 const BOOSTS=[
   {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",s:"Patience +30 %",c:270,ic:"the"},
