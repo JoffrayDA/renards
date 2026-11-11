@@ -161,10 +161,19 @@ const paMetro=(x,y)=>{const st=(d)=>`<path d="${d}" fill="none" stroke="${INK}" 
 const paMorris=(x,y)=>shadow(x,y,16)+`<rect x="${x-12}" y="${y-48}" width="24" height="48" fill="#4f8a6a" ${BO}/><rect x="${x+4}" y="${y-48}" width="8" height="48" fill="#3c6e54"/>`
   +`<rect x="${x-9}" y="${y-42}" width="8" height="13" fill="#f49ab0" ${BO2}/><rect x="${x}" y="${y-40}" width="8" height="11" fill="#ffe08a" ${BO2}/><rect x="${x-7}" y="${y-25}" width="13" height="13" fill="#bfe1f0" ${BO2}/><path d="M${x-5} ${y-20} h8 M${x-5} ${y-17} h6" stroke="#5f7fb0" stroke-width="1"/>`
   +`<path d="M${x-15} ${y-48} H${x+15} Q${x+11} ${y-62} ${x} ${y-64} Q${x-11} ${y-62} ${x-15} ${y-48}Z" fill="#4f8a6a" ${BO}/><path d="M${x-9} ${y-52} Q${x-5} ${y-60} ${x} ${y-61}" stroke="#7fb89a" stroke-width="1.6" fill="none"/><circle cx="${x}" cy="${y-66}" r="3" fill="#4f8a6a" ${BO2}/>`;
-// la terrasse : guéridon rond et chaises bistrot en rotin
-const paTable=(x,y)=>shadow(x,y,28)+`<path d="M${x} ${y} V${y-15}" ${BO2}/><ellipse cx="${x}" cy="${y-16}" rx="12" ry="4" fill="#fff" ${BO2}/><ellipse cx="${x}" cy="${y}" rx="6" ry="1.8" fill="${INK}"/>`
-  +[-18,18].map(o=>`<path d="M${x+o-6} ${y} V${y-11} M${x+o+6} ${y} V${y-11}" stroke="#a8703e" stroke-width="2.6"/><rect x="${x+o-8}" y="${y-13}" width="16" height="5" rx="2" fill="#d9a46a" ${BO2}/><path d="M${x+o-5} ${y-11} h10" stroke="#f2c894" stroke-width="1"/><path d="M${x+o+(o<0?-8:8)} ${y-11} V${y-25} Q${x+o} ${y-30} ${x+o-(o<0?-8:8)} ${y-25}" fill="none" stroke="${INK}" stroke-width="4.2"/><path d="M${x+o+(o<0?-8:8)} ${y-11} V${y-25} Q${x+o} ${y-30} ${x+o-(o<0?-8:8)} ${y-25}" fill="none" stroke="#c48a52" stroke-width="2.4"/>`).join("")
-  +`<rect x="${x-4}" y="${y-22}" width="5" height="6" rx="1.4" fill="#fff" ${BO2}/><circle cx="${x+4}" cy="${y-19}" r="2.6" fill="#f2707e" stroke="${INK}" stroke-width="1"/>`;
+// la terrasse (refaite le 11/11/2026, Joffray : « améliore la terrasse ») : guéridon au plateau de marbre cerclé de laiton,
+// pied en fonte, deux chaises bistrot au dossier de rotin tressé, deux tasses et un petit vase
+const paChair=(x,y,sd)=>`<path d="M${x-6} ${y} L${x-5} ${y-11} M${x+6} ${y} L${x+5} ${y-11}" stroke="#7a4a2a" stroke-width="2.4" stroke-linecap="round"/><rect x="${x-8.5}" y="${y-14}" width="17" height="5.5" rx="2.4" fill="#e9c08a" ${BO2}/><path d="M${x-6} ${y-11.4} h12" stroke="#c48a52" stroke-width="1" stroke-dasharray="2 1.4"/>`
+  +`<path d="M${x+sd*8} ${y-12} V${y-27} Q${x} ${y-33} ${x-sd*8} ${y-27} V${y-12}" fill="#f3d7a6" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`
+  +`<path d="M${x-6} ${y-25} H${x+6} M${x-6.5} ${y-21} H${x+6.5} M${x-7} ${y-17} H${x+7} M${x-3} ${y-29} V${y-13} M${x+3} ${y-29} V${y-13}" stroke="#c48a52" stroke-width="1.1"/>`;
+const paTable=(x,y)=>shadow(x,y,30)+paChair(x-19,y+1,-1)+paChair(x+19,y+1,1)
+  +`<path d="M${x-6} ${y} Q${x} ${y-3} ${x+6} ${y}" fill="none" stroke="${INK}" stroke-width="2.4"/><path d="M${x} ${y-1} V${y-16}" stroke="${INK}" stroke-width="3"/><path d="M${x} ${y-1} V${y-16}" stroke="#4a4048" stroke-width="1.4"/>`
+  +`<ellipse cx="${x}" cy="${y-17}" rx="14" ry="4.6" fill="#c9a86a" ${BO2}/><ellipse cx="${x}" cy="${y-18.2}" rx="11.6" ry="3.4" fill="#f7f3ee"/><path d="M${x-7} ${y-19} q4 1 7 -.4 q3 -1 6 .6" fill="none" stroke="#ddd6ce" stroke-width=".9"/>`
+  +`<path d="M${x-7} ${y-24} h5 v4 q-2.5 1.6 -5 0Z" fill="#fff" stroke="${INK}" stroke-width="1.2"/><path d="M${x-2} ${y-23} q2 0 1.6 1.8" fill="none" stroke="${INK}" stroke-width="1"/><path d="M${x+3} ${y-23} h5 v3.4 q-2.5 1.6 -5 0Z" fill="#fff" stroke="${INK}" stroke-width="1.2"/>`
+  +`<path d="M${x} ${y-21} v-5" stroke="#6fae5e" stroke-width="1.4"/><circle cx="${x}" cy="${y-27}" r="2.2" fill="#f2707e" stroke="${INK}" stroke-width="1"/>`;
+// jardinière de buis et ardoise du menu, devant le café
+const paPlanter=(x,y)=>shadow(x,y,18)+`<rect x="${x-16}" y="${y-12}" width="32" height="12" rx="2" fill="#2f5a48" ${BO2}/><path d="M${x-14} ${y-12} q3 -10 8 -6 q3 -8 8 -3 q4 -8 8 -1 q4 -5 6 2Z" fill="url(#pa-leaf2)" ${BO2}/>`;
+const paSlate=(x,y)=>shadow(x,y,12)+`<path d="M${x-10} ${y} L${x-7} ${y-30} M${x+10} ${y} L${x+7} ${y-30}" stroke="#7a4a2a" stroke-width="2.6" stroke-linecap="round"/><rect x="${x-11}" y="${y-30}" width="22" height="22" rx="2" fill="#3a3a44" stroke="#a8703e" stroke-width="2.4"/><path d="M${x-6} ${y-24} h12 M${x-6} ${y-19} h9 M${x-6} ${y-14} h11" stroke="#f2ece0" stroke-width="1.4" stroke-linecap="round"/>`;
 const paBouq=(x,y)=>shadow(x+17,y,22)+`<rect x="${x}" y="${y-13}" width="34" height="13" fill="#3f7a5a" ${BO2}/><path d="M${x-2} ${y-13} L${x+3} ${y-27} H${x+31} L${x+36} ${y-13}" fill="#4f8a6a" ${BO2}/><path d="M${x+5} ${y-24} H${x+29}" stroke="#7fb89a" stroke-width="1.2"/>`
   +[0,1,2,3,4].map(i=>`<rect x="${x+3+i*6}" y="${y-12}" width="5" height="8" rx=".8" fill="${["#f49ab0","#ffe08a","#bfe1f0","#fff","#b99ad8"][i]}" stroke="${INK}" stroke-width="1"/>`).join("");
 const paEasel=(x,y,c)=>shadow(x,y,11)+`<path d="M${x-9} ${y} L${x} ${y-32} L${x+9} ${y} M${x} ${y-32} V${y}" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M${x-9} ${y} L${x} ${y-32} L${x+9} ${y} M${x} ${y-32} V${y}" stroke="#c49a6a" stroke-width="2" stroke-linecap="round"/>`
@@ -195,9 +204,14 @@ const paNotreDame=(x,y)=>{let g=`<path d="M${x-96} ${y+8} Q${x-98} ${y-6} ${x-80
 // la tour Eiffel : quatre pieds en arc, treillis de fer, deux étages et leurs rambardes, le sommet et son phare
 const paEiffel=(x,y,h)=>{const k=h/300,X=a=>(x+a*k).toFixed(1),Y=b=>(y-b*k).toFixed(1);
   const out=`M${X(-74)} ${Y(0)} C${X(-60)} ${Y(40)} ${X(-40)} ${Y(78)} ${X(-34)} ${Y(96)} L${X(-30)} ${Y(104)} C${X(-26)} ${Y(126)} ${X(-20)} ${Y(140)} ${X(-17)} ${Y(158)} L${X(-14)} ${Y(164)} L${X(-4)} ${Y(262)} L${X(0)} ${Y(282)} L${X(4)} ${Y(262)} L${X(14)} ${Y(164)} L${X(17)} ${Y(158)} C${X(20)} ${Y(140)} ${X(26)} ${Y(126)} ${X(30)} ${Y(104)} L${X(34)} ${Y(96)} C${X(40)} ${Y(78)} ${X(60)} ${Y(40)} ${X(74)} ${Y(0)} H${X(48)} C${X(40)} ${Y(30)} ${X(24)} ${Y(58)} ${X(0)} ${Y(60)} C${X(-24)} ${Y(58)} ${X(-40)} ${Y(30)} ${X(-48)} ${Y(0)}Z`;
-  const id="pa-eif";
-  let g=`<ellipse cx="${x}" cy="${y+2}" rx="${82*k}" ry="${12*k}" fill="rgba(91,66,80,.14)"/>`+`<clipPath id="${id}"><path d="${out}"/></clipPath><path d="${out}" fill="url(#pa-iron)"/>`
-    +`<g clip-path="url(#${id})"><rect x="${X(-80)}" y="${Y(290)}" width="${160*k}" height="${290*k}" fill="url(#pa-lattice)"/><path d="M${X(-60)} ${Y(4)} C${X(-46)} ${Y(44)} ${X(-34)} ${Y(80)} ${X(-28)} ${Y(100)}" stroke="#e8c49a" stroke-width="${3*k}" fill="none" opacity=".7"/></g><path d="${out}" fill="none" ${BO}/>`;
+  // les vides entre les étages (11/11/2026, Joffray : « il n'y a pas de trous au premier et au second étage ») : sous le
+  // premier étage l'arc entre les pieds, entre le premier et le deuxième une grande ouverture en ogive, au-dessus une fente fine
+  const holes=` M${X(-24)} ${Y(108)} Q${X(0)} ${Y(124)} ${X(24)} ${Y(108)} L${X(12.5)} ${Y(156)} Q${X(0)} ${Y(150)} ${X(-12.5)} ${Y(156)}Z M${X(-8.5)} ${Y(168)} Q${X(0)} ${Y(176)} ${X(8.5)} ${Y(168)} L${X(2.2)} ${Y(254)} L${X(-2.2)} ${Y(254)}Z`;
+  const full=out+holes,id="pa-eif";
+  let g=`<ellipse cx="${x}" cy="${y+2}" rx="${82*k}" ry="${12*k}" fill="rgba(91,66,80,.14)"/>`+`<clipPath id="${id}"><path d="${full}" clip-rule="evenodd"/></clipPath><path d="${full}" fill="url(#pa-iron)" fill-rule="evenodd"/>`
+    +`<g clip-path="url(#${id})"><rect x="${X(-80)}" y="${Y(290)}" width="${160*k}" height="${290*k}" fill="url(#pa-lattice)"/><path d="M${X(-60)} ${Y(4)} C${X(-46)} ${Y(44)} ${X(-34)} ${Y(80)} ${X(-28)} ${Y(100)}" stroke="#e8c49a" stroke-width="${3*k}" fill="none" opacity=".7"/>`
+    // croisillons de fer le long des arêtes
+    +[-1,1].map(sd=>Array.from({length:9},(_,i)=>{const b=8+i*11,a=sd*(70-b*.42);return `<path d="M${X(a)} ${Y(b)} l${-sd*5*k} ${-9*k} M${X(a-sd*5)} ${Y(b)} l${sd*5*k} ${-9*k}" stroke="#6e4d33" stroke-width="${1.3*k}"/>`}).join("")).join("")+`</g><path d="${full}" fill="none" fill-rule="evenodd" ${BO}/>`;
   // l'arc entre les pieds, souligné
   g+=`<path d="M${X(-48)} ${Y(0)} C${X(-40)} ${Y(30)} ${X(-24)} ${Y(58)} ${X(0)} ${Y(60)} C${X(24)} ${Y(58)} ${X(40)} ${Y(30)} ${X(48)} ${Y(0)}" fill="none" stroke="#7a5638" stroke-width="${2.4*k}"/>`;
   // premier étage, deuxième étage, avec leurs rambardes
@@ -224,8 +238,21 @@ const paSacre=(x,y,k=1)=>{const X=a=>(x+a*k).toFixed(1),Y=b=>(y+b*k).toFixed(1);
   g+=dome(0,-80,22,46,6);
   g+=`<rect x="${X(26)}" y="${Y(-52)}" width="${20*k}" height="${36*k}" fill="#000" opacity=".05"/>`;
   return g};
-// un escalier de Montmartre, avec sa rampe et ses lampadaires
-const paStairs=(x,y)=>Array.from({length:8},(_,i)=>`<rect x="${x+i*3.6}" y="${y-i*11}" width="28" height="11" fill="${i%2?"#efe6d8":"#e6dccb"}" stroke="${INK}" stroke-width="1.6"/>`).join("")+`<path d="M${x-4} ${y+8} L${x+24} ${y-84}" stroke="${INK}" stroke-width="2.4"/><path d="M${x+33} ${y+8} L${x+60} ${y-84}" stroke="${INK}" stroke-width="2.4"/>`;
+// Montmartre (refait le 11/11/2026, Joffray : « ça ressemble pas ») : une maison étroite de la butte (crépi clair, toit d'ardoise,
+// cheminée, volets et jardinières), la vigne en rangs, les parasols rouges de la place du Tertre, le Moulin Rouge au pied
+const paMontHouse=(x,y,w,h,wall,shut)=>shadow(x+w/2,y,w*.55)+`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" fill="${wall}" ${BO2}/><path d="M${x-3} ${y-h+1} L${x+w*.5} ${y-h-w*.45} L${x+w+3} ${y-h+1}Z" fill="#8f9bb0" ${BO2}/><rect x="${x+w*.68}" y="${y-h-w*.42}" width="5" height="9" fill="#d98a6a" stroke="${INK}" stroke-width="1.2"/>`
+  +Array.from({length:Math.max(1,Math.floor(h/16))},(_,r)=>`<rect x="${x+w/2-4}" y="${y-h+6+r*16}" width="8" height="9" rx="1" fill="#bcd8ea" stroke="${INK}" stroke-width="1.2"/><rect x="${x+w/2-8.5}" y="${y-h+6+r*16}" width="4" height="9" fill="${shut}" stroke="${INK}" stroke-width="1"/><rect x="${x+w/2+4.5}" y="${y-h+6+r*16}" width="4" height="9" fill="${shut}" stroke="${INK}" stroke-width="1"/><path d="M${x+w/2-6} ${y-h+16+r*16} h12" stroke="#8fbf5a" stroke-width="2.6" stroke-linecap="round"/><circle cx="${x+w/2-3}" cy="${y-h+15+r*16}" r="1.4" fill="#f2707e"/><circle cx="${x+w/2+3}" cy="${y-h+15+r*16}" r="1.4" fill="#ffd34d"/>`).join("");
+const paVigne=(x,y)=>Array.from({length:3},(_,r)=>`<path d="M${x} ${y-r*12} h56" stroke="#8a6a4a" stroke-width="1.6"/>`+Array.from({length:6},(_,i)=>`<circle cx="${x+5+i*9.4}" cy="${y-r*12-3}" r="4" fill="url(#pa-leaf2)" stroke="${INK}" stroke-width="1.2"/><circle cx="${x+7+i*9.4}" cy="${y-r*12+1}" r="1.5" fill="#7a4a8a"/>`).join("")).join("");
+const paTertre=(x,y)=>[[-22,0],[18,-6]].map(([dx,dy])=>shadow(x+dx,y+dy,16)+`<path d="M${x+dx} ${y+dy} V${y+dy-30}" stroke="${INK}" stroke-width="2.2"/><path d="M${x+dx-18} ${y+dy-26} Q${x+dx} ${y+dy-44} ${x+dx+18} ${y+dy-26}Z" fill="#e2546e" ${BO2}/><path d="M${x+dx-6} ${y+dy-27} Q${x+dx} ${y+dy-42} ${x+dx+6} ${y+dy-27}Z" fill="#fff"/><path d="M${x+dx-18} ${y+dy-26} Q${x+dx} ${y+dy-44} ${x+dx+18} ${y+dy-26}" fill="none" ${BO2}/>`).join("")
+  +`<rect x="${x-6}" y="${y-12}" width="12" height="9" rx="1" fill="#fff" ${BO2}/><path d="M${x-4} ${y-6} q3 -4 8 -1" stroke="#7fb4d8" stroke-width="1.6" fill="none"/>`;
+const paMoulinRouge=(x,y)=>shadow(x,y,40)+`<rect x="${x-38}" y="${y-30}" width="76" height="30" fill="#c0303e" ${BO}/><rect x="${x-34}" y="${y-26}" width="68" height="9" rx="2" fill="#ffe08a" stroke="${INK}" stroke-width="1.4"/><text x="${x}" y="${y-19}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="7" fill="#c0303e">MOULIN ROUGE</text>`
+  +[-24,-8,8,24].map(o=>`<circle cx="${x+o}" cy="${y-10}" r="2" fill="#ffe08a" stroke="${INK}" stroke-width="1"/>`).join("")
+  +`<path d="M${x+18} ${y-30} L${x+20} ${y-58} H${x+34} L${x+36} ${y-30}Z" fill="#c0303e" ${BO}/><path d="M${x+18} ${y-58} L${x+27} ${y-68} L${x+36} ${y-58}Z" fill="#7a2a33" ${BO2}/>`
+  +`<g transform="translate(${x+27} ${y-56})"><g><animateTransform attributeName="transform" type="rotate" values="0;360" dur="14s" repeatCount="indefinite"/>${[0,90,180,270].map(a=>`<g transform="rotate(${a})"><rect x="-2.6" y="-24" width="5.2" height="21" fill="#ffe08a" stroke="${INK}" stroke-width="1.3"/><path d="M-2.6 -18 h5.2 M-2.6 -12 h5.2" stroke="#c0303e" stroke-width=".9"/></g>`).join("")}</g><circle r="2.6" fill="#7a2a33" stroke="${INK}" stroke-width="1.4"/></g>`;
+// un escalier de Montmartre : volée de marches dans la verdure, rampe au milieu, deux lampadaires
+const paStairs=(x,y)=>`<path d="M${x-8} ${y+6} L${x+16} ${y-92} H${x+60} L${x+44} ${y+6}Z" fill="#7ea86a" ${BO2}/><path d="M${x-2} ${y+6} L${x+20} ${y-92} H${x+56} L${x+38} ${y+6}Z" fill="#efe4d2" stroke="${INK}" stroke-width="1.6"/>`
+  +Array.from({length:12},(_,i)=>{const t=i/12,y0=y+6-98*t,xl=x-2+22*t,xr=x+38+18*t;return `<path d="M${xl.toFixed(1)} ${y0.toFixed(1)} H${xr.toFixed(1)}" stroke="#cdbb9a" stroke-width="1.6"/>`}).join("")
+  +`<path d="M${x+18} ${y+6} L${x+38} ${y-92}" stroke="${INK}" stroke-width="2.4"/>`+[[x+21,y-10],[x+31,y-58]].map(([lx,ly])=>`<circle cx="${lx}" cy="${ly-22}" r="10" fill="url(#pa-glow)"/><path d="M${lx} ${ly} V${ly-17}" stroke="${INK}" stroke-width="2.2"/><path d="M${lx-3.6} ${ly-17} h7.2 l-1.4 -7 h-4.4Z" fill="#ffe9a8" stroke="${INK}" stroke-width="1.2"/>`).join("");
 // le moulin de la butte, ailes en croix
 const paMill=(x,y)=>shadow(x,y,20)+`<path d="M${x-14} ${y} L${x-11} ${y-34} H${x+11} L${x+14} ${y}Z" fill="#e8d6b8" ${BO}/><path d="M${x-14} ${y-34} L${x} ${y-50} L${x+14} ${y-34}Z" fill="#c0485a" ${BO}/><rect x="${x-4}" y="${y-14}" width="8" height="14" rx="3" fill="#8a5a4a" ${BO2}/>`
   +`<g transform="translate(${x} ${y-36})"><g><animateTransform attributeName="transform" type="rotate" values="0;360" dur="18s" repeatCount="indefinite"/>${[0,90,180,270].map(a=>`<g transform="rotate(${a})"><rect x="-3" y="-30" width="6" height="26" fill="#fff8ec" stroke="${INK}" stroke-width="1.6"/><path d="M-3 -24 h6 M-3 -18 h6 M-3 -12 h6 M0 -30 V-4" stroke="#c9b8a0" stroke-width=".9"/></g>`).join("")}</g><circle r="3" fill="#8a5a4a" stroke="${INK}" stroke-width="1.6"/></g>`;
@@ -253,7 +280,7 @@ function paCafeSVG(x,y){
   s+=`<rect x="${x-80}" y="${y-78}" width="160" height="20" rx="4" fill="#2f5a48" ${BO}/><text x="${x}" y="${y-63}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="#f2cf6a">Café Frimousse</text>`;
   let aw=`<path d="M${x-102} ${y-54} H${x+102} L${x+110} ${y-36} H${x-110}Z" fill="#fff" ${BO}/>`;for(let i=0;i<10;i++)aw+=`<path d="M${x-101+i*20.6} ${y-54} h10 l2 18 h-10Z" fill="#c0485a"/>`;
   aw+=`<path d="M${x-110} ${y-36} ${Array.from({length:10},()=>"q11 8 22 0").join(" ")}" fill="#c0485a" ${K}/><path d="M${x-102} ${y-54} H${x+102} L${x+110} ${y-36} H${x-110}Z" fill="none" ${BO}/>`;
-  return s+aw+paTable(x-80,y+32)+paTable(x+80,y+32);
+  return s+aw+paPlanter(x-128,y+20)+paPlanter(x+128,y+20)+paTable(x-82,y+34)+paTable(x-40,y+40)+paTable(x+44,y+40)+paTable(x+86,y+34)+paSlate(x+14,y+42);
 }
 const paBakery=(x,y)=>shadow(x,y,46)+`<rect x="${x-39}" y="${y-80}" width="78" height="80" fill="#5f7fb0" ${BO}/><path d="M${x-43} ${y-80} H${x+43}" stroke="${INK}" stroke-width="3"/><rect x="${x-33}" y="${y-72}" width="66" height="14" rx="3" fill="#fff4dc" ${K2}/><text x="${x}" y="${y-61.5}" text-anchor="middle" font-size="8.4" font-weight="900" fill="#5f7fb0">BOULANGERIE</text><rect x="${x-31}" y="${y-50}" width="40" height="34" rx="3" fill="#fff4dc" ${K2}/>`
   +[[x-21,y-28],[x-7,y-26],[x-15,y-38]].map(([a,b])=>`<g transform="translate(${a-10} ${b-9}) scale(.5)">${ICON["croissant@paris"]}</g>`).join("")+`<rect x="${x+15}" y="${y-50}" width="18" height="50" rx="3" fill="#a8664a" ${K2}/>`;
@@ -302,8 +329,10 @@ function paMapSVG(L){
   // le Champ-de-Mars : la tour, des platanes, un banc, un lampadaire
   at(320,u7+70,(x,y)=>paEiffel(x,y,360));at(30,u7+60,(x,y)=>paTree(x,y,.8));at(384,u7+24,(x,y)=>paTree(x,y,.6));at(36,u12-140,(x,y)=>paTree(x,y,.8));at(232,u12-176,paBench);at(54,u12+6,paLamp);
   // Montmartre : le Sacré-Cœur, les escaliers, le moulin, deux maisons, les chevalets
-  at(96,u13+246,(x,y)=>paSacre(x,y,1.1));at(112,u13+92,(x,y)=>paStairs(x,y));at(48,u13+116,(x,y)=>paEasel(x,y,"#8fbf5a"));at(180,u13+330,(x,y)=>paEasel(x,y,"#9fc0e8"));at(64,u18-34,(x,y)=>paEasel(x,y,"#f49ab0"));
-  at(150,u18-96,paMill);at(36,u13+20,(x,y)=>paCottage(x,y,"#7fb4d8"));at(150,u13+184,(x,y)=>paCottage(x,y,"#f2a2b0"));
+  at(96,u13+266,(x,y)=>paSacre(x,y,1.1));at(104,u13+100,(x,y)=>paStairs(x,y));at(160,u13+340,(x,y)=>paEasel(x,y,"#9fc0e8"));at(64,u18-34,(x,y)=>paEasel(x,y,"#f49ab0"));
+  at(158,u18-80,paMill);at(70,u13-6,paMoulinRouge);at(118,u13+150,paTertre);at(150,u13+40,(x,y)=>paVigne(x-28,y));
+  // les maisons qui montent la butte, serrées
+  [[6,u13+60,24,40,"#f6e8d0","#7fb4d8"],[32,u13+70,22,52,"#f2dcc0","#f2a2b0"],[140,u13+196,24,44,"#f8ecd8","#8fbf5a"],[166,u13+206,20,34,"#efd9be","#c9a8ec"],[8,u13+170,22,46,"#f4e2c8","#e2546e"],[30,u13+176,20,36,"#f8ecd8","#7fb4d8"],[156,u13+120,22,30,"#f6e8d0","#f2a2b0"]].forEach(([hx,hu,w,h,c,sh])=>at(hx+w/2,hu,(cx,y)=>paMontHouse(hx,y,w,h,c,sh)));
   at(370,u13+150,(x,y)=>paTree(x,y,.75));at(372,u18-44,(x,y)=>paTree(x,y,.7));at(30,u18-120,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
   // devant le café : la boulangerie de Firmin, en face ; un platane
   at(340,cafe.u+20,paBakery);at(40,cafe.u-40,(x,y)=>paTree(x,y,.85));

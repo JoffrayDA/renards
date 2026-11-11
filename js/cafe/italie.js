@@ -157,6 +157,19 @@ const itGondola=(x,y)=>`<path d="M${x-40} ${y-4} Q${x} ${y+8} ${x+40} ${y-4} q6 
 const itDuomo=(x,y)=>shadow(x,y,64)+`<rect x="${x-56}" y="${y-40}" width="112" height="40" rx="3" fill="#fbf4e6" ${BO}/>`+[0,1,2].map(i=>`<path d="M${x-56} ${y-30+i*10} H${x+56}" stroke="#d7cbb8" stroke-width="2"/>`).join("")+[-44,-30,-16,16,30,44].map(a=>`<path d="M${x+a-4} ${y-4} v-14 a4 4 0 0 1 8 0 v14" fill="#e3d6c2" stroke="${INK}" stroke-width="1.4"/>`).join("")+
   `<path d="M${x+8} ${y-40} Q${x+30} ${y-84} ${x+52} ${y-40}Z" fill="#e8b48a" ${BO}/><path d="M${x+30} ${y-76} V${y-90}" stroke="${INK}" stroke-width="2"/><circle cx="${x+30}" cy="${y-92}" r="3" fill="#f2c94c" stroke="${INK}" stroke-width="1.2"/>`+
   `<path d="M${x-58} ${y-40} L${x-28} ${y-66} L${x+2} ${y-40}Z" fill="#fbf4e6" ${BO}/><circle cx="${x-28}" cy="${y-50}" r="6" fill="#bfe1f0" ${K}/><rect x="${x-36}" y="${y-22}" width="16" height="22" rx="7" fill="#a8664a" ${BO}/>`;
+// l'église du quartier (11/11/2026, Joffray : « fais-moi une église quelque part », en Italie) : façade toscane en marbre
+// blanc et vert, fronton, rosace, trois portails, marches, et son campanile à arcades au toit de tuiles
+const itChiesa=(x,y)=>{let g=shadow(x+6,y,70);
+  g+=`<rect x="${x+38}" y="${y-118}" width="26" height="118" fill="#fbf4e6" ${BO}/>`+[0,1,2,3,4,5].map(i=>`<path d="M${x+38} ${y-12-i*18} H${x+64}" stroke="#6f9a7a" stroke-width="3"/>`).join("")
+    +`<path d="M${x+42} ${y-100} v-10 q9 -9 18 0 v10Z" fill="#5a4a52" stroke="${INK}" stroke-width="1.6"/><path d="M${x+51} ${y-106} v5" stroke="#f2c75c" stroke-width="3" stroke-linecap="round"/><circle cx="${x+51}" cy="${y-100}" r="2.6" fill="#f2c75c" stroke="${INK}" stroke-width="1"/>`
+    +`<path d="M${x+35} ${y-118} L${x+51} ${y-142} L${x+67} ${y-118}Z" fill="#d9774e" ${BO}/><path d="M${x+51} ${y-142} v-9 M${x+47} ${y-147} h8" stroke="${INK}" stroke-width="2"/>`;
+  g+=Array.from({length:3},(_,i)=>`<rect x="${x-52+i*4}" y="${y-5-i*4}" width="${104-i*8}" height="5" fill="#efe4d0" stroke="${INK}" stroke-width="1.4"/>`).join("");
+  g+=`<path d="M${x-44} ${y-12} V${y-74} H${x+44} V${y-12}Z" fill="#fbf4e6" ${BO}/>`+[-44,-22,22,44].map(o=>`<path d="M${x+o} ${y-74} V${y-12}" stroke="#6f9a7a" stroke-width="4"/>`).join("")
+    +`<path d="M${x-44} ${y-44} H${x+44}" stroke="#6f9a7a" stroke-width="3"/><path d="M${x-44} ${y-48} H${x+44}" stroke="#6f9a7a" stroke-width="1.4"/>`
+    +`<path d="M${x-48} ${y-74} L${x} ${y-104} L${x+48} ${y-74}Z" fill="#fbf4e6" ${BO}/><path d="M${x-36} ${y-78} L${x} ${y-99} L${x+36} ${y-78}Z" fill="none" stroke="#6f9a7a" stroke-width="2.4"/><path d="M${x} ${y-104} v-10 M${x-4} ${y-110} h8" stroke="${INK}" stroke-width="2.2"/>`
+    +`<circle cx="${x}" cy="${y-60}" r="11" fill="url(#it-rose)" ${BO}/>`+Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<path d="M${x} ${y-60} L${(x+11*Math.cos(a)).toFixed(1)} ${(y-60+11*Math.sin(a)).toFixed(1)}" stroke="${INK}" stroke-width="1"/>`}).join("")+`<circle cx="${x}" cy="${y-60}" r="3" fill="#ffd36a" stroke="${INK}" stroke-width="1"/>`
+    +[[-30,9],[0,12],[30,9]].map(([o,w])=>`<path d="M${x+o-w} ${y-12} V${y-28} Q${x+o-w} ${y-36-w*.4} ${x+o} ${y-37-w*.4} Q${x+o+w} ${y-36-w*.4} ${x+o+w} ${y-28} V${y-12}Z" fill="#8a5a4a" ${BO2}/><path d="M${x+o} ${y-12} V${y-30}" stroke="#6a4036" stroke-width="1.2"/>`).join("");
+  return g};
 const itBaptistery=(x,y)=>shadow(x,y,40)+`<rect x="${x-34}" y="${y-36}" width="68" height="36" rx="4" fill="#fbf4e6" ${BO}/>`+[-24,-12,0,12,24].map(a=>`<path d="M${x+a-3.5} ${y-6} v-12 a3.5 3.5 0 0 1 7 0 v12" fill="#e3d6c2" stroke="${INK}" stroke-width="1.3"/>`).join("")+`<path d="M${x-38} ${y-36} Q${x} ${y-80} ${x+38} ${y-36}Z" fill="#efe3cf" ${BO}/><path d="M${x-20} ${y-52} Q${x} ${y-74} ${x+10} ${y-66}" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/><rect x="${x-5}" y="${y-66}" width="10" height="9" rx="2" fill="#fbf4e6" ${K}/>`;
 const itPine=(x,y,k=1)=>shadow(x,y,30*k)+`<path d="M${x-3*k} ${y} Q${x-6*k} ${y-30*k} ${x+4*k} ${y-50*k} M${x+1*k} ${y-34*k} q${10*k} -6 ${18*k} -16" fill="none" stroke="#9a6a4a" stroke-width="${5*k}" stroke-linecap="round"/>`+blob([[x-22*k,y-56*k,14*k],[x,y-62*k,18*k],[x+22*k,y-58*k,15*k],[x+36*k,y-54*k,10*k]],"#6fa86e")+`<path d="M${x-28*k} ${y-64*k} q${12*k} -10 ${26*k} -6" stroke="#9fd08a" stroke-width="${3*k}" fill="none" stroke-linecap="round"/>`;
 const itCypress=(x,y,k=1)=>shadow(x,y,10*k)+`<path d="M${x} ${y-62*k} Q${x+12*k} ${y-30*k} ${x+8*k} ${y} H${x-8*k} Q${x-12*k} ${y-30*k} ${x} ${y-62*k}Z" fill="#5f9a6a" ${BO}/><path d="M${x-2*k} ${y-50*k} q${-4*k} ${16*k} ${-2*k} ${34*k}" stroke="#8fc48a" stroke-width="${2.4*k}" fill="none" stroke-linecap="round"/>`;
@@ -193,14 +206,25 @@ function pisaSVG(x,y,k=1){
   const by=y-lh-6*22*k;s+=`<rect x="${x-15*k}" y="${by-22*k}" width="${30*k}" height="${22*k}" fill="#fbf4e6" ${BO}/>`+[0,1,2].map(j=>`<path d="M${x-12*k+j*8.5*k} ${by-3*k} v${-11*k} a${3*k} ${3*k} 0 0 1 ${6*k} 0 v${11*k}" fill="#e3d6c2" stroke="${INK}" stroke-width="1.4"/>`).join("")+`<path d="M${x-17*k} ${by-22*k} H${x+17*k} L${x+12*k} ${by-28*k} H${x-12*k}Z" fill="#efe3cf" ${BO}/><path d="M${x-12*k} ${by-30*k} l${4*k} ${-3*k}" stroke="#fff" stroke-width="2" opacity=".7"/>`;
   return s+`<path d="M${x-lw/2+5*k} ${y-lh-20*k} V${y-lh-6*22*k+6*k}" stroke="#fff" stroke-width="${3*k}" stroke-linecap="round" opacity=".55"/></g>`;
 }
+// la terrasse du Caffè (refaite le 11/11/2026, Joffray : « améliore la terrasse ») : tables à nappe à carreaux rouges, chaises
+// de bois peint, une carafe et deux verres, parasols rayés vert et blanc, citronniers en pot et ardoise
+const itChairW=(x,y,sd)=>`<path d="M${x-5} ${y} V${y-10} M${x+5} ${y} V${y-10}" stroke="#7a4a2a" stroke-width="2.2" stroke-linecap="round"/><rect x="${x-7}" y="${y-13}" width="14" height="4.6" rx="1.6" fill="#7fb48a" stroke="${INK}" stroke-width="1.6"/><path d="M${x+sd*7} ${y-11} V${y-27}" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/><path d="M${x+sd*7} ${y-11} V${y-27}" stroke="#7fb48a" stroke-width="1.8" stroke-linecap="round"/><path d="M${x+sd*7} ${y-25} h${-sd*5} M${x+sd*7} ${y-19} h${-sd*5}" stroke="${INK}" stroke-width="1.6"/>`;
+const itTavolo=(x,y,um)=>shadow(x,y,30)+itChairW(x-18,y+1,-1)+itChairW(x+18,y+1,1)
+  +`<path d="M${x-9} ${y} V${y-14} M${x+9} ${y} V${y-14}" stroke="#7a4a2a" stroke-width="2.4"/><path d="M${x-14} ${y-15} H${x+14} L${x+12} ${y-6} H${x-12}Z" fill="#fff" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`
+  +[-10,-4,2,8].map(o=>`<rect x="${x+o}" y="${y-15}" width="3" height="9" fill="#e2546e" opacity=".8"/>`).join("")+`<path d="M${x-14} ${y-11} H${x+14}" stroke="#e2546e" stroke-width="2.4" opacity=".6"/><path d="M${x-14} ${y-15} H${x+14} L${x+12} ${y-6} H${x-12}Z" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`
+  +`<path d="M${x-3} ${y-16} q-1 -6 1 -8 h2 q2 2 1 8Z" fill="#e8f4fb" stroke="${INK}" stroke-width="1.1"/><path d="M${x+4} ${y-16} v-4 h3 v4Z M${x-9} ${y-16} v-4 h3 v4Z" fill="#f7d77a" stroke="${INK}" stroke-width="1"/>`
+  +(um?`<path d="M${x} ${y-15} V${y-50}" stroke="${INK}" stroke-width="2.2"/><path d="M${x-30} ${y-44} Q${x} ${y-66} ${x+30} ${y-44}Z" fill="#fff" ${BO}/>`+[-30,-15,0,15].map((a,i)=>i%2?"":`<path d="M${x+a} ${y-44} Q${x+a+5} ${y-56} ${x} ${y-62} Q${x+a+10} ${y-56} ${x+a+15} ${y-44}Z" fill="#7fb48a"/>`).join("")+`<path d="M${x-30} ${y-44} Q${x} ${y-66} ${x+30} ${y-44}Z" fill="none" ${BO}/><path d="M${x-30} ${y-44} ${Array.from({length:6},()=>"q5 5 10 0").join(" ")}" fill="#fff" ${K}/>`:"");
+const itLemonTree=(x,y)=>shadow(x,y,14)+`<path d="M${x-10} ${y-14} L${x-8} ${y} H${x+8} L${x+10} ${y-14}Z" fill="#d9774e" ${BO}/><path d="M${x} ${y-14} V${y-26}" stroke="#7a4a2a" stroke-width="2.4"/><circle cx="${x}" cy="${y-36}" r="13" fill="#7fb85f" ${BO}/>`+[[-6,-40],[5,-33],[-2,-30],[7,-42]].map(([a,b])=>`<circle cx="${x+a}" cy="${y+b}" r="2.6" fill="#ffd34d" stroke="${INK}" stroke-width="1"/>`).join("");
 function itCafeSVG(x,y){
   let s=shadow(x,y+4,100)+`<rect x="${x-90}" y="${y-92}" width="180" height="92" rx="6" fill="#fbe0a0" ${BO}/><path d="M${x-100} ${y-90} L${x} ${y-130} L${x+100} ${y-90}Z" fill="#d9774e" ${BO}/><rect x="${x-18}" y="${y-48}" width="36" height="48" rx="6" fill="#a8664a" ${BO}/><circle cx="${x+11}" cy="${y-22}" r="2.4" fill="#ffd36a"/>`;
   s+=`<path d="M${x-88} ${y-62} H${x+88} L${x+96} ${y-42} H${x-96}Z" fill="#fff" ${BO}/>`+Array.from({length:8},(_,i)=>`<path d="M${x-87+i*22} ${y-62} h11 l3 20 h-11Z" fill="#7fb48a"/>`).join("")+`<path d="M${x-96} ${y-42} ${Array.from({length:8},()=>"q12 9 24 0").join(" ")}" fill="#fff" ${K}/><path d="M${x-88} ${y-62} H${x+88} L${x+96} ${y-42} H${x-96}Z" fill="none" ${BO}/>`;
   s+=`<rect x="${x-74}" y="${y-86}" width="148" height="20" rx="8" fill="#fff" ${BO}/><text x="${x}" y="${y-71}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Caffè Frimousse</text>`;
-  s+=[x-70,x+70].map(t=>`<path d="M${t} ${y+18} V${y-4}" ${K}/><path d="M${t-16} ${y} Q${t} ${y-14} ${t+16} ${y}Z" fill="#f47f9a" ${K}/><ellipse cx="${t}" cy="${y+18}" rx="13" ry="4" fill="#fff" ${K}/>`).join("");
+  s+=itLemonTree(x-112,y+16)+itLemonTree(x+112,y+16)+itTavolo(x-72,y+32,1)+itTavolo(x+72,y+32,1)+itTavolo(x-32,y+44,0)+itTavolo(x+34,y+44,0);
+  s+=shadow(x,y+46,10)+`<path d="M${x-8} ${y+44} L${x-6} ${y+18} M${x+8} ${y+44} L${x+6} ${y+18}" stroke="#7a4a2a" stroke-width="2.4" stroke-linecap="round"/><rect x="${x-10}" y="${y+16}" width="20" height="20" rx="2" fill="#3a3a44" stroke="#a8703e" stroke-width="2.2"/><path d="M${x-5} ${y+22} h10 M${x-5} ${y+27} h7 M${x-5} ${y+31} h9" stroke="#f2ece0" stroke-width="1.3" stroke-linecap="round"/>`;
   return s;
 }
 function itArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#f7c99a" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Petite Italie</text>`}
+const IT_ROSE=`<radialGradient id="it-rose"><stop offset="0" stop-color="#ffe08a"/><stop offset=".4" stop-color="#f49ab0"/><stop offset=".8" stop-color="#7fa6dc"/><stop offset="1" stop-color="#5a6fae"/></radialGradient>`;
 function itMapSVG(L){
   const {P,way,H,tower,cafe}=L,Y=u=>H-u,o=u=>((H-u)/H).toFixed(4),hz=Y(cafe.u)+34;
   // le sol, d'un seul tenant : pavés de la rue, la place, le pré de la tour, puis les champs dorés des collines
@@ -233,7 +257,7 @@ function itMapSVG(L){
     const i=n++,w=56+(i*7)%12,h=66+(i*13)%28,x=side?352-(i%3)*3:-10+(i%3)*3;
     at(x+w/2,u,(cx,y)=>itH(x,y-h,w,h,IT_COL[i%IT_COL.length],{sh:IT_SH[i%IT_SH.length],shop:shops[i],balcony:i%4===2,v:i}))}
   at(264,150,itLemonPot);at(306,262,(x,y)=>itScooter(x,y,"#f9b8c6"));at(112,300,itTerrace);at(150,432,itStall);at(116,514,(x,y)=>itScooter(x,y,"#9fd8c4"));
-  at(282,672,itFountain);at(292,792,itGelato);at(262,880,itBench);at(306,890,itLamp);
+  at(282,672,itFountain);at(236,808,itChiesa);at(318,930,itGelato);at(312,812,itLamp);
   // le pré des miracles : la cathédrale, la tour qui penche, le baptistère, des pins parasols
   at(112,944,(x,y)=>itFlowerBed(x,y,"#f47f9a"));at(338,1000,itPine);at(100,1030,itDuomo);at(150,1112,(x,y)=>itFlowerBed(x,y,"#ffd36a"));
   at(tower.x,tower.u,(x,y)=>pisaSVG(x,y,1.05));at(352,1262,(x,y)=>itPine(x,y,.85));at(330,1400,itBaptistery);
@@ -247,7 +271,7 @@ function itMapSVG(L){
   s+=itArchSVG(200,Y(60))+itCafeSVG(cafe.x,Y(cafe.u));
   // le panneau vers Paris, à droite du Caffè, une fois le quartier fini (paris.js)
   if(typeof paOpen==="function"&&paOpen()){const px=cafe.x+128,py=Y(cafe.u+20);s+=`<rect x="${px-4}" y="${py-6}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${px-44} ${py-30} H${px+34} L${px+46} ${py-18} L${px+34} ${py-6} H${px-44}Z" fill="#fffaf2" ${BO}/><text x="${px}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">Paris</text>`}
-  return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
+  return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}${IT_ROSE}</defs>${s}</svg>`;
 }
 const WLAY={};
 function renderMapIt(){
