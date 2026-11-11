@@ -180,7 +180,7 @@ function foxArt(f,o={}){
     sensei:`<path d="M41 ${Y-9} q6 -5 12 -1 M79 ${Y-9} q-6 -5 -12 -1" fill="none" stroke="#fffaf2" stroke-width="3.4"/><path d="M41 ${Y-9} q6 -5 12 -1 M79 ${Y-9} q-6 -5 -12 -1" fill="none" stroke-width="1"/><path d="M54 ${Y+14} Q60 ${Y+30} 66 ${Y+14} Q63 ${Y+19} 60 ${Y+17} Q57 ${Y+19} 54 ${Y+14}Z" fill="#fffaf2" stroke-width="1.6"/>`
       +`<g transform="translate(${60+w-1} ${neck+16})"><path d="M-10 -4 H10 Q9 7 0 8 Q-9 7 -10 -4Z" fill="#6f8a6a" stroke-width="1.8"/><path d="M-8 1 Q0 3 8 1" fill="none" stroke="#9db898" stroke-width="1.4"/><ellipse cx="0" cy="-4" rx="10" ry="2.6" fill="#a9cf7a" stroke-width="1.6"/><ellipse cx="-3" cy="-4.4" rx="3" ry=".9" fill="#d6ecb4" stroke="none"/></g>`,
     inari:`<path d="M${60-w} ${neck-3} Q60 ${neck+7} ${60+w} ${neck-3} L${60+w} ${neck+2} Q60 ${neck+12} ${60-w} ${neck+2}Z" fill="#d8364a"/>`+[-.55,.55].map(k=>`<path d="M${(60+w*k).toFixed(1)} ${neck+5} l3 5 l-3 4 l3 5" fill="none" stroke="#fffaf2" stroke-width="2.6"/>`).join("")
-      +`<circle cx="60" cy="${neck+10}" r="4.6" fill="#f7d77a" stroke-width="1.8"/><path d="M57.4 ${neck+11} h5.2" stroke-width="1.2"/><path d="M42 ${Y-7} q4 -6 9 -5 M78 ${Y-7} q-4 -6 -9 -5" fill="none" stroke="#e2546e" stroke-width="2.6" stroke-linecap="round"/><path d="M56 ${top+7} q4 -7 8 0 q-4 4 -8 0Z" fill="#e2546e" stroke="none"/>`,
+      +`<circle cx="60" cy="${neck+10}" r="4.6" fill="#f7d77a" stroke-width="1.8"/><path d="M57.4 ${neck+11} h5.2" stroke-width="1.2"/><path d="M56 ${top+7} q4 -7 8 0 q-4 4 -8 0Z" fill="#e2546e" stroke="none"/>`,
     // Kyoto, essais du 09/11/2026 (Joffray : « montre-moi un renard sumo et un autre samouraï ») : planche tools/kyoto-renards.html
     // sumo A : la ceinture mawashi bleu nuit et ses cordelettes, le petit chignon ; sumo B, le grand champion : mawashi violet,
     // grosse corde blanche tressée et ses papiers en zigzag, chignon en feuille de ginkgo
@@ -275,8 +275,9 @@ function foxArt(f,o={}){
       else h=noMouth+dot(49.3,Y+1.2,2.6,3,.8)+dot(73.3,Y+1.2,2.6,3,.8)
         +`<g stroke="#e2546e" stroke-width="1.4"><path d="M36 ${Y+3} l-2 4 M40 ${Y+3} l-2 4 M44 ${Y+3} l-2 4 M80 ${Y+3} l-2 4 M84 ${Y+3} l-2 4 M88 ${Y+3} l-2 4"/></g><path d="M56 ${Y+7.6} q2 -1.6 4 0 q2 1.6 4 0" fill="none" stroke-width="1.6"/><path d="M90 ${Y-14} q-3 4.6 0 6.4 q3 -1.8 0 -6.4Z" fill="#cfe4f7" stroke-width="1.3"/>`;
     }
-    // Kyūbi (kyoto.js) : traits rouges de kitsune au coin des yeux et flamme au front, comme les masques d'Inari
-    if(f.flick)h+=`<g fill="#d8283a" stroke="none"><path d="M43.4 ${Y-1.8} Q37.5 ${Y-3.2} 34.2 ${Y-8.6} Q39.8 ${Y-6.4} 44.6 ${Y-4.6}Z"/><path d="M76.6 ${Y-1.8} Q82.5 ${Y-3.2} 85.8 ${Y-8.6} Q80.2 ${Y-6.4} 75.4 ${Y-4.6}Z"/><path d="M60 ${Y-19} Q64 ${Y-13.5} 60 ${Y-9.5} Q56 ${Y-13.5} 60 ${Y-19}Z"/></g>`;
+    // Kyūbi (kyoto.js) : pas de sourcils, un eyeliner rouge en pointe vers l'extérieur (Joffray, 11/11/2026)
+    if(f.flick){const lid=(x,k)=>{const X=d=>(x+k*d).toFixed(1);return `<path d="M${X(3.9)} ${Y-1.4} Q${X(.2)} ${Y-6.6} ${X(-3.6)} ${Y-2.6} L${X(-10.4)} ${Y-7.4} Q${X(-7.2)} ${Y-1.2} ${X(-3.4)} ${Y-.2} Q${X(.2)} ${Y-4.8} ${X(3.9)} ${Y-1.4}Z"/>`};
+      h=h.replace(/<path d="M4[23](\.5)? [^"]*" fill="none" stroke-width="2"\/>/,"")+`<g fill="#c4142e" stroke="none">${lid(48,1)}${lid(72,-1)}</g>`}
     if(f.mark==="oeil")h=`<ellipse cx="72.5" cy="${Y-.6}" rx="7.4" ry="7" fill="${c.e}" opacity=".8" stroke="none"/>`+h;
     if(f.mark==="masque")h=`<path d="M34 ${Y+1} Q35 ${Y-8} 48 ${Y-7} Q60 ${Y-3.5} 72 ${Y-7} Q85 ${Y-8} 86 ${Y+1} Q81 ${Y+7} 72 ${Y+5} Q60 ${Y+2.5} 48 ${Y+5} Q39 ${Y+7} 34 ${Y+1}Z" fill="#625c6e" stroke="none"/>`+h;
     return dx?`<g transform="translate(${dx} 0)">${h}</g>`:h};
