@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Images Play Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* Image de la fiche Play Store (11/11/2026) : bannière 1024 × 500 (#feature) ; l'icône est icons/icon-512.png.
+   Capture avec Playwright, élément par élément. */
+body{margin:0;background:#ddd;font-family:"Zen Maru Gothic",sans-serif}
+#feature{width:1024px;height:500px;position:relative;overflow:hidden;background:linear-gradient(180deg,#bfe3f5 0%,#e8f5f0 55%,#f6ece4 56%,#f6ece4 100%)}
+#feature .hill{position:absolute;bottom:200px;border-radius:50%;background:#bfe0a4;border:5px solid #5b4250}
+#feature .floor{position:absolute;left:0;right:0;bottom:0;height:222px;background:#e8b98c;border-top:6px solid #5b4250}
+#feature .floor:before{content:"";position:absolute;left:0;right:0;top:0;height:26px;background:#f2cfa6;border-bottom:5px solid #5b4250}
+#feature h1{position:absolute;left:0;right:0;top:34px;margin:0;text-align:center;font-family:"Mochiy Pop One";font-size:84px;color:#fff;letter-spacing:1px;
+  -webkit-text-stroke:9px #5b4250;paint-order:stroke fill;text-shadow:0 7px 0 #5b4250}
+#feature .sub{position:absolute;left:0;right:0;top:150px;text-align:center;font-size:30px;font-weight:900;color:#5b4250}
+#feature .fox{position:absolute;bottom:14px}
+#feature .fox svg{width:100%;display:block;overflow:visible}
+#feature .lamp{position:absolute;top:-6px;width:34px;height:44px;border-radius:40% 40% 50% 50%;border:4px solid #5b4250}
+#feature .garl{position:absolute;top:0;left:-20px;right:-20px;height:30px;border-bottom:4px solid #5b4250;border-radius:0 0 50% 50%}
+#feature .cloud{position:absolute;width:90px;height:34px;background:#fff;border:4px solid #5b4250;border-radius:20px}
+#feature .cloud:before{content:"";position:absolute;left:18px;top:-24px;width:44px;height:44px;background:#fff;border:4px solid #5b4250;border-bottom:none;border-radius:50% 50% 0 0}
+#icon{width:512px;height:512px;position:relative;overflow:hidden;background:linear-gradient(#ffb59f,#f59a8b);margin-top:20px}
+#icon svg{position:absolute;left:36px;top:46px;width:440px}
+</style></head><body>
+<div id="feature">
+  <div class="hill" style="left:-140px;width:620px;height:300px;bottom:70px"></div>
+  <div class="hill" style="left:300px;width:520px;height:240px;bottom:90px;background:#cfe8b4"></div>
+  <div class="hill" style="left:640px;width:600px;height:320px;bottom:60px;background:#a9d38f"></div>
+  <div class="cloud" style="left:36px;top:180px;transform:scale(.8)"></div><div class="cloud" style="left:910px;top:200px;transform:scale(.7)"></div>
+  <div class="garl"></div>
+  <div class="lamp" style="left:70px;background:#f6a5b4"></div><div class="lamp" style="left:250px;background:#f7d77a;top:6px"></div>
+  <div class="lamp" style="left:740px;background:#a9d4f0;top:6px"></div><div class="lamp" style="left:920px;background:#c9b6ef"></div>
+  <div class="floor"></div>
+  <h1>Café Frimousse</h1>
+  <div class="sub">Sers les renards, fais grandir ton café</div>
+  <div id="foxes"></div>
+</div>
+<script src="../js/cafe/foxes.js"></script><script src="../js/foxart.js"></script>
+<script>
+const KY={id:"kyubi",name:"Kyūbi",rar:"legend",acc:"inari",tail:"neuf",eye:"#d8283a",flick:1,c:{b:"#fbf4ea",ch:"#ffffff",e:"#e0b860",s:"#d4a84a",t:"#f7d77a"}};
+const F=id=>id==="kyubi"?KY:FOXES.find(f=>f.id===id);
+// [renard, pose, gauche, largeur]
+const row=[["kyubi","sit",14,200],["noisette","happy",196,170],["petitpois","walk",350,150],["roussette","happy",424,190],["zaza","sit",600,165],["flocon","eat",755,165],["luciole","sit",862,150]];
+document.getElementById("foxes").innerHTML=row.map(([id,p,l,w])=>`<div class="fox" style="left:${l}px;width:${w}px">${foxArt(F(id),{pose:p,plain:1})}</div>`).join("");
+</script>
+</body></html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Café Frimousse : confidentialité</title>
+<meta name="theme-color" content="#f6ece4">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+  :root{--bg:#f6ece4;--card:#fffaf5;--ink:#5b4250;--soft:#8a7480;--accent:#e2546e}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+  .card{background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:20px 22px;margin:0 0 16px}
+  h1{font-size:1.6rem;margin:.2em 0 .1em}
+  h2{font-size:1.15rem;margin:0 0 .4em;color:var(--accent)}
+  p,li{margin:.35em 0}
+  ul{padding-left:1.2em}
+  .top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .top img{width:64px;height:64px;border-radius:16px;border:3px solid var(--ink)}
+  .soft{color:var(--soft);font-size:.92rem}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><img src="icons/icon-192.png" alt=""><div><h1>Règles de confidentialité</h1><div class="soft">Café Frimousse · mise à jour le 11 novembre 2026</div></div></div>
+
+  <div class="card">
+    <h2>En bref</h2>
+    <ul>
+      <li>Pas de compte à créer, pas de nom réel, pas d'adresse mail demandés.</li>
+      <li>Pas de publicité, pas de suivi, pas de revente de données.</li>
+      <li>Ta partie est enregistrée sur ton téléphone. Elle ne part en ligne que pour la sauvegarde et les notifications, si tu les utilises.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Ce qui reste sur ton téléphone</h2>
+    <p>Ta partie (café, refuge, pièces, réglages, le prénom que tu donnes à ton renard) est enregistrée dans la mémoire du navigateur de ton appareil. Elle n'est envoyée nulle part tant que tu n'utilises pas la sauvegarde en ligne ni les notifications. Désinstaller le jeu ou effacer les données du site la supprime.</p>
+  </div>
+
+  <div class="card">
+    <h2>Sauvegarde en ligne</h2>
+    <p>Pour retrouver ta partie sur un autre téléphone, une copie de ta partie est envoyée sur un serveur Google Firebase (projet du jeu), rangée sous un code anonyme de 12 caractères. Seul ce code permet de la relire. Le jeu se connecte avec un identifiant anonyme Firebase, créé automatiquement, sans nom ni adresse mail.</p>
+  </div>
+
+  <div class="card">
+    <h2>Notifications</h2>
+    <p>Si tu acceptes les notifications, ton téléphone enregistre sur Firebase son abonnement aux notifications, ton décalage horaire et les heures des prochains événements du jeu (prochain renard, case du calendrier…), pour t'envoyer au plus une notification par jour entre 9 h et 21 h. Les refuser ou les couper efface cet abonnement.</p>
+  </div>
+
+  <div class="card">
+    <h2>Services utilisés</h2>
+    <ul>
+      <li><b>Google Firebase</b> (authentification anonyme et base Firestore) : sauvegarde en ligne et notifications. <a href="https://firebase.google.com/support/privacy">Confidentialité de Firebase</a>.</li>
+      <li><b>Google Fonts</b> : les polices du jeu. Leur téléchargement passe par les serveurs de Google, qui voient l'adresse IP de l'appareil. <a href="https://policies.google.com/privacy">Règles de Google</a>.</li>
+      <li><b>GitHub Pages</b> : hébergement du jeu.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Enfants</h2>
+    <p>Le jeu ne demande aucune information personnelle et ne contient pas de publicité. Il ne cherche pas à collecter de données sur les enfants.</p>
+  </div>
+
+  <div class="card">
+    <h2>Tes droits et contact</h2>
+    <p>Tu peux demander l'effacement de ta sauvegarde en ligne ou de ton abonnement aux notifications, ou poser une question, en écrivant à <a href="mailto:cafefrimousse.studio@gmail.com">cafefrimousse.studio@gmail.com</a> (donne ton code de sauvegarde s'il s'agit d'elle). Si ces règles changent, cette page sera mise à jour.</p>
+  </div>
+</main>
+</body>
+</html>
