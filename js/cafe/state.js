@@ -23,6 +23,8 @@ if(S.ver<3){
 }
 // le nom du joueur (Roussette par défaut) ; S.named : l'écran d'accueil où on le choisit a été vu (une fois, parties en cours comprises)
 const ME=()=>S.name||"Roussette";
+// le Concours de la vallée (saisons.js) : scènes lues, défis gagnés ; Pâquerette remplace Zaza comme invitée du Printemps (11/11/2026)
+S.sread=S.sread||{};S.sduel=S.sduel||{};S.guest=S.guest||{};if(S.guest.zaza&&!S.guest.paquerette)S.guest.paquerette=1;
 // le compagnon, toujours à côté de Roussette (offert depuis le 11/11/2026) : choisi au refuge (R.buddy dans la sauvegarde
 // de la Clairière, lue sans y écrire), Petit Pois par défaut. S.together[id] = {n : journées ensemble (une par jour réel), last}
 function buddy(){try{const R=JSON.parse(localStorage.getItem("clairiere-renards-v2"));const id=R&&R.buddy;if(id&&R.res&&R.res[id]&&FOX[id])return id}catch(e){}return "petitpois"}

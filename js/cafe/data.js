@@ -72,7 +72,7 @@ for(const k in REC){const r=REC[k];r.nm=r.name;r.npl=r.pl;Object.defineProperty(
 const CHAP=[
   {id:"printemps",sea:"automne",name:"Automne",from:1,to:10,gate:0,guest:"noisette"},
   {id:"ete",sea:"hiver",name:"Hiver",from:11,to:20,gate:24,guest:"flocon"},
-  {id:"automne",sea:"printemps",name:"Printemps",from:21,to:30,gate:50,guest:"zaza"},
+  {id:"automne",sea:"printemps",name:"Printemps",from:21,to:30,gate:50,guest:"paquerette"}, // Pâquerette (saisons.js) remplace Zaza le 11/11/2026
   {id:"hiver",sea:"ete",name:"Été",from:31,to:40,gate:78,guest:"comete"}
 ];
 const LASTDAY=40;

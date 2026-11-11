@@ -27,6 +27,7 @@ function endDay(){
   if(st&&ok&&!S.own[ok]){S.own[ok]=1;news.push(itRow(icon(ok),`Nouvelle option : ${OPTS[ok].name}`,`Elle arrive dès la prochaine journée. ${OPTS[ok].desc}`,"background:#e3f2d6"))}
   for(const c of checkGuests())news.push(itRow(foxSVG(FOX[c.guest],{pose:"happy"}),`${FOX[c.guest].name} rejoint ton café !`,`Saison ${c.name} en ★★★ : ${FOX[c.guest].name} vient désormais en invité d'honneur dans toutes les journées, toutes saisons confondues : il paie le triple, mais il est pressé.`,"background:#fbf0cc"));
   for(const c of CHAP)if(c.gate&&!S.pass[c.id]&&before<c.gate&&starSum()>=c.gate&&gateOpen(c))news.push(itRow(icon("chest"),`La porte de la saison ${c.name} s'ouvre !`,`Tu as réuni ${c.gate} étoiles.`,"background:#e3f2d6"));
+  const dRow=seaDuelNews(d,e,st);if(dRow)news.push(dRow);
   const nc=chapOf(S.day);
   if(st&&S.day===nc.from&&nc.gate&&!gateOpen(nc))news.push(itRow(icon("chest"),`Porte de la saison ${nc.name} : ${starSum()} / ${nc.gate} ★`,`Rejoue des journées pour gagner les étoiles qui manquent.`));
   const bRow=buddyRow();
@@ -34,14 +35,16 @@ function endDay(){
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
-  endFx(st);openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>
+  const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
+  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 25 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>
   ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
   ${bl?itRow(bellSVG,`+${bl} clochette${bl>1?"s":""}`,"Les clochettes achètent les beaux objets de la boutique du jour, à la Clairière."):""}
   ${news.join("")}${albumRow()}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
-  <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`,true);
+  <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
+  // la scène du Concours de la vallée (saisons.js), jouée avant les résultats
+  const dd=d;setTimeout(()=>seaScenes(dd,()=>{endFx(st);openSheet(sheet,true)}),0);
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
 }
 function endNight(){
@@ -60,7 +63,7 @@ function endNight(){
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
   const canNext=st&&n<5&&nightOpen(n+1);
   endFx(st);openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NIGHT_NAMES[n-1]}</b><br>${nxt}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div><div style="background:#efe4fb">Bonbons<b>+${G.candy+cb}</b></div></div>
+  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 25 %</small>`:""}</div><div style="background:#efe4fb">Bonbons<b>+${G.candy+cb}</b></div></div>
   ${cb?itRow(candySVG,`Coffre de la nuit : +${cb} bonbons`,st===3?"Trois étoiles : le grand coffre !":"Chaque nouvelle étoile d'une nuit rapporte des bonbons."):""}
   ${news.join("")}${albumRow()}${bRow}
   ${questHTML(qShow)}
