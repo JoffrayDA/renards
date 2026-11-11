@@ -1,0 +1,18 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portes des saisons</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Planche des portes des saisons du Café (js/cafe/portes.js, 11/11/2026) : fermée puis ouverte, sur le sol de chaque saison */
+body{margin:0;background:#f6ece4;color:#5b4250;font-family:"Zen Maru Gothic",sans-serif;padding:16px}
+h1{font-family:"Mochiy Pop One";font-size:22px;margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+.c{border:3px solid #5b4250;border-radius:20px;overflow:hidden;width:620px;max-width:100%;background:#fffaf5}
+.c h2{margin:8px 12px 0;font-family:"Mochiy Pop One";font-size:17px}
+.c svg{display:block;width:100%}
+</style></head><body>
+<h1>Portes des saisons</h1><div class="row" id="row"></div>
+<script src="../js/cafe/foxes.js"></script><script src="../js/cafe/portes.js"></script>
+<script>
+const S=[["automne","Automne","#e9c79a","★ 0"],["hiver","Hiver","#e8f1f8","★ 24"],["printemps","Printemps","#d6ecc0","★ 50"],["ete","Été","#f3e3a6","★ 78"]];
+document.getElementById("row").innerHTML=S.map(([k,n,bg,lock])=>`<div class="c"><h2>${n}</h2><svg viewBox="0 0 340 170"><rect width="340" height="170" fill="${bg}"/>${k==="automne"?"":seasonGateSVG(85,150,false,k,lock)}${seasonGateSVG(k==="automne"?170:255,150,true,k,n)}</svg></div>`).join("");
+</script></body></html>
