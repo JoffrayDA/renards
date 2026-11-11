@@ -313,7 +313,9 @@ function foxArt(f,o={}){
     // le renard couché d'un seul bloc, un peu penché, le ventre crème, les quatre pattes en l'air qui gigotent
     T=50;Y=69;N=86;W=34;
     body=`<g transform="rotate(-6 60 90)">`+tailBack(18,92,86)+ears(14,-12)+bun(T,90,41)+faceOf(Y,"open")+(gh?"":`<ellipse cx="60" cy="86" rx="20" ry="6" fill="${c.ch}" stroke="none"/>`)+`</g>`;
-    if(!gh)fx+=[[22,64,-55,0],[98,62,55,.2],[42,94,-150,.35],[78,92,150,.1]].map(([x,y,r,d])=>`<g class="bpaw" style="animation-delay:${d}s"><ellipse cx="${x}" cy="${y}" rx="5.6" ry="7.4" fill="${c.s}" transform="rotate(${r} ${x} ${y})"/></g>`).join("");
+    // les patounes de la version d'avant (Joffray, 11/11/2026) : coussinets roses bien visibles
+    const pad=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="6.4" ry="8.4" fill="${c.s}"/><ellipse cx="${x}" cy="${y+2}" rx="2.8" ry="2.4" fill="#f6a5b4" stroke="none"/><circle cx="${x-2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x}" cy="${y-4.2}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x+2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/></g>`;
+    if(!gh)fx+=[[22,64,-45,0],[98,62,45,.2],[38,92,-25,.35],[82,90,25,.1]].map(([x,y,r,d])=>`<g class="bpaw" style="animation-delay:${d}s">${pad(x,y,r)}</g>`).join("");
     // o.toy : un jouet serré sur le ventre (le coin des jeux de la maison)
     if(!gh&&o.toy==="pelote")fx+=`<g class="toyhug"><circle cx="60" cy="84" r="8" fill="#f6b3c4"/><path d="M53 80 q7 2 11 10 M52 85 q7 1 12 8 M56 76 q6 3 10 11" fill="none" stroke="#e0889e" stroke-width="1.3"/></g>`;
     if(!gh&&o.toy==="balle")fx+=`<g class="toyhug"><circle cx="60" cy="84" r="8.4" fill="#9fd0f0"/><circle cx="57" cy="81" r="1.8" fill="#fff" stroke="none"/><circle cx="63" cy="87" r="1.6" fill="#fff" stroke="none"/><circle cx="63" cy="80" r="1.2" fill="#fff" stroke="none"/></g>`;
