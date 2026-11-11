@@ -274,7 +274,8 @@ function itMapSVG(L){
     const i=n++,w=56+(i*7)%12,h=66+(i*13)%28,x=side?352-(i%3)*3:-10+(i%3)*3;
     at(x+w/2,u,(cx,y)=>itH(x,y-h,w,h,IT_COL[i%IT_COL.length],{sh:IT_SH[i%IT_SH.length],shop:shops[i],balcony:i%4===2,v:i}))}
   at(264,150,itLemonPot);at(306,262,(x,y)=>itScooter(x,y,"#f9b8c6"));at(112,300,itTerrace);at(150,432,itStall);at(116,514,(x,y)=>itScooter(x,y,"#9fd8c4"));
-  at(282,672,itFountain);at(272,740,itChiesa);at(292,884,itGelato);at(206,846,itLamp);
+  at(282,672,itFountain);at(238,752,(x,y)=>`<g transform="translate(${x} ${y}) scale(1.3) translate(${-x} ${-y})">${itChiesa(x,y)}</g>`); // à 130 % (Joffray, 11/11/2026 : même taille que la fontaine et le gelato)
+  at(292,884,itGelato);
   // le pré des miracles : la cathédrale, la tour qui penche, le baptistère, des pins parasols
   at(112,944,(x,y)=>itFlowerBed(x,y,"#f47f9a"));at(338,1000,itPine);at(100,1030,itDuomo);at(150,1112,(x,y)=>itFlowerBed(x,y,"#ffd36a"));
   at(tower.x,tower.u,(x,y)=>pisaSVG(x,y,1.05));at(352,1262,(x,y)=>itPine(x,y,.85));at(330,1400,itBaptistery);
