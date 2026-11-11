@@ -34,12 +34,12 @@ function daySheet(d){
   if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,"Réussis la journée pour l'avoir.","background:#e3f2d6"));
   const ok=Object.keys(OPTS).find(o=>OPTS[o].day===d);
   if(ok&&!S.own[ok])rw.push(itRow(icon(ok),`Option à gagner : ${OPTS[ok].name}`,"Réussis la journée pour l'avoir.","background:#e3f2d6"));
-  rw.push(itRow(icon("chest"),st<3?"Coffre ★★★":"Coffre ouvert",(st<3?"Chaque nouvelle étoile rapporte des pièces.":"Plus rien dans le coffre.")+(st?" Rejouer : moitié des pièces.":"")));
+  rw.push(itRow(icon("chest"),st<3?"Coffre ★★★":"Coffre ouvert",(st<3?"Chaque nouvelle étoile rapporte des pièces.":"Plus rien dans le coffre.")+(st?" Rejouer : un quart des pièces.":"")));
   if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient partout en VIP.":`★★★ sur tout ${ch.name.replace(/^(Automne|Été|Hiver)$/,"l'$1").replace(/^Printemps$/,"le Printemps")} (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">${c.c} clients${c.max>1?` · ${c.max} articles max`:""} · patience ${Math.round(c.pat*patMult())} s${S.best[d]?` · record <b>${S.best[d]}</b>`:""}</p>
   ${d<=2?`<button class="btn ghost wide" data-act="tuto" type="button" style="margin:0 0 12px">Revoir la leçon de Petit Pois</button>`:""}
-  <p class="sub" style="margin-bottom:6px">Objectif (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
+  <p class="sub" style="margin-bottom:6px">Objectif (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*cuts(d)[1])}</span><span><em>★★★</em>${Math.ceil(g*cuts(d)[2])}</span></div>
   ${equipBonus(d)?`<p class="sub" style="margin:6px 0 0;font-size:12.5px">Objectif +${Math.round(equipBonus(d)*100)} % : tu es très bien équipé.</p>`:""}
   ${rw.join("")}
   ${d>=3?boostHTML(()=>daySheet(d)):""}
@@ -72,13 +72,13 @@ function costumesSheet(){
 }
 function nightSheet(n){
   if(!nightOpen(n)){toast("Cette nuit n'est pas encore ouverte.");return}
-  const N=NIGHTS[n-1],c=cfgOf(N.base),g=Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0)))),st=S.hwStars[n]||0;
+  const N=NIGHTS[n-1],c=cfgOf(N.base),g=Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0),.12))),st=S.hwStars[n]||0;
   openSheet(`<h2>${NIGHT_NAMES[n-1]}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
   <p class="sub">Nuit ${n} sur 5. ${c.c} clients, <b>tous déguisés</b>${c.max>1?`, jusqu'à ${c.max} articles par commande`:""}. Les VIP sont les invités d'Halloween.</p>
   <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
   ${st<3?itRow(candySVG,"Coffre de bonbons","Chaque nouvelle étoile rapporte 8 bonbons, et ★★★ ouvre le grand coffre (+15)."):""}
   ${n===5&&!S.hwKeep?itRow(foxSVG(FOX.feufollet,{pose:"happy"}),"Récompense : Feu Follet","Réussis cette nuit et il restera au café toute l'année.","background:#efe4fb"):""}
-  ${st?itRow(icon("coeur"),"Nuit déjà réussie","La rejouer ne rapporte que la moitié des pièces."):""}
+  ${st?itRow(icon("coeur"),"Nuit déjà réussie","La rejouer ne rapporte qu'un quart des pièces."):""}
   ${boostHTML(()=>nightSheet(n))}
   <div class="col" style="margin-top:6px"><button class="btn big wide" data-nplay="${n}" type="button">Commencer la nuit</button><button class="btn ghost wide" data-act="hw" type="button">Retour</button></div>`);
 }

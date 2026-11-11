@@ -1,7 +1,7 @@
 /* Café Frimousse : fin de journée et de nuit, quêtes affichées. */
 /* ---------- fin de journée ---------- */
 // le compagnon dans l'écran de fin : une journée ensemble par jour réel fait grandir l'amitié au refuge
-function buddyRow(){if(!OWN().serveur)return "";const id=buddy(),f=FOX[id],td=todayStr(),t=S.together[id]||(S.together[id]={n:0,last:""}),first=t.last!==td;
+function buddyRow(){const id=buddy(),f=FOX[id],td=todayStr(),t=S.together[id]||(S.together[id]={n:0,last:""}),first=t.last!==td;
   if(first){t.n++;t.last=td}
   return itRow(foxSVG(f,{pose:"happy"}),`${f.name} était là pour t'aider !`,first?"Une journée de plus ensemble : votre amitié grandit au refuge.":"Votre journée ensemble compte déjà pour aujourd'hui.","background:#fff3e2")}
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
@@ -10,7 +10,7 @@ function endDay(){
   if(G.it)return endIt();
   if(G.noel)return endNoel();
   if(G.night)return endNight();
-  const g=G.cfg.goal,e=G.earned,st=e>=g*1.7?3:e>=g*1.35?2:e>=g?1:0,d=G.day,prev=S.stars[d]||0,before=starSum();
+  const g=G.cfg.goal,e=G.earned,d=G.day,[,c2,c3]=cuts(d),st=e>=Math.ceil(g*c3)?3:e>=Math.ceil(g*c2)?2:e>=g?1:0,prev=S.stars[d]||0,before=starSum();
   G.run=0;
   if(!G.lost&&st)qEvent("perfect");if(st===3)qEvent("stars3");
   if(st){const m=noelEvent("star");if(m)setTimeout(()=>toast(m),1200)}
@@ -32,7 +32,7 @@ function endDay(){
   const bRow=buddyRow();
   const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
-  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
+  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
   endFx(st);openSheet(`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 50 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>

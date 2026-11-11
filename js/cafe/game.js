@@ -28,7 +28,7 @@ function newDay(d){
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;(MUSIC.again||MUSIC.want)(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
 }
-function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0))))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
+function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0),.12)))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
 // Un client vit ainsi : file d'attente à la porte (queue), il entre en trottinant (walkin), attend sa commande (wait),
 // reste un instant content ou fâché (happy, angry), puis repart en marchant (walkout). Sa patience ne baisse qu'en « wait ».
 const WALK=1.6,QMAX=3;
@@ -94,7 +94,7 @@ function update(dt){
   }
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte au client le plus pressé ce qui l'attend sur le plateau
   // (la « vitrine » de Joffray) ; il ne touche jamais au plan de travail : sinon c'est de la triche, et on ne comprend plus
-  if(OWN().serveur&&!G.tuto){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
+  if(!G.tuto){G.helperT-=dt;if(G.helperT<=0){G.helperT=.5;
     const w=G.cust.filter(c=>c.state==="wait").sort((a,b)=>a.pat-b.pat);
     for(const c of w){let got=0;for(const it of c.order){if(it.done)continue;const k=G.tray.indexOf(itemKey(it));if(k<0)continue;
         flyPastry(itemKey(it),custEl(c),got+1,k);G.tray.splice(k,1);it.done=1;got++;G.arm=null;G.pick=null}
@@ -129,7 +129,7 @@ function complete(c){
   const cb=G.combo>=3?Math.min(G.combo,6)-1:0;
   let tot=base+tip+cb;if(c.vip){tot*=3;G.vipServed++;qEvent("vip")}
   // la recette (objectif, étoiles) compte le prix payé ; on ne garde en pièces que le bénéfice, et la moitié quand on rejoue (30 % avant le 30/10/2026)
-  const cost=c.order.reduce((a,o)=>a+itemCost(itemKey(o)),0),gain=Math.max(0,Math.round((tot-cost)*(G.replay?.5:1)));
+  const cost=c.order.reduce((a,o)=>a+itemCost(itemKey(o)),0),gain=Math.max(0,Math.round((tot-cost)*(G.replay?.25:1)));
   G.earned+=tot;G.cost+=cost;G.gain+=gain;S.coins+=gain;S.total+=gain;G.served++;S.served++;
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
   if(frac>=.6)qEvent("green");

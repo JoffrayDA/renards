@@ -5,14 +5,14 @@
    thé de Noël, pain d'épice, sucre d'orge, chocolat cannelle, lait de poule, bûche ; la clé, le prix et la cuisson ne changent pas.
    Les VIP sont les invités de Noël (NOELF), qui donnent un sucre d'orge ; les nouvelles étoiles paient en sucres d'orge.
    Réussir la dernière garde Guimauve au café toute l'année (S.noelKeep). Étoiles dans S.noelStars. */
-const NOEL_NIGHTS=[{base:2,seed:79,goal:59},{base:3,seed:66,goal:73},{base:4,seed:76,goal:91},{base:5,seed:77,goal:113},{base:6,seed:62,goal:123},{base:7,seed:76,goal:138},{base:8,seed:72,goal:152},{base:9,seed:71,goal:160},{base:10,seed:70,goal:176},{base:11,seed:62,goal:187},{base:12,seed:70,goal:212},{base:13,seed:72,goal:223},{base:14,seed:79,goal:241},{base:16,seed:71,goal:256},{base:18,seed:70,goal:288},{base:20,seed:75,goal:333},{base:22,seed:77,goal:362},{base:24,seed:78,goal:338},{base:26,seed:76,goal:362},{base:28,seed:73,goal:388},{base:30,seed:71,goal:382},{base:33,seed:64,goal:401},{base:36,seed:66,goal:462},{base:39,seed:71,goal:488}];
+const NOEL_NIGHTS=[{base:2,seed:79,goal:59},{base:3,seed:66,goal:73},{base:4,seed:76,goal:91},{base:5,seed:75,goal:103},{base:6,seed:62,goal:123},{base:7,seed:76,goal:138},{base:8,seed:68,goal:157},{base:9,seed:67,goal:162},{base:10,seed:68,goal:182},{base:11,seed:66,goal:194},{base:12,seed:70,goal:212},{base:13,seed:69,goal:214},{base:14,seed:62,goal:232},{base:16,seed:66,goal:266},{base:18,seed:70,goal:290},{base:20,seed:61,goal:319},{base:22,seed:68,goal:324},{base:24,seed:78,goal:338},{base:26,seed:69,goal:343},{base:28,seed:60,goal:352},{base:30,seed:71,goal:382},{base:33,seed:64,goal:401},{base:36,seed:65,goal:438},{base:39,seed:64,goal:469}];
 const NOEL_NAMES=["Nuit des premiers flocons","Nuit des guirlandes","Nuit des bougies","Nuit du pain d'épice","Nuit des lutins","Nuit des clochettes","Nuit des marrons chauds","Nuit des étoiles filantes",
   "Nuit du chocolat chaud","Nuit des bonhommes de neige","Nuit des aurores","Nuit des cadeaux","Nuit du gui","Nuit des lanternes de glace","Nuit des chants","Nuit du traîneau",
   "Nuit des rennes","Nuit du grand froid","Nuit des biscuits","Nuit des souhaits","Nuit des sucres d'orge","Nuit de la bûche","Nuit des lumières","Grande nuit de Noël"];
 const NOELF=FOXES.filter(f=>f.event==="noel");
 S.noelStars=S.noelStars||{};
 const noelNightOpen=n=>{const N=NOEL_NIGHTS[n-1];return xmasDay()>0&&S.day>N.base&&(n===1||(S.noelStars[n-1]||0)>0)};
-const noelGoal=n=>{const N=NOEL_NIGHTS[n-1];return Math.round(N.goal*(1+equipBonus(N.base,!(S.noelStars[n]>0))))};
+const noelGoal=n=>{const N=NOEL_NIGHTS[n-1];return Math.round(N.goal*(1+equipBonus(N.base,!(S.noelStars[n]>0),.12)))};
 function addSucres(n){const b=bourse();b.sucres=(b.sucres||0)+n;putBourse(b)}
 
 /* ---------- la carte de Noël ---------- */
@@ -74,7 +74,7 @@ function noelNightSheet(n){
   <p class="sub" style="margin-bottom:6px">Objectif de recette (en pièces)</p><div class="goals"><span><em>★</em>${g}</span><span><em>★★</em>${Math.ceil(g*1.35)}</span><span><em>★★★</em>${Math.ceil(g*1.7)}</span></div>
   ${st<3?itRow(sucreSVG,"Hotte de sucres d'orge","Chaque nouvelle étoile rapporte 2 sucres d'orge, et ★★★ ouvre la grande hotte (+5)."):""}
   ${n===NOEL_NIGHTS.length&&!S.noelKeep?itRow(foxSVG(FOX.guimauve,{pose:"happy"}),"Récompense : Guimauve","Réussis cette nuit et elle restera au café toute l'année.","background:#fde8ea"):""}
-  ${st?itRow(icon("coeur"),"Nuit déjà réussie","La rejouer ne rapporte que la moitié des pièces."):""}
+  ${st?itRow(icon("coeur"),"Nuit déjà réussie","La rejouer ne rapporte qu'un quart des pièces."):""}
   ${boostHTML(()=>noelNightSheet(n))}
   <div class="col" style="margin-top:6px"><button class="btn big wide" data-nnplay="${n}" type="button">Commencer la nuit</button><button class="btn ghost wide" data-act="noel" type="button">Retour</button></div>`);
 }

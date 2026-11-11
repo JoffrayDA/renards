@@ -612,8 +612,7 @@ function reread(id){const n=R.beat[id]||0;closeSheet();
 // compagnon au Café : Petit Pois, ou tout renard dont l'histoire est terminée
 const canBuddy=id=>isRes(id)&&(id==="petitpois"||(STORIES[id]&&storyDone(id)));
 function buddyHTML(id){if(!canBuddy(id))return "";
-  const own=((load(CAFEKEY)||{}).own||{}).serveur,n=(R.tog[id]||0);
-  const why=own?"":" Sa place à côté de toi s'ouvre avec l'Apprenti serveur, dans la boutique du Café.";
+  const n=(R.tog[id]||0),why="";
   const days=n?` ${n} journée${n>1?"s":""} ensemble au Café.`:"";
   return R.buddy===id?`<p class="story"><b>Ton compagnon au Café.</b> Chaque journée ensemble ajoute un cœur.${days}${why}</p>`
     :`<p class="story">Il peut t'accompagner au Café : même aide que Petit Pois, et chaque journée ensemble ajoute un cœur.${why}</p><button class="btn" data-buddy="${id}" type="button">L'emmener au Café</button>`}

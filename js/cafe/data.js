@@ -84,7 +84,6 @@ const UPG={
     {id:"comptoir1",name:"Comptoir",lv:[{d:"Un 3e client peut commander en même temps.",c:100},{d:"Un 4e client peut commander en même temps.",c:400,ic:"comptoir2"}]},
     {id:"fourpro",name:"Four rapide",lv:[{d:"Cuisson 12 % plus rapide, brûle moins vite.",c:110},{d:"Cuisson 20 % plus rapide, brûle moins vite.",c:1200}]},
     {id:"barista",name:"Gestes de barista",lv:[{d:"Toutes les boissons se préparent 15 % plus vite.",c:150},{d:"Toutes les boissons se préparent 22 % plus vite.",c:950},{d:"Toutes les boissons se préparent 30 % plus vite.",c:2800,from:31}]},
-    {id:"serveur",name:"Apprenti serveur",lv:[{d:"Ton compagnon apporte aux clients ce que tu poses sur le plateau.",c:320}]},
     {id:"machines",name:"Machines doubles",lv:[{d:"Thé, chocolat et smoothie se préparent aussi 2 par 2.",c:1100,from:21}]},
     {id:"four2",name:"Four de boulanger",lv:[{d:"Chaque fournée donne deux fois plus de pâtisseries.",c:1800,from:31}]}
   ],
@@ -99,18 +98,23 @@ const UPG={
 };
 const lv=id=>+OWN()[id]||0;
 // paliers d'étoiles (multiplicateurs de l'objectif) : ★, ★★, ★★★ ; chaque quartier a son ★★★ à lui par journée (IT_S3, PA_S3)
-function cuts(d){const s=WORLD&&WD().s3[d-1]||1.7;return[1,1+(s-1)/2,s]}
+// l'objectif relevé par l'équipement (equipBonus, jusqu'à 25 %) ne relève ★★★ que de 12 % au plus : tout équipé, le jeu parfait
+// ne fait que 10 à 25 % de mieux, ★★★ doit rester possible (11/11/2026)
+function cuts(d){const s0=WORLD&&WD().s3[d-1]||1.7,b=equipBonus(d),s=s0*(1+Math.min(b,.12))/(1+b);return[1,1+(s-1)/2,s]}
 // dans un quartier, l'équipement se rachète (moins cher : 20 journées pour tout racheter), et les achats des dernières saisons arrivent plus tôt
 const IT_FROM={21:8,31:12};
 const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ : 10 360 pièces pour le kit, inabordable ; python tools/balance-bot.py --italie --economie)
-const upPrice=nx=>WORLD?Math.round(nx.c*IT_PRICE/10)*10:nx.c;
+// prix de l'équipement selon le monde (11/11/2026, Joffray : « 10 000 balles, je peux tout m'acheter ») : ×1,5 au premier café,
+// puis de plus en plus cher ; le kit d'un monde demande de rejouer des journées (python tools/balance-bot.py --economie)
+const WPRICE={"":1.5,italie:1,paris:1.1,kyoto:1.2};
+const upPrice=nx=>Math.round(nx.c*(WPRICE[WORLD]||1.5)/10)*10;
 const upLocked=nx=>!!nx.from&&(WORLD?WD().sv().day<IT_FROM[nx.from]:S.day<nx.from);
 // Bonus à usage unique (S.boost[id] = nombre en réserve) : on les choisit avant une journée, ils ne servent qu'une fois.
 const BOOSTS=[
-  {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",s:"Patience +30 %",c:90,ic:"the"},
-  {id:"tips",name:"Pot à pourboires",d:"Pourboires doublés.",s:"Pourboires ×2",c:120,ic:"coin"},
-  {id:"four",name:"Bûches de hêtre",d:"Le four cuit deux fois plus vite.",s:"Four ×2",c:80,ic:"fourpro"},
-  {id:"vip",name:"Invitations dorées",d:"Deux fois plus de clients VIP.",s:"VIP ×2",c:140,ic:"coussins"}
+  {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",s:"Patience +30 %",c:270,ic:"the"},
+  {id:"tips",name:"Pot à pourboires",d:"Pourboires doublés.",s:"Pourboires ×2",c:360,ic:"coin"},
+  {id:"four",name:"Bûches de hêtre",d:"Le four cuit deux fois plus vite.",s:"Four ×2",c:240,ic:"fourpro"},
+  {id:"vip",name:"Invitations dorées",d:"Deux fois plus de clients VIP.",s:"VIP ×2",c:420,ic:"coussins"}
 ];
 let boostSel=new Set(),boostCtx=null;
 // Style : purement décoratif (papier peint, comptoir, tenue de Roussette sur la carte). S.style garde le choix.
@@ -174,21 +178,21 @@ function wildMet(){try{const R=JSON.parse(localStorage.getItem("clairiere-renard
 // Difficulté : chaque journée a sa graine (commandes, VIP, arrivées) et son objectif, calculés par
 // « python tools/balance-bot.py --calibrer » : ★★★ (1,7 × objectif) demande environ 94 % du score d'un joueur parfait.
 // L'écart entre clients ne descend pas sous 4 s (3,2 s à partir de l'Automne) et la patience pas sous 14 s, sinon un bon joueur ne suit plus.
-const SEED=[4,12,15,10,14,4,0,11,10,10,13,4,9,6,8,8,4,13,11,7,13,0,2,3,4,7,15,6,4,14,11,10,6,5,13,12,13,14,3,11];
-const GOALS=[37,59,73,92,109,123,139,152,160,181,185,208,212,217,217,263,266,277,309,317,323,317,328,342,347,372,363,379,378,382,381,403,407,422,439,452,449,460,489,469];
+const SEED=[4,12,15,10,7,4,11,11,6,10,4,4,9,3,14,8,8,15,13,13,8,3,1,2,4,5,9,13,12,13,15,8,6,3,13,3,12,14,9,11];
+const GOALS=[37,59,73,92,103,124,139,153,162,182,193,210,213,233,254,265,283,295,305,321,321,324,329,341,346,347,364,369,370,379,384,404,405,418,434,439,454,455,472,465];
 // Équipement prévu pour chaque jour : [achat, niveau, à partir du jour]. Les objectifs sont calibrés avec lui
 // (tools/balance-bot.py le lit ici). Chaque niveau d'amélioration en plus relève l'objectif de 2 % (12 % au plus) :
 // tout équipé, ★★★ devenait gratuit (Joffray à 815 / 407 au jour 31). Pas plus de 12 % : tout équipé, le jeu parfait
 // ne fait que 10 à 25 % de mieux selon le jour, et ★★★ doit rester possible. EQUIP=0 retire cet ajustement.
-const KIT=[["plantes",1,4],["comptoir1",1,6],["double",1,6],["guirlande",1,8],["fourpro",1,8],["barista",1,11],["plateau",1,11],["comptoir1",2,13],["disque",1,13],["coussins",1,16],["serveur",1,19],["machines",1,23],["plateau",2,24],["fauteuils",1,27],["four2",1,33],["lanternes",1,37]];
-const EQUIP=.02;
+const KIT=[["plantes",1,4],["comptoir1",1,6],["double",1,6],["guirlande",1,8],["fourpro",1,8],["barista",1,11],["plateau",1,11],["comptoir1",2,13],["disque",1,13],["coussins",1,16],["machines",1,23],["plateau",2,24],["fauteuils",1,27],["four2",1,33],["lanternes",1,37]];
+const EQUIP=.03;
 // seulement tant que le jour n'est pas réussi : rejouer un jour avec plus d'équipement doit être plus facile, pas plus dur
 // (la copine de Joffray, niveau 19, ne pouvait plus faire ★★★ au jour 1 : il fallait 70 pièces, le bot parfait en fait 71)
-function equipBonus(d,fresh=!(((WORLD?WD().sv().stars:S.stars)||{})[d]>0)){
+function equipBonus(d,fresh=!(((WORLD?WD().sv().stars:S.stars)||{})[d]>0),cap=.25){
   if(!fresh)return 0;
   const kit=WORLD?WD().kit:KIT;
   let n=0;for(const u of ALLUP){const k=Math.max(0,...kit.filter(x=>x[0]===u.id&&x[2]<=d).map(x=>x[1]));n+=Math.max(0,lv(u.id)-k)}
-  return Math.min(.12,EQUIP*n);
+  return Math.min(cap,EQUIP*n);
 }
 function cfgOf(d){
   const c=d<=10?6+d:Math.min(24,16+Math.floor((d-10)/3)),goal=Math.round(GOALS[d-1]*(1+equipBonus(d)));

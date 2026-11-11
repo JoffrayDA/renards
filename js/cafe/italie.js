@@ -22,13 +22,13 @@ const ITF_REG=ITF.filter(f=>f.rar==="commun");
 
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde (le jour 1 du quartier se joue déjà comme le jour 15), graine et objectif par --italie
-const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:13,goal:151},{base:17,seed:12,goal:168},{base:18,seed:8,goal:185},{base:19,seed:3,goal:209},{base:20,seed:3,goal:218},{base:21,seed:0,goal:219},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:7,goal:304},{base:25,seed:0,goal:319},{base:26,seed:10,goal:337},{base:27,seed:3,goal:357},{base:28,seed:13,goal:383},{base:30,seed:15,goal:414},{base:32,seed:7,goal:433},{base:34,seed:9,goal:450},{base:36,seed:1,goal:459},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
+const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:10,goal:162},{base:17,seed:3,goal:173},{base:18,seed:14,goal:191},{base:19,seed:3,goal:211},{base:20,seed:3,goal:219},{base:21,seed:1,goal:242},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:7,goal:304},{base:25,seed:0,goal:319},{base:26,seed:10,goal:337},{base:27,seed:3,goal:357},{base:28,seed:13,goal:383},{base:30,seed:15,goal:414},{base:32,seed:7,goal:433},{base:34,seed:9,goal:450},{base:36,seed:1,goal:459},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
 // ★★★ de chaque journée, en multiple de l'objectif (cuts dans data.js). Baissé le 04/11/2026 puis remis à 1,7 partout le même jour :
 // Joffray croyait avoir tout l'équipement, il lui manquait la déco. Le mécanisme reste pour régler une journée à part si besoin.
 const IT_S3=Array(20).fill(1.7);
 const IT_LAST=IT_DAYS.length;
 // équipement prévu pour chaque journée du quartier (calibrage, et objectif relevé au-delà, comme KIT)
-const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["serveur",1,8],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];
+const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];
 S.it=S.it||{day:1,stars:{},best:{},own:{},intro:0,guest:0};
 // l'équipement du quartier coûtait ×1,3 avant le 04/11/2026 (inabordable) : on rembourse une fois la différence avec IT_PRICE
 if(!S.it.px){let back=0;for(const id in S.it.own){const u=ALLUP.find(x=>x.id===id);if(u)for(let i=0;i<S.it.own[id]&&i<u.lv.length;i++)back+=Math.round(u.lv[i].c*1.3/10)*10-Math.round(u.lv[i].c*IT_PRICE/10)*10}
@@ -379,7 +379,7 @@ function itDaySheet(d){
   if(rk&&!V.own[rk])rw.push(itRow(icon(rk,WORLD),`${OPTS[rk]?"Option":"Recette"} à gagner : ${OPTS[rk]?(Q.optWords&&Q.optWords[rk]||Q.optWord):VAR[WORLD][rk][0]}`,`Réussis cette journée pour l'ajouter à la carte du ${Q.short}.`,"background:#e3f2d6"));
   if(Q.duel&&Q.duel[d])rw.push(Q.duelRow(d,g));
   if(Q.dayRow){const r=Q.dayRow(d);if(r)rw.push(r)}
-  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte que la moitié des pièces. Les nouvelles étoiles restent payées par le coffre."));
+  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte qu'un quart des pièces. Les nouvelles étoiles restent payées par le coffre."));
   rw.push(st<3?itRow(icon("chest"),"Coffre ★★★","Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
   if(d===N){const f=FOX[Q.guest],ok=V.guest;rw.push(itRow(foxSVG(f,{sil:!ok}),ok?`Invitée d'honneur : ${f.name}`:"Invitée d'honneur mystère",ok?Q.guestBio:`Obtiens ★★★ sur les ${N} journées du quartier pour l'inviter (${itStarSum()} / ${N*3} ★).`,"background:#fbf0cc"))}
   const menu=Object.keys(REC).filter(k=>onMenu(k,d)).map(k=>VAR[WORLD][k][0]);

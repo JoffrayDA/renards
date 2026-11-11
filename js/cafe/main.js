@@ -1,4 +1,6 @@
 /* Café Frimousse : effets, événements (touchers) et boucle de jeu. Chargé en dernier. */
+// 11/11/2026 : l'Apprenti serveur (le compagnon) est offert dans tous les mondes ; ceux qui l'avaient acheté sont remboursés
+if(!S.srvFree){let back=0;for(const [o,c] of [[S.own,320],[S.it&&S.it.own,220],[S.pa&&S.pa.own,220],[S.ky&&S.ky.own,220]])if(o&&o.serveur){back+=c;delete o.serveur}S.coins+=back;S.srvFree=1;save()}
 /* ---------- effets ---------- */
 let toastT;
 function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600)}
