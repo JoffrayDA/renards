@@ -309,13 +309,14 @@ function foxArt(f,o={}){
       +(wrap?tailG(glow(31,92)+`<path d="M99 86 C106 98 70 100 30 96 C21 95 20 89 29 88 C60 91 88 90 94 82Z" fill="${c.b}"/><path d="M30 96 C21 95 20 89 29 88 C34 88.5 39 89 43 89.4 C42 93 37 96 30 96Z" fill="${c.t}"/>`):paws(91,44,76));
   }else if(pose==="belly"){
     // ventre en l'air dans l'herbe : couché sur le dos, gros ventre crème, les quatre pattes en l'air qui gigotent, coussinets roses (10/11/2026)
-    T=52;Y=70;N=86;W=34;
-    body=tailBack(34,92,86)+ears(16,-34)+bun(T,90,41)+(gh?"":`<ellipse cx="60" cy="84" rx="25" ry="8.5" fill="${c.ch}" stroke="none"/>`)+faceOf(Y,"joy");
-    const pad=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="6.4" ry="8.4" fill="${c.s}"/><ellipse cx="${x}" cy="${y+2}" rx="2.8" ry="2.4" fill="#f6a5b4" stroke="none"/><circle cx="${x-2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x}" cy="${y-4.2}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x+2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/></g>`;
-    if(!gh)fx+=[[27,50,-35,0],[93,50,35,.25],[31,86,-25,.4],[89,86,25,.12]].map(([x,y,r,d])=>`<g class="bpaw" style="animation-delay:${d}s">${pad(x,y,r)}</g>`).join("");
+    // refaite le 11/11/2026 (Joffray : « on voit pas du tout leur ventre ») : la tête en haut, un corps rond dessous avec un grand ventre crème
+    T=34;Y=52;N=70;W=30;
+    body=tailBack(62,86,88)+(gh?"":`<ellipse cx="60" cy="81" rx="31" ry="16.5" fill="${c.b}"/><ellipse cx="60" cy="84" rx="21.5" ry="11.5" fill="${c.ch}" stroke="none"/><path d="M53 89.5 q2 1.6 4 0 M63 89.5 q2 1.6 4 0" fill="none" stroke="${c.b}" stroke-width="1.6" opacity=".55"/>`)+ears(2,-48)+bun(T,70,33)+faceOf(Y,"joy");
+    const pad=(x,y,r,k=1)=>`<g transform="rotate(${r} ${x} ${y}) translate(${x} ${y}) scale(${k}) translate(${-x} ${-y})"><ellipse cx="${x}" cy="${y}" rx="6.4" ry="8.4" fill="${c.s}"/><ellipse cx="${x}" cy="${y+2}" rx="2.8" ry="2.4" fill="#f6a5b4" stroke="none"/><circle cx="${x-2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x}" cy="${y-4.2}" r="1.2" fill="#f6a5b4" stroke="none"/><circle cx="${x+2.6}" cy="${y-3}" r="1.2" fill="#f6a5b4" stroke="none"/></g>`;
+    if(!gh)fx+=[[36,73,-30,0,.8],[84,73,30,.25,.8],[24,85,-62,.4,1],[96,85,62,.12,1]].map(([x,y,r,d,k])=>`<g class="bpaw" style="animation-delay:${d}s">${pad(x,y,r,k)}</g>`).join("");
     // o.toy : un jouet serré sur le ventre (le coin des jeux de la maison)
-    if(!gh&&o.toy==="pelote")fx+=`<g class="toyhug"><circle cx="60" cy="88" r="9" fill="#f6b3c4"/><path d="M53 84 q7 2 11 10 M52 89 q7 1 12 8 M56 80 q6 3 10 11" fill="none" stroke="#e0889e" stroke-width="1.3"/></g>`;
-    if(!gh&&o.toy==="balle")fx+=`<g class="toyhug"><circle cx="60" cy="88" r="8.4" fill="#9fd0f0"/><circle cx="57" cy="85" r="1.8" fill="#fff" stroke="none"/><circle cx="63" cy="91" r="1.6" fill="#fff" stroke="none"/><circle cx="63" cy="84" r="1.2" fill="#fff" stroke="none"/></g>`;
+    if(!gh&&o.toy==="pelote")fx+=`<g class="toyhug"><circle cx="60" cy="84" r="9" fill="#f6b3c4"/><path d="M53 80 q7 2 11 10 M52 85 q7 1 12 8 M56 76 q6 3 10 11" fill="none" stroke="#e0889e" stroke-width="1.3"/></g>`;
+    if(!gh&&o.toy==="balle")fx+=`<g class="toyhug"><circle cx="60" cy="84" r="8.4" fill="#9fd0f0"/><circle cx="57" cy="81" r="1.8" fill="#fff" stroke="none"/><circle cx="63" cy="87" r="1.6" fill="#fff" stroke="none"/><circle cx="63" cy="80" r="1.2" fill="#fff" stroke="none"/></g>`;
   }else if(pose==="play"){
     // joue avec un petit jouet (o.toy) : pelote de laine, balle à pois, ou papillon au-dessus du nez (10/11/2026, Joffray : « des trucs trop kawaii »)
     const toy=o.toy||"pelote",bf=toy==="papillon"||toy==="nez"; // nez : une balle en équilibre sur le nez
