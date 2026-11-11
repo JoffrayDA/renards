@@ -71,7 +71,7 @@ const DECO={
 };
 const LAND={printemps:{bg:"#e2f1d4",mk:"#c7e2b4"},ete:{bg:"#f3efc2",mk:"#dfe0a0"},automne:{bg:"#f8dfc4",mk:"#efc59c"},hiver:{bg:"#e6eff8",mk:"#ffffff"}};
 function mapLayout(){
-  const P=[],gates=[];let u=205;
+  const P=[],gates=[];let u=345; // 345 (205 avant le 11/11/2026) : la place de la porte d'Automne, sous le jour 1
   CHAP.forEach((c,i)=>{
     if(i){gates.push({i,u:u+84});u+=265}
     for(let d=c.from;d<=c.to;d++){P[d]={d,x:Math.round(200+112*Math.sin((d-1)*.82)),u};if(d<c.to)u+=96}
@@ -87,16 +87,8 @@ function mapLayout(){
 }
 function pathX(way,u){for(let i=0;i<way.length-1;i++){const a=way[i],b=way[i+1];if(u>=a.u&&u<=b.u)return a.x+(b.x-a.x)*(u-a.u)/(b.u-a.u)}return 200}
 function smooth(pts){let s=`M${pts[0][0]} ${pts[0][1]}`;for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;s+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)} ${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)} ${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]} ${p2[1]}`}return s}
-function gateSVG(x,y,open,c){
-  const wood="#c8946a";
-  let s=shadow(x,y+4,52);
-  if(!open)s+=[-1,1].map(sd=>`<rect x="${sd<0?x-32:x}" y="${y-36}" width="32" height="40" rx="3" fill="#e8b07a" ${BO}/>`+[8,16,24].map(o=>`<path d="M${sd<0?x-32+o:x+o} ${y-34} V${y+2}" stroke="#c8946a" stroke-width="2"/>`).join("")).join("")+`<circle cx="${x}" cy="${y-16}" r="9" fill="#f2c75c" ${BO}/><path d="M${x-4} ${y-22} v-4 a4 4 0 0 1 8 0 v4" fill="none" stroke="${INK}" stroke-width="2.4"/>`;
-  s+=[-1,1].map(sd=>`<rect x="${x+sd*38-6}" y="${y-58}" width="12" height="64" rx="4" fill="${wood}" ${BO}/><circle cx="${x+sd*38}" cy="${y-60}" r="7" fill="${wood}" ${BO}/>`).join("");
-  s+=`<path d="M${x-38} ${y-56} Q${x} ${y-86} ${x+38} ${y-56}" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="M${x-38} ${y-56} Q${x} ${y-86} ${x+38} ${y-56}" fill="none" stroke="${wood}" stroke-width="7" stroke-linecap="round"/>`;
-  if(open)s+=[-30,-18,-6,6,18,30].map((a,i)=>`<circle cx="${x+a}" cy="${y-62-(1-(a/38)**2)*12}" r="4.6" fill="${["#f6a5b4","#f7d77a","#c9b8f2"][i%3]}" stroke="${INK}" stroke-width="1.8"/>`).join("");
-  s+=`<rect x="${x-44}" y="${y-104}" width="88" height="26" rx="10" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-86}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${open?c.name:`★ ${c.gate}`}</text>`;
-  return s;
-}
+// les portes des saisons sont dessinées par js/cafe/portes.js (11/11/2026)
+function gateSVG(x,y,open,c){return seasonGateSVG(x,y,open,c.sea,open?c.name:`★ ${c.gate}`)}
 function mapSVG(L){
   const {P,gates,way,bands,guests,H}=L,Y=u=>H-u,R=rng(42);
   let defs="",s="";
@@ -117,7 +109,7 @@ function mapSVG(L){
   s+=`<path d="${d}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   if(k>0)s+=`<path d="${done}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   // déco : posée au hasard (graine fixe) loin du chemin, des portes et des invités
-  const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80],...(HW?[[322,104,62]]:[])],deco=[];
+  const taken=[...gates.map(g=>[g.x,g.u+50,82]),...guests.map(g=>[g.x,g.u,60]),[200,70,80],[200,195,80],...(HW?[[322,104,62]]:[])],deco=[];
   for(const b of bands){
     const n=Math.floor((b.hi-b.lo)/44),fs=HW?[...DECO[b.c.sea],jack,ghostie,jack]:DECO[b.c.sea],last=[];
     for(let j=0;j<n;j++)for(let t=0;t<14;t++){
@@ -134,7 +126,7 @@ function mapSVG(L){
   if(HW)s+=jack(146,cy+16,.7)+jack(256,cy+18,.55);
   // la couronne de houx du calendrier de l'Avent, sur la porte, pendant Noël
   if(xmasDay()&&(bourse().noel||{}).houx)s+=`<circle cx="200" cy="${cy-1}" r="7.4" fill="none" stroke="#3f6a4f" stroke-width="5"/><circle cx="200" cy="${cy-1}" r="7.4" fill="none" stroke="#5f9468" stroke-width="2.4" stroke-dasharray="2 3"/>${[[-5,-5],[5,-4],[0,6]].map(([dx,dy])=>`<circle cx="${200+dx}" cy="${cy-1+dy}" r="1.8" fill="#e0505a"/>`).join("")}<path d="M200 ${cy+6} l-4 4 v-6Z M200 ${cy+6} l4 4 v-6Z" fill="#e0505a" stroke="${INK}" stroke-width="1"/>`;
-  gates.forEach(g=>s+=gateSVG(g.x,Y(g.u),gateOpen(CHAP[g.i]),CHAP[g.i]));
+  gates.forEach(g=>s+=gateSVG(g.x,Y(g.u),gateOpen(CHAP[g.i]),CHAP[g.i]));s+=seasonGateSVG(200,Y(170),true,CHAP[0].sea,CHAP[0].name);
   const e=way[way.length-1],ey=Y(e.u);
   s+=`<rect x="${e.x-4}" y="${ey-30}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${e.x-48} ${ey-56} H${e.x+40} L${e.x+52} ${ey-44} L${e.x+40} ${ey-32} H${e.x-48}Z" fill="#fffaf2" ${BO}/><text x="${e.x}" y="${ey-39}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${typeof itOpen==="function"&&itOpen()?"Petite Italie":"À suivre…"}</text>`;
   return `<svg viewBox="0 0 ${MW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;

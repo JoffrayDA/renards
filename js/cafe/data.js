@@ -113,8 +113,10 @@ const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ :
 // puis de plus en plus cher ; le kit d'un monde demande de rejouer des journées (python tools/balance-bot.py --economie)
 const WPRICE={"":1.5,italie:1,paris:1.1,kyoto:1.2};
 const upPrice=nx=>Math.round(nx.c*(WPRICE[WORLD]||1.5)/10)*10;
-// dans les quartiers, tout s'achète dès le début (11/11/2026 : la copine de Joffray ne comprenait pas les achats bloqués à Kyoto)
-const upLocked=nx=>!WORLD&&!!nx.from&&S.day<nx.from;
+// achats des dernières saisons : au premier café, avec leur saison ; dans un quartier, aux jours 8 et 12 (IT_FROM). Joffray tient
+// à ce blocage (11/11/2026), mais il n'était écrit nulle part : la boutique montre maintenant un cadenas et le jour (upWhen)
+const upLocked=nx=>!!nx.from&&(WORLD?WD().sv().day<IT_FROM[nx.from]:S.day<nx.from);
+const upWhen=nx=>WORLD?`Jour ${IT_FROM[nx.from]}`:chapOf(nx.from).name;
 // Bonus à usage unique (S.boost[id] = nombre en réserve) : on les choisit avant une journée, ils ne servent qu'une fois.
 const BOOSTS=[
   {id:"patience",name:"Tisane calmante",d:"Les clients patientent 30 % plus longtemps.",s:"Patience +30 %",c:270,ic:"the"},

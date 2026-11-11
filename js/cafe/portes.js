@@ -36,12 +36,17 @@ function seasonGateSVG(x,y,open,sea,label){
       +pgPumpkin(x-52,y+8,1)+pgPumpkin(x+54,y+9,.82)+pgPumpkin(x+40,y+12,.6)
       +[[-62,-4,20,"#e8743b"],[64,-6,-30,"#c9452f"],[-30,12,60,"#f2b33d"],[24,14,-10,"#e89a3c"]].map(([dx,dy,r,c])=>pgLeaf(x+dx,y+dy,r,c)).join("");
   }else if(sea==="hiver"){
-    // arche enneigée, glaçons, branche de sapin et baies de houx, petit bonhomme de neige
-    front=`<path d="M${x-44} ${y-58} Q${x} ${y-96} ${x+44} ${y-58} Q${x+30} ${y-66} ${x} ${y-74} Q${x-30} ${y-66} ${x-44} ${y-58}Z" fill="#fff" ${PG_k}/>`
-      +along(7,(ax,ay,i)=>`<path d="M${ax-2.4} ${ay+5} L${ax} ${ay+12+(i%3)*3} L${ax+2.4} ${ay+5}Z" fill="#dff0ff" ${PG_k}/>`,1)
+    // refaite le 11/11/2026 (Joffray : la première « avait des dents », houx trop simple) : guirlande de sapin drapée en festons,
+    // petites lumières dorées, couronne de houx au sommet (vraies feuilles dentelées, grappe de baies), neige douce sur le dessus
+    const ah=t=>[x-38+76*t,y-56-60*t*(1-t)];
+    const swag=[0,.25,.5,.75].map(t0=>{const [a1,b1]=ah(t0),[a2,b2]=ah(t0+.25);return `M${a1.toFixed(1)} ${b1.toFixed(1)} Q${((a1+a2)/2).toFixed(1)} ${((b1+b2)/2+9).toFixed(1)} ${a2.toFixed(1)} ${b2.toFixed(1)}`}).join(" ");
+    const leaf=(r,col)=>`<path d="M0 0 L3 -3 L6 -2 L8 -6 L11 -5 L13 -9 L16 -8 Q14 -2 8 1 Q4 2 0 0Z" fill="${col}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round" transform="rotate(${r})"/><path d="M1 -.5 Q8 -2 15 -7.5" fill="none" stroke="#2f6a45" stroke-width="1"/>`;
+    front=`<path d="M${x-45} ${y-57} Q${x-40} ${y-68} ${x-30} ${y-70} Q${x-16} ${y-82} ${x} ${y-80} Q${x+16} ${y-82} ${x+30} ${y-70} Q${x+40} ${y-68} ${x+45} ${y-57} Q${x+30} ${y-64} ${x} ${y-74} Q${x-30} ${y-64} ${x-45} ${y-57}Z" fill="#fff" ${PG_k}/>`
+      +`<path d="${swag}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round"/><path d="${swag}" fill="none" stroke="#4f8f5f" stroke-width="5.4" stroke-linecap="round"/><path d="${swag}" fill="none" stroke="#7cbf86" stroke-width="2" stroke-dasharray="1.5 3" stroke-linecap="round"/>`
+      +[.12,.25,.38,.62,.75,.88].map((t,i)=>{const [a,b]=ah(t),d=Math.abs((t%.25)-.125)<.02?9:5;return `<circle cx="${a.toFixed(1)}" cy="${(b+d).toFixed(1)}" r="2.6" fill="${["#ffd34d","#ffb3c1","#bfe3ff"][i%3]}" stroke="${INK}" stroke-width="1.2"/>`}).join("")
       +[-1,1].map(sd=>pgSnowCap(x+sd*38,y-68,18)).join("")
-      +along(9,(ax,ay,i)=>`<path d="M${ax} ${ay-2} l-6 -3 M${ax} ${ay-2} l6 -3" stroke="#5f9a6a" stroke-width="3" stroke-linecap="round"/>`,-6)
-      +`<circle cx="${x-4}" cy="${y-80}" r="3.2" fill="#d9363e" ${PG_k}/><circle cx="${x+3}" cy="${y-81}" r="3.2" fill="#d9363e" ${PG_k}/>`
+      +`<g transform="translate(${x} ${y-79}) scale(1.3)"><g transform="translate(-2 1)">${leaf(195,"#3f8a57")}</g><g transform="translate(2 1)">${leaf(-15,"#4f9c66")}</g><g transform="translate(0 0)">${leaf(250,"#468f5c").replace("rotate(250)","rotate(250) scale(.85)")}</g>`
+      +[[-3,1],[3,1],[0,-3.5]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="3.4" fill="#d9363e" stroke="${INK}" stroke-width="1.4"/><circle cx="${a-1}" cy="${b-1.2}" r="1" fill="#ff9a9e"/>`).join("")+`</g>`
       +`<g transform="translate(${x+56} ${y+8})"><circle cy="-10" r="11" fill="#fff" ${PG_K}/><circle cy="-27" r="8" fill="#fff" ${PG_K}/><path d="M-1 -27 l7 2 l-7 2Z" fill="#f08a3c" stroke="none"/><circle cx="-3" cy="-29" r="1.3" fill="${INK}"/><circle cx="2" cy="-30" r="1.3" fill="${INK}"/><path d="M-8 -21 q8 4 16 0" fill="none" stroke="#d9363e" stroke-width="4" stroke-linecap="round"/></g>`
       +`<ellipse cx="${x-52}" cy="${y+8}" rx="14" ry="5" fill="#fff" ${PG_k}/>`;
   }else if(sea==="printemps"){
