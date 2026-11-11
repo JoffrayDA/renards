@@ -275,9 +275,9 @@ function foxArt(f,o={}){
       else h=noMouth+dot(49.3,Y+1.2,2.6,3,.8)+dot(73.3,Y+1.2,2.6,3,.8)
         +`<g stroke="#e2546e" stroke-width="1.4"><path d="M36 ${Y+3} l-2 4 M40 ${Y+3} l-2 4 M44 ${Y+3} l-2 4 M80 ${Y+3} l-2 4 M84 ${Y+3} l-2 4 M88 ${Y+3} l-2 4"/></g><path d="M56 ${Y+7.6} q2 -1.6 4 0 q2 1.6 4 0" fill="none" stroke-width="1.6"/><path d="M90 ${Y-14} q-3 4.6 0 6.4 q3 -1.8 0 -6.4Z" fill="#cfe4f7" stroke-width="1.3"/>`;
     }
-    // Kyūbi (kyoto.js) : pas de sourcils, un eyeliner rouge en pointe vers l'extérieur (Joffray, 11/11/2026)
+    // Kyūbi (kyoto.js) : pas de sourcils, un eyeliner rouge en pointe vers l'extérieur, et les yeux fermés en rouge aussi (Joffray, 11/11/2026)
     if(f.flick){const lid=(x,k)=>{const X=d=>(x+k*d).toFixed(1);return `<path d="M${X(3.9)} ${Y-1.4} Q${X(.2)} ${Y-6.6} ${X(-3.6)} ${Y-2.6} L${X(-10.4)} ${Y-7.4} Q${X(-7.2)} ${Y-1.2} ${X(-3.4)} ${Y-.2} Q${X(.2)} ${Y-4.8} ${X(3.9)} ${Y-1.4}Z"/>`};
-      h=h.replace(/<path d="M4[23](\.5)? [^"]*" fill="none" stroke-width="2"\/>/,"")+`<g fill="#c4142e" stroke="none">${lid(48,1)}${lid(72,-1)}</g>`}
+      h=h.replace(/<path d="M4[23](\.5)? [^"]*" fill="none" stroke-width="2"\/>/,"").replace(/(<path d="M4[34](\.5)? [^"]*" fill="none" stroke-width="2\.[46]")/g,'$1 stroke="#c4142e"')+`<g fill="#c4142e" stroke="none">${lid(48,1)}${lid(72,-1)}</g>`}
     if(f.mark==="oeil")h=`<ellipse cx="72.5" cy="${Y-.6}" rx="7.4" ry="7" fill="${c.e}" opacity=".8" stroke="none"/>`+h;
     if(f.mark==="masque")h=`<path d="M34 ${Y+1} Q35 ${Y-8} 48 ${Y-7} Q60 ${Y-3.5} 72 ${Y-7} Q85 ${Y-8} 86 ${Y+1} Q81 ${Y+7} 72 ${Y+5} Q60 ${Y+2.5} 48 ${Y+5} Q39 ${Y+7} 34 ${Y+1}Z" fill="#625c6e" stroke="none"/>`+h;
     return dx?`<g transform="translate(${dx} 0)">${h}</g>`:h};
