@@ -1,0 +1,25 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invitée du Printemps</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Propositions pour la nouvelle invitée d'honneur du Printemps (11/11/2026, Joffray : Zaza a les grandes oreilles d'un sauvage). */
+body{margin:0;background:#f6ece4;color:#5b4250;font-family:"Zen Maru Gothic",sans-serif;padding:16px}
+h1{font-family:"Mochiy Pop One";font-size:22px;margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.c{background:#fffaf5;border:3px solid #5b4250;border-radius:20px;padding:12px;width:300px;max-width:100%;box-sizing:border-box}
+.c h2{margin:0;font-family:"Mochiy Pop One";font-size:18px}.c p{margin:4px 0 8px;font-size:14px}
+.poses{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:4px;align-items:end}.poses svg{width:100%;display:block}
+</style></head><body>
+<h1>Invitée du Printemps : trois propositions</h1>
+<div class="row" id="row"></div>
+<script src="../js/cafe/foxes.js"></script><script src="../js/foxart.js"></script>
+<script>
+const P=[
+ {id:"pa",name:"A · Pâquerette",acc:"paquerette",txt:"Pelage blanc crème, bouts roses. Une grande pâquerette posée sur la tête, un peu de côté.",
+  c:{b:"#fdf6ee",ch:"#ffffff",e:"#f2a7b8",s:"#f2b7c4",t:"#f9cdd8"}},
+ {id:"pb",name:"B · Bourgeon",acc:"paquerettec",txt:"Pelage vert tendre comme une jeune pousse, une pâquerette qui pousse entre ses oreilles, avec sa feuille.",
+  c:{b:"#cfe6b4",ch:"#fbfff2",e:"#8fbf74",s:"#8fbf74",t:"#fbfff2"}},
+ {id:"pc",name:"C · Primevère",acc:"paquerettes",txt:"Pelage rose pâle, une couronne de pâquerettes. La plus « princesse du printemps ».",
+  c:{b:"#f9d3dc",ch:"#fff7f9",e:"#e58fa6",s:"#e9a3b6",t:"#fff7f9"}}];
+document.getElementById("row").innerHTML=P.map(f=>`<div class="c"><h2>${f.name}</h2><p>${f.txt}</p><div class="poses">${foxArt(f,{pose:"sit",portrait:1,expr:"open"})}${foxArt(f,{pose:"happy"})}${foxArt(f,{pose:"sleep"})}</div></div>`).join("");
+</script></body></html>
