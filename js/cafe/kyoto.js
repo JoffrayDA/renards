@@ -28,7 +28,7 @@ const KYF=[
   {id:"hayate",name:"Hayate",rar:"commun",acc:"samouraib",c:{b:"#8a7a9a",ch:"#f6f2fa",e:"#4a3e5a",s:"#3e3450",t:"#f6f2fa"},bio:"Un rōnin, samouraï sans maître. Il ne parle pas : il s'incline, il paie, il repart."},
   // le maître de thé : ne vient au Shokudō qu'une fois son matcha jugé parfait (scène du jour 19, S.ky.read[19])
   {id:"hoji",name:"Sensei Hōji",rar:"rare",acc:"sensei",c:{b:"#b8957a",ch:"#f6efe6",e:"#7a5a44",s:"#6a4c38",t:"#f6efe6"},bio:"Maître de la cérémonie du thé depuis soixante ans. Il ne sourit qu'aux matchas parfaits."},
-  {id:"kyubi",name:"Kyūbi",rar:"legend",acc:"inari",tail:"neuf",c:{b:"#fbf4ea",ch:"#ffffff",e:"#e0b860",s:"#d4a84a",t:"#f7d77a"},bio:"La Dame aux neuf queues, gardienne du chemin des torii. Elle ne descend que pour les fêtes les plus lumineuses."}
+  {id:"kyubi",name:"Kyūbi",rar:"legend",acc:"inari",tail:"neuf",eye:"#d8283a",flick:1,c:{b:"#fbf4ea",ch:"#ffffff",e:"#e0b860",s:"#d4a84a",t:"#f7d77a"},bio:"La Dame aux neuf queues, gardienne du chemin des torii. Elle ne descend que pour les fêtes les plus lumineuses."}
 ];
 KYF.forEach(f=>{f.world="kyoto";FOX[f.id]=f});
 // les sumos (big) ne viennent pas comme les autres : seulement après leur premier défi, et rarement (Joffray, 09/11/2026)

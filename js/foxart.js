@@ -275,6 +275,8 @@ function foxArt(f,o={}){
       else h=noMouth+dot(49.3,Y+1.2,2.6,3,.8)+dot(73.3,Y+1.2,2.6,3,.8)
         +`<g stroke="#e2546e" stroke-width="1.4"><path d="M36 ${Y+3} l-2 4 M40 ${Y+3} l-2 4 M44 ${Y+3} l-2 4 M80 ${Y+3} l-2 4 M84 ${Y+3} l-2 4 M88 ${Y+3} l-2 4"/></g><path d="M56 ${Y+7.6} q2 -1.6 4 0 q2 1.6 4 0" fill="none" stroke-width="1.6"/><path d="M90 ${Y-14} q-3 4.6 0 6.4 q3 -1.8 0 -6.4Z" fill="#cfe4f7" stroke-width="1.3"/>`;
     }
+    // Kyūbi (kyoto.js) : traits rouges de kitsune au coin des yeux et flamme au front, comme les masques d'Inari
+    if(f.flick)h+=`<g fill="#d8283a" stroke="none"><path d="M43.4 ${Y-1.8} Q37.5 ${Y-3.2} 34.2 ${Y-8.6} Q39.8 ${Y-6.4} 44.6 ${Y-4.6}Z"/><path d="M76.6 ${Y-1.8} Q82.5 ${Y-3.2} 85.8 ${Y-8.6} Q80.2 ${Y-6.4} 75.4 ${Y-4.6}Z"/><path d="M60 ${Y-19} Q64 ${Y-13.5} 60 ${Y-9.5} Q56 ${Y-13.5} 60 ${Y-19}Z"/></g>`;
     if(f.mark==="oeil")h=`<ellipse cx="72.5" cy="${Y-.6}" rx="7.4" ry="7" fill="${c.e}" opacity=".8" stroke="none"/>`+h;
     if(f.mark==="masque")h=`<path d="M34 ${Y+1} Q35 ${Y-8} 48 ${Y-7} Q60 ${Y-3.5} 72 ${Y-7} Q85 ${Y-8} 86 ${Y+1} Q81 ${Y+7} 72 ${Y+5} Q60 ${Y+2.5} 48 ${Y+5} Q39 ${Y+7} 34 ${Y+1}Z" fill="#625c6e" stroke="none"/>`+h;
     return dx?`<g transform="translate(${dx} 0)">${h}</g>`:h};
