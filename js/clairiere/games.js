@@ -969,7 +969,7 @@ const GAMES={
   /* Ne bouge plus : Gribouille peint ; des mouches viennent chatouiller le museau du modèle, il faut les chasser. */
   still(g,A){
     const sv=A.sv,ids=g.all?foxes.filter(f=>!f.wild&&f.id!=="gribouille").map(f=>f.id).slice(0,6):[g.target],N=ids.length;
-    const dur=g.all?13:10,w=N>1?Math.min(120,340/Math.ceil(N/2)):190;
+    const dur=g.all?12:9,w=N>1?Math.min(120,340/Math.ceil(N/2)):190;
     const pos=ids.map((id,i)=>N===1?[200,380]:[(i%Math.ceil(N/2)+.5)*(360/Math.ceil(N/2))+20,i<Math.ceil(N/2)?300:430]);
     sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#f0c99a"/>${Array.from({length:8},(_,i)=>`<path d="M0 ${60+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
       <rect x="40" y="112" width="320" height="20" rx="10" fill="#fff" stroke="${INK}" stroke-width="3"/><rect id="bar" x="43" y="115" width="0" height="14" rx="7" fill="#9ec3ef"/>
@@ -981,15 +981,16 @@ const GAMES={
       if(p>=100){flies.forEach(f=>f.el.remove());A.win(g.win||"Ne bougez plus… Voilà !");return}
       // plus dur (08/11/2026, Joffray : « beaucoup beaucoup trop simple » sur téléphone) : mouches plus nombreuses, plus rapides,
       // de plus en plus vers la fin, qui arrivent de tous les côtés en zigzag
-      next-=dt;if(next<=0&&flies.length<(N>1?5:4)){next=(N>1?.6:.62)*(1-p/260)*(.7+Math.random()*.6);const m=Math.floor(Math.random()*N),[mx,my]=pos[m];
-        const a=-Math.PI*(.05+Math.random()*.9),D=w*.6+70,T=(N>1?1.2:1.1)-p/100*.35;
+      // un peu adouci le 12/11/2026 (Joffray : « devenu un peu trop dur ») : 3 mouches à la fois (4 en groupe), plus lentes
+      next-=dt;if(next<=0&&flies.length<(N>1?4:3)){next=(N>1?.75:.8)*(1-p/300)*(.7+Math.random()*.6);const m=Math.floor(Math.random()*N),[mx,my]=pos[m];
+        const a=-Math.PI*(.05+Math.random()*.9),D=w*.6+70,T=(N>1?1.45:1.35)-p/100*.3;
         const f={m,t:0,T,z:6+Math.random()*8,x:mx+Math.cos(a)*D,y:my-w*.42+Math.sin(a)*D,tx:mx,ty:my-w*.42};
         f.el=grp(sv,`<circle r="24" fill="transparent"/><ellipse cx="-5" cy="-6" rx="6" ry="4" fill="#e4f3f9" stroke="${INK}" stroke-width="1.6" class="wing"/><ellipse cx="5" cy="-6" rx="6" ry="4" fill="#e4f3f9" stroke="${INK}" stroke-width="1.6" class="wing"/><circle r="5.5" fill="${INK}"/>`);
         f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();if(A.won)return;A.sfx("pop");f.el.classList.add("shoo");flies.splice(flies.indexOf(f),1);setTimeout(()=>f.el.remove(),350)};
         flies.push(f)}
       for(const f of flies.slice()){f.t+=dt;const k=Math.min(1,f.t/f.T),z=f.z*(1-k);
         const x=f.x+(f.tx-f.x)*k+Math.sin(f.t*14)*z,y=f.y+(f.ty-f.y)*k+Math.cos(f.t*11)*z;f.el.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
-        if(k>=1){flies.splice(flies.indexOf(f),1);f.el.remove();p=Math.max(0,p-30);replay(models[f.m],"sneeze");A.sfx("bad");A.say(`Atchoum ! ${FOX[ids[f.m]].name} a bougé. On reprend…`)}}
+        if(k>=1){flies.splice(flies.indexOf(f),1);f.el.remove();p=Math.max(0,p-25);replay(models[f.m],"sneeze");A.sfx("bad");A.say(`Atchoum ! ${FOX[ids[f.m]].name} a bougé. On reprend…`)}}
     });
   }
 };
