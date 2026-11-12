@@ -428,7 +428,8 @@ const STORIES={
       ["gribouille","sad","Mais un renard tout seul sur un tableau, ça fait un peu triste…",()=>actEmote("gribouille","goutte")],
       ["me","open","Et si on vous peignait tous ensemble ?",()=>actEmote("me","!")],
       ["gribouille","surprise","Le grand portrait ! Appelle tout le monde devant la maison !",()=>actTrick("gribouille","boing")]]},
-    {at:"@porch",gather:1,game:{k:"still",all:1,say:"Tout le monde pose ! Chasse les mouches !",win:"Ne bougez plus… Voilà !"},goal:"Appelle tout le monde devant la maison.",lines:[
+    // plus de jeu des mouches pour la photo de groupe (Joffray, 12/11/2026 : trop dur à ce moment-là)
+    {at:"@porch",gather:1,goal:"Appelle tout le monde devant la maison.",lines:[
       ["petitpois","surprise","Mais… Gribouille, tu n'es pas dessus, toi !",()=>actEmote("petitpois","!")],
       ["gribouille","shy","Le peintre, on ne le voit jamais. C'est normal.",()=>actEmote("gribouille","goutte")],
       ["petitpois","open","Prête-moi ta queue, Gribouille. J'ai une idée.",()=>actEmote("petitpois","note")]]},
