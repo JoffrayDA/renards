@@ -99,7 +99,7 @@ const SOUV_SPOT={gribouille:1,gaston:1,luciole:1,flocon:1,moka:1,sesame:1,plouf:
 const SOUV_SLOTS=[...[208,232,256,280].flatMap(y=>[295,311,327,343].map(x=>[x,y])),[152,184],[166,184],[180,184],[222,184],[236,184],[250,184],[36,226],[52,226]];
 function souvSpecial(id,night){const l=hL(1.8);return ({
   // le grand portrait du refuge, encadré au-dessus de l'étagère
-  gribouille:`<rect x="298" y="148" width="42" height="32" rx="2" fill="#c99a3a" ${hL(2.4)}/><rect x="302" y="152" width="34" height="24" fill="#bfe3f2"/><path d="M302 168 Q319 162 336 168 V176 H302Z" fill="#a9d68f"/>${[[308,170,"#e8915c"],[315,168,"#f6f1ea"],[322,169,"#d9764c"],[329,170,"#8a7f8a"]].map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="3.4" fill="${c}" stroke="${INK}" stroke-width="1"/>`).join("")}<rect x="302" y="152" width="34" height="24" fill="none" stroke="${INK}" stroke-width="1.4"/><path d="M319 148 L314 140 L324 140Z" fill="none" stroke="${INK}" stroke-width="1.4"/>`,
+  gribouille:`<rect x="298" y="148" width="42" height="32" rx="2" fill="#c99a3a" ${hL(2.4)}/><rect x="302" y="152" width="34" height="24" fill="#bfe3f2"/><path d="M302 168 Q319 162 336 168 V176 H302Z" fill="#a9d68f"/>${[[308,170,"#e8915c"],[315,168,"#f6f1ea"],[322,169,"#d9764c"],[329,170,"#8a7f8a"]].map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="3.4" fill="${c}" stroke="${INK}" stroke-width="1"/>`).join("")}<rect x="302" y="152" width="34" height="24" fill="none" stroke="${INK}" stroke-width="1.4"/><path d="M319 148 L314 140 L324 140Z" fill="none" stroke="${INK}" stroke-width="1.4"/><rect id="htab" x="290" y="134" width="58" height="52" fill="transparent" style="cursor:pointer"/>`,
   // la vieille canne de Gaston, appuyée au mur à côté de la cheminée
   gaston:`<path d="M274 300 L279 204" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M274 300 L279 204" stroke="#a9785a" stroke-width="2.6" stroke-linecap="round"/><circle cx="275" cy="280" r="4" fill="#9aa0aa" ${hL(1.4)}/><path d="M279 204 Q282 222 280 238" fill="none" stroke="#fff" stroke-width="1"/><path d="M280 238 v4" stroke="#e0564f" stroke-width="3" stroke-linecap="round"/>`,
   // les deux bocaux de lumière, aux bouts du linteau
@@ -286,6 +286,8 @@ function enterHouse(){
     g.style.cursor="pointer";g.onpointerdown=e=>{e.stopPropagation();if(shooting){shootHome({id,x,y:y+w*.04,pose,w,...(toy?{toy}:{})});return}const r=pet(id);if(r)bip("purr");
       toast(r?`${nameOf(id)} ronronne près du feu (+1 cœur, +1 gland).`:`${nameOf(id)} ${s.rot?"fait la sieste, collé à son ami":night?"dort, roulé en boule":toy?TOYTXT[toy]:"se chauffe les pattes"}.`);if(r)renderHud()}});
   if(cud){const hx=(cud[0].x+cud[1].x)/2,hy=cud[0].y-48;grp(box,`<g class="cudh"><path transform="translate(${hx} ${hy})" d="M0 -3 c-4 -7 -12 0 0 9 c12 -9 4 -16 0 -9Z" fill="#f6a5b4" stroke="#5b4250" stroke-width="2"/></g>`)}
+  // toucher le petit tableau : le grand portrait du refuge, en grand (Joffray, 12/11/2026 : « on peut le retrouver quelque part ? »)
+  {const tb=houseEl.querySelector("#htab");if(tb)tb.onpointerdown=e=>{e.stopPropagation();if(shooting||gameOn)return;playGame({k:"portrait",free:1,view:1},()=>{})}}
   houseEl.querySelector(".pclose").onpointerdown=e=>{e.stopPropagation();bip("door");leaveHouse()};
   houseEl.querySelector(".hgrow").onpointerdown=e=>{e.stopPropagation();houseSheet()};
   houseEl.querySelector(".hdeco").onpointerdown=e=>{e.stopPropagation();decoStart(null,"home")};

@@ -975,6 +975,8 @@ const GAMES={
       <g id="brush" opacity="0"><path d="M0 0 q-10 -30 -40 -44" stroke="#f2a35c" stroke-width="10" stroke-linecap="round" fill="none"/><circle r="8" fill="#6aa6c9" stroke="${INK}" stroke-width="2.4"/></g>
       ${foxAt("petitpois",44,BOT-2,ppS,{pose:"happy"})}`;
     const grr=sv.querySelector("#gp-grr"),br=sv.querySelector("#brush");let st="look",t=0;
+    // revu depuis la maison : le tableau fini, tout de suite
+    if(g.view){st="done";grr.setAttribute("width",(gsz*1.6).toFixed(1));A.say("Le grand portrait du refuge.");A.tap=()=>A.close();return}
     A.say(g.say||"Le grand portrait du refuge… tout le monde est là.");
     A.later(()=>{st="paint";A.sfx("swap");A.say("Petit Pois ajoute Gribouille dans le coin…");br.setAttribute("opacity",1)},1800);
     A.loop(dt=>{if(st!=="paint")return;t+=dt;const k=Math.min(1,t/2.2);grr.setAttribute("width",(gsz*1.6*k).toFixed(1));
