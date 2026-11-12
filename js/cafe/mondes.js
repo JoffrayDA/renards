@@ -45,6 +45,8 @@ function mondeArtKy(){
   s+=`<g transform="translate(176 138) scale(.5)">${kyCafeSVG(0,0)}</g>`;
   return `<defs>${KY_DEFS}${mSky("mw4","#eaa6b6","#fde6d4")}</defs>`+s;
 }
+// ids propres à chaque vignette : sinon url(#ky-wood) visait la carte du quartier, cachée, et le Shokudō devenait invisible (Joffray, 12/11/2026)
+const wScope=(svg,p)=>svg.replace(/id="([^"]+)"/g,`id="${p}$1"`).replace(/url\(#([^)]+)\)/g,`url(#${p}$1)`).replace(/href="#([^"]+)"/g,`href="#${p}$1"`);
 function openWorlds(){
   closeSheet();closeMap();$("worlds").hidden=false;document.body.style.overflow="hidden";
   MUSIC.want(HW?"fantomes":xmasDay()?"noel":"ukulele");
@@ -52,7 +54,7 @@ function openWorlds(){
     const fox=foxSVG({...f,scale:1},ok?{pose:"sit"}:{pose:"sit",sil:true});
     const info=ok?`<span class="wst">★ ${st} / ${mx}</span><span class="wbar"><i style="width:${Math.round(st/mx*100)}%"></i></span><span class="wday">${m.day()>=m.last()&&st>=mx?"Tout en ★★★ !":`Jour ${m.day()} / ${m.last()}`}</span>`
       :`<span class="wlock">${WORLDS[m.id].lockMsg}</span>`;
-    return `<button class="wcard${ok?"":" locked"}${WORLD===m.id?" cur":""}" data-world="${m.id}" type="button"><span class="wart"><svg viewBox="0 0 320 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${m.art()}</svg><span class="wfox">${fox}</span></span>
+    return `<button class="wcard${ok?"":" locked"}${WORLD===m.id?" cur":""}" data-world="${m.id}" type="button"><span class="wart"><svg viewBox="0 0 320 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${wScope(m.art(),"w"+m.id+"-")}</svg><span class="wfox">${fox}</span></span>
       <span class="wtxt"><b>${m.name}</b><small>${m.sub}</small>${info}</span></button>`}).join("")
     +`<div class="wcard soon"><b>Bientôt</b><small>D'autres quartiers arrivent…</small></div>`;
 }

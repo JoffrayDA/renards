@@ -451,7 +451,8 @@ if(R.nextAt>Date.now()+storyGap())R.nextAt=Date.now()+storyGap(); // une attente
 const chainDone=()=>ORDER.every(storyDone);
 // Gribouille vient en tout dernier, le 30e renard (demande de Joffray) : son histoire attend que tous les autres
 // renards aient fini la leur, même celles qui ne sont pas encore écrites
-const LAST="gribouille",OTHERS=FOXES.filter(f=>!f.event&&f.id!=="roussette"&&f.id!==LAST).map(f=>f.id);
+// les sauvages de la gamelle ne comptent pas (Joffray, 12/11/2026 : on ne les attend pas)
+const LAST="gribouille",OTHERS=FOXES.filter(f=>!f.event&&f.id!=="roussette"&&f.id!==LAST&&!WILD[f.id]).map(f=>f.id);
 const lastReady=()=>OTHERS.every(id=>STORIES[id]&&storyDone(id));
 // un sauvage n'a son histoire qu'une fois croisé à la gamelle ; ensuite il s'installe au refuge (Joffray, 27/10/2026)
 // une histoire déjà commencée passe avant tout (l'ordre a changé le 29/10/2026 : on ne coupe personne au milieu)
