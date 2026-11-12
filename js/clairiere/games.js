@@ -904,45 +904,81 @@ const GAMES={
   /* Le grand portrait (fin de l'histoire de Gribouille) : le tableau de tout le refuge ; Petit Pois y ajoute Gribouille
      dans le coin, de travers. On touche pour continuer. */
   portrait(g,A){
-    // refait le 02/11/2026 : une vraie photo de famille, en gradins (les plus petits au fond), devant la maison, sur toute la
-    // hauteur ; Petit Pois au premier rang, au milieu ; Gribouille peint dans le coin, de travers
-    const sv=A.sv,all=Object.keys(R.res).filter(i=>i!=="gribouille"&&FOX[i]&&!FOX[i].event&&!INC[i]),T=Math.min(-EXT+96,40),B=404,X0=30,X1=370,HH=B-T,GY=T+HH*.5,F=Math.min(1.25,Math.max(1,HH/380));
-    const ids=["petitpois",...all.filter(i=>i!=="petitpois")].filter(i=>R.res[i]);
-    // les rangées, du premier au dernier : taille du renard et place disponible
-    const sizes=[74,62,52,44,38,33].map(v=>Math.round(v*F)),rows=[];let k=0;
-    for(const sz of sizes){if(k>=ids.length)break;const cap=Math.floor((X1-X0-10)/(sz*.78));rows.push({sz,cap});k+=cap}
-    // on répartit selon la place de chaque rangée : pas de dernier rang avec un seul renard
-    {const tot=rows.reduce((a,r)=>a+r.cap,0);let left=ids.length,at=0;rows.forEach((r,i)=>{const n=i===rows.length-1?left:Math.min(r.cap,Math.round(ids.length*r.cap/tot));r.ids=ids.slice(at,at+n);at+=n;left-=n})}
-    // les rangées s'étalent sur toute la prairie
-    const gap=Math.max(...rows.map(r=>r.sz*.5),(B-6-(GY+40))/Math.max(1,rows.length-1));let y=B-6;rows.forEach(r=>{r.y=y;y-=Math.min(gap,r.sz*.62)});
-    const POS=["lie","sit","happy","sit","happy","up"];
-    const drawRow=(r,ri)=>r.ids.map((fid,i)=>{const n=r.ids.length,step=Math.min(r.sz*.86,(X1-X0-r.sz)/Math.max(1,n-1)),x=200+(i-(n-1)/2)*step;
-      // Petit Pois au milieu du premier rang : on réordonne pour qu'il soit au centre
-      return foxAt(fid,x,r.y+(i%2?2:0),r.sz,{pose:ri===0?(fid==="petitpois"?"happy":"lie"):POS[(i+ri)%POS.length]})}).join("");
-    const front=rows[0];if(front){const pp=front.ids.indexOf("petitpois");if(pp>=0){front.ids.splice(pp,1);front.ids.splice(Math.floor(front.ids.length/2),0,"petitpois")}}
-    const house=`<g transform="translate(200 ${(GY-34).toFixed(0)}) scale(${(.62*F).toFixed(2)})" opacity=".9"><path d="M-70 60 V0 L0 -44 L70 0 V60Z" fill="#e8b47c" stroke="${INK}" stroke-width="3"/><path d="M-84 6 L0 -56 L84 6" fill="none" stroke="#c8604f" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="-12" y="22" width="24" height="38" rx="10" fill="#8a5a3a" stroke="${INK}" stroke-width="2.4"/><rect x="-52" y="16" width="22" height="20" rx="4" fill="#cfe8f6" stroke="${INK}" stroke-width="2.4"/><rect x="30" y="16" width="22" height="20" rx="4" fill="#cfe8f6" stroke="${INK}" stroke-width="2.4"/></g>`;
-    const bunting=`<path d="M${X0} ${T+24} Q200 ${T+52} ${X1} ${T+24}" fill="none" stroke="${INK}" stroke-width="1.6"/>`+Array.from({length:11},(_,i)=>{const t=(i+.5)/11,x=X0+(X1-X0)*t,yy=T+24+28*4*t*(1-t);return `<path d="M${(x-7).toFixed(1)} ${yy.toFixed(1)} L${(x+7).toFixed(1)} ${yy.toFixed(1)} L${x.toFixed(1)} ${(yy+13).toFixed(1)}Z" fill="${["#f6a5b4","#f2c45a","#9ec3ef","#a9d68f","#c9a8ec"][i%5]}" stroke="${INK}" stroke-width="1.4"/>`}).join("");
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#f0c99a"/>${Array.from({length:14},(_,i)=>`<path d="M0 ${-EXT+40+i*56} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
-      <path d="M90 ${B+12} L60 470 M310 ${B+12} L340 470 M200 ${B+12} V470" stroke="#a9785a" stroke-width="10" stroke-linecap="round"/>
-      <defs><clipPath id="pc"><rect x="${X0}" y="${T}" width="${X1-X0}" height="${B+10-T}" rx="4"/></clipPath><clipPath id="gr"><rect id="grr" x="270" y="${B-110}" width="0" height="130"/></clipPath>
-        <linearGradient id="psk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe0f2"/><stop offset="1" stop-color="#eaf6f0"/></linearGradient></defs>
-      <rect x="${X0-12}" y="${T-12}" width="${X1-X0+24}" height="${B+34-T}" rx="10" fill="#c08a5c" stroke="${INK}" stroke-width="3.4"/><rect x="${X0-6}" y="${T-6}" width="${X1-X0+12}" height="${B+22-T}" rx="6" fill="none" stroke="#e6b884" stroke-width="2.4"/>
-      <g clip-path="url(#pc)"><rect x="${X0}" y="${T}" width="${X1-X0}" height="${B+10-T}" fill="url(#psk)"/><circle cx="${X1-40}" cy="${T+40}" r="20" fill="#fff3b8"/>
-        ${[[X0+40,T+46],[X0+150,T+30]].map(([x,yy])=>`<path d="M${x} ${yy} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff"/>`).join("")}
-        ${[[X0+10,GY-28,40],[X0+60,GY-38,34],[X1-14,GY-28,42],[X1-64,GY-40,32]].map(([x,yy,r])=>`<circle cx="${x}" cy="${yy}" r="${r}" fill="#8dbd86" stroke="${INK}" stroke-width="2.4"/>`).join("")}
-        ${house}${bunting}
-        <path d="M${X0} ${GY} Q140 ${GY-18} 200 ${GY-6} Q290 ${GY-20} ${X1} ${GY-2} V${B+10} H${X0}Z" fill="#b5d68f"/>
-        ${Array.from({length:16},(_,i)=>`<path d="M${X0+6+i*22} ${GY+8+(i%3)*5} q8 -6 16 0" stroke="#8dbd86" stroke-width="3" fill="none" stroke-linecap="round"/>`).join("")}
+    // refait le 12/11/2026 (Joffray : « 1000 choses qui ne vont pas ») : tableau sur un chevalet, ciel court, maison en rondins
+    // dans la forêt, gradins réguliers en quinconce (chaque renard visible entre ceux de devant), Petit Pois au milieu du
+    // premier rang, une place gardée dans le coin pour Gribouille, peint de travers ; le vrai Petit Pois peint à côté du chevalet
+    const sv=A.sv,all=Object.keys(R.res).filter(i=>i!=="gribouille"&&FOX[i]&&!FOX[i].event&&!INC[i]);
+    const ids=["petitpois",...all.filter(i=>i!=="petitpois")].filter(i=>R.res[i]),n=ids.length;
+    const BOT=H-EXT,X0=28,X1=372,T=Math.max(-EXT+84,-170),B=Math.min(BOT-96,T+560),HH=B-T,GY=T+HH*.34,W=X1-X0;
+    // les gradins : du premier rang (gros) au dernier (petit) ; assez de rangs pour tout le monde
+    const F=Math.min(1.15,Math.max(.85,HH/430)),GR=78;
+    let rows=[];
+    for(let R0=3;R0<=8;R0++){rows=[];const y0=B-8,y1=GY+30;
+      for(let i=0;i<R0;i++){const t=R0>1?i/(R0-1):0,sz=Math.round((72-30*t)*F),w=W-(i===0?GR:0)-sz*.7;rows.push({sz,y:y0-(y0-y1)*t,cap:Math.max(1,Math.floor(w/(sz*.84))+1),w})}
+      if(rows.reduce((a,r)=>a+r.cap,0)>=n)break}
+    // remplissage à parts égales selon la place de chaque rang
+    {let left=n;const per=rows.map(()=>0);
+      while(left>0){let best=-1;rows.forEach((r,i)=>{if(per[i]>=r.cap)return;if(best<0||per[i]/r.cap<per[best]/rows[best].cap)best=i});if(best<0)break;per[best]++;left--}
+      let at=0;rows.forEach((r,i)=>{r.ids=ids.slice(at,at+per[i]);at+=per[i]})}
+    // Petit Pois au milieu du premier rang
+    {rows.forEach(r=>{const k=r.ids.indexOf("petitpois");if(k>=0)r.ids.splice(k,1)});const f=rows[0].ids;
+      if(R.res.petitpois){if(f.length>=rows[0].cap&&rows[1]){rows[1].ids.push(f.pop())}f.splice(Math.floor(f.length/2),0,"petitpois")}}
+    const POS=["sit","happy","sit","sit","happy"];
+    const drawRow=(r,ri)=>{const k=r.ids.length,step=k>1?Math.min(r.sz*1.05,r.w/(k-1)):0,half=(k-1)*step/2+r.sz*.5,cx=Math.min(X1-(ri===0?GR:0)-half+4,Math.max(X0+half-4,X0+(W-(ri===0?GR:0))/2+(ri%2?r.sz*.22:0)));
+      return r.ids.map((fid,i)=>{const x=cx+(i-(k-1)/2)*step,pose=fid==="petitpois"?"happy":POS[(i*3+ri)%POS.length];
+        return foxAt(fid,x,r.y+(i%2?3:0),fid==="petitpois"&&ri===0?r.sz*1.08:r.sz,{pose})}).join("")};
+    // le décor peint : ciel, soleil, forêt, maison en rondins, fanions, prairie en gradins
+    const hx=200,hy=GY+6,hs=.95*F;
+    const tree=(x,y,r,c)=>`<path d="M${x} ${y} V${y-r*.6}" stroke="#7a5236" stroke-width="${r*.28}" stroke-linecap="round"/><circle cx="${x}" cy="${y-r*1.1}" r="${r}" fill="${c}" stroke="${INK}" stroke-width="2.2"/><circle cx="${x-r*.35}" cy="${y-r*1.35}" r="${r*.35}" fill="#fff" opacity=".18"/>`;
+    const pine=(x,y,h,c)=>`<path d="M${x} ${y-h} L${x+h*.34} ${y-h*.42} H${x+h*.2} L${x+h*.42} ${y} H${x-h*.42} L${x-h*.2} ${y-h*.42} H${x-h*.34}Z" fill="${c}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    const house=`<g transform="translate(${hx} ${hy}) scale(${hs.toFixed(2)})">
+      <rect x="44" y="-104" width="16" height="34" fill="#a99a8e" stroke="${INK}" stroke-width="2.6"/>
+      <g opacity=".75"><circle cx="52" cy="-114" r="7" fill="#fff"/><circle cx="60" cy="-128" r="9" fill="#fff"/><circle cx="54" cy="-146" r="11" fill="#fff"/></g>
+      <rect x="-74" y="-58" width="148" height="58" fill="#c98e5c" stroke="${INK}" stroke-width="3"/>
+      ${[-46,-34,-22,-10].map(y=>`<path d="M-72 ${y} H72" stroke="#a46c40" stroke-width="2.2"/>`).join("")}
+      <path d="M-90 -54 L0 -112 L90 -54Z" fill="#d06a52" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+      ${[-68,-82,-96].map((y,i)=>`<path d="M${-60+i*20} ${y+28} H${60-i*20}" stroke="#a84e3c" stroke-width="2" stroke-dasharray="9 5"/>`).join("")}
+      <rect x="-14" y="-36" width="28" height="36" rx="12" fill="#7a4a30" stroke="${INK}" stroke-width="2.6"/><circle cx="8" cy="-17" r="2.2" fill="#f2c45a"/>
+      ${[-48,48].map(x=>`<rect x="${x-13}" y="-44" width="26" height="22" rx="5" fill="#ffe7a6" stroke="${INK}" stroke-width="2.4"/><path d="M${x} -44 V-22 M${x-13} -33 H${x+13}" stroke="${INK}" stroke-width="1.8"/><path d="M${x-15} -20 H${x+15}" stroke="#7a5236" stroke-width="5" stroke-linecap="round"/>`).join("")}
+      ${[[-52,"#f6a5b4"],[-44,"#f2c45a"],[44,"#c9a8ec"],[52,"#f6a5b4"]].map(([x,c])=>`<circle cx="${x}" cy="-23" r="3.2" fill="${c}" stroke="${INK}" stroke-width="1.2"/>`).join("")}</g>`;
+    const by=hy-100*hs,bq=(t,ya,ym,yb)=>(1-t)*(1-t)*ya+2*t*(1-t)*ym+t*t*yb;
+    const bunting=`<path d="M${X0} ${by-20} Q${(X0+hx)/2} ${by+6} ${hx} ${by-6} Q${(hx+X1)/2} ${by+6} ${X1} ${by-20}" fill="none" stroke="${INK}" stroke-width="1.6"/>`
+      +Array.from({length:12},(_,i)=>{const L=i<6,t=((i%6)+.5)/6,a=L?X0:hx,b=L?hx:X1,x=bq(t,a,(a+b)/2,b),yy=L?bq(t,by-20,by+6,by-6):bq(t,by-6,by+6,by-20);
+        return `<path d="M${(x-7).toFixed(1)} ${yy.toFixed(1)} L${(x+7).toFixed(1)} ${yy.toFixed(1)} L${x.toFixed(1)} ${(yy+13).toFixed(1)}Z" fill="${["#f6a5b4","#f2c45a","#9ec3ef","#a9d68f","#c9a8ec"][i%5]}" stroke="${INK}" stroke-width="1.4"/>`}).join("");
+    const forest=[[X0+24,GY+10,40,"#4f7d58"],[X1-26,GY+10,44,"#4f7d58"],[X0+80,GY+6,52,"#5d8c63"],[X1-84,GY+6,56,"#5d8c63"]].map(([x,y,h,c])=>pine(x,y,h,c)).join("")
+      +[[X0+8,GY+10,20,"#6f9f6e"],[X0+48,GY+10,16,"#7fae76"],[X1-10,GY+10,22,"#6f9f6e"],[X1-50,GY+10,16,"#7fae76"]].map(([x,y,r,c])=>tree(x,y,r,c)).join("");
+    const steps=rows.map(r=>`<path d="M${X0} ${(r.y+2).toFixed(1)} Q200 ${(r.y-6).toFixed(1)} ${X1} ${(r.y+2).toFixed(1)}" stroke="#86b56b" stroke-width="3" fill="none" opacity=".55"/>`).join("");
+    const flowers=Array.from({length:14},(_,i)=>{const x=X0+12+((i*53)%(W-24)),y=GY+20+((i*37)%Math.max(20,B-GY-24));return `<circle cx="${x}" cy="${y}" r="2.6" fill="${["#fff","#f6a5b4","#f2c45a"][i%3]}"/>`}).join("");
+    // Gribouille, peint de travers dans le coin (révélé au pinceau)
+    const gsz=Math.round(66*F),gx=X1-gsz*.55,gy=B-2;
+    const plaque=`<rect x="138" y="${B+18}" width="124" height="20" rx="5" fill="#f2c45a" stroke="${INK}" stroke-width="2.4"/><text x="200" y="${B+32}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="10.5" fill="${INK}">Le refuge</text>`;
+    const ppS=Math.max(56,Math.min(84,BOT-B-14));
+    sv.innerHTML=`<defs><clipPath id="gp-pc"><rect x="${X0}" y="${T}" width="${W}" height="${HH+6}" rx="4"/></clipPath><clipPath id="gp-gr"><rect id="gp-grr" x="${(gx-gsz*.8).toFixed(1)}" y="${(gy-gsz*1.35).toFixed(1)}" width="0" height="${(gsz*1.5).toFixed(1)}"/></clipPath>
+        <linearGradient id="gp-psk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d4f0"/><stop offset="1" stop-color="#fbeedd"/></linearGradient>
+        <linearGradient id="gp-pgr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe0a0"/><stop offset="1" stop-color="#93c47a"/></linearGradient>
+        <radialGradient id="gp-pvig" cx=".5" cy=".5" r=".75"><stop offset=".65" stop-color="#5b4250" stop-opacity="0"/><stop offset="1" stop-color="#5b4250" stop-opacity=".22"/></radialGradient></defs>
+      <rect y="${-EXT}" width="400" height="${H}" fill="#f0d2ac"/>${Array.from({length:Math.ceil(H/48)},(_,i)=>`<path d="M0 ${-EXT+24+i*48} H400" stroke="#e2bd92" stroke-width="2"/>`).join("")}
+      <path d="M104 ${B+20} L76 ${BOT+4} M296 ${B+20} L324 ${BOT+4} M200 ${B+20} V${BOT+4}" stroke="#a9785a" stroke-width="11" stroke-linecap="round"/>
+      <rect x="${X0-14}" y="${T-14}" width="${W+28}" height="${HH+30}" rx="10" fill="#b97e4f" stroke="${INK}" stroke-width="3.4"/><rect x="${X0-7}" y="${T-7}" width="${W+14}" height="${HH+16}" rx="6" fill="none" stroke="#f2c45a" stroke-width="2.4"/>
+      <rect x="${X0-24}" y="${B+12}" width="${W+48}" height="10" rx="5" fill="#a9785a" stroke="${INK}" stroke-width="2.6"/>
+      <g clip-path="url(#gp-pc)"><rect x="${X0}" y="${T}" width="${W}" height="${HH+6}" fill="url(#gp-psk)"/>
+        <circle cx="${X1-46}" cy="${T+44}" r="32" fill="#fff3b8" opacity=".35"/><circle cx="${X1-46}" cy="${T+44}" r="22" fill="#fff3b8"/>
+        ${[[X0+36,T+40],[X0+150,T+24],[X0+220,T+62]].map(([x,yy])=>`<path d="M${x} ${yy} q14 -14 30 0 q14 -8 24 4 q-28 8 -54 -4Z" fill="#fff"/>`).join("")}
+        <path d="M${X0} ${GY-30} Q${X0+90} ${GY-74} ${X0+180} ${GY-30} Q${X0+260} ${GY-66} ${X1} ${GY-34} V${GY+20} H${X0}Z" fill="#c6dcc8" opacity=".8"/>
+        ${forest}${house}${bunting}
+        <path d="M${X0} ${GY+8} Q140 ${GY-6} 200 ${GY+4} Q290 ${GY-8} ${X1} ${GY+6} V${B+10} H${X0}Z" fill="url(#gp-pgr)" stroke="${INK}" stroke-width="2"/>
+        ${steps}${flowers}
         ${rows.map((r,ri)=>({r,ri})).reverse().map(({r,ri})=>drawRow(r,ri)).join("")}
-        <g clip-path="url(#gr)"><g transform="translate(330 ${B-4}) rotate(-12)">${foxAt("gribouille",0,0,78,{pose:"happy"})}</g></g></g>
+        <g clip-path="url(#gp-gr)"><path d="M${(gx-gsz*.62).toFixed(1)} ${gy+4} q-6 -${(gsz*.7).toFixed(0)} ${(gsz*.3).toFixed(0)} -${(gsz*1.05).toFixed(0)} q${(gsz*.5).toFixed(0)} -${(gsz*.2).toFixed(0)} ${(gsz*.82).toFixed(0)} ${(gsz*.18).toFixed(0)} q${(gsz*.2).toFixed(0)} ${(gsz*.5).toFixed(0)} 0 ${(gsz*.9).toFixed(0)}Z" fill="#fbe3a8" opacity=".9"/><path d="M${(gx-gsz*.55).toFixed(1)} ${gy-gsz*.2} q${(gsz*.5).toFixed(0)} -${(gsz*.4).toFixed(0)} ${(gsz*1.05).toFixed(0)} -${(gsz*.1).toFixed(0)}" stroke="#9ec3ef" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/><g transform="translate(${gx.toFixed(1)} ${gy}) rotate(-20)">${foxAt("gribouille",0,0,gsz,{pose:"happy"})}</g></g>
+        <rect x="${X0}" y="${T}" width="${W}" height="${HH+6}" fill="url(#gp-pvig)"/></g>
+      ${plaque}
       <g id="brush" opacity="0"><path d="M0 0 q-10 -30 -40 -44" stroke="#f2a35c" stroke-width="10" stroke-linecap="round" fill="none"/><circle r="8" fill="#6aa6c9" stroke="${INK}" stroke-width="2.4"/></g>
-      ${foxAt("petitpois",52,476,84,{pose:"happy"})}`;
-    const grr=sv.querySelector("#grr"),br=sv.querySelector("#brush");let st="look",t=0;
+      ${foxAt("petitpois",44,BOT-2,ppS,{pose:"happy"})}`;
+    const grr=sv.querySelector("#gp-grr"),br=sv.querySelector("#brush");let st="look",t=0;
     A.say(g.say||"Le grand portrait du refuge… tout le monde est là.");
     A.later(()=>{st="paint";A.sfx("swap");A.say("Petit Pois ajoute Gribouille dans le coin…");br.setAttribute("opacity",1)},1800);
-    A.loop(dt=>{if(st!=="paint")return;t+=dt;const k=Math.min(1,t/2.2);grr.setAttribute("width",(120*k).toFixed(1));
-      br.setAttribute("transform",`translate(${(280+90*k).toFixed(1)} ${(B-60+Math.sin(t*14)*18).toFixed(1)})`);
+    A.loop(dt=>{if(st!=="paint")return;t+=dt;const k=Math.min(1,t/2.2);grr.setAttribute("width",(gsz*1.6*k).toFixed(1));
+      br.setAttribute("transform",`translate(${(gx-gsz*.8+gsz*1.6*k).toFixed(1)} ${(gy-gsz*.5+Math.sin(t*14)*gsz*.35).toFixed(1)})`);
       if(k>=1){st="done";br.setAttribute("opacity",0);A.sfx("cheer");A.say("Voilà : tout le refuge. Touche pour continuer.")}});
     A.tap=()=>{if(st==="done")A.win(g.win||"Le grand portrait est fini !")};
   },
