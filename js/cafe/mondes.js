@@ -41,7 +41,7 @@ function mondeArtPa(){
 function mondeArtKy(){
   let s=`<rect width="320" height="150" fill="url(#mw4)"/><circle cx="60" cy="50" r="18" fill="#fff2c8" opacity=".95"/>`;
   s+=`<path d="M0 108 Q90 82 180 100 T320 92 V150 H0Z" fill="#a9c79a" ${BO}/><path d="M0 132 Q120 120 220 130 T320 128 V150 H0Z" fill="#e6dccb" ${BO}/>`;
-  s+=kyPagoda(272,124,.62)+kyTorii(52,138,.95)+kyTorii(92,134,.8)+kySakura(20,136,.7);
+  s+=kyPagoda(272,124,.62)+kySakura(16,136,.66)+kyTorii(64,138,1);
   s+=`<g transform="translate(176 138) scale(.5)">${kyCafeSVG(0,0)}</g>`;
   return `<defs>${KY_DEFS}${mSky("mw4","#eaa6b6","#fde6d4")}</defs>`+s;
 }
