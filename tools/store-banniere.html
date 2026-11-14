@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Bannière Play Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* Propositions de bannière pour la fiche Play Store (14/11/2026) : 1024 × 500 chacune.
+   A = au comptoir (intérieur), B = la devanture, C = la véranda. Capture élément par élément (#A, #B, #C). */
+body{margin:0;background:#ddd;font-family:"Zen Maru Gothic",sans-serif;display:flex;flex-direction:column;gap:20px;padding:20px}
+.ban{width:1024px;height:500px;position:relative;overflow:hidden;flex:none}
+.ban>svg.bg{position:absolute;inset:0;width:1024px;height:500px}
+.ban h1{position:absolute;left:0;right:0;margin:0;text-align:center;font-family:"Mochiy Pop One";font-size:84px;letter-spacing:1px;paint-order:stroke fill}
+.ban h1.white{color:#fff;-webkit-text-stroke:9px #5b4250;text-shadow:0 7px 0 #5b4250}
+.ban h1.ink{color:#5b4250;-webkit-text-stroke:9px #fffaf2;text-shadow:0 7px 0 #f2b6a4}
+.ban .sub{position:absolute;left:0;right:0;text-align:center;font-size:29px;font-weight:900;color:#5b4250}
+.ban .sub span{background:#fffaf2;border:4px solid #5b4250;border-radius:30px;padding:2px 22px}
+.ban .fox{position:absolute}
+.ban .fox svg{width:100%;display:block;overflow:visible}
+.ban .ico{position:absolute}
+.ban .ico svg{width:100%;height:100%;display:block;overflow:visible}
+</style></head><body>
+<div class="ban" id="A"></div>
+<div class="ban" id="B"></div>
+<div class="ban" id="C"></div>
+<script>const HW=false;</script>
+<script src="../js/cafe/foxes.js"></script><script src="../js/foxart.js"></script>
+<script src="../js/cafe/draw.js"></script>
+<script>
+// renards des quartiers (copiés de italie.js, paris.js, kyoto.js)
+const XF={
+  lorenzo:{id:"lorenzo",name:"Lorenzo",acc:"coppola",scale:.84,c:{b:"#e8955a",ch:"#fff4e6",e:"#8a4a2a",s:"#7a4028",t:"#fff4e6"}},
+  leon:{id:"leon",name:"Léon",acc:"bouquiniste",c:{b:"#8a8f9e",ch:"#f2f2f6",e:"#5a5e6a",s:"#4c505a",t:"#f2f2f6"}},
+  hayate:{id:"hayate",name:"Hayate",acc:"samouraib",c:{b:"#8a7a9a",ch:"#f6f2fa",e:"#4a3e5a",s:"#3e3450",t:"#f6f2fa"}},
+  radar:{id:"radar",name:"Radar",ears:1.75,c:{b:"#f0d6a4",ch:"#fffaf0",e:"#c79a5a",s:"#c79a5a",t:"#fffaf0"}},
+  tsuba:{id:"tsuba",name:"Tsuba",acc:"samourai",c:{b:"#c45a3a",ch:"#fff2e8",e:"#7a2e1e",s:"#6a2618",t:"#fff2e8"}}
+};
+const F=id=>XF[id]||FOXES.find(f=>f.id===id);
+const I="#5b4250",S=`stroke="${I}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"`,S3=`stroke="${I}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"`;
+const foxes=(row,bottom)=>row.map(([id,p,l,w,b=0])=>`<div class="fox" style="left:${l}px;width:${w}px;bottom:${bottom+b}px">${foxArt(F(id),{pose:p,plain:1})}</div>`).join("");
+const ico=(k,x,y,s=56)=>`<div class="ico" style="left:${x}px;top:${y}px;width:${s}px;height:${s}px"><svg viewBox="0 0 40 40">${ICON[k]}</svg></div>`;
+const LINE=[["hayate","sit",150,150],["leon","happy",262,158],["roussette","happy",400,200],["petitpois","walk",560,146],["lorenzo","sit",650,160],["radar","sit",770,160]];
+
+// ---------- dessins communs ----------
+const garland=(y0,amp,cols,n=9)=>{let d=`<path d="M-10 ${y0} Q512 ${y0+amp*2} 1034 ${y0}" fill="none" ${S3}/>`;
+  for(let i=0;i<n;i++){const t=(i+.5)/n,x=-10+1044*t,y=y0+amp*2*2*t*(1-t)+4,c=cols[i%cols.length];
+    d+=`<circle cx="${x}" cy="${y+14}" r="22" fill="${c}" opacity=".28"/><path d="M${x-9} ${y} h18 v6 h-18z" fill="#c8b6a8" ${S3}/><ellipse cx="${x}" cy="${y+16}" rx="11" ry="13" fill="${c}" ${S3}/><ellipse cx="${x-3}" cy="${y+12}" rx="3" ry="4" fill="#fff" opacity=".7"/>`}
+  return d};
+const book=(x,y,w,h,c)=>`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" rx="2" fill="${c}" ${S3}/><path d="M${x+3} ${y-h+7} h${w-6}" stroke="#fff" stroke-width="2" opacity=".6"/>`;
+const plant=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 -30 Q-26 -40 -30 -66 Q-6 -60 0 -30 Q4 -70 24 -78 Q26 -50 0 -30 Q20 -46 40 -40 Q30 -22 0 -30Z" fill="#8fca7a" ${S3}/><path d="M-20 -30 H20 L15 0 H-15Z" fill="#f59a8b" ${S3}/><path d="M-22 -30 H22" ${S3}/></g>`;
+const mug=(x,y,c,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M12 -16 q9 0 8 7 q-1 6 -9 5" fill="none" ${S3}/><path d="M-12 -20 H13 V-6 Q13 0 0 0 Q-12 0 -12 -6Z" fill="${c}" ${S3}/></g>`;
+const jar=(x,y,c)=>`<rect x="${x-14}" y="${y-38}" width="28" height="38" rx="7" fill="#eaf6fb" ${S3}/><rect x="${x-16}" y="${y-44}" width="32" height="9" rx="3" fill="${c}" ${S3}/>${[0,1,2].map(i=>`<circle cx="${x-6+i*6}" cy="${y-10-i%2*9}" r="4.5" fill="#e0a868" stroke="${I}" stroke-width="2"/>`).join("")}`;
+const shelf=(x,y,w,items)=>`<rect x="${x}" y="${y}" width="${w}" height="12" rx="4" fill="#c8946a" ${S3}/><path d="M${x+18} ${y+12} l0 16 l14 -16 M${x+w-18} ${y+12} l0 16 l-14 -16" fill="#b07a52" ${S3}/>${items}`;
+const cloud=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M-46 14 Q-58 14 -56 2 Q-54 -10 -40 -8 Q-38 -28 -16 -26 Q-4 -40 14 -30 Q34 -34 38 -14 Q56 -14 54 2 Q52 14 40 14Z" fill="#fff" stroke="${I}" stroke-width="4" stroke-linejoin="round"/></g>`;
+
+// ---------- A : au comptoir ----------
+function sceneA(){
+  let s=`<defs><linearGradient id="aw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbd9c9"/><stop offset="1" stop-color="#f6c4b1"/></linearGradient>
+  <pattern id="astr" width="56" height="10" patternUnits="userSpaceOnUse"><rect width="28" height="10" fill="#fff" opacity=".22"/></pattern>
+  <pattern id="atile" width="64" height="64" patternUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff4e8"/><rect width="32" height="32" fill="#f9d3c6"/><rect x="32" y="32" width="32" height="32" fill="#f9d3c6"/></pattern>
+  <radialGradient id="aglow" cx=".5" cy=".3" r=".6"><stop offset="0" stop-color="#fff6d8" stop-opacity=".8"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></radialGradient></defs>
+  <rect width="1024" height="500" fill="url(#aw)"/><rect width="1024" height="330" fill="url(#astr)"/>
+  <rect width="1024" height="330" fill="url(#aglow)"/>
+  <rect x="0" y="232" width="1024" height="10" fill="#e9a990"/>`;
+  // étagères
+  s+=shelf(16,148,190,book(34,148,16,46,"#f6a5b4")+book(52,148,14,40,"#9ec3ef")+book(68,148,18,50,"#f7d77a")+book(88,148,12,36,"#a9d68f")+mug(126,148,"#fff")+mug(170,148,"#a9d68f"));
+  s+=shelf(818,148,190,jar(842,148,"#f59a8b")+jar(878,148,"#9ec3ef")+book(910,148,16,44,"#c9b6ef")+book(928,148,14,38,"#f6a5b4")+mug(970,148,"#f7d77a"));
+  // comptoir et vitrine
+  s+=`<rect x="0" y="262" width="1024" height="22" rx="6" fill="#c8946a" ${S}/><rect x="10" y="284" width="1004" height="96" fill="#e8b07a" ${S}/>
+  ${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${34+i*124}" y="298" width="100" height="68" rx="10" fill="#f0c08e" stroke="${I}" stroke-width="3"/>`).join("")}
+  <path d="M250 262 V214 Q250 196 270 196 H754 Q774 196 774 214 V262" fill="#eaf6fb" fill-opacity=".55" ${S}/><path d="M262 230 H762" stroke="${I}" stroke-width="3.5"/>
+  <path d="M280 206 l30 20 M690 206 l24 16" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+  <rect x="90" y="196" width="96" height="68" rx="12" fill="#9ec3ef" ${S}/><rect x="104" y="208" width="68" height="22" rx="6" fill="#eaf6fb" ${S3}/><path d="M126 242 h24 v12 h-24z" fill="#c8b6a8" ${S3}/><circle cx="116" cy="219" r="4" fill="#f47f9a"/><circle cx="160" cy="219" r="4" fill="#a9d68f"/>
+  ${mug(870,262,"#fff",1.3)+mug(924,262,"#f6a5b4",1.3)}
+  <rect x="0" y="380" width="1024" height="120" fill="url(#atile)"/><path d="M0 380 H1024" ${S}/>
+  <ellipse cx="512" cy="478" rx="430" ry="26" fill="#5b4250" opacity=".08"/>`;
+  s+=garland(14,22,["#f7d77a","#f6a5b4","#9ec3ef","#a9d68f","#c9b6ef"],11);
+  const icons=ico("croissant",290,196,52)+ico("cookie",350,200,48)+ico("gateau",404,196,52)+ico("choco",572,190,50)+ico("croissant",630,196,52)+ico("cookie",690,200,48)
+    +ico("cafe",462,234,40)+ico("the",510,234,40);
+  return `<svg class="bg" viewBox="0 0 1024 500">${s}</svg>${icons}
+  <h1 class="white" style="top:40px">Café Frimousse</h1>
+  <div class="sub" style="top:148px">Le petit café des renards gourmands</div>
+  ${foxes(LINE,4)}`;
+}
+
+// ---------- B : la devanture ----------
+function sceneB(){
+  let s=`<defs><linearGradient id="bsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9dcf2"/><stop offset="1" stop-color="#e2f4f6"/></linearGradient>
+  <pattern id="bbrick" width="60" height="30" patternUnits="userSpaceOnUse"><rect width="60" height="30" fill="#fbe7d6"/><path d="M0 15 H60 M30 0 V15 M0 15 V30 M60 15 V30" stroke="#efcdb4" stroke-width="2.5"/></pattern>
+  <pattern id="bcob" width="44" height="22" patternUnits="userSpaceOnUse"><rect width="44" height="22" fill="#d9cdd2"/><rect x="2" y="2" width="40" height="18" rx="7" fill="#e8dfe2"/></pattern>
+  <pattern id="bstripe" width="68" height="60" patternUnits="userSpaceOnUse"><rect width="34" height="60" fill="#f6a5b4"/><rect x="34" width="34" height="60" fill="#fffaf2"/></pattern></defs>
+  <rect width="1024" height="500" fill="url(#bsky)"/>${cloud(70,60,.9)}${cloud(960,52,.8)}
+  <rect x="36" y="20" width="952" height="420" rx="8" fill="url(#bbrick)" ${S}/>
+  <rect x="110" y="18" width="804" height="164" rx="22" fill="#7c3a4e" ${S}/><rect x="124" y="32" width="776" height="136" rx="14" fill="none" stroke="#f2c75c" stroke-width="4"/>
+  ${[150,874].map(x=>`<circle cx="${x}" cy="44" r="6" fill="#f2c75c" ${S3}/><circle cx="${x}" cy="156" r="6" fill="#f2c75c" ${S3}/>`).join("")}`;
+  // auvent festonné
+  s+=`<path d="M60 196 H964 L990 240 H34Z" fill="url(#bstripe)" ${S}/>`;
+  let sc="";for(let i=0;i<28;i++){const x=34+i*34.1;sc+=`<path d="M${x} 240 q17 26 34.1 0" fill="${i%2?"#fffaf2":"#f6a5b4"}" ${S3}/>`}s+=sc;
+  // vitrines et porte
+  const win=(x)=>`<rect x="${x}" y="266" width="270" height="140" rx="14" fill="#fff4dc" ${S}/><rect x="${x+10}" y="276" width="250" height="120" rx="8" fill="#ffe7b8"/><path d="M${x+10} 352 H${x+260}" stroke="${I}" stroke-width="3.5"/><path d="M${x+30} 286 l40 40 M${x+200} 286 l30 30" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".7"/><rect x="${x-8}" y="402" width="286" height="26" rx="6" fill="#c8946a" ${S3}/>${[0,1,2,3,4,5].map(i=>`<circle cx="${x+18+i*47}" cy="398" r="14" fill="${["#f47f9a","#f7d77a","#c9b6ef"][i%3]}" ${S3}/>`).join("")}`;
+  s+=win(80)+win(674)+`<rect x="430" y="256" width="164" height="184" rx="14" fill="#8fca7a" ${S}/><rect x="448" y="274" width="128" height="100" rx="54" fill="#eaf6fb" ${S3}/><circle cx="566" cy="396" r="7" fill="#f2c75c" ${S3}/>`;
+  s+=garland(196,-8,["#f7d77a","#f6a5b4","#9ec3ef"],0);
+  s+=`<rect x="0" y="436" width="1024" height="64" fill="url(#bcob)"/><path d="M0 436 H1024" ${S}/>`;
+  const icons=ico("croissant",110,300,50)+ico("gateau",170,298,52)+ico("cookie",236,302,46)+ico("croissant",300,300,50)
+    +ico("choco",702,296,50)+ico("cookie",766,302,46)+ico("gateau",824,298,52)+ico("croissant",890,300,50)
+    +ico("cafe",112,356,38)+ico("the",160,356,38)+ico("cafe",900,356,38)+ico("the",852,356,38);
+  return `<svg class="bg" viewBox="0 0 1024 500">${s}</svg>${icons}
+  <h1 class="white" style="top:28px">Café Frimousse</h1>
+  <div class="sub" style="top:128px;color:#fff3d6;font-size:27px">Sers les renards, fais grandir ton café</div>
+  ${foxes(LINE,2)}`;
+}
+
+// ---------- C : la véranda ----------
+function sceneC(){
+  let s=`<defs><linearGradient id="csky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6f6"/><stop offset=".7" stop-color="#eaf7f2"/><stop offset="1" stop-color="#fff3e0"/></linearGradient>
+  <linearGradient id="cwood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9b98a"/><stop offset="1" stop-color="#d9a172"/></linearGradient>
+  <pattern id="cplank" width="160" height="34" patternUnits="userSpaceOnUse"><rect width="160" height="34" fill="#e8bd8f"/><path d="M0 33 H160 M60 0 V33" stroke="#cf9f70" stroke-width="3"/></pattern></defs>
+  <rect width="1024" height="500" fill="url(#csky)"/>
+  ${cloud(200,90,.8)}${cloud(820,70,.9)}${cloud(520,250,.55)}
+  <path d="M0 300 Q140 236 300 268 Q420 290 520 256 Q660 214 800 262 Q920 296 1024 250 V400 H0Z" fill="#cfe8b4" stroke="#9cc184" stroke-width="3"/>
+  <path d="M0 330 Q200 290 380 318 Q560 340 720 306 Q880 278 1024 312 V400 H0Z" fill="#b6dc98" stroke="#8fb878" stroke-width="3"/>
+  ${[[120,300],[300,312],[760,296],[930,300]].map(([x,y])=>`<path d="M${x} ${y} v-14" stroke="#a87a52" stroke-width="5"/><circle cx="${x}" cy="${y-26}" r="16" fill="#f5b0c0" stroke="#d98ea0" stroke-width="3"/>`).join("")}`;
+  // cadre de la véranda
+  s+=`<path d="M0 0 H1024 V500 H0Z M30 196 Q30 40 200 40 H824 Q994 40 994 196 V380 H30Z" fill="url(#cwood)" fill-rule="evenodd" ${S}/>
+  <path d="M352 380 V40 M672 380 V40" stroke="${I}" stroke-width="16"/><path d="M352 380 V40 M672 380 V40" stroke="#e9b98a" stroke-width="8"/>
+  <path d="M30 230 H352 M672 230 H994" stroke="${I}" stroke-width="10"/><path d="M30 230 H352 M672 230 H994" stroke="#e9b98a" stroke-width="4"/>`;
+  s+=`<path d="M70 120 l50 50 M760 110 l40 40" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".55"/>`;
+  // plantes suspendues
+  const hang=x=>`<path d="M${x} 0 V70" stroke="${I}" stroke-width="3"/><path d="M${x-26} 70 H${x+26} Q${x+24} 100 ${x} 100 Q${x-24} 100 ${x-26} 70Z" fill="#f59a8b" ${S3}/>${[-22,-8,8,22].map((d,i)=>`<path d="M${x+d} 74 q${d/3} 30 ${d/2} ${50+i%2*20}" fill="none" stroke="#7cb868" stroke-width="5" stroke-linecap="round"/><ellipse cx="${x+d*1.5}" cy="${118+i%2*20}" rx="7" ry="10" fill="#8fca7a" ${S3}/>`).join("")}`;
+  s+=hang(84)+hang(940);
+  // sol, tapis, comptoir bas
+  s+=`<rect x="0" y="380" width="1024" height="120" fill="url(#cplank)"/><path d="M0 380 H1024" ${S}/>
+  <rect x="0" y="372" width="1024" height="14" fill="#c8946a" ${S}/>
+  <ellipse cx="512" cy="470" rx="440" ry="44" fill="#f6c9d2" ${S}/><ellipse cx="512" cy="470" rx="400" ry="32" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="14 12"/>`;
+  s+=plant(60,486,1.1)+plant(968,486,1.1);
+  s+=garland(36,16,["#f7d77a","#f6a5b4","#9ec3ef","#a9d68f","#c9b6ef"],11);
+  return `<svg class="bg" viewBox="0 0 1024 500">${s}</svg>
+  <h1 class="white" style="top:76px">Café Frimousse</h1>
+  <div class="sub" style="top:198px"><span>Le petit café des renards gourmands</span></div>
+  ${foxes(LINE,20)}`;
+}
+document.getElementById("A").innerHTML=sceneA();
+document.getElementById("B").innerHTML=sceneB();
+document.getElementById("C").innerHTML=sceneC();
+</script>
+</body></html>

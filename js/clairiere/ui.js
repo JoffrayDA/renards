@@ -232,20 +232,21 @@ function buddyPick(){const ids=Object.keys(R.res).filter(canBuddy).sort((a,b)=>(
 let meTab="c",meBack="carnet"; // touchée dans la scène, la fiche se ferme au lieu de revenir au carnet
 // un accessoire acheté dans la boutique Style du Café compte aussi
 const meHas=(k,id)=>meOwn(k,id)||(k==="a"&&!!((load(CAFEKEY)||{}).own||{})["st-acc-"+id]);
-function moiSheet(tab,back){if(tab)meTab=tab;if(back!==undefined)meBack=back;const m=meB(),L={c:ME_FUR,m:ME_MARK,a:ME_ACC,y:ME_EYE,q:ME_TAIL}[meTab],cur=meTab==="a"?(m.a??""):(m[meTab]||"");
+function moiSheet(tab,back){if(tab)meTab=tab;if(back!==undefined)meBack=back;if(!ME_LIST[meTab])meTab="c";const m=meB(),L=ME_LIST[meTab],cur=m[meTab]??"";
   const done=Object.keys(R.souv).filter(id=>STORIES[id]).length,met=ROSTER.filter(id=>R.res[id]||R.met[id]).length,days=Math.max(1,Math.round((Date.now()-((R.res.petitpois||{}).at||Date.now()))/864e5));
-  const prev=it=>foxArt({...FOX.roussette,...meLook(FOX.roussette),...(meTab==="c"?{c:it.c}:meTab==="m"?(it.id==="chaussettes"?{mark:"",c:{...meLook(FOX.roussette).c,s:"#fffaf3"}}:{mark:it.id}):meTab==="y"?{eye:it.e}:meTab==="q"?{tail:it.id||undefined}:{acc:it.id||undefined})},{pose:"sit",plain:1});
+  // l'aperçu d'une vignette : tout le look actuel, avec cette pièce à la place
+  const prev=it=>foxArt({...FOX.roussette,...meLook(FOX.roussette,{[meTab]:it.id})},{pose:"sit",plain:1});
   const card=it=>{const own=meHas(meTab,it.id),on=cur===it.id,can=it.b?bellsN()>=it.b:cafeCoins()>=(it.p||0);
     return `<button class="card mecell${on?" on":""}" data-me="${meTab}|${it.id}" type="button" ${!own&&!can?"disabled":""}><div class="pic">${prev(it)}</div><h3>${it.name}</h3><p>${on?"Porté":own?"À toi":it.b?`${bellSVG} ${it.b}`:`${coinIcon()} ${it.p}`}</p></button>`};
   openSheet(`<div class="foxhead"><div class="pic">${foxArt(FOX.roussette,{expr:"joy",portrait:1})}</div><div><h2>${ME()}</h2><span class="chip">C'est toi</span><div class="lvl">La gardienne du refuge, et la patronne du Café Frimousse.</div></div></div>
     <div class="mestats"><div><b>${met} / ${ROSTER.length}</b>renards réunis</div><div><b>${done}</b>histoires finies</div><div><b>${R.photos.length}</b>photos</div><div><b>${R.fish||0}</b>poissons</div><div><b>${R.glands}</b>glands</div><div><b>${days}</b>jour${days>1?"s":""} au refuge</div></div>
-    <h3 class="sec">Ton look</h3><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span></div>
-    <div class="tabs">${[["c","Pelage"],["y","Yeux"],["m","Motif"],["q","Queue"],["a","Accessoire"]].map(([k,n])=>`<button class="tab${meTab===k?" on":""}" data-metab="${k}" type="button">${n}</button>`).join("")}</div>
-    <div class="grid">${L.map(card).join("")}</div>${tenueHTML?tenueHTML("roussette"):""}`,meBack)}
-function meBuy(v){const [k,id]=v.split("|"),L={c:ME_FUR,m:ME_MARK,a:ME_ACC,y:ME_EYE,q:ME_TAIL}[k],it=L.find(x=>x.id===id),m=meB();if(!it)return;
+    <h3 class="sec">Ton look</h3><div class="mebig">${foxArt(FOX.roussette,{pose:"sit"})}</div><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span></div>
+    <div class="tabs metabs">${ME_SLOTS.map(([k,n])=>`<button class="tab${meTab===k?" on":""}" data-metab="${k}" type="button">${n}</button>`).join("")}</div>
+    <div class="grid megrid">${L.map(card).join("")}</div>${tenueHTML?tenueHTML("roussette"):""}`,meBack)}
+function meBuy(v){const [k,id]=v.split("|"),L=ME_LIST[k],it=L&&L.find(x=>x.id===id),m=meB();if(!it)return;
   if(!meHas(k,id)){if(it.b){if(bellsN()<it.b)return;addBells(-it.b)}else if(it.p&&!spendCoins(it.p))return;m.own[k+":"+id]=1;toast(`${it.name} : acheté !`)}
   m[k]=id;mePut(m);
-  // l'accessoire est aussi celui de la carte du Café
+  // l'accessoire de tête est aussi celui de la carte du Café
   if(k==="a"){const C=load(CAFEKEY);if(C){C.style=C.style||{};C.style.acc=id;try{localStorage.setItem(CAFEKEY,JSON.stringify(C))}catch(e){}}}
   $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});if(!meF.walk)draw(meF);const y=$("sheet-in").scrollTop;moiSheet();$("sheet-in").scrollTop=y}
 function foxSheet(id){
