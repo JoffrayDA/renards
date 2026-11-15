@@ -14,7 +14,7 @@ function pushInvite(){if(!pushOk()||pushOn()||R.pushAsk)return;if(!$("talk").hid
   R.pushAsk=1;save();pushSheet()}
 $("ic-g").innerHTML=acornSVG();$("ic-f").innerHTML=fishSVG();$("actors").appendChild(pondEl);
 $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});
-$("actors").appendChild(bowlEl);
+$("actors").appendChild(bowlEl);$("actors").appendChild(bowlHit);
 scn.rain=rainNow();decoRefresh("fontaine");
 simulate(false);
 const togGot=syncTogether();
@@ -28,6 +28,8 @@ drawBg();sizeRain();addEventListener("resize",sizeRain);if(scn.rain)startRain();
 if(new URLSearchParams(location.search).get("voir")==="maison")setTimeout(()=>{closeSheet();enterHouse()},900);
 const QJEU=new URLSearchParams(location.search).get("jeu");
 if(QJEU&&GAMES[QJEU]){const again=()=>playGame({k:QJEU,who:"petitpois",target:"petitpois",item:"wool",thing:"page",n:6},()=>setTimeout(again,1200));setTimeout(again,600)}
+// tous les jeux à la suite, avec une barre Précédent / Rejouer / Suivant (15/11/2026, Joffray : tout tester avant le test fermé) : clairiere.html?jeu=tous
+if(QJEU==="tous")setTimeout(jeuxSuite,600);
 syncFoxes();drawObjs();fillObjs();gardenSync(); // le record de Boule-de-Neige (noel.js)
 chainTick(false);if(checkArrival())syncFoxes(); // arrivé à l'ouverture : il est là tout de suite
 renderHud();

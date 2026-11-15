@@ -77,6 +77,21 @@ function playGame(g,done){
   el.hidden=false;GAMES[g.k](g,api);
 }
 
+/* Tous les jeux à la suite (tools/jeux.html, clairiere.html?jeu=tous) : un jeu gagné passe au suivant */
+const SUITE=[["fish","La pêche","Gaston"],["shake","Secouer l'arbre","Luciole"],["search","Fouiller les feuilles","Mitaine"],["catch","Attraper les pages","Galette"],["firefly","La luciole dorée","Luciole"],
+  ["ricochet","Les ricochets","Plouf"],["cushion","Le jeu des coussins","Pantoufle"],["memory","Les chaussettes","Mamie Brindille"],["basket","Le panier de pommes","Biscuit"],["rake","Le tas de feuilles","Cannelle"],
+  ["lantern","La lanterne","Charbon"],["umbrella","Le parapluie-feuille","Brume"],["nails","Les clous","Copeau"],["order","La course","Moka"],["simon","La danse des flaques","Plouf"],["still","Ne bouge plus","Gribouille"],
+  ["portrait","Le grand portrait","Gribouille"],["battle","La bataille de neige","Balafre, Noël"],["luge","La luge","Noël"],["curling","Le curling","Filou, Noël"],["snowball","Les boules de neige","Boule-de-Neige, Noël"],
+  ["skate","La clochette sur la glace","Ramure, Noël"],["tournee","La tournée","Barbe-Neige, Noël"]];
+function jeuxSuite(){let i=0,tok=0;const bar=document.createElement("div");bar.className="suitebar";document.body.appendChild(bar);
+  const stop=()=>{const a=$("play").__api;if(a&&!$("play").hidden){tok++;a.close()}};
+  const go=n=>{stop();i=(n+SUITE.length)%SUITE.length;const [k,nm,w]=SUITE[i],t=++tok;
+    bar.innerHTML=`<button type="button" data-s="-1">‹</button><span><b>${i+1}/${SUITE.length} · ${nm}</b><i>${w}</i></span><button type="button" data-s="0">↻</button><button type="button" data-s="1">›</button>`;
+    if(!GAMES[k]){toast(`Jeu introuvable : ${k}`);return}
+    try{playGame({k,who:"petitpois",target:"petitpois",item:"wool",thing:k==="catch"?"page":undefined,n:k==="basket"?8:undefined},()=>{if(t===tok)setTimeout(()=>{if(t===tok)go(i+1)},900)})}catch(e){toast(`Bug dans ${nm} : ${e.message}`)}};
+  bar.onpointerdown=e=>{const b=e.target.closest("[data-s]");if(!b)return;e.stopPropagation();const a=$("play").__api;if(a&&a.won&&!$("play").hidden)return;go(i+ +b.dataset.s)};
+  go(0)}
+
 const GAMES={
   /* Pêche : vue depuis le ponton, Roussette au premier plan, la rive d'en face et ses reflets, l'heure réelle.
      Une ombre de poisson approche ; elle grignote (ploc, petit rond : pas encore !), puis mord : le bouchon coule,
@@ -319,28 +334,73 @@ const GAMES={
   /* Le jeu des coussins (Pantoufle) : le renard se cache sous un des coussins du porche, les coussins se mélangent,
      il faut toucher le bon. 3 manches, de plus en plus rapides. Raté : on voit où il était, et on refait la manche. */
   cushion(g,A){
-    const sv=A.sv,id=g.who||g.target,name=FOX[id].name,RD=g.rounds||[[3,4,.5],[3,7,.36],[4,9,.3]],Y=338,
-      COL=["#f6b3c4","#9ec3ef","#f2d27a"],LOOT=[["wool","une pelote de laine"],["cone","une pomme de pin"],["leaf","une feuille"],["pebble","un caillou"]];
+    // 15/11/2026, Joffray : la 3e manche « un poil trop lente » (avant [4,9,.3]) et le dessin « pas beau » : porche refait
+    const sv=A.sv,id=g.who||g.target,name=FOX[id].name,RD=g.rounds||[[3,4,.5],[3,7,.36],[4,10,.23]],Y=338,
+      COL=[["#f6b3c4","#fde3ea","#de8aa2"],["#9ec3ef","#dcebfb","#6f9fd8"],["#f2d27a","#fbefc4","#d4a944"]],LOOT=[["wool","une pelote de laine"],["cone","une pomme de pin"],["leaf","une feuille"],["pebble","un caillou"]];
     let r=0,st="show",cs=[],under=null,sw=null,q=[];
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bcd99a"/><rect y="-320" width="400" height="360" fill="#bfe0f2"/><g filter="url(#wobble)">
-      <rect x="-10" y="40" width="420" height="230" fill="#f0c99a" ${O}/>${[80,120,160,200,240].map(y=>`<path d="M0 ${y} H400" stroke="#d9ac7c" stroke-width="2"/>`).join("")}
-      ${[40,280].map(x=>`<rect x="${x}" y="100" width="80" height="72" rx="8" fill="#ffe9a6" ${O}/><path d="M${x+40} 100 V172 M${x} 136 H${x+80}" stroke="${INK}" stroke-width="3"/>`).join("")}
-      <path d="M156 270 V140 Q200 104 244 140 V270Z" fill="#6a4434" ${O}/><circle cx="232" cy="210" r="4" fill="#f2c45a"/>
-      <path d="M-10 18 H410 V58 H-10Z" fill="#d98b7a" ${O}/>
-      <rect x="-10" y="262" width="420" height="230" fill="#d9a777" ${O}/>${[300,340,380,420,460].map(y=>`<path d="M0 ${y} H400" stroke="#c08a5c" stroke-width="2"/>`).join("")}</g>
+    const r7=rng(11),LOGS=[];for(let y=56;y<262;y+=25)LOGS.push(y);
+    const tree=(x,y,k,c)=>`<g transform="translate(${x} ${y}) scale(${k})"><path d="M0 -60 Q26 -40 22 -10 Q36 0 26 18 H-26 Q-36 0 -22 -10 Q-26 -40 0 -60Z" fill="${c}"/></g>`;
+    const FLAGS=[30,62,94,126,158,242,274,306,338,370].map((x,i)=>{const yy=64+Math.sin(Math.PI*(x<200?(x-8)/192:(392-x)/192))*24;
+      return `<path d="M${x-9} ${yy.toFixed(1)} L${x} ${(yy+18).toFixed(1)} L${x+9} ${yy.toFixed(1)}Z" fill="${["#f48aa6","#9ec3ef","#f2d27a","#a9d68f"][i%4]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`}).join("");
+    sv.innerHTML=`<defs>
+        <linearGradient id="cu-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d4f0"/><stop offset="1" stop-color="#e9f5f6"/></linearGradient>
+        <linearGradient id="cu-log" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a06c"/><stop offset=".55" stop-color="#c0834f"/><stop offset="1" stop-color="#9c6238"/></linearGradient>
+        <linearGradient id="cu-deck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7a875"/><stop offset="1" stop-color="#b98252"/></linearGradient>
+        <linearGradient id="cu-door" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a4c36"/><stop offset=".5" stop-color="#8e5a40"/><stop offset="1" stop-color="#6c4130"/></linearGradient>
+        <radialGradient id="cu-win" cx=".5" cy=".55" r=".7"><stop offset="0" stop-color="#fff3c4"/><stop offset="1" stop-color="#f6c76c"/></radialGradient>
+        <clipPath id="cu-roofc"><path d="M-70 52 L200 -156 L470 52Z"/></clipPath>
+        <radialGradient id="cu-vig" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#3b2430" stop-opacity="0"/><stop offset="1" stop-color="#3b2430" stop-opacity=".28"/></radialGradient>
+        ${COL.map(([c,l,d],i)=>`<radialGradient id="cu-p${i}" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="${l}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${d}"/></radialGradient>`).join("")}
+      </defs>
+      <rect y="-320" width="400" height="400" fill="url(#cu-sky)"/>
+      <g fill="#fff" opacity=".7">${[[316,-178,9],[326,-204,12],[312,-236,15]].map(([x,y,rr])=>`<circle cx="${x}" cy="${y}" r="${rr}"/>`).join("")}</g>
+      ${[[60,-170,1],[250,-220,1.3],[340,-120,.8]].map(([x,y,k])=>`<g transform="translate(${x} ${y}) scale(${k})" fill="#fff" opacity=".85"><ellipse rx="34" ry="13"/><ellipse cx="-18" cy="-8" rx="18" ry="13"/><ellipse cx="12" cy="-12" rx="20" ry="15"/></g>`).join("")}
+      <g opacity=".55">${Array.from({length:9},(_,i)=>tree(i*50+(r7()*16|0),24,.8+r7()*.3,"#9fc4a6")).join("")}</g>
+      ${Array.from({length:8},(_,i)=>tree(25+i*52+(r7()*14|0),40,.9+r7()*.3,"#79ab83")).join("")}
+      <g filter="url(#wobble)">
+        <rect x="-10" y="44" width="420" height="222" fill="#9c6238"/>
+        ${LOGS.map(y=>`<rect x="-10" y="${y}" width="420" height="25" rx="12" fill="url(#cu-log)" stroke="#6e4128" stroke-width="2"/>`).join("")}
+        ${Array.from({length:9},()=>`<ellipse cx="${(r7()*400)|0}" cy="${LOGS[(r7()*LOGS.length)|0]+12}" rx="5" ry="3.5" fill="none" stroke="#86522f" stroke-width="2"/>`).join("")}
+        ${[38,282].map(x=>`<g transform="translate(${x} 94)"><rect x="-6" y="-6" width="92" height="84" rx="10" fill="#7a4c36" ${O}/><rect width="80" height="72" rx="6" fill="url(#cu-win)" ${O}/>
+          <path d="M40 0 V72 M0 36 H80" stroke="${INK}" stroke-width="3"/><path d="M2 2 Q22 30 12 70 H2Z M78 2 Q58 30 68 70 H78Z" fill="#f48aa6" opacity=".85" stroke="${INK}" stroke-width="2"/>
+          <rect x="-10" y="74" width="100" height="12" rx="4" fill="#a8693f" ${O}/>
+          ${[12,40,68].map((fx,j)=>`<circle cx="${fx}" cy="70" r="9" fill="${["#f48aa6","#fff","#f2c45a"][j]}" stroke="${INK}" stroke-width="2"/><circle cx="${fx}" cy="70" r="3" fill="#f2c45a"/>`).join("")}</g>`).join("")}
+        <path d="M150 266 V146 Q200 100 250 146 V266Z" fill="#5e3a2a" ${O}/><path d="M158 266 V150 Q200 112 242 150 V266Z" fill="url(#cu-door)" ${O}/>
+        <path d="M186 124 V266 M214 124 V266" stroke="#5e3a2a" stroke-width="2.4"/>
+        <path d="M200 166 C188 156 186 146 194 142 Q198 140 200 145 Q202 140 206 142 C214 146 212 156 200 166Z" fill="#f2c45a" ${O}/>
+        <circle cx="232" cy="212" r="5" fill="#f2c45a" stroke="${INK}" stroke-width="2"/>
+        <rect x="290" y="-150" width="36" height="140" fill="#b4664e" ${O}/><path d="M290 -120 H326 M290 -96 H326 M308 -150 V-120 M300 -120 V-96 M316 -120 V-96" stroke="#8a4a3a" stroke-width="2"/><rect x="284" y="-160" width="48" height="14" rx="4" fill="#8a4a3a" ${O}/>
+        <path d="M-70 52 L200 -156 L470 52Z" fill="#8c5a3c"/>
+        <g clip-path="url(#cu-roofc)">${Array.from({length:11},(_,j)=>{const y=-150+j*20;return Array.from({length:16},(_,i)=>`<path d="M${i*28-(j%2?14:0)-20} ${y} v8 q14 18 28 0 v-8Z" fill="${j%2?"#b4664e":"#a65a44"}" stroke="#6e3a2c" stroke-width="2"/>`).join("")}).join("")}</g>
+        <path d="M-70 52 L200 -156 L470 52" fill="none" stroke="${INK}" stroke-width="9" stroke-linejoin="round"/><path d="M-70 52 L200 -156 L470 52" fill="none" stroke="#e7a07a" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="200" cy="-52" r="26" fill="#7a4c36" ${O}/><circle cx="200" cy="-52" r="19" fill="url(#cu-win)" ${O}/><path d="M200 -71 V-33 M181 -52 H219" stroke="${INK}" stroke-width="2.6"/>
+        ${[20,380].map(x=>`<path d="M${x} 50 V74" stroke="${INK}" stroke-width="2.4"/><g transform="translate(${x} 92)"><rect x="-11" y="-18" width="22" height="34" rx="6" fill="#fff3c4" ${O}/><path d="M-14 -18 H14 L8 -26 H-8Z M-12 16 H12" fill="#5e3a2a" ${O}/></g>`).join("")}
+        <rect x="-10" y="262" width="420" height="230" fill="url(#cu-deck)" ${O}/>
+        ${[292,326,362,400,442].map(y=>`<path d="M-10 ${y} H410" stroke="#9c6a40" stroke-width="2.2"/>`).join("")}
+        ${[[60,262,292],[250,292,326],[130,326,362],[320,362,400],[90,400,442],[280,442,490]].map(([x,a,b])=>`<path d="M${x} ${a} V${b}" stroke="#9c6a40" stroke-width="2"/>`).join("")}
+      </g>
+      <path d="M8 64 Q100 112 200 64 Q300 112 392 64" fill="none" stroke="${INK}" stroke-width="2"/>${FLAGS}
+      <ellipse cx="200" cy="360" rx="196" ry="70" fill="#5b4250" opacity=".12"/>
+      ${[[192,64,"#e7a07a"],[176,56,"#f6dcb5"],[156,48,"#9ec3ef"],[134,40,"#f6dcb5"],[110,31,"#f48aa6"],[84,23,"#f6dcb5"]].map(([rx,ry,c],i)=>`<ellipse cx="200" cy="354" rx="${rx}" ry="${ry}" fill="${c}" ${i?`stroke="#fff" stroke-width="2" stroke-dasharray="6 5" stroke-opacity=".7"`:O}/>`).join("")}
+      <rect y="-320" width="400" height="810" fill="url(#cu-vig)" pointer-events="none"/>
       <g id="pips"></g><g id="loot"></g><g id="fx" style="opacity:0">${foxAt(id,0,0,100,{pose:"sit"})}</g><g id="cush"></g>`;
     const fx=sv.querySelector("#fx"),loot=sv.querySelector("#loot"),box=sv.querySelector("#cush"),pips=sv.querySelector("#pips");
     const X=(i,n)=>200+(i-(n-1)/2)*(n>3?94:124);
     const put=(e,x,y,t)=>{e.style.transition=t||"none";e.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`};
     const fox=(x,y,pose,t)=>{fx.innerHTML=foxAt(id,0,0,100,{pose});put(fx,x,y,t||"transform .35s cubic-bezier(.3,1.5,.5,1),opacity .25s")};
-    const pillow=c=>`<ellipse cy="40" rx="54" ry="9" fill="#5b4250" opacity=".14"/><g filter="url(#wobble)"><path d="M-54 -30 Q0 -44 54 -30 Q66 0 54 30 Q0 44 -54 30 Q-66 0 -54 -30Z" fill="${c}" ${O}/>
-      <path d="M-40 -21 Q0 -31 40 -21 M-40 21 Q0 31 40 21" fill="none" stroke="#fff" stroke-width="2.4" stroke-dasharray="5 6" opacity=".85"/></g>
-      <circle r="5.5" fill="#fff" stroke="${INK}" stroke-width="2.2"/>${[[-56,-30],[56,-30],[-56,30],[56,30]].map(([x,y])=>`<path d="M${x} ${y} l${x<0?-8:8} ${y<0?-6:6}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`).join("")}
-      <rect x="-64" y="-50" width="128" height="96" fill="transparent"/>`;
+    // sans filtre #wobble : les coussins bougent sans cesse (le filtre serait recalculé à chaque image)
+    const pillow=(i,n)=>{const [c,l,d]=COL[i];return `<g transform="scale(${n>3?.68:.84})"><ellipse cy="42" rx="58" ry="10" fill="#5b4250" opacity=".2"/>
+      <path d="M-56 -30 Q0 -46 56 -30 Q70 0 56 32 Q0 48 -56 32 Q-70 0 -56 -30Z" fill="url(#cu-p${i})" ${O}/>
+      <path d="M-46 -22 Q0 -35 46 -22 Q57 0 46 24 Q0 37 -46 24 Q-57 0 -46 -22Z" fill="none" stroke="#fff" stroke-width="2.2" stroke-dasharray="4 5" opacity=".8"/>
+      <path d="M-14 -4 Q-6 -2 -3 0 M14 -4 Q6 -2 3 0 M-12 8 Q-5 4 -3 2 M12 8 Q5 4 3 2" fill="none" stroke="${d}" stroke-width="2.4" stroke-linecap="round"/>
+      <circle r="6" fill="${l}" stroke="${INK}" stroke-width="2.2"/><circle cx="-1.5" cy="-1.5" r="1.8" fill="#fff"/>
+      <ellipse cx="-26" cy="-17" rx="14" ry="6" fill="#fff" opacity=".45" transform="rotate(-12 -26 -17)"/>
+      ${[[-58,-31],[58,-31],[-58,33],[58,33]].map(([x,y])=>{const sx=x<0?-1:1,sy=y<0?-1:1;return `<g transform="translate(${x} ${y})"><path d="M0 0 l${sx*6} ${sy*4}" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M${sx*5} ${sy*3} l${sx*7} ${sy*1} l${sx*1} ${sy*8}Z" fill="#f2c45a" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/></g>`}).join("")}
+      <rect x="-70" y="-56" width="140" height="108" fill="transparent"/></g>`};
     const drawPips=()=>pips.innerHTML=RD.map((_,i)=>`<circle cx="${200+(i-(RD.length-1)/2)*30}" cy="452" r="9" fill="${i<r?"#a9d68f":"#fff"}" stroke="${INK}" stroke-width="2.6"/>`).join("");
     const start=()=>{const [n,k,d]=RD[r];st="show";sw=null;q=[];loot.innerHTML="";box.innerHTML="";drawPips();
       // tous pareils, sinon on suivrait la couleur
-      cs=Array.from({length:n},(_,i)=>{const c={slot:i,el:grp(box,pillow(COL[r%COL.length]),{class:"cush"})};c.el.style.cursor="pointer";put(c.el,X(i,n),Y);
+      cs=Array.from({length:n},(_,i)=>{const c={slot:i,el:grp(box,pillow(r%COL.length,n),{class:"cush"})};c.el.style.cursor="pointer";put(c.el,X(i,n),Y);
         c.el.onpointerdown=e=>{e.stopPropagation();pick(c)};return c});
       under=cs[Math.floor(Math.random()*n)];under.el.dataset.g=1; // data-g : la bonne réponse, pour les tests
       fox(X(under.slot,n),Y-26,"happy","none");fx.style.opacity=1;

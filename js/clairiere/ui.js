@@ -37,11 +37,15 @@ let toastT;function toast(t){const el=$("toast");el.textContent=t;el.hidden=fals
 /* ---------- gamelle dans la scène ---------- */
 const bowlEl=document.createElement("button");bowlEl.className="bowl";bowlEl.type="button";bowlEl.setAttribute("aria-label","La gamelle");
 bowlEl.onpointerdown=e=>{e.stopPropagation();bowlSheet()};
+// zone de toucher posée au-dessus des renards (15/11/2026, Joffray : « des fois ça marche pas ») : un renard qui passe
+// devant la gamelle, ou le sauvage qui y mange, prenait le toucher pour un câlin
+const bowlHit=document.createElement("button");bowlHit.className="bowl bowlhit";bowlHit.type="button";bowlHit.setAttribute("aria-label","La gamelle");
+bowlHit.onpointerdown=bowlEl.onpointerdown;
 // tant qu'un sauvage est venu manger, la gamelle montre encore ce qu'il est venu chercher
 function drawBowl(){const v=foxes.find(f=>f.wild&&f.food);
   // une jauge sous la gamelle dit ce qu'il reste (05/11/2026, Joffray : il fallait ouvrir la feuille pour le savoir)
   const B=R.bowl&&BOWLS[R.bowl.type],fr=B?Math.max(0,Math.min(1,(R.bowl.until-Date.now())/(B.hours*36e5))):0;
-  bowlEl.style.cssText=pc(240,268)+";z-index:269";bowlEl.innerHTML=bowlSVG(v?v.food:R.bowl&&R.bowl.type,B?Math.max(1,Math.ceil(fr*3)):3)+(B&&!v?`<i class="bgauge"><b style="width:${(fr*100).toFixed(0)}%;background:${B.col}"></b></i>`:"");
+  bowlEl.style.cssText=pc(240,268)+";z-index:269";bowlHit.style.cssText=pc(240,268)+";z-index:899";bowlEl.innerHTML=bowlSVG(v?v.food:R.bowl&&R.bowl.type,B?Math.max(1,Math.ceil(fr*3)):3)+(B&&!v?`<i class="bgauge"><b style="width:${(fr*100).toFixed(0)}%;background:${B.col}"></b></i>`:"");
   bowlEl.classList.toggle("want",!R.bowl&&!v&&typeof wildLeft==="function"&&wildLeft().length>0&&!nextId())}
 setInterval(()=>{if(!document.hidden)drawBowl()},6e4);
 

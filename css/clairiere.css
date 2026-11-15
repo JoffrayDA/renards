@@ -65,6 +65,7 @@ h1 span{color:var(--coral-d)}
 @keyframes float{50%{transform:translateY(-4%)}}
 .bowl{position:absolute;width:10%;transform:translate(-50%,-60%);background:none;border:0;padding:0;cursor:pointer;pointer-events:auto}
 .bowl svg{display:block;width:100%}
+.bowl.bowlhit{width:13%;aspect-ratio:1.5;transform:translate(-50%,-62%);border-radius:40%}
 .bowl .bgauge{display:block;width:64%;height:6px;margin:1px auto 0;border:1.6px solid #5b4250;border-radius:4px;background:rgba(255,250,240,.85);overflow:hidden}
 .bowl .bgauge b{display:block;height:100%}
 .bowl.want svg{animation:bowlwant 1.3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,248,200,.95))}
@@ -506,3 +507,8 @@ h1 .la{font-style:normal}
 @keyframes vglow{50%{opacity:.55}}
 .shh{animation:shh 3.2s ease-in-out infinite}
 @keyframes shh{0%{opacity:0;transform:translate(0,4px)}25%,70%{opacity:.95}100%{opacity:0;transform:translate(6px,-8px)}}
+
+/* tous les jeux à la suite (clairiere.html?jeu=tous) */
+.suitebar{position:fixed;left:8px;right:8px;bottom:8px;z-index:99;display:flex;align-items:center;gap:6px;background:rgba(255,250,242,.95);border:2.5px solid var(--ink);border-radius:14px;padding:5px;box-shadow:0 3px 0 var(--ink)}
+.suitebar span{flex:1;min-width:0;text-align:center;line-height:1.15}.suitebar b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.suitebar i{font-size:11px;opacity:.7;font-style:normal}
+.suitebar button{width:40px;height:36px;border:2px solid var(--ink);border-radius:10px;background:#ffd36a;font:900 18px/1 system-ui;color:var(--ink);cursor:pointer}
