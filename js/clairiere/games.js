@@ -340,7 +340,7 @@ const GAMES={
       return b};
     const NF=46,flies=[...Array.from({length:NF},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[NF].el); // la dorée passe devant
     A.say(g.say||"Attrape la luciole dorée !");
-    const clk=A.clock(g.time||15,()=>{A.say("Trop tard, elle s'est cachée ! Encore une fois…");A.later(()=>{clk.reset();A.say(g.say||"Attrape la luciole dorée !")},1400)});
+    const clk=A.clock(g.time||9,()=>{A.say("Trop tard, elle s'est cachée ! Encore une fois…");A.later(()=>{clk.reset();A.say(g.say||"Attrape la luciole dorée !")},1400)});
     A.loop(dt=>{for(const b of flies){if(done&&b.gold)continue;b.t+=dt;
       if(b.flee>0&&(b.flee-=dt)<=0)b.s=45+Math.random()*45;
       // la dorée change souvent de direction, d'un coup
