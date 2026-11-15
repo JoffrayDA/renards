@@ -11,7 +11,7 @@ const ENVIES={
   pommes:{ok:()=>!scn.rain,ask:"J'ai un petit creux… Tu me rattrapes des pommes sous le grand arbre ?",goal:"rattraper des pommes",
     game:{k:"basket",n:6,win:"Six belles pommes !"},thx:"Miam ! Elles sont encore toutes fraîches. Je t'en garde une."},
   feuilles:{ok:()=>!scn.rain,ask:"Tu me fais un gros tas de feuilles ? J'ai très envie de sauter dedans.",goal:"un tas de feuilles",
-    game:{k:"rake",n:12,time:16,win:"Un tas tout moelleux !"},thx:"Crounch ! C'est le meilleur tas du monde.",to:"leaves"},
+    game:{k:"rake",n:12,time:11,win:"Un tas tout moelleux !"},thx:"Crounch ! C'est le meilleur tas du monde.",to:"leaves"},
   lucioles:{ok:()=>dark()&&!scn.rain,ask:"On dit qu'une luciole dorée passe le soir. Tu me la montres ?",goal:"la luciole dorée",
     game:{k:"firefly",win:"La voilà !"},thx:"Elle brille comme la queue de Luciole… Je vais bien dormir."},
   poisson:{ok:()=>canFish(),ask:"Tu m'apprends à pêcher ? Juste un poisson, pour voir.",goal:"pêcher un poisson",

@@ -92,6 +92,13 @@ function jeuxSuite(){let i=0,tok=0;const bar=document.createElement("div");bar.c
   bar.onpointerdown=e=>{const b=e.target.closest("[data-s]");if(!b)return;e.stopPropagation();const a=$("play").__api;if(a&&a.won&&!$("play").hidden)return;go(i+ +b.dataset.s)};
   go(0)}
 
+/* décors communs des petits jeux (15/11/2026, Joffray : « améliore les graphismes ») : ciel en dégradé, nuages, collines, herbe */
+const gSky=(id,a,b,y0=-320,y1=400)=>`<linearGradient id="${id}" x1="0" y1="${y0}" x2="0" y2="${y1}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+const gCloud=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})" fill="#fff"><ellipse rx="36" ry="13" opacity=".95"/><ellipse cx="-16" cy="-9" rx="18" ry="14"/><ellipse cx="13" cy="-13" rx="21" ry="17"/><ellipse cx="-4" cy="4" rx="34" ry="8" fill="#dcecf6"/></g>`;
+const gTufts=(seed,n,y0,y1,c)=>{const r=rng(seed);return Array.from({length:n},()=>{const x=r()*400,y=y0+r()*(y1-y0);return `<path d="M${x.toFixed(0)} ${y.toFixed(0)} q-2 -7 -5 -9 M${x.toFixed(0)} ${y.toFixed(0)} q0 -8 1 -11 M${x.toFixed(0)} ${y.toFixed(0)} q3 -6 6 -8" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round"/>`}).join("")};
+const gFlowers=(seed,n,y0,y1)=>{const r=rng(seed),C=["#fff","#f6b3c4","#f2d27a","#c9a6ff"];return Array.from({length:n},(_,i)=>{const x=r()*400,y=y0+r()*(y1-y0),c=C[i%4];return `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})">${[0,72,144,216,288].map(a=>`<circle cx="${(Math.cos(a*Math.PI/180)*3.4).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*3.4).toFixed(1)}" r="2.6" fill="${c}"/>`).join("")}<circle r="1.8" fill="#f2a33a"/></g>`}).join("")};
+const gTree=(x,y,k,c)=>`<g transform="translate(${x} ${y}) scale(${k})"><path d="M0 -62 Q28 -42 24 -12 Q38 0 28 18 H-28 Q-38 0 -24 -12 Q-28 -42 0 -62Z" fill="${c}"/></g>`;
+
 const GAMES={
   /* Pêche : vue depuis le ponton, Roussette au premier plan, la rive d'en face et ses reflets, l'heure réelle.
      Une ombre de poisson approche ; elle grignote (ploc, petit rond : pas encore !), puis mord : le bouchon coule,
@@ -188,10 +195,26 @@ const GAMES={
      Avec catch : il tombe au milieu de pommes de pin, il faut le toucher en l'air avant qu'il se casse par terre. */
   shake(g,A){
     const sv=A.sv,n=g.n||7,it=g.item||"jar";let k=0,st="shake",dn=0;
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><rect y="380" width="400" height="100" fill="#bcd99a"/>
-      <g filter="url(#wobble)"><path d="M178 470 Q186 380 180 260 L222 260 Q216 380 226 470Z" fill="#a9785a" ${O}/></g>
-      <g id="crown" class="crown"><g filter="url(#wobble)">${[[200,170,92],[120,200,60],[284,200,62],[160,110,58],[246,112,60]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}
-        ${[[150,180],[250,150],[205,230],[290,215],[120,140]].map(([x,y])=>`<path d="M${x} ${y} q8 -6 16 0" fill="none" stroke="#6f9a60" stroke-width="3" stroke-linecap="round"/>`).join("")}</g>
+    sv.innerHTML=`<defs>${gSky("sh-sky","#93c9ec","#e8f4ee")}
+        <linearGradient id="sh-gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d68f"/><stop offset="1" stop-color="#86bd72"/></linearGradient>
+        <linearGradient id="sh-tr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a4c36"/><stop offset=".45" stop-color="#b07a52"/><stop offset="1" stop-color="#6c4130"/></linearGradient>
+        <radialGradient id="sh-cr" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#b8dc98"/><stop offset=".6" stop-color="#8dbd86"/><stop offset="1" stop-color="#6c9f66"/></radialGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#sh-sky)"/>
+      <circle cx="62" cy="-60" r="70" fill="#fff6c8" opacity=".35"/><circle cx="62" cy="-60" r="30" fill="#fff3b0"/>
+      ${gCloud(310,-150,1)}${gCloud(90,-230,.8)}${gCloud(340,20,.6)}
+      <path d="M-10 350 Q70 300 150 336 Q240 296 320 330 Q370 312 410 326 V400 H-10Z" fill="#c4dfb0"/>
+      <g opacity=".7">${[30,90,330,380].map((x,i)=>gTree(x,352,.7+i%2*.2,"#8fbf8a")).join("")}</g>
+      <path d="M-10 372 Q120 352 220 366 Q320 352 410 368 V490 H-10Z" fill="url(#sh-gr)" stroke="${INK}" stroke-width="2.4"/>
+      ${gTufts(3,26,380,478,"#6f9a60")}${gFlowers(5,14,384,476)}
+      <ellipse cx="204" cy="452" rx="110" ry="16" fill="#5b4250" opacity=".14"/>
+      <g filter="url(#wobble)"><path d="M150 468 Q176 452 182 400 Q186 330 178 250 L224 250 Q216 330 220 400 Q226 452 256 468 Q230 470 214 458 Q204 470 192 458 Q176 470 150 468Z" fill="url(#sh-tr)" ${O}/>
+        <path d="M192 300 q6 30 0 60 M210 330 q-4 24 2 50" stroke="#6c4130" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="206" cy="292" rx="7" ry="9" fill="#5e3a2a" ${O}/></g>
+      <g id="crown" class="crown"><g filter="url(#wobble)">
+        ${[[200,170,98],[118,204,66],[286,204,68],[158,108,64],[248,110,66]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#6c9f66" ${O}/>`).join("")}
+        ${[[200,170,90],[120,202,58],[284,202,60],[160,110,56],[246,112,58]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#sh-cr)"/>`).join("")}
+        ${[[176,140,30],[110,186,20],[262,180,22],[146,92,20],[232,94,22]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#c8e6a6" opacity=".55"/>`).join("")}
+        ${[[150,180],[250,150],[205,230],[290,215],[120,140],[180,96],[300,170],[96,220]].map(([x,y])=>`<path d="M${x} ${y} q8 -6 16 0" fill="none" stroke="#5d8a52" stroke-width="3" stroke-linecap="round"/>`).join("")}
+        ${[[140,220],[268,236],[180,200],[300,150],[110,170]].map(([x,y],i)=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<circle cx="${(Math.cos(a*Math.PI/180)*4.6).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*4.6).toFixed(1)}" r="3.6" fill="${i%2?"#fff":"#f6b3c4"}" stroke="${INK}" stroke-width="1.2"/>`).join("")}<circle r="2.4" fill="#f2c45a"/></g>`).join("")}</g>
         <g id="hang" transform="translate(232 196) scale(.8)" opacity=".9">${ITEM[it]}</g></g>
       <g id="fx"></g><g id="air"></g><g id="drop" opacity="0"><g transform="translate(232 196) scale(.8)">${ITEM[it]}</g></g>`;
     A.say(g.say||"Secoue l'arbre : touche-le plusieurs fois !");
@@ -250,13 +273,25 @@ const GAMES={
   catch(g,A){
     const sv=A.sv,n=g.n||5,page=g.thing==="page",xmas=g.thing==="bell"||g.thing==="ball";let got=0;
     // Noël : ciel d'hiver et neige ; grelots de Grelot ou boules de Paillette
-    sv.innerHTML=xmas?`<rect y="-320" width="400" height="800" fill="#cfe3f2"/><path d="M0 320 Q100 296 200 314 Q300 296 400 320 V480 H0Z" fill="#f4f8fc" stroke="${INK}" stroke-width="2.4"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${(i*71)%300}" r="${1.4+i%3}" fill="#fff" opacity=".9"/>`).join("")}`:page?`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><path d="M0 300 Q100 280 200 296 Q300 280 400 300 V480 H0Z" fill="#bcd99a"/>
-      ${[[60,90],[300,60],[200,140]].map(([x,y])=>`<path d="M${x} ${y} q20 -18 40 0 q16 -10 30 4 q-35 10 -70 -4Z" fill="#fff" opacity=".9"/>`).join("")}`:`<defs><radialGradient id="lg"><stop offset="0" stop-color="#fff6a0"/><stop offset=".35" stop-color="#ffe46a" stop-opacity=".8"/><stop offset="1" stop-color="#ffe46a" stop-opacity="0"/></radialGradient></defs>
-      <rect y="-320" width="400" height="800" fill="#3a3f78"/><path d="M0 330 Q100 300 200 320 Q300 300 400 330 V480 H0Z" fill="#4b6a5a"/>
-      ${Array.from({length:18},(_,i)=>`<circle cx="${(i*97)%400}" cy="${(i*53)%260}" r="1.4" fill="#fff8d0" opacity=".8"/>`).join("")}`;
+    sv.innerHTML=xmas?`<defs>${gSky("ca-sx","#b9d4ec","#eaf3fa")}</defs><rect y="-320" width="400" height="800" fill="url(#ca-sx)"/>
+      <g opacity=".75">${Array.from({length:9},(_,i)=>gTree(i*50+10,316,.9+(i%3)*.15,"#9fbfd4")).join("")}</g>
+      <path d="M0 320 Q100 296 200 314 Q300 296 400 320 V480 H0Z" fill="#f4f8fc" stroke="${INK}" stroke-width="2.4"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*137)%400}" cy="${(i*71)%300}" r="${1.4+i%3}" fill="#fff" opacity=".9"/>`).join("")}`
+      :page?`<defs>${gSky("ca-sk","#8fc6ea","#eaf5ee")}<linearGradient id="ca-gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b2da98"/><stop offset="1" stop-color="#8cc277"/></linearGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#ca-sk)"/>${gCloud(80,-170,1)}${gCloud(300,-90,1.2)}${gCloud(200,40,.7)}
+      <path d="M-10 296 Q90 258 180 284 Q270 254 410 282 V330 H-10Z" fill="#c4dfb0"/>
+      <g opacity=".85">${[20,70,340,385].map((x,i)=>gTree(x,300,.8+i%2*.25,"#86b884")).join("")}</g>
+      <path d="M-10 304 Q100 284 200 298 Q300 282 410 302 V490 H-10Z" fill="url(#ca-gr)" stroke="${INK}" stroke-width="2.4"/>${gTufts(7,24,312,478,"#6f9a60")}${gFlowers(9,12,316,470)}
+      <g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"><path d="M30 150 q40 -20 80 0 t60 -6"/><path d="M230 220 q36 -16 72 0 t50 -4"/><path d="M90 300 q30 -12 60 0"/></g>
+      <g filter="url(#wobble)" transform="translate(300 420)"><rect x="-60" y="-22" width="120" height="12" rx="5" fill="#c08a5c" ${O}/><rect x="-60" y="-44" width="120" height="10" rx="5" fill="#c08a5c" ${O}/><path d="M-50 -10 V18 M50 -10 V18" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M-50 -10 V18 M50 -10 V18" stroke="#a8693f" stroke-width="3.6" stroke-linecap="round"/>
+        <path d="M-30 -24 Q-14 -32 0 -24 Q14 -32 30 -24 V-20 Q14 -26 0 -20 Q-14 -26 -30 -20Z" fill="#fffaf0" stroke="${INK}" stroke-width="2"/></g>`
+      :`<defs><radialGradient id="lg"><stop offset="0" stop-color="#fff6a0"/><stop offset=".35" stop-color="#ffe46a" stop-opacity=".8"/><stop offset="1" stop-color="#ffe46a" stop-opacity="0"/></radialGradient>${gSky("ca-nt","#1d2150","#4a4a88",-320,340)}<radialGradient id="ca-moon"><stop offset=".3" stop-color="#fff8d8" stop-opacity=".6"/><stop offset="1" stop-color="#fff8d8" stop-opacity="0"/></radialGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#ca-nt)"/><circle cx="320" cy="20" r="80" fill="url(#ca-moon)"/><circle cx="320" cy="20" r="24" fill="#fff6d0"/>
+      ${Array.from({length:26},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.41%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%300-60}" r="1.4" fill="#fff8d0"/>`).join("")}
+      ${Array.from({length:9},(_,i)=>gTree(i*50+8,330,.9+(i%3)*.2,"#2b3260")).join("")}
+      <path d="M0 330 Q100 300 200 320 Q300 300 400 330 V480 H0Z" fill="#3d5a4e" stroke="${INK}" stroke-width="2.4"/>${gTufts(11,22,340,478,"#2c4a3c")}`;
     let bugs0=0;const bugs=Array.from({length:n},()=>{const b={x:60+Math.random()*280,y:80+Math.random()*300,a:Math.random()*6.3,s:70+Math.random()*50};
       b.el=grp(sv,xmas?(g.thing==="bell"?`<g filter="url(#wobble)">${ITEM.bell}</g><circle r="26" fill="transparent"/>`
-          :`<g filter="url(#wobble)"><circle r="13" fill="${["#e2445e","#5aa0dc","#f2c45a","#9a6ad6","#5fae6c"][bugs0++%5]}" stroke="${INK}" stroke-width="2.4"/><rect x="-4" y="-18" width="8" height="6" rx="1.4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g><circle cx="-4" cy="-4" r="3.4" fill="#fff" opacity=".8"/><circle r="26" fill="transparent"/>`):page?`<g filter="url(#wobble)"><rect x="-13" y="-16" width="26" height="32" rx="3" fill="#fffaf0" stroke="${INK}" stroke-width="2.4"/><path d="M-8 -9 h16 M-8 -3 h16 M-8 3 h11 M-8 9 h14" stroke="#cdb9ad" stroke-width="2"/></g><circle r="26" fill="transparent"/>`
+          :`<g filter="url(#wobble)"><circle r="13" fill="${["#e2445e","#5aa0dc","#f2c45a","#9a6ad6","#5fae6c"][bugs0++%5]}" stroke="${INK}" stroke-width="2.4"/><rect x="-4" y="-18" width="8" height="6" rx="1.4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g><circle cx="-4" cy="-4" r="3.4" fill="#fff" opacity=".8"/><circle r="26" fill="transparent"/>`):page?`<path d="M-13 -15 H6 L14 -7 V17 H-13Z" fill="#5b4250" opacity=".18" transform="translate(3 4)"/><path d="M-14 -17 H6 L15 -8 V17 H-14Z" fill="#fffaf0" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/><path d="M6 -17 V-8 H15" fill="#ead9cf" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M-9 -9 h11 M-9 -3 h18 M-9 3 h13 M-9 9 h17" stroke="#cdb9ad" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="10" r="2.6" fill="#f6b3c4"/><circle r="28" fill="transparent"/>`
         :`<circle r="30" fill="url(#lg)"/><circle r="5" fill="#fffbe0"/><circle r="26" fill="transparent"/>`);
       b.el.style.cursor="pointer";
       b.el.onpointerdown=e=>{e.stopPropagation();if(b.got||A.won||!clk.on)return;b.got=1;got++;b.el.classList.add("caught");setTimeout(()=>{if(b.got)b.el.style.display="none"},400);A.sfx("good",got);
@@ -277,13 +312,25 @@ const GAMES={
   firefly(g,A){
     const sv=A.sv,COL=["#ff9ec4","#8fd3ff","#a6f08a","#c9a6ff","#ff7a8a","#7ff0d8"];let done=0;
     sv.innerHTML=`<defs>${COL.map((c,i)=>`<radialGradient id="ffc${i}"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="${c}" stop-opacity=".85"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`).join("")}
-        <radialGradient id="ffsky" cx=".5" cy=".55" r=".7"><stop offset="0" stop-color="#7a6bb8" stop-opacity=".7"/><stop offset="1" stop-color="#3a3f78" stop-opacity="0"/></radialGradient><radialGradient id="ffg"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#ffd23a"/><stop offset="1" stop-color="#ffb800" stop-opacity="0"/></radialGradient></defs>
-      <rect y="-320" width="400" height="800" fill="#3a3f78"/><rect y="-320" width="400" height="800" fill="url(#ffsky)"/><circle cx="61" cy="239" r="90" fill="url(#ffg)" opacity=".35"/>${Array.from({length:22},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.37%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%240}" r="1.4" fill="#fff8d0"/>`).join("")}
-      <g filter="url(#wobble)"><path d="M0 340 Q100 310 200 330 Q300 310 400 340 V480 H0Z" fill="#4b6a5a" ${O}/>
-        <rect x="56" y="250" width="10" height="110" rx="4" fill="#7a5a4a" ${O}/><rect x="44" y="222" width="34" height="34" rx="9" fill="#ffe9a6" ${O}/></g>
+        ${gSky("ff-sky","#151a44","#4d4a8c",-320,340)}<radialGradient id="ffg"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#ffd23a"/><stop offset="1" stop-color="#ffb800" stop-opacity="0"/></radialGradient>
+        <radialGradient id="ff-moon"><stop offset=".25" stop-color="#fff6d6" stop-opacity=".55"/><stop offset="1" stop-color="#fff6d6" stop-opacity="0"/></radialGradient>
+        <radialGradient id="ff-lamp"><stop offset="0" stop-color="#ffe9a0" stop-opacity=".9"/><stop offset=".4" stop-color="#ffc85a" stop-opacity=".35"/><stop offset="1" stop-color="#ffc85a" stop-opacity="0"/></radialGradient>
+        <linearGradient id="ff-gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a58"/><stop offset="1" stop-color="#2a4a40"/></linearGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#ff-sky)"/>
+      <circle cx="318" cy="-40" r="96" fill="url(#ff-moon)"/><circle cx="318" cy="-40" r="28" fill="#fff4cc"/><circle cx="330" cy="-48" r="25" fill="#3a3a78" opacity=".0"/><circle cx="308" cy="-48" r="5" fill="#efe2b0"/><circle cx="326" cy="-30" r="3.6" fill="#efe2b0"/>
+      ${Array.from({length:30},(_,i)=>`<circle class="twk" style="animation-delay:${(i*.37%3).toFixed(2)}s" cx="${(i*97)%400}" cy="${(i*53)%300-80}" r="${1.1+i%3*.4}" fill="#fff8d0"/>`).join("")}
+      <g opacity=".9">${Array.from({length:10},(_,i)=>gTree(i*44,318,1+(i%3)*.2,"#272d5c")).join("")}</g>
+      ${Array.from({length:8},(_,i)=>gTree(i*56+20,334,1.1+(i%2)*.25,"#1f2a4a")).join("")}
+      <path d="M0 340 Q100 312 200 330 Q300 310 400 340 V490 H0Z" fill="url(#ff-gr)" stroke="${INK}" stroke-width="2.4"/>${gTufts(13,26,350,478,"#244236")}
+      ${[[120,420,"#7ff0d8"],[150,438,"#ff9ec4"],[300,410,"#c9a6ff"],[332,432,"#7ff0d8"],[240,456,"#ff9ec4"]].map(([x,y,c],i)=>`<g transform="translate(${x} ${y}) scale(${i%2?.8:1})"><circle cy="-10" r="22" fill="${c}" opacity=".18"/><rect x="-3" y="-8" width="6" height="12" rx="3" fill="#f6ead8" stroke="${INK}" stroke-width="1.8"/><path d="M-11 -6 Q0 -22 11 -6Z" fill="${c}" stroke="${INK}" stroke-width="2"/><circle cx="-4" cy="-11" r="1.6" fill="#fff"/><circle cx="3" cy="-14" r="1.3" fill="#fff"/></g>`).join("")}
+      <circle cx="74" cy="250" r="84" fill="url(#ff-lamp)"/>
+      <g filter="url(#wobble)"><path d="M40 470 V200 Q40 176 64 176 H76" fill="none" stroke="${INK}" stroke-width="11" stroke-linecap="round"/><path d="M40 470 V200 Q40 176 64 176 H76" fill="none" stroke="#7a5a4a" stroke-width="6" stroke-linecap="round"/>
+        <path d="M76 176 V196" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M60 204 Q74 196 88 204 L92 242 Q74 252 56 242Z" fill="#ffe9a6" ${O}/><path d="M66 202 Q64 224 64 246 M82 202 Q84 224 84 246" stroke="#f2b45a" stroke-width="2"/>
+        <rect x="62" y="194" width="24" height="9" rx="3" fill="#5e3a2a" ${O}/><rect x="64" y="244" width="20" height="7" rx="3" fill="#5e3a2a" ${O}/><path d="M74 251 v8" stroke="#e2546e" stroke-width="3" stroke-linecap="round"/></g>
       <g id="flies"></g>`;
     const box=sv.querySelector("#flies");
-    const mkFly=(gold,i)=>{const b={gold,x:40+Math.random()*320,y:70+Math.random()*290,a:Math.random()*6.3,s:gold?330:45+Math.random()*45,t:Math.random()*9,flee:0};
+    const mkFly=(gold,i)=>{const b={gold,x:40+Math.random()*320,y:70+Math.random()*290,a:Math.random()*6.3,s:gold?410:45+Math.random()*45,t:Math.random()*9,flee:0};
       b.el=grp(box,gold?`<circle r="50" fill="url(#ffg)" class="glim"/><circle r="6" fill="#fffbe0" stroke="#ffb800" stroke-width="2"/><circle r="34" fill="transparent"/>`
         :`<circle r="${26+Math.random()*14}" fill="url(#ffc${i%COL.length})" class="glim" style="animation-delay:${(-Math.random()*2).toFixed(2)}s"/><circle r="3.6" fill="#fff"/><circle r="22" fill="transparent"/>`);
       b.el.style.cursor="pointer";
@@ -291,13 +338,13 @@ const GAMES={
         if(b.gold){done=1;b.el.classList.add("caught");A.win(g.win||"Attrapée !")}
         else{b.flee=.6;b.s=180;b.a+=Math.PI;A.sfx("pop");A.say(g.miss||"Pas celle-là ! Cherche la dorée !")}};
       return b};
-    const flies=[...Array.from({length:28},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[28].el); // la dorée passe devant
+    const NF=46,flies=[...Array.from({length:NF},(_,i)=>mkFly(0,i)),mkFly(1)];box.appendChild(flies[NF].el); // la dorée passe devant
     A.say(g.say||"Attrape la luciole dorée !");
     const clk=A.clock(g.time||15,()=>{A.say("Trop tard, elle s'est cachée ! Encore une fois…");A.later(()=>{clk.reset();A.say(g.say||"Attrape la luciole dorée !")},1400)});
     A.loop(dt=>{for(const b of flies){if(done&&b.gold)continue;b.t+=dt;
       if(b.flee>0&&(b.flee-=dt)<=0)b.s=45+Math.random()*45;
       // la dorée change souvent de direction, d'un coup
-      if(b.gold&&Math.random()<dt*3)b.a+=(Math.random()-.5)*3.6;else b.a+=(Math.random()-.5)*(b.gold?6:2.5)*dt;
+      if(b.gold&&Math.random()<dt*4)b.a+=(Math.random()-.5)*3.6;else b.a+=(Math.random()-.5)*(b.gold?6:2.5)*dt;
       b.x+=Math.cos(b.a)*b.s*dt;b.y+=Math.sin(b.a)*b.s*dt+Math.sin(b.t*3)*.4;
       if(b.x<30||b.x>370)b.a=Math.PI-b.a;if(b.y<60||b.y>400)b.a=-b.a;b.x=Math.max(30,Math.min(370,b.x));b.y=Math.max(60,Math.min(400,b.y));
       b.el.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)})`)}});
@@ -307,15 +354,30 @@ const GAMES={
      Un raté et le caillou coule : on recommence. Il faut need rebonds d'affilée. */
   ricochet(g,A){
     const sv=A.sv,need=g.need||4,X0=40,WG=320,HALF=26;let t=0,k=0,per=.9,st="aim";
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><g filter="url(#wobble)"><path d="M0 170 Q100 150 200 164 Q300 150 400 170 V200 H0Z" fill="#8dbd86" ${O}/></g>
-      <rect y="196" width="400" height="200" fill="#a9d3e6"/><path d="M60 240 q30 -8 60 0 M220 300 q26 -8 52 0 M120 350 q24 -6 48 0" fill="none" stroke="#e4f3f9" stroke-width="3" stroke-linecap="round"/>
-      <rect y="392" width="400" height="88" fill="#d9c6a4"/><g id="rings"></g><g id="pips"></g>
-      <circle id="stone" cx="40" cy="300" r="9" fill="#cfc6c0" stroke="${INK}" stroke-width="2.6" style="transition:transform .16s ease-out,opacity .3s"/>
-      <rect x="${X0}" y="420" width="${WG}" height="24" rx="12" fill="#f6b3a8" stroke="${INK}" stroke-width="3"/>
-      <rect x="${200-HALF}" y="423" width="${2*HALF}" height="18" fill="#a9d68f"/>
-      <rect id="cur" x="${X0}" y="412" width="8" height="40" rx="4" fill="${INK}"/>`;
+    sv.innerHTML=`<defs>${gSky("ri-sky","#8fc6ea","#eef6ee",-320,180)}
+        <linearGradient id="ri-w" x1="0" y1="190" x2="0" y2="396" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9fd3ea"/><stop offset="1" stop-color="#5fa6cf"/></linearGradient>
+        <linearGradient id="ri-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6d3ae"/><stop offset="1" stop-color="#cdb48a"/></linearGradient>
+        <radialGradient id="ri-st" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#f1ece8"/><stop offset="1" stop-color="#a99f98"/></radialGradient>
+        <linearGradient id="ri-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f6a3a0"/><stop offset=".5" stop-color="#fcd9c4"/><stop offset="1" stop-color="#f6a3a0"/></linearGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#ri-sky)"/>${gCloud(90,-140,1)}${gCloud(310,-60,1.1)}${gCloud(220,60,.6)}
+      <g opacity=".75">${Array.from({length:9},(_,i)=>gTree(i*50+12,174,.75+(i%3)*.15,"#8fbf8a")).join("")}</g>
+      <g filter="url(#wobble)"><path d="M0 172 Q100 152 200 166 Q300 152 400 172 V202 H0Z" fill="#8dbd86" ${O}/></g>
+      <rect y="198" width="400" height="198" fill="url(#ri-w)"/>
+      <g opacity=".22">${Array.from({length:9},(_,i)=>`<g transform="translate(0 404) scale(1 -1)">${gTree(i*50+12,206,.75+(i%3)*.15,"#2f6a5a")}</g>`).join("")}</g>
+      <g stroke="#e8f6fb" stroke-width="3" fill="none" stroke-linecap="round" opacity=".85"><path d="M40 236 q30 -8 60 0"/><path d="M230 262 q26 -8 52 0"/><path d="M110 330 q24 -6 48 0"/><path d="M290 352 q20 -6 40 0"/></g>
+      ${[[24,230,1],[372,300,.8],[340,236,.6]].map(([x,y,k])=>`<g transform="translate(${x} ${y}) scale(${k})"><path d="M-18 0 A18 9 0 1 0 0 -9 L0 0Z" fill="#7fbf74" stroke="${INK}" stroke-width="2"/></g>`).join("")}
+      <path d="M-10 394 Q100 382 200 390 Q300 380 410 394 V490 H-10Z" fill="url(#ri-s)" stroke="${INK}" stroke-width="2.4"/>
+      ${[[40,404,7],[66,412,5],[330,406,6],[360,414,8],[150,470,5],[260,468,6]].map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*.7}" fill="#bdb2aa" stroke="${INK}" stroke-width="1.6"/>`).join("")}
+      ${[[8,396],[22,392],[386,396],[372,392]].map(([x,y],i)=>`<path d="M${x} ${y} q${i%2?3:-3} -40 ${i%2?-2:2} -62" stroke="#6f9a60" stroke-width="3" fill="none"/><ellipse cx="${x+(i%2?-2:2)}" cy="${y-56}" rx="3.4" ry="9" fill="#9a6a44" stroke="${INK}" stroke-width="1.6"/>`).join("")}
+      <g id="rings"></g><g id="pips"></g>
+      <g id="stone" style="transition:transform .16s ease-out,opacity .3s"><ellipse cx="40" cy="300" rx="11" ry="8" fill="url(#ri-st)" stroke="${INK}" stroke-width="2.6"/><ellipse cx="36" cy="297" rx="3.4" ry="2" fill="#fff" opacity=".8"/></g>
+      <rect x="${X0-10}" y="410" width="${WG+20}" height="46" rx="16" fill="#fffaf2" stroke="${INK}" stroke-width="3"/>
+      <rect x="${X0}" y="421" width="${WG}" height="24" rx="12" fill="url(#ri-g)" stroke="${INK}" stroke-width="2.6"/>
+      <rect x="${200-HALF}" y="423" width="${2*HALF}" height="20" fill="#a9d68f"/><path d="M200 426 l2.6 5.2 5.6 .8 -4 4 1 5.6 -5.2 -2.8 -5.2 2.8 1 -5.6 -4 -4 5.6 -.8Z" fill="#fff" opacity=".9"/>
+      <path d="M${200-HALF} 423 V443 M${200+HALF} 423 V443" stroke="${INK}" stroke-width="2"/>
+      <rect id="cur" x="${X0}" y="414" width="8" height="38" rx="4" fill="${INK}" stroke="#fff" stroke-width="1.6"/>`;
     const cur=sv.querySelector("#cur"),stone=sv.querySelector("#stone"),rings=sv.querySelector("#rings"),pips=sv.querySelector("#pips");
-    const drawPips=()=>pips.innerHTML=Array.from({length:need},(_,i)=>`<circle cx="${200+(i-(need-1)/2)*30}" cy="118" r="10" fill="${i<k?"#a9d68f":"#fff"}" stroke="${INK}" stroke-width="2.6"/>`).join("");
+    const drawPips=()=>pips.innerHTML=Array.from({length:need},(_,i)=>`<ellipse cx="${200+(i-(need-1)/2)*32}" cy="118" rx="12" ry="9" fill="${i<k?"#a9d68f":"#fffaf2"}" stroke="${INK}" stroke-width="2.6"/>`).join("");
     const reset=()=>{k=0;per=.9;t=0;st="aim";stone.style.transform="";stone.style.opacity=1;rings.innerHTML="";drawPips();A.say(g.say||`Touche dans le vert à chaque rebond : ${need} d'affilée !`)};
     const pos=()=>(1-Math.cos(t*Math.PI/per))/2;
     A.loop(dt=>{if(st!=="aim")return;t+=dt;cur.setAttribute("x",(X0+pos()*WG-4).toFixed(1))});
@@ -380,6 +442,9 @@ const GAMES={
         ${[[60,262,292],[250,292,326],[130,326,362],[320,362,400],[90,400,442],[280,442,490]].map(([x,a,b])=>`<path d="M${x} ${a} V${b}" stroke="#9c6a40" stroke-width="2"/>`).join("")}
       </g>
       <path d="M8 64 Q100 112 200 64 Q300 112 392 64" fill="none" stroke="${INK}" stroke-width="2"/>${FLAGS}
+      ${[128,272].map((x,i)=>`<g transform="translate(${x} 266)" filter="url(#wobble)"><ellipse cy="2" rx="20" ry="5" fill="#5b4250" opacity=".18"/><path d="M-16 -26 H16 L12 0 H-12Z" fill="#d98b6a" ${O}/><rect x="-19" y="-32" width="38" height="8" rx="3" fill="#c97a5a" ${O}/>
+        <path d="M0 -32 q-2 -18 -10 -26 M0 -32 q2 -20 10 -30 M0 -32 V-56" stroke="#6f9a60" stroke-width="3" fill="none" stroke-linecap="round"/>
+        ${[[-10,-58],[10,-62],[0,-60]].map(([fx,fy],j)=>`<g transform="translate(${fx} ${fy})">${[0,72,144,216,288].map(a=>`<circle cx="${(Math.cos(a*Math.PI/180)*4.4).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*4.4).toFixed(1)}" r="3.6" fill="${[["#f48aa6","#fff","#f2d27a"],["#c9a6ff","#f48aa6","#fff"]][i][j]}" stroke="${INK}" stroke-width="1.3"/>`).join("")}<circle r="2.4" fill="#f2c45a"/></g>`).join("")}</g>`).join("")}
       <ellipse cx="200" cy="360" rx="196" ry="70" fill="#5b4250" opacity=".12"/>
       ${[[192,64,"#e7a07a"],[176,56,"#f6dcb5"],[156,48,"#9ec3ef"],[134,40,"#f6dcb5"],[110,31,"#f48aa6"],[84,23,"#f6dcb5"]].map(([rx,ry,c],i)=>`<ellipse cx="200" cy="354" rx="${rx}" ry="${ry}" fill="${c}" ${i?`stroke="#fff" stroke-width="2" stroke-dasharray="6 5" stroke-opacity=".7"`:O}/>`).join("")}
       <rect y="-320" width="400" height="810" fill="url(#cu-vig)" pointer-events="none"/>
@@ -437,12 +502,25 @@ const GAMES={
     const MOT={stripe:`<path d="M-10 -14 H10 M-10 -5 H10" stroke="#fff" stroke-width="3.4"/>`,dot:`<circle cx="-4" cy="-15" r="2.6" fill="#fff"/><circle cx="4" cy="-6" r="2.6" fill="#fff"/><circle cx="-3" cy="3" r="2.6" fill="#fff"/>`,
       heart:`<path d="M0 -2 C-8 -7 -9 -12 -6 -15 Q-3 -17 0 -13 Q3 -17 6 -15 C9 -12 8 -7 0 -2Z" fill="#fff"/>`,star:`<path d="M0 -17 l2.6 5.4 5.8 .8 -4.2 4 1 5.8 -5.2 -2.8 -5.2 2.8 1 -5.8 -4.2 -4 5.8 -.8Z" fill="#fff"/>`};
     const sock=([c,m])=>`<g filter="url(#wobble)"><path d="M-10 -26 H10 V6 H20 Q28 6 28 14 Q28 22 20 22 H-2 Q-10 22 -10 14Z" fill="${c}" ${O}/><rect x="-12" y="-31" width="24" height="9" rx="3" fill="#fffaf2" ${O}/></g>${MOT[m]}`;
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${Array.from({length:24},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}<g id="cards"></g>`;
+    sv.innerHTML=`<defs><pattern id="me-ging" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="28" height="28" fill="#fff6ef"/><rect width="14" height="28" fill="#f6b3c4" opacity=".45"/><rect width="28" height="14" fill="#f6b3c4" opacity=".45"/></pattern>
+        <linearGradient id="me-wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c58c5c"/><stop offset="1" stop-color="#a8703f"/></linearGradient>
+        <linearGradient id="me-bk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9c6d3"/><stop offset="1" stop-color="#ec98ae"/></linearGradient>
+        <linearGradient id="me-fc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf8"/><stop offset="1" stop-color="#f6ebe0"/></linearGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#me-wd)"/>${Array.from({length:16},(_,i)=>`<path d="M0 ${-310+i*52} H400" stroke="#8e5a34" stroke-width="2" opacity=".6"/>`).join("")}
+      <g filter="url(#wobble)"><rect x="10" y="56" width="380" height="410" rx="14" fill="url(#me-ging)" ${O}/>
+        <path d="M10 448 Q30 462 50 448 Q70 462 90 448 Q110 462 130 448 Q150 462 170 448 Q190 462 210 448 Q230 462 250 448 Q270 462 290 448 Q310 462 330 448 Q350 462 370 448 Q380 456 390 448" fill="none" stroke="#fff" stroke-width="3" opacity=".8"/>
+        <g transform="translate(66 -10)"><path d="M-46 -6 Q0 18 46 -6 L40 40 Q0 54 -40 40Z" fill="#d9a777" ${O}/><path d="M-42 8 Q0 28 42 8 M-40 24 Q0 42 40 24" stroke="#b07a50" stroke-width="2.4" fill="none"/>
+          <circle cx="-18" cy="-12" r="17" fill="#9ec3ef" ${O}/><path d="M-30 -18 q12 8 24 -6 M-32 -8 q14 8 28 -8" stroke="#fff" stroke-width="2" fill="none" opacity=".8"/>
+          <circle cx="14" cy="-16" r="18" fill="#f48aa6" ${O}/><path d="M2 -24 q12 10 24 -4 M0 -12 q14 8 28 -8" stroke="#fff" stroke-width="2" fill="none" opacity=".8"/>
+          <path d="M28 -30 L60 -64 M36 -26 L70 -56" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="-64" r="4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/><circle cx="70" cy="-56" r="4" fill="#f2c45a" stroke="${INK}" stroke-width="2"/></g>
+        <g transform="translate(330 -4)"><path d="M-22 -14 H22 L18 18 Q0 26 -18 18Z" fill="#fff" ${O}/><path d="M22 -6 q16 0 14 12 q-2 10 -16 8" fill="none" stroke="${INK}" stroke-width="3"/><path d="M-8 -6 C-14 -10 -14 -16 -10 -18 Q-8 -19 -6 -16 Q-4 -19 -2 -18 C2 -16 2 -10 -8 -6Z" transform="translate(8 6)" fill="#f48aa6"/>
+          <path d="M-8 -22 q-4 -10 2 -18 M6 -22 q-4 -10 2 -18" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/></g></g>
+      <g id="cards"></g>`;
     const box=sv.querySelector("#cards"),deck=[...Array(K).keys(),...Array(K).keys()].sort(()=>Math.random()-.5);
     const cards=deck.map((k,i)=>{const c={k,slot:i,up:false,done:false};
-      c.el=grp(box,`<g class="mflip"><g class="back"><rect x="-56" y="-43" width="112" height="86" rx="16" fill="#f6b3c4" stroke="${INK}" stroke-width="3"/>
+      c.el=grp(box,`<g class="mflip"><g class="back"><rect x="-54" y="-38" width="112" height="86" rx="16" fill="#5b4250" opacity=".18"/><rect x="-56" y="-43" width="112" height="86" rx="16" fill="url(#me-bk)" stroke="${INK}" stroke-width="3"/><rect x="-48" y="-35" width="96" height="70" rx="11" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" opacity=".85"/>
         <path d="M-36 -18 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8 M-36 6 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8 l8 8 l8 -8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/></g>
-        <g class="face" style="display:none"><rect x="-56" y="-43" width="112" height="86" rx="16" fill="#fffaf2" stroke="${INK}" stroke-width="3"/><g transform="translate(-6 4) scale(1.15)">${sock(SK[k])}</g></g></g>`,{class:"mcard","data-k":k});
+        <g class="face" style="display:none"><rect x="-54" y="-38" width="112" height="86" rx="16" fill="#5b4250" opacity=".18"/><rect x="-56" y="-43" width="112" height="86" rx="16" fill="url(#me-fc)" stroke="${INK}" stroke-width="3"/><g transform="translate(-6 4) scale(1.15)">${sock(SK[k])}</g></g></g>`,{class:"mcard","data-k":k});
       c.el.style.cursor="pointer";const [x,y]=XY(i);c.el.style.transform=`translate(${x}px,${y}px)`;
       c.el.onpointerdown=e=>{e.stopPropagation();pick(c)};return c});
     const turn=(c,up)=>{c.up=up;const f=c.el.firstChild;replay(f,"flipc");
@@ -469,20 +547,34 @@ const GAMES={
      Une véreuse fait perdre une pomme ; trois belles pommes par terre et on recommence. */
   basket(g,A){
     const sv=A.sv,n=g.n||8,miss=g.miss||3;let got=0,lost=0,bx=200,tx=200,next=.6,st="play",fr=[];
-    const APPLE=`<circle r="13" fill="#e0564f" ${O}/><path d="M0 -12 q2 -6 6 -8" stroke="${INK}" stroke-width="2.4" fill="none"/><path d="M3 -16 q8 -4 10 2 q-6 3 -10 -2Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.8"/><path d="M-7 -4 q2 -4 6 -4" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
-      ROT=`<circle r="13" fill="#a68a52" ${O}/><circle cx="-4" cy="2" r="3" fill="#6f5a34"/><circle cx="5" cy="-4" r="2.2" fill="#6f5a34"/><path d="M5 3 q7 -3 9 4 q-5 3 -9 -4Z" fill="#f3b9c8" stroke="${INK}" stroke-width="1.6"/><circle cx="11" cy="4" r="1" fill="${INK}"/>`;
-    sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#bfe0f2"/><rect y="400" width="400" height="80" fill="#bcd99a"/>
-      <g filter="url(#wobble)">${[[60,40,70],[170,20,80],[290,30,76],[380,60,60],[110,90,56],[240,96,60]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8dbd86" ${O}/>`).join("")}</g>
-      ${[[50,80],[140,60],[210,110],[300,70],[360,100],[100,120]].map(([x,y])=>`<g transform="translate(${x} ${y}) scale(.7)">${APPLE}</g>`).join("")}
-      <g id="fr"></g><g id="bk"><g filter="url(#wobble)"><path d="M-48 -24 H48 L38 20 H-38Z" fill="#d9a777" ${O}/><path d="M-44 -8 H44 M-41 6 H41" stroke="#b07a50" stroke-width="2.4"/><rect x="-52" y="-30" width="104" height="10" rx="5" fill="#c08a5c" ${O}/></g></g>`;
+    const APPLE=`<circle r="13" fill="url(#ba-ap)" ${O}/><path d="M0 -12 q2 -6 6 -8" stroke="${INK}" stroke-width="2.4" fill="none"/><path d="M3 -16 q8 -4 10 2 q-6 3 -10 -2Z" fill="#8fca7a" stroke="${INK}" stroke-width="1.8"/><path d="M-7 -4 q2 -4 6 -4" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
+      ROT=`<circle r="13" fill="url(#ba-rt)" ${O}/><circle cx="-4" cy="2" r="3" fill="#6f5a34"/><circle cx="5" cy="-4" r="2.2" fill="#6f5a34"/><path d="M5 3 q7 -3 9 4 q-5 3 -9 -4Z" fill="#f3b9c8" stroke="${INK}" stroke-width="1.6"/><circle cx="11" cy="4" r="1" fill="${INK}"/>`;
+    sv.innerHTML=`<defs>${gSky("ba-sky","#8fc6ea","#eaf5ee",-320,400)}
+        <radialGradient id="ba-ap" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ff9a8a"/><stop offset=".5" stop-color="#e0564f"/><stop offset="1" stop-color="#b8383a"/></radialGradient>
+        <radialGradient id="ba-rt" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#c9ab70"/><stop offset="1" stop-color="#7f6438"/></radialGradient>
+        <radialGradient id="ba-cr" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#b8dc98"/><stop offset=".6" stop-color="#8dbd86"/><stop offset="1" stop-color="#6c9f66"/></radialGradient>
+        <linearGradient id="ba-gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d68f"/><stop offset="1" stop-color="#86bd72"/></linearGradient>
+        <linearGradient id="ba-bk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2b583"/><stop offset="1" stop-color="#b8834f"/></linearGradient></defs>
+      <rect y="-320" width="400" height="800" fill="url(#ba-sky)"/>${gCloud(300,-150,1)}${gCloud(90,-230,.8)}
+      <path d="M-10 380 Q90 350 200 368 Q300 348 410 372 V420 H-10Z" fill="#c4dfb0"/>
+      <g stroke="${INK}" stroke-width="2.4" fill="#f3e2c4">${[20,80,140,200,260,320,380].map(x=>`<path d="M${x-7} 404 V378 L${x} 370 L${x+7} 378 V404Z"/>`).join("")}<rect x="-10" y="382" width="420" height="7" rx="2"/><rect x="-10" y="394" width="420" height="7" rx="2"/></g>
+      <path d="M-10 400 Q100 390 200 398 Q300 388 410 400 V490 H-10Z" fill="url(#ba-gr)" stroke="${INK}" stroke-width="2.4"/>${gTufts(17,20,408,478,"#6f9a60")}${gFlowers(19,10,410,476)}
+      <g filter="url(#wobble)"><path d="M-10 -320 H410 V40 Q380 120 330 100 Q300 140 250 112 Q210 146 160 116 Q110 142 70 108 Q30 128 -10 96Z" fill="#6c9f66" ${O}/>
+        ${[[50,40,74],[170,24,84],[296,32,80],[380,62,62],[110,86,58],[236,92,62],[340,96,46],[20,90,44]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#ba-cr)"/>`).join("")}
+        ${[[30,20,26],[150,0,30],[276,10,28],[94,70,18],[220,74,20]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#c8e6a6" opacity=".5"/>`).join("")}
+        ${[[80,60],[190,50],[320,70],[130,110],[260,120],[30,110]].map(([x,y])=>`<path d="M${x} ${y} q8 -6 16 0" fill="none" stroke="#5d8a52" stroke-width="3" stroke-linecap="round"/>`).join("")}</g>
+      ${[[50,80],[140,60],[210,110],[300,70],[360,100],[100,120],[250,40],[30,50]].map(([x,y])=>`<g transform="translate(${x} ${y}) scale(.72)">${APPLE}</g>`).join("")}
+      <g id="fr"></g><g id="bk"><ellipse cy="26" rx="54" ry="8" fill="#5b4250" opacity=".16"/><path d="M-44 -26 Q0 -78 44 -26" fill="none" stroke="${INK}" stroke-width="8" stroke-linecap="round"/><path d="M-44 -26 Q0 -78 44 -26" fill="none" stroke="#c08a5c" stroke-width="4" stroke-linecap="round"/>
+        <path d="M-50 -24 H50 L40 22 Q0 28 -40 22Z" fill="url(#ba-bk)" ${O}/>${[-36,-18,0,18,36].map(x=>`<path d="M${x} -22 Q${x+4} 0 ${x*.82} 22" stroke="#9c6a40" stroke-width="2" fill="none"/>`).join("")}<path d="M-46 -8 Q0 -2 46 -8 M-43 7 Q0 13 43 7" stroke="#9c6a40" stroke-width="2.4" fill="none"/>
+        <rect x="-54" y="-31" width="108" height="11" rx="5.5" fill="#c08a5c" ${O}/><path d="M-40 -26 h80" stroke="#e7b98a" stroke-width="2" stroke-dasharray="6 5"/><path d="M-50 -4 l-6 6 M-52 6 l-4 4" stroke="#e2546e" stroke-width="3" stroke-linecap="round"/></g>`;
     const box=sv.querySelector("#fr"),bk=sv.querySelector("#bk");
     drag(A,p=>{tx=Math.max(50,Math.min(350,p.x))});
     const reset=()=>{got=0;lost=0;fr.forEach(f=>f.el.remove());fr=[];next=.8;st="play";A.say(g.say||`Rattrape ${n} pommes avec le panier ! Pas les véreuses.`)};
     A.loop(dt=>{bx+=(tx-bx)*Math.min(1,dt*14);bk.setAttribute("transform",`translate(${bx.toFixed(1)} 430)`);if(st!=="play")return;
-      if((next-=dt)<=0){next=Math.max(.45,.9-got*.05);const bad=Math.random()<.22;fr.push({x:40+Math.random()*320,y:100,vy:80+got*10+Math.random()*40,bad,el:grp(box,bad?ROT:APPLE)})}
-      for(const f of fr){f.vy+=170*dt;f.y+=f.vy*dt;
-        if(f.y>=398&&f.y<=432&&Math.abs(f.x-bx)<48){f.done=1;f.el.remove();
-          if(f.bad){got=Math.max(0,got-1);A.sfx("bad");A.say(`Beurk, une véreuse ! ${got} sur ${n}.`)}
+      if((next-=dt)<=0){next=Math.max(.34,.72-got*.05);const bad=Math.random()<.32;fr.push({x:30+Math.random()*340,y:100,vy:130+got*16+Math.random()*60,bad,el:grp(box,bad?ROT:APPLE)})}
+      for(const f of fr){f.vy+=230*dt;f.y+=f.vy*dt;
+        if(f.y>=398&&f.y<=432&&Math.abs(f.x-bx)<44){f.done=1;f.el.remove();
+          if(f.bad){got=Math.max(0,got-2);A.sfx("bad");A.say(`Beurk, une véreuse ! −2. ${got} sur ${n}.`)}
           else{got++;A.sfx("good",got);if(got>=n){st="won";A.win(g.win||"Le panier est plein !");return}if(got===Math.ceil(n/2))A.cheer("CONTINUE !");A.say(`${got} sur ${n} !`)}continue}
         if(f.y>480){f.done=1;f.el.remove();if(f.bad)continue;lost++;
           if(lost>=miss){st="lost";A.sfx("lose");A.say(`${miss} pommes par terre… On recommence !`);A.later(reset,1400);return}
@@ -494,7 +586,8 @@ const GAMES={
 
   /* Le tas de feuilles (Cannelle) : on pousse les feuilles du doigt jusqu'au tas, avant que le vent se lève. */
   rake(g,A){
-    const sv=A.sv,N=g.n||16,T=g.time||20,PX=200,PY=260;let st="play",left=T,lv=[],last=null;
+    // 20 s avant le 15/11/2026 (Joffray : « trop simple »)
+    const sv=A.sv,N=g.n||16,T=g.time||13,PX=200,PY=260;let st="play",left=T,lv=[],last=null;
     sv.innerHTML=`<rect y="-320" width="400" height="800" fill="#c9e2a4"/>${Array.from({length:26},(_,i)=>{const x=(i*137)%400,y=(i*89)%480;return `<path d="M${x} ${y} l-3 -6 M${x} ${y} l0 -7 M${x} ${y} l3 -6" stroke="#86b06e" stroke-width="2" stroke-linecap="round"/>`}).join("")}
       <ellipse cx="${PX}" cy="${PY}" rx="70" ry="46" fill="#e8d3a8" stroke="#b9925e" stroke-width="3" stroke-dasharray="8 7"/><g id="lv"></g>
       <rect x="40" y="456" width="320" height="12" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.4"/><rect id="bar" x="42" y="458" width="316" height="8" rx="4" fill="#f2a35c"/>`;
@@ -1074,6 +1167,13 @@ const GAMES={
       <text x="200" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="${INK}">${g.label||"Gribouille peint…"}</text>`;
     const models=ids.map((id,i)=>grp(sv,foxAt(id,pos[i][0],pos[i][1],w),{class:"model"}));
     const bar=sv.querySelector("#bar");let p=0,next=.8;const flies=[];
+    // mouches rondes à grands yeux (15/11/2026, Joffray : « un peu plus belles ») ; des abeilles quand le texte en parle (Pataud)
+    const bee=/abeille/i.test((g.say||"")+(g.label||"")),
+      BUG=`<circle r="26" fill="transparent"/><g transform="scale(1.45)"><g class="wing"><ellipse cx="-7" cy="-9" rx="8" ry="5.4" transform="rotate(-25 -7 -9)" fill="#eef8ff" fill-opacity=".85" stroke="${INK}" stroke-width="1.5"/><ellipse cx="7" cy="-9" rx="8" ry="5.4" transform="rotate(25 7 -9)" fill="#eef8ff" fill-opacity=".85" stroke="${INK}" stroke-width="1.5"/><path d="M-9 -11 q2 -2 4 -1 M9 -11 q-2 -2 -4 -1" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></g>
+        <ellipse rx="8.5" ry="7.5" fill="${bee?"#f6c84a":"#4a4f6a"}" stroke="${INK}" stroke-width="1.8"/>${bee?`<path d="M-3 -7 V7 M3.4 -6.6 V6.6" stroke="${INK}" stroke-width="2.6"/>`:`<ellipse cx="-2.4" cy="-3.6" rx="3" ry="1.8" fill="#8a90b8"/>`}
+        <circle cx="-3.4" cy="1" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.3"/><circle cx="3.4" cy="1" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.3"/><circle cx="-2.8" cy="1.6" r="1.7" fill="${INK}"/><circle cx="4" cy="1.6" r="1.7" fill="${INK}"/><circle cx="-2.2" cy=".9" r=".6" fill="#fff"/><circle cx="4.6" cy=".9" r=".6" fill="#fff"/>
+        <ellipse cx="-6" cy="4.6" rx="1.6" ry="1" fill="#f48aa6" opacity=".8"/><ellipse cx="6" cy="4.6" rx="1.6" ry="1" fill="#f48aa6" opacity=".8"/>
+        <path d="M-2 -7 q-3 -5 -6 -6 M2 -7 q3 -5 6 -6" stroke="${INK}" stroke-width="1.3" fill="none" stroke-linecap="round"/>${bee?`<path d="M8 2 l4 1 -4 1.6" fill="${INK}"/>`:""}</g>`;
     A.say(g.say||"Chasse les mouches avant qu'elles chatouillent le museau !");
     A.loop(dt=>{p=Math.min(100,p+dt/dur*100);bar.setAttribute("width",(p/100*314).toFixed(1));
       if(p>=100){flies.forEach(f=>f.el.remove());A.win(g.win||"Ne bougez plus… Voilà !");return}
@@ -1083,7 +1183,7 @@ const GAMES={
       next-=dt;if(next<=0&&flies.length<(N>1?4:3)){next=(N>1?.75:.8)*(1-p/300)*(.7+Math.random()*.6);const m=Math.floor(Math.random()*N),[mx,my]=pos[m];
         const a=-Math.PI*(.05+Math.random()*.9),D=w*.6+70,T=(N>1?1.45:1.35)-p/100*.3;
         const f={m,t:0,T,z:6+Math.random()*8,x:mx+Math.cos(a)*D,y:my-w*.42+Math.sin(a)*D,tx:mx,ty:my-w*.42};
-        f.el=grp(sv,`<circle r="24" fill="transparent"/><ellipse cx="-5" cy="-6" rx="6" ry="4" fill="#e4f3f9" stroke="${INK}" stroke-width="1.6" class="wing"/><ellipse cx="5" cy="-6" rx="6" ry="4" fill="#e4f3f9" stroke="${INK}" stroke-width="1.6" class="wing"/><circle r="5.5" fill="${INK}"/>`);
+        f.el=grp(sv,BUG);
         f.el.style.cursor="pointer";f.el.onpointerdown=e=>{e.stopPropagation();if(A.won)return;A.sfx("pop");f.el.classList.add("shoo");flies.splice(flies.indexOf(f),1);setTimeout(()=>f.el.remove(),350)};
         flies.push(f)}
       for(const f of flies.slice()){f.t+=dt;const k=Math.min(1,f.t/f.T),z=f.z*(1-k);
