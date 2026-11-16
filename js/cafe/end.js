@@ -8,7 +8,7 @@ function buddyRow(){const id=buddy(),f=FOX[id],td=todayStr(),t=S.together[id]||(
 // et mal dites) : une barre de score avec les trois étoiles, ce qu'on gagne, puis les clients
 function endStats(o){const t=[o.g,Math.ceil(o.g*o.c2),Math.ceil(o.g*o.c3)],mx=Math.max(t[2]*1.08,o.e),pc=x=>Math.min(100,x/mx*100).toFixed(1);
   const gain=(ic,n)=>n?`<span>${ic}<b>+${n}</b></span>`:"";
-  return`<div class="escore"><div class="ebar"><i style="width:${pc(o.e)}%"></i>${t.map((x,i)=>`<span class="etk${o.e>=x?" on":""}" style="left:${pc(x)}%"><b>${"★".repeat(i+1)}</b></span>`).join("")}<em><span>Score ${o.e}</span></em></div>
+  return`<div class="escore"><div class="erow"><span class="enum">Score<b>${o.e}</b></span><div class="ebar"><i style="width:${pc(o.e)}%"></i>${t.map((x,i)=>`<span class="etk${o.e>=x?" on":""}" style="left:${pc(x)}%"><b>${"★".repeat(i+1)}</b></span>`).join("")}</div></div>
   <div class="egain">${gain(coinSVG,o.coins)||`<span>${coinSVG}<b>+0</b></span>`}${gain(bellSVG,o.bells)}${gain(candySVG,o.candy)}${gain(sucreSVG,o.sucres)}</div>
   ${o.replay?`<div class="emini">Journée rejouée : 25 % des pièces</div>`:""}
   <div class="emini">${G.served} / ${G.cfg.c} clients servis · ${G.lost?`${G.lost} parti${G.lost>1?"s":""} fâché${G.lost>1?"s":""}`:"aucun fâché"}</div></div>`}

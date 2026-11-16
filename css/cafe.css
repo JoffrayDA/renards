@@ -200,7 +200,10 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .stars{font-size:38px;letter-spacing:6px;color:var(--gold);text-align:center;line-height:1.1;margin:4px 0 6px}
 .stars em{font-style:normal;color:#e9dccf}
 .escore{margin:0 0 14px}
-.ebar{position:relative;height:28px;margin:20px 4px 10px;background:var(--card-2);border:2.5px solid var(--ink);border-radius:14px}
+.erow{display:flex;align-items:flex-end;gap:10px;margin:0 4px 10px}
+.enum{flex:none;text-align:center;font-size:11px;font-weight:800;color:var(--ink-soft);line-height:1.1}
+.enum b{display:block;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ebar{flex:1;position:relative;height:24px;margin:20px 0 2px;background:var(--card-2);border:2.5px solid var(--ink);border-radius:14px}
 .ebar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#ffdc73,#f5b13a);border-radius:12px}
 .ebar em{position:absolute;inset:0;text-align:center;font-style:normal;font-weight:800;font-size:15px;line-height:23px;font-variant-numeric:tabular-nums}
 .etk{position:absolute;top:-2px;bottom:-2px;width:2.5px;margin-left:-1px;background:var(--ink);opacity:.35}
