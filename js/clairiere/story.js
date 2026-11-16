@@ -524,7 +524,7 @@ function storyTap(at){const c=cur();if(!c||gameOn||!$("talk").hidden||!$("sheet"
   {const tf=at.startsWith("@")?null:sF(at);if(tf&&!tf.walk&&!tf.inside&&tf.y>H-130){tf.fast=1;actGo(at,Math.max(60,Math.min(340,tf.x)),H-160,"sit")}}
   hotEl.hidden=true;meStory(at); // Roussette y va (roussette.js)
   syncFoxes();
-  const go=()=>talk(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
+  const go=()=>talkNow(typeof b.lines==="function"?b.lines(at):b.lines,()=>{
     R.beat[c.id]=c.n+1;if(isNoelStory(c.id)||gardenCleared())drawBg(); // le sapin change en cours d'histoire (décoré après les boules de Paillette)
     if(b.rain)rainTill=Date.now()+18e4;if(b.stay){stayIds=b.stay;stayTill=Date.now()+18e4}
     for(const [fid,sp] of b.after||[]){const f=foxes.find(x=>x.id===fid&&!x.wild);if(!f||f.walk)continue;

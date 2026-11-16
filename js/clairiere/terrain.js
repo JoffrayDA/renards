@@ -55,8 +55,8 @@ function goZone(z){if(z===zone||!ZONES.includes(z))return;const from=ZONES.index
   if(z==="jardin")return;
   zoneEl=document.createElement("div");zoneEl.className=`play zone z-${z} ${fwd?"fromR":"fromL"}`;
   $("scene").appendChild(zoneEl);
-  if(z==="jeux")renderJeux();else renderPotager();
-  ppTip(z==="jeux"?"terrain":"potager")}
+  if(z==="jeux")renderJeux();else if(POT_SOON)renderSoon();else renderPotager();
+  if(z==="jeux"||!POT_SOON)ppTip(z==="jeux"?"terrain":"potager",null,true)}
 const leaveZone=()=>goZone("jardin");
 // la languette du jardin vers le terrain de jeu, sur le bord droit de la scène
 function drawZoneTab(){let t=$("ztab");if(!t){t=document.createElement("button");t.id="ztab";t.type="button";t.className="znav zr";t.setAttribute("aria-label",ZNAME.jeux);
@@ -79,7 +79,11 @@ const JEUX={
   bascule:{name:"Bascule",b:80,n:2,desc:"Une planche sur un rondin, un renard à chaque bout. Touche-la pour qu'ils montent plus haut."},
   trampoline:{name:"Trampoline",b:120,n:1,desc:"Il rebondit, il rebondit… Touche-le : salto !"}
 };
-const jeuAt=()=>{const {a,b}=zRows();return{toboggan:[52,a],tourniquet:[292,a],bascule:[112,b],trampoline:[296,b]}};
+// en quinconce (16/11/2026, Joffray : alignés, ils se marchaient dessus) : toboggan en haut à gauche, tourniquet plus bas à droite,
+// trampoline encore plus bas à gauche, bascule tout en bas à droite
+// (écran court : le tourniquet remonte et la bascule descend tout en bas, sinon ils se chevauchent)
+const jeuAt=()=>{const {a,b}=zRows(),d=b-a,sm=H<620;
+  return{toboggan:[40,a-14],tourniquet:[298,sm?a+30:Math.round(a+d*.38+20)],trampoline:[92,Math.round(a+d*.62+20)],bascule:[282,sm?H-70:b+10]}};
 // dessins sans renard, pour la boutique et les jeux construits
 const JART={
   tourniquet:(cx,cy,th=.5)=>{const RX=66,RY=21,C=["#f6a5b4","#9fd0f0","#f2d27a","#a9d68f"];
@@ -129,7 +133,7 @@ function renderJeux(){if(!zoneEl)return;stopZone();
     u.tap();const r=u.ids.map(pet).some(Boolean);bip(r?"purr":"pop");if(r){renderHud();toast(`Rires ${zAu[k]} : +1 cœur chacun !`)}};
   // le tunnel en glands : au fond, contre la barrière
   if(R.obj.tunnel){const id=play?take(1)[0]:null,w=74;grp(box,`<g data-z="tunnel">`+OBJS.tunnel.svg(id).replace(/^<svg/,`<svg x="${200-w/2}" y="${222-w*.97}" width="${w}" height="${(w*.97).toFixed(1)}"`)+"</g>")}
-  for(const k of ["toboggan","tourniquet","bascule","trampoline"]){const [x,y]=AT[k];
+  for(const k of ["toboggan","tourniquet","trampoline","bascule"]){const [x,y]=AT[k];
     if(!R.jeux[k]){const w={toboggan:170,tourniquet:150,bascule:190,trampoline:120}[k],h={toboggan:130,tourniquet:80,bascule:56,trampoline:56}[k],cx=k==="toboggan"?x+70:x,cy=y+8;
       grp(box,`<g class="zslot" data-z="${k}"><rect x="${cx-w/2}" y="${cy-h}" width="${w}" height="${h}" rx="18" fill="#fffaf2" fill-opacity=".45" stroke="${INK}" stroke-width="2.2" stroke-dasharray="7 6"/>
         <circle cx="${cx}" cy="${cy-h/2-6}" r="13" fill="#fffaf2" ${zL(2.2)}/><path d="M${cx-6} ${cy-h/2-6} h12 M${cx} ${cy-h/2-12} v12" ${zL(3)}/>
@@ -191,6 +195,27 @@ const JMOVE={
 };
 
 /* ---------- le potager ---------- */
+// en construction pour les testeurs (16/11/2026, Joffray) : l'écran existe, mais on ne plante pas encore ;
+// ni objet en boutique, ni bouton dans la gamelle. Remettre à false pour l'ouvrir.
+const POT_SOON=true;
+function renderSoon(){if(!zoneEl)return;stopZone();
+  const y=Math.round(H*.56),cop=FOX.copeau&&R.res.copeau?"copeau":"petitpois",
+    plank=(x,yy,w,r)=>`<g transform="rotate(${r} ${x} ${yy})"><rect x="${x-w/2}" y="${yy-7}" width="${w}" height="14" rx="3" fill="#e8b884" ${zL(2.4)}/>${Array.from({length:Math.floor(w/26)},(_,i)=>`<path d="M${x-w/2+10+i*26} ${yy+7} l12 -14" stroke="#e0855c" stroke-width="6"/>`).join("")}<rect x="${x-w/2}" y="${yy-7}" width="${w}" height="14" rx="3" fill="none" ${zL(2.4)}/></g>`;
+  let fr="";potSpots().forEach(([x,yy])=>{fr+=`<ellipse cx="${x}" cy="${yy}" rx="52" ry="24" fill="#9fc27e" opacity=".6"/>${[-30,-10,10,30].map(d=>`<path d="M${x+d} ${yy+8} q2 -14 6 -20 M${x+d+6} ${yy+8} q-1 -10 -6 -16" fill="none" stroke="#6f9a60" stroke-width="2" stroke-linecap="round"/>`).join("")}`});
+  zoneEl.innerHTML=`<svg viewBox="0 0 400 ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${zoneBg("zp")}<g opacity=".75">${fr}</g>
+    <g filter="url(#wobble)">
+      ${[120,280].map(x=>`<path d="M${x-30} ${y+40} L${x-18} ${y-26} M${x+30} ${y+40} L${x+18} ${y-26}" ${zL(6)}/><path d="M${x-30} ${y+40} L${x-18} ${y-26} M${x+30} ${y+40} L${x+18} ${y-26}" stroke="#c98a5a" stroke-width="3" stroke-linecap="round"/>`).join("")}
+      ${plank(200,y-14,250,0)}${plank(200,y+16,250,0)}
+      <path d="M200 ${y-34} V${y-96}" ${zL(6)}/><path d="M200 ${y-34} V${y-96}" stroke="#c98a5a" stroke-width="3"/>
+      <rect x="124" y="${y-150}" width="152" height="62" rx="10" fill="#f6dcb0" ${zL(2.8)}/><path d="M132 ${y-136} H268 M132 ${y-112} H268" stroke="#e8c48e" stroke-width="2"/>
+      <text x="200" y="${y-124}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="15" fill="${INK}">En construction</text>
+      <text x="200" y="${y-102}" text-anchor="middle" font-family="Zen Maru Gothic,sans-serif" font-weight="900" font-size="13" fill="#b8604f">Bientôt !</text>
+      <path d="M58 ${y+60} l10 -30 l10 30Z" fill="#f2a25a" ${zL(2.2)}/><path d="M61 ${y+50} h14" stroke="#fffaf2" stroke-width="4"/><path d="M322 ${y+60} l10 -30 l10 30Z" fill="#f2a25a" ${zL(2.2)}/><path d="M325 ${y+50} h14" stroke="#fffaf2" stroke-width="4"/>
+      <path d="M262 ${y+66} l22 -40" ${zL(4)}/><path d="M276 ${y+30} q8 -8 18 -2 l-6 10Z" fill="#a9b4c0" ${zL(2)}/>
+    </g>
+    <g transform="translate(150 ${y+84})">${zFox(cop,"happy",60)}</g>${zoneOver("zp")}</svg>
+    ${zoneNav()}<div class="psay low">Copeau prépare le potager. Revenez bientôt !</div>`;
+  zoneEl.onpointerdown=e=>{if(zoneClick(e))return;e.stopPropagation();bip("knock");toast("Toc toc… Copeau bêche encore. Le potager ouvre bientôt !")}}
 const CROPS={
   myrtille:{name:"Myrtilles",gl:5,h:3,give:"baies",n:3,desc:"3 poignées de baies. Il en faut 6 pour une gamelle de baies des bois."},
   trefle:{name:"Trèfle",gl:8,h:6,give:"miel",n:1,desc:"Les abeilles en tirent un pot de miel. Il en faut 3 pour une gamelle de miel."},

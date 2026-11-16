@@ -89,11 +89,20 @@ function tapFox(f){
 
 /* ---------- boîte de dialogue ---------- */
 // portrait à gauche, texte à droite ; on touche pour passer à la réplique suivante ; "me", c'est Roussette (le joueur)
-let talkQ=[],talkDone=null;
-function talk(lines,done){talkQ=lines.slice();talkDone=done||null;nextLine()}
-function nextLine(){const el=$("talk");
+// Un dialogue qui arrive tout seul (accueil, arrivée, explication) ne montre d'abord que la tête de celui qui parle, en haut à gauche,
+// avec un « ! » (peek) : on la touche et la bulle s'ouvre. Juste après un toucher (on a touché le renard), la bulle s'ouvre directement.
+let talkQ=[],talkDone=null,tapAt=0;
+document.addEventListener("pointerdown",()=>{tapAt=Date.now()},true);
+const talkWho=id=>id==="me"?{...FOX.roussette,name:ME()}:{...FOX[id],name:nameOf(id)}; // un inconnu ne dit pas son nom
+function talk(lines,done,peek){talkQ=lines.slice();talkDone=done||null;
+  if(peek===undefined)peek=Date.now()-tapAt>900;
+  if(peek&&talkQ.length){const el=$("talk"),[id,expr]=talkQ[0];el.className="talk peek";
+    el.innerHTML=`<div class="pic">${foxArt(talkWho(id),{expr:expr==="open"?"surprise":expr,portrait:1})}</div><i class="tcall">!</i>`;el.hidden=false;bip("pop");return}
+  nextLine()}
+const talkNow=(l,d)=>talk(l,d,false);
+function nextLine(){const el=$("talk");el.className="talk";
   if(!talkQ.length){el.hidden=true;const d=talkDone;talkDone=null;if(d)d();return}
-  const [id,expr,txt,act]=talkQ.shift(),f=id==="me"?{...FOX.roussette,name:ME()}:{...FOX[id],name:nameOf(id)}; // un inconnu ne dit pas son nom
+  const [id,expr,txt,act]=talkQ.shift(),f=talkWho(id);
   el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false;
   try{meLine(id,expr)}catch(e){} // Roussette se tourne vers celui qui parle (roussette.js)
   if(typeof act==="function")try{act()}catch(e){} // les renards jouent la scène pendant la réplique (scenes.js)
@@ -115,10 +124,10 @@ const PP_TIPS={
 };
 R.tips=R.tips||{};
 // la première fois : Petit Pois vient et explique, puis then() ; sinon then() tout de suite
-function ppTip(k,then){const L=PP_TIPS[k];
+function ppTip(k,then,peek){const L=PP_TIPS[k];
   if(!L||R.tips[k]||!R.intro||(typeof gameOn!=="undefined"&&gameOn)||!$("talk").hidden){if(then)then();return}
   R.tips[k]=1;save();
-  talk(L.map(([e,t],i)=>["petitpois",e,t,i===0?()=>{try{if(!houseEl)actNear("petitpois","me")}catch(x){}}:undefined]),then)}
+  talk(L.map(([e,t],i)=>["petitpois",e,t,i===0?()=>{try{if(!houseEl)actNear("petitpois","me")}catch(x){}}:undefined]),then,peek)}
 const INTRO=[
   ["petitpois","joy",`${ME()} ! Te voilà ! J'ai gardé la maison toute la journée.`],
   ["petitpois","shy","Enfin… j'ai surtout dormi sous le porche."],
@@ -162,7 +171,7 @@ function bowlSheet(){
   // (05/11/2026, Joffray : « trop de texte ») : ce qu'il reste en jauge, une ligne par gamelle
   const B=R.bowl&&BOWLS[R.bowl.type],fr=B?Math.max(0,Math.min(1,(R.bowl.until-Date.now())/(B.hours*36e5))):0;
   const cur=B?`<div class="bnow"><b>${B.name}</b> · ${hoursLeft()}<i class="bgauge"><b style="width:${(fr*100).toFixed(0)}%;background:${B.col}"></b></i></div>`:`<p class="sub">La gamelle est vide.</p>`;
-  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name} · ${B.hours} h</strong><span>${B.desc}</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button>${POT_NEED[k]&&R.obj.potager?`<button class="btn ghost bpot" data-buyp="${k}" type="button" ${R.pot[k]<POT_NEED[k]?"disabled":""}>${potIcon[k]()} ${R.pot[k]}/${POT_NEED[k]}</button>`:""}</div>`).join("")}<p class="sub">Chaque visiteur laisse une photo.${canFish()?"":" Le poisson se pêche dans la mare, avec une canne."}</p>`);
+  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name} · ${B.hours} h</strong><span>${B.desc}</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button>${POT_NEED[k]&&R.obj.potager&&!POT_SOON?`<button class="btn ghost bpot" data-buyp="${k}" type="button" ${R.pot[k]<POT_NEED[k]?"disabled":""}>${potIcon[k]()} ${R.pot[k]}/${POT_NEED[k]}</button>`:""}</div>`).join("")}<p class="sub">Chaque visiteur laisse une photo.${canFish()?"":" Le poisson se pêche dans la mare, avec une canne."}</p>`);
 }
 function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))return;
   R.glands-=B.price;R.fish-=B.fish||0;bip("kibble");R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();

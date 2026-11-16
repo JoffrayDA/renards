@@ -116,7 +116,7 @@ function fillObjs(){if(scn.rain)return;
 
 // l'onglet Refuge de la boutique (deco.js) : les objets en glands, à leur place fixe
 function objList(){
-  return `<div class="dgrid">${Object.entries(OBJS).map(([k,o])=>dTile("",o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`),o.name,o.desc,"",
+  return `<div class="dgrid">${Object.entries(OBJS).filter(([k])=>!(k==="potager"&&POT_SOON)).map(([k,o])=>dTile("",o.photo?o.photo("petitpois"):o.svg().replace('viewBox="0 -16 120 116"',`viewBox="${o.thumb}"`),o.name,o.desc,"",
     `<button class="btn" data-obj="${k}" type="button" ${R.obj[k]||R.glands<o.price?"disabled":""}>${R.obj[k]?"Posé":`${acornSVG()} ${o.price}`}</button>`)).join("")}</div>`}
 function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
   R.glands-=o.price;R.obj[k]=1;bip("buy");renderHud();
