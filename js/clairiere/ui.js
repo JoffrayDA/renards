@@ -88,22 +88,36 @@ function tapFox(f){
 }
 
 /* ---------- boîte de dialogue ---------- */
-// portrait à gauche, texte à droite ; on touche pour passer à la réplique suivante ; "me", c'est Roussette (le joueur)
-// Un dialogue qui arrive tout seul (accueil, arrivée, explication) ne montre d'abord que la tête de celui qui parle, en haut à gauche,
-// avec un « ! » (peek) : on la touche et la bulle s'ouvre. Juste après un toucher (on a touché le renard), la bulle s'ouvre directement.
-let talkQ=[],talkDone=null,tapAt=0;
+// comme les quartiers du Café (16/11/2026, Joffray : « DA commune ») : grand portrait au-dessus d'un panneau, au milieu de l'écran ;
+// le premier qui parle à gauche, les autres à droite ; on touche pour passer à la réplique suivante ; "me", c'est Roussette (le joueur).
+// Un dialogue qui arrive tout seul (accueil, arrivée, explication) ne montre d'abord que la tête de celui qui parle, dans un carré de
+// bois miel sous l'heure, avec un « ! » (peek) : on la touche et la bulle s'ouvre. Juste après un toucher, la bulle s'ouvre directement.
+let talkQ=[],talkDone=null,tapAt=0,talkFirst=null,talkLast=null;
 document.addEventListener("pointerdown",()=>{tapAt=Date.now()},true);
 const talkWho=id=>id==="me"?{...FOX.roussette,name:ME()}:{...FOX[id],name:nameOf(id)}; // un inconnu ne dit pas son nom
-function talk(lines,done,peek){talkQ=lines.slice();talkDone=done||null;
+// le carré de bois miel (choix de Joffray parmi les cadres de tools/dialogues.html) : quatre planches en onglet, veines, nœud, clous
+const woodFrame=(()=>{const W={b:"#e9b46c",g:"#c98a45",d:"#a86a32",l:"#f8d9a2",k:"#9a5f2c"},o=7,i=22,I=100-i,O=100-o,h=(i-o)/2,wv=v=>Math.sin(v*1.7)*2;
+  const hg=(y0,y1)=>{let s="";for(let y=y0+2;y<y1;y+=4.2){const a=wv(y);s+=`<path d="M${o} ${y} C${o+26} ${y+a} ${o+52} ${y-a} ${O} ${y+.5}" fill="none" stroke="${W.g}" stroke-width="1.3" stroke-linecap="round"/>`}return s};
+  const vg=(x0,x1)=>{let s="";for(let x=x0+2;x<x1;x+=4.2){const a=wv(x);s+=`<path d="M${x} ${o} C${x+a} ${o+30} ${x-a} ${o+56} ${x+.5} ${O}" fill="none" stroke="${W.g}" stroke-width="1.3" stroke-linecap="round"/>`}return s};
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="tfT"><path d="M${o} ${o} H${O} L${I} ${i} H${i}Z"/></clipPath><clipPath id="tfB"><path d="M${o} ${O} H${O} L${I} ${I} H${i}Z"/></clipPath>
+    <clipPath id="tfL"><path d="M${o} ${o} L${i} ${i} V${I} L${o} ${O}Z"/></clipPath><clipPath id="tfR"><path d="M${O} ${o} L${I} ${i} V${I} L${O} ${O}Z"/></clipPath></defs>
+    <rect x="${o}" y="${o+3}" width="${O-o}" height="${O-o}" rx="9" fill="${INK}"/><rect x="${o}" y="${o}" width="${O-o}" height="${O-o}" rx="9" fill="${W.b}"/>
+    <g clip-path="url(#tfT)">${hg(o,i)}<path d="M${o+6} ${o+3} H${O-6}" stroke="${W.l}" stroke-width="2" stroke-linecap="round"/></g><g clip-path="url(#tfB)">${hg(I,O)}</g>
+    <g clip-path="url(#tfL)">${vg(o,i)}<path d="M${o+3} ${o+8} V${O-8}" stroke="${W.l}" stroke-width="2" stroke-linecap="round"/></g><g clip-path="url(#tfR)">${vg(I,O)}</g>
+    <ellipse cx="${O-h}" cy="62" rx="3" ry="4.6" fill="${W.d}" stroke="${W.k}" stroke-width="1"/><ellipse cx="${O-h}" cy="62" rx="1.2" ry="2" fill="${W.k}"/>
+    ${[[o,o,i,i],[O,o,I,i],[o,O,i,I],[O,O,I,I]].map(([a,b,c,d])=>`<path d="M${a} ${b} L${c} ${d}" stroke="${W.k}" stroke-width="1.6"/>`).join("")}
+    ${[[o+h,o+h],[O-h,o+h],[o+h,O-h],[O-h,O-h]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6" fill="#d8d2cc" stroke="${INK}" stroke-width="1.2"/><circle cx="${x-.8}" cy="${y-.8}" r=".8" fill="#fff"/>`).join("")}
+    <rect x="${o}" y="${o}" width="${O-o}" height="${O-o}" rx="9" fill="none" stroke="${INK}" stroke-width="3.2"/><rect x="${i}" y="${i}" width="${I-i}" height="${I-i}" rx="4" fill="none" stroke="${INK}" stroke-width="2.6"/></svg>`})();
+function talk(lines,done,peek){talkQ=lines.slice();talkDone=done||null;talkFirst=talkQ.length?talkQ[0][0]:null;talkLast=null;
   if(peek===undefined)peek=Date.now()-tapAt>900;
   if(peek&&talkQ.length){const el=$("talk"),[id,expr]=talkQ[0];el.className="talk peek";
-    el.innerHTML=`<div class="pic">${foxArt(talkWho(id),{expr:expr==="open"?"surprise":expr,portrait:1})}</div><i class="tcall">!</i>`;el.hidden=false;bip("pop");return}
+    el.innerHTML=`${woodFrame}<div class="pic">${foxArt(talkWho(id),{expr:expr==="open"?"surprise":expr,portrait:1})}</div><i class="tcall">!</i>`;el.hidden=false;bip("pop");return}
   nextLine()}
 const talkNow=(l,d)=>talk(l,d,false);
 function nextLine(){const el=$("talk");el.className="talk";
-  if(!talkQ.length){el.hidden=true;const d=talkDone;talkDone=null;if(d)d();return}
-  const [id,expr,txt,act]=talkQ.shift(),f=talkWho(id);
-  el.innerHTML=`<div class="pic">${foxArt(f,{expr,portrait:1})}</div><div class="txt"><b>${f.name}</b><span>${txt}</span><small>Touche pour continuer</small></div>`;el.hidden=false;
+  if(!talkQ.length){el.hidden=true;talkLast=null;const d=talkDone;talkDone=null;if(d)d();return}
+  const [id,expr,txt,act]=talkQ.shift(),f=talkWho(id),r=id!==talkFirst?" r":"",nw=id!==talkLast?" in":"";talkLast=id;
+  el.innerHTML=`<div class="tw${r}${nw}">${foxArt(f,{expr,portrait:1})}</div><div class="tbox"><span class="tnm${r}">${f.name}</span><p>${txt}</p><small>Touche pour continuer <span>▸</span></small></div>`;el.hidden=false;
   try{meLine(id,expr)}catch(e){} // Roussette se tourne vers celui qui parle (roussette.js)
   if(typeof act==="function")try{act()}catch(e){} // les renards jouent la scène pendant la réplique (scenes.js)
 }
