@@ -50,13 +50,37 @@ figcaption b{display:block;font-family:"Mochiy Pop One",system-ui;font-weight:40
 .E .pic{width:78px;position:absolute;left:-26px;top:50%;transform:translateY(-50%) rotate(-4deg);z-index:3;border-width:3px;border-radius:16px;box-shadow:0 3px 0 var(--wood-d)}
 .reco{display:inline-block;background:#7fb48a;color:#fff;border-radius:999px;font-size:11px;padding:1px 9px;margin-left:6px;font-family:"Zen Maru Gothic";font-weight:900;vertical-align:2px}
 .peek{max-width:640px;margin:30px auto 0;font-size:14px;line-height:1.45;text-align:center}
+/* la petite tête qui appelle, 3 mm plus bas qu'en ligne, cadre plus épais */
+h2{font-family:"Mochiy Pop One",system-ui;font-weight:400;font-size:18px;text-align:center;margin:34px 0 4px}
+.hd{position:absolute;left:8px;top:46px;z-index:2;animation:tpeek 1.6s ease-in-out infinite}
+.hd .pic{width:52px}
+.hd i{position:absolute;right:-10px;top:-10px;width:24px;height:24px;border-radius:50%;background:#ffd36a;border:3px solid var(--wood);display:grid;place-items:center;font:900 14px/1 "Mochiy Pop One",system-ui;font-style:normal;color:var(--wood-d);box-shadow:0 2px 0 var(--wood-d)}
+.h1 .hd{background:var(--cream);border:5px solid var(--wood);border-radius:18px;padding:4px;box-shadow:0 4px 0 var(--wood-d)}
+.h2 .hd{background:var(--cream);border:5px solid #8a5636;border-radius:16px;padding:5px;box-shadow:inset 0 0 0 3px #e8b884,0 4px 0 #5e3d26}
+.h2 .hd .pic{border-color:#8a5636}
+.h3 .hd{background:#fffaf2;border:4px solid var(--wood);border-radius:8px;padding:5px 5px 4px;box-shadow:0 4px 0 var(--wood-d);transform:rotate(-4deg);animation:none}
+.h3 .hd .pic{border-radius:4px;border-width:2px}
+.h3 .hd b{display:block;text-align:center;font-family:"Mochiy Pop One",system-ui;font-weight:400;font-size:9.5px;color:var(--wood);margin-top:3px}
+.h4 .hd{background:var(--cream);border:5px solid var(--wood);border-radius:50%;padding:4px;box-shadow:0 4px 0 var(--wood-d)}
+.h4 .hd .pic{border-radius:50%}
+.h4 .hd i{right:-6px;top:-6px}
+@keyframes tpeek{0%,60%,100%{transform:none}70%{transform:rotate(-6deg) scale(1.06)}80%{transform:rotate(5deg) scale(1.06)}90%{transform:rotate(-3deg)}}
+.zoom{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.zoom .z{position:relative;width:110px;height:120px;transform:scale(1.6);transform-origin:top center;margin-bottom:70px}
+.zoom .z .hd{left:22px;top:20px}
+.zoom .z span{position:absolute;left:0;right:0;bottom:-10px;text-align:center;font-family:"Mochiy Pop One",system-ui;font-size:9px}
 </style>
 </head>
 <body>
 <h1>Dialogues de la Clairière</h1>
-<p class="intro">Cinq façons de placer la bulle. Partout : cadre en bois marron, et la petite tête qui sautille avec un « ! » quand un renard veut te parler tout seul.</p>
+<h2>1 · La petite tête qui t'appelle</h2>
+<p class="intro">Juste sous Jour / Nuit, 3 mm plus bas qu'en ligne, cadre marron plus épais. Elle sautille avec son « ! » ; on la touche, la bulle s'ouvre.</p>
+<div class="grid" id="heads"></div>
+<div class="zoom" id="zoom"></div>
+<h2>2 · La bulle, une fois la tête touchée</h2>
+<p class="intro">Plus centrale. Cadre en bois marron partout.</p>
 <div class="grid" id="grid"></div>
-<p class="peek">Dis-moi la lettre (ou un mélange : « B avec le parchemin de E »…).</p>
+<p class="peek">Dis-moi un chiffre pour la tête et une lettre pour la bulle (par exemple « 2 et B »).</p>
 <script src="../js/cafe/foxes.js"></script>
 <script src="../js/bourse.js"></script>
 <script src="../js/tenues.js"></script>
@@ -76,6 +100,14 @@ const V=[
  ["E","Parchemin","Un rouleau de papier au milieu, la tête qui déborde à gauche, un peu penchée. Plus « conte de la forêt ».",
   `<div class="box"><div class="pic">${head("joy")}</div><div class="nm">Petit Pois</div><div class="tx">${T}</div><div class="nx">Touche pour continuer</div></div>`]
 ];
+const HD=[
+ ["1","Bois épais","Le carré d'aujourd'hui, avec un cadre deux fois plus épais."],
+ ["2","Double cadre","Bois foncé avec un filet clair dedans, comme un cadre de tableau."],
+ ["3","Photo","Petite photo penchée avec le prénom dessous, comme épinglée."],
+ ["4","Médaillon","Rond, cadre épais, comme un pendentif."]];
+const hd=k=>`<div class="hd"><div class="pic">${head(k==="3"?"open":"surprise")}</div>${k==="3"?"<b>Petit Pois</b>":""}<i>!</i></div>`;
+document.getElementById("heads").innerHTML=HD.map(([k,t,d])=>`<figure><div class="ph h${k}">${hd(k)}</div><figcaption><b>${k} · ${t}</b>${d}</figcaption></figure>`).join("");
+document.getElementById("zoom").innerHTML=HD.map(([k,t])=>`<div class="z h${k}">${hd(k)}<span>${k} · ${t}</span></div>`).join("");
 document.getElementById("grid").innerHTML=V.map(([k,t,d,h,dim])=>`<figure><div class="ph ${k}${dim?" dim":""}">${h}</div><figcaption><b>${k} · ${t}${k==="B"?'<span class="reco">mon choix</span>':""}</b>${d}</figcaption></figure>`).join("");
 </script>
 </body>
