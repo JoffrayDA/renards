@@ -3,7 +3,15 @@
 // le compagnon dans l'écran de fin : une journée ensemble par jour réel fait grandir l'amitié au refuge
 function buddyRow(){const id=buddy(),f=FOX[id],td=todayStr(),t=S.together[id]||(S.together[id]={n:0,last:""}),first=t.last!==td;
   if(first){t.n++;t.last=td}
-  return itRow(foxSVG(f,{pose:"happy"}),`${f.name} était là pour t'aider !`,first?"Une journée de plus ensemble : votre amitié grandit au refuge.":"Votre journée ensemble compte déjà pour aujourd'hui.","background:#fff3e2")}
+  return`<div class="ebud">${foxSVG(f,{pose:"happy"})}<span>${f.name} était là pour t'aider${first?" : amitié +1 au refuge":""}</span></div>`}
+// résultats de la journée, en trois lignes (16/11/2026, Joffray : six cases, « Recette 1303 / 676 », « Ingrédients − » : trop d'infos,
+// et mal dites) : une barre de score avec les trois étoiles, ce qu'on gagne, puis les clients
+function endStats(o){const t=[o.g,Math.ceil(o.g*o.c2),Math.ceil(o.g*o.c3)],mx=Math.max(t[2]*1.08,o.e),pc=x=>Math.min(100,x/mx*100).toFixed(1);
+  const gain=(ic,n)=>n?`<span>${ic}<b>+${n}</b></span>`:"";
+  return`<div class="escore"><div class="ebar"><i style="width:${pc(o.e)}%"></i>${t.map((x,i)=>`<span class="etk${o.e>=x?" on":""}" style="left:${pc(x)}%"><b>${"★".repeat(i+1)}</b></span>`).join("")}<em><span>Score ${o.e}</span></em></div>
+  <div class="egain">${gain(coinSVG,o.coins)||`<span>${coinSVG}<b>+0</b></span>`}${gain(bellSVG,o.bells)}${gain(candySVG,o.candy)}${gain(sucreSVG,o.sucres)}</div>
+  ${o.replay?`<div class="emini">Journée rejouée : 25 % des pièces</div>`:""}
+  <div class="emini">${G.served} / ${G.cfg.c} clients servis · ${G.lost?`${G.lost} parti${G.lost>1?"s":""} fâché${G.lost>1?"s":""}`:"aucun fâché"}</div></div>`}
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
 const albumRow=()=>G.albumNew?itRow(foxSVG({...FOX.roussette,acc:"couronne"},{pose:"happy"}),"Album d'Halloween complet !",`Tu as servi les ${HWF.length} invités : ${ME()} gagne la Couronne de citrouilles (dans la boutique, onglet Style).`,"background:#efe4fb"):"";
 function endDay(){
@@ -33,12 +41,10 @@ function endDay(){
   const bRow=buddyRow();
   const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   fillQuests();save();
-  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
+  const nxt=st<3?(e<g?`Il manquait ${g-e} points pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} points pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Ingrédients<b>−${Math.round(G.cost)}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 25 %</small>`:""}</div>${HW?`<div style="background:#efe4fb">Bonbons<b>+${G.candy}</b></div>`:""}</div>
-  ${chest?itRow(icon("chest"),`Coffre : +${chest} pièces`,st===3?"Trois étoiles : le coffre de la journée est ouvert !":"Chaque nouvelle étoile rapporte des pièces."):""}
-  ${bl?itRow(bellSVG,`+${bl} clochette${bl>1?"s":""}`,"Les clochettes achètent les beaux objets de la boutique du jour, à la Clairière."):""}
+  ${endStats({e,g,c2,c3,coins:G.gain+chest,bells:bl,candy:HW?G.candy:0,replay:G.replay})}
   ${news.join("")}${albumRow()}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
@@ -60,11 +66,10 @@ function endNight(){
   const bRow=buddyRow();
   const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   fillQuests();save();
-  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
+  const nxt=st<3?(e<g?`Il manquait ${g-e} points pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} points pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
   const canNext=st&&n<5&&nightOpen(n+1);
   endFx(st);openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NIGHT_NAMES[n-1]}</b><br>${nxt}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b>${G.replay?`<small style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft)">rejouée : 25 %</small>`:""}</div><div style="background:#efe4fb">Bonbons<b>+${G.candy+cb}</b></div></div>
-  ${cb?itRow(candySVG,`Coffre de la nuit : +${cb} bonbons`,st===3?"Trois étoiles : le grand coffre !":"Chaque nouvelle étoile d'une nuit rapporte des bonbons."):""}
+  ${endStats({e,g,c2:1.35,c3:1.7,coins:G.gain,candy:G.candy+cb,replay:G.replay})}
   ${news.join("")}${albumRow()}${bRow}
   ${questHTML(qShow)}
   <div class="col">${canNext?`<button class="btn big wide" data-nplay="${n+1}" type="button">Nuit ${n+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-nplay="${n}" type="button">${st?"Rejouer":"Réessayer"} la nuit ${n}</button><button class="btn ghost wide" data-act="hw" type="button">Les nuits d'Halloween</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`,true);

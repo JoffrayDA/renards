@@ -162,24 +162,22 @@ const SPOTX={2:[31,69],3:[20,50,80],4:[14,38,62,86]};
 const REG=[...FOXES.filter(f=>f.rar==="commun"&&f.id!=="roussette"&&!f.refuge),...FOXES.filter(f=>f.rar==="discret"&&!f.refuge)];
 const VIPS=FOXES.filter(f=>f.rar==="discret"&&!f.refuge);
 // quêtes du jour (16/11/2026, Joffray : « tu t'en remets pas une nouvelle quand elle est finie, sinon ça n'a plus de sens ») :
-// trois par jour réel, faisables en quelques journées ; une quête réussie reste affichée en vert jusqu'au lendemain
+// trois par jour réel ; une quête réussie reste affichée en vert jusqu'au lendemain.
+// Leur taille suit la progression (16/11/2026, Joffray : une quête finie en une partie « n'a pas de sens ») :
+// qProfile estime ce qu'une partie rapporte au point le plus avancé du joueur ; une quête du jour en demande environ 4,5,
+// celle de la semaine environ 40. {n} = le nombre, {r} = la recette (nom du monde où on l'a tirée).
 const QUESTS=[
-  {k:"serve",r:"cafe",n:12,t:"Sers 12 cafés",g:40},{k:"serve",r:"croissant",n:12,t:"Sers 12 croissants",g:40},
-  {k:"serve",r:"the",n:10,t:"Sers 10 thés",g:45},{k:"serve",r:"cookie",n:10,t:"Sers 10 cookies",g:55},
-  {k:"serve",r:"choco",n:8,t:"Sers 8 chocolats chauds",g:65},{k:"serve",r:"smoothie",n:8,t:"Sers 8 smoothies",g:75},{k:"serve",r:"gateau",n:6,t:"Sers 6 parts de gâteau",g:85},
-  {k:"combo3",n:3,t:"Fais 3 combos ×3",g:40},{k:"combo",n:6,t:"Fais un combo ×6",g:60},
-  {k:"vip",n:2,t:"Sers 2 clients VIP",g:60},{k:"perfect",n:1,t:"Réussis une journée sans client fâché",g:70},
-  {k:"stars3",n:1,t:"Obtiens 3 étoiles sur une journée",g:90},{k:"orders",n:25,t:"Complète 25 commandes",g:50},
-  {k:"big",n:4,t:"Complète 4 commandes de 3 articles",g:60},{k:"green",n:10,t:"Sers 10 clients quand leur jauge est encore verte",g:50},
+  {k:"serve",t:"Sers {n} {r}"},{k:"orders",t:"Complète {n} commandes"},{k:"combo3",t:"Fais {n} combos ×3"},
+  {k:"vip",t:"Sers {n} clients VIP"},{k:"perfect",t:"Réussis {n} journées sans client fâché",n:3},
+  {k:"big",t:"Complète {n} commandes de 3 articles"},{k:"green",t:"Sers {n} clients quand leur jauge est encore verte"},
   {k:"costume",n:25,t:"Sers 25 clients déguisés",g:30,cdy:1,hw:1},{k:"hwguest",n:6,t:"Sers 6 invités d'Halloween",g:40,cdy:1,hw:1},
   {k:"candy",n:80,t:"Récolte 80 bonbons",g:30,cdy:1,hw:1},{k:"night",n:2,t:"Réussis 2 Nuits d'Halloween",g:40,cdy:1,hw:1}
 ];
-// la quête de la semaine : longue, elle rapporte gros (une par semaine, du lundi au dimanche, la même pour tous)
-const WQUESTS=[
-  {k:"orders",n:150,t:"Complète 150 commandes",g:600,b:5},{k:"green",n:90,t:"Sers 90 clients quand leur jauge est encore verte",g:600,b:5},
-  {k:"vip",n:20,t:"Sers 20 clients VIP",g:650,b:5},{k:"combo3",n:30,t:"Fais 30 combos ×3",g:600,b:5},{k:"big",n:35,t:"Complète 35 commandes de 3 articles",g:650,b:5}
-];
-const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
+// la quête de la semaine : longue, elle rapporte gros (une par semaine, du lundi au dimanche)
+const WQUESTS=[{k:"orders",t:"Complète {n} commandes"},{k:"green",t:"Sers {n} clients quand leur jauge est encore verte"},
+  {k:"vip",t:"Sers {n} clients VIP"},{k:"combo3",t:"Fais {n} combos ×3"},{k:"big",t:"Complète {n} commandes de 3 articles"}];
+const QV=2; // version des quêtes : une quête plus ancienne est retirée
+const qText=q=>q.k==="serve"?`Sers ${q.n} ${vName(q.r,q.sea)[1]}`:q.t;
 const has=k=>{const r=REC[k];if(r&&r.w&&r.w!==WORLD)return false;return !recDay(k)||!!OWN()[k]};
 // au menu d'une journée : les recettes gagnées avant elle seulement, même quand on rejoue une ancienne journée
 const onMenu=(k,d=G&&G.run?G.day:curDay())=>has(k)&&!(recDay(k)>=d);

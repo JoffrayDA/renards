@@ -43,11 +43,10 @@ function endNoel(){
   if(st&&!last&&!prev)news.push(itRow(sucreSVG,`${NOEL_NAMES[n]} ouverte !`,"La nuit suivante t'attend.","background:#fde8ea"));
   const bRow=buddyRow(),qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   fillQuests();save();
-  const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
+  const nxt=st<3?(e<g?`Il manquait ${g-e} points pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} points pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
   const canNext=st&&!last&&noelNightOpen(n+1);
   endFx(st);openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NOEL_NAMES[n-1]}</b><br>${nxt}</p>
-  <div class="stats"><div>Recette<b>${e} / ${g}</b></div><div>Clients servis<b>${G.served} / ${G.cfg.c}</b></div><div>Partis fâchés<b>${G.lost}</b></div><div>Meilleur combo<b>×${G.bestCombo}</b></div><div>Pièces gagnées<b>+${G.gain}</b></div><div>Sucres d'orge<b>+${su+(G.sucres||0)}</b></div></div>
-  ${su?itRow(sucreSVG,`Hotte de la nuit : +${su} sucres d'orge`,st===3?"Trois étoiles : la grande hotte !":"Chaque nouvelle étoile d'une nuit rapporte des sucres d'orge, à dépenser dans la boutique de Noël de la Clairière."):""}
+  ${endStats({e,g,c2:1.35,c3:1.7,coins:G.gain,sucres:su+(G.sucres||0),replay:G.replay})}
   ${news.join("")}${bRow}
   ${questHTML(qShow)}
   <div class="col">${canNext?`<button class="btn big wide" data-nnplay="${n+1}" type="button">Nuit ${n+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-nnplay="${n}" type="button">${st?"Rejouer":"Réessayer"} la nuit ${n}</button><button class="btn ghost wide" data-act="noel" type="button">Les nuits de Noël</button></div>`);

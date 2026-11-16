@@ -199,6 +199,22 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .tuto ol{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
 .stars{font-size:38px;letter-spacing:6px;color:var(--gold);text-align:center;line-height:1.1;margin:4px 0 6px}
 .stars em{font-style:normal;color:#e9dccf}
+.escore{margin:0 0 14px}
+.ebar{position:relative;height:28px;margin:20px 4px 10px;background:var(--card-2);border:2.5px solid var(--ink);border-radius:14px}
+.ebar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#ffdc73,#f5b13a);border-radius:12px}
+.ebar em{position:absolute;inset:0;text-align:center;font-style:normal;font-weight:800;font-size:15px;line-height:23px;font-variant-numeric:tabular-nums}
+.etk{position:absolute;top:-2px;bottom:-2px;width:2.5px;margin-left:-1px;background:var(--ink);opacity:.35}
+.etk.on{opacity:.8}
+.ebar em span{position:relative;z-index:1;background:#fffaf2e0;border-radius:9px;padding:0 7px}
+.etk b{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);font-size:13px;letter-spacing:-2px;color:#cdbcc4;white-space:nowrap}
+.etk.on b{color:#f2a51f}
+.etk:last-of-type b{left:auto;right:-4px;transform:none}
+.egain{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;font-size:24px;font-variant-numeric:tabular-nums}
+.egain span{display:inline-flex;align-items:center;gap:5px}
+.egain svg{width:28px;height:28px}
+.emini{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:4px}
+.ebud{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);margin:0 0 10px}
+.ebud svg{width:34px;height:34px;flex:none}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 14px}
 .stats div{background:var(--card-2);border-radius:12px;padding:6px 10px;font-size:13px}
 .stats b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
