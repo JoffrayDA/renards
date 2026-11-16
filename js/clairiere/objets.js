@@ -50,7 +50,7 @@ const OBJS={
       <path d="M10 -102 h8 v8 h-8Z M102 -102 h8 v8 h-8Z" fill="#e8d2a8" stroke="${INK}" stroke-width="2"/></svg>`},
     photo:id=>`<svg viewBox="0 0 200 160" aria-hidden="true"><rect width="200" height="160" fill="#bfe3f2"/><path d="M0 62 Q50 50 100 58 Q150 50 200 62 V160 H0Z" fill="#cfe3a8"/><g filter="url(#wobble)"><path d="M-10 14 Q100 2 210 20 L210 40 Q100 22 -10 30Z" fill="#a9785a" ${O}/><path d="M60 22 q-12 -2 -20 2 M150 26 q-10 -3 -18 0" fill="none" stroke="#8a5a3a" stroke-width="2" stroke-linecap="round"/><circle cx="30" cy="10" r="14" fill="#8dbd86" ${O}/><circle cx="182" cy="14" r="12" fill="#9cc796" ${O}/></g><g transform="rotate(8 100 22)"><path d="M72 22 V118 M128 22 V118" stroke="${INK}" stroke-width="2.4"/><g filter="url(#wobble)"><rect x="64" y="116" width="72" height="10" rx="4" fill="#e8b884" ${O}/></g>${foxAt(id,100,122,62,{pose:"happy"})}</g></svg>`},
   // dans l'herbe en plus sous la scène (EXT, 01/11/2026 : « il va falloir remplir la clairière ») ; le potager, écarté le 28/10/2026 faute de place, revient
-  potager:{name:"Potager",price:60,pose:"happy",r:44,k:1.5,in:"Au potager",spot:{id:"garden",x:305,y:extY(.2),poses:["happy"],obj:"potager"},thumb:"-26 0 172 104",
+  potager:{name:"Potager",price:60,zone:"potager",pose:"happy",r:44,k:1.5,in:"Au potager",spot:{id:"garden",x:305,y:extY(.2),poses:["happy"],obj:"potager"},thumb:"-26 0 172 104",
     desc:"Un carré de terre bordé de planches : carottes, salades et un petit arrosoir. Quelqu'un viendra forcément jardiner.",
     svg:id=>{const carrot=x=>`<path d="M${x} 70 l-3 6 h6Z" fill="#f08a3c" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M${x} 70 q-6 -8 -4 -14 M${x} 70 q0 -10 2 -15 M${x} 70 q6 -7 7 -12" fill="none" stroke="#5f9a5a" stroke-width="2.6" stroke-linecap="round"/>`,
       salad=x=>`<g transform="translate(${x} 68)"><circle r="8" fill="#a9d68f" stroke="${INK}" stroke-width="1.8"/><path d="M-5 -1 q5 -6 10 0 M-3 3 q3 -3 6 0" fill="none" stroke="#6f9a60" stroke-width="1.6"/></g>`;
@@ -72,7 +72,7 @@ const OBJS={
     <path d="M24 80 l6 6 M30 80 l-6 6" stroke="#a8774a" stroke-width="2"/></g>
   ${id?[46,74].map(x=>`<ellipse cx="${x}" cy="59" rx="6" ry="4" fill="${FOX[id].c.b}" stroke="${INK}" stroke-width="2"/>`).join(""):""}</svg>`},
   // le tunnel de jeu, vu de face : le renard regarde depuis l'entrée
-  tunnel:{name:"Tunnel de jeu",price:45,pose:"sit",k:1.25,in:"Dans le tunnel",spot:{id:"tunnel",x:270,y:extY(.6),poses:["sit"],obj:"tunnel"},thumb:"0 0 120 104",
+  tunnel:{name:"Tunnel de jeu",price:45,zone:"jeux",pose:"sit",k:1.25,in:"Dans le tunnel",spot:{id:"tunnel",x:270,y:extY(.6),poses:["sit"],obj:"tunnel"},thumb:"0 0 120 104",
     desc:"Un tunnel en tissu rayé, qui fait « frrt » quand on passe dedans. On y entre d'un côté, on ressort de l'autre… ou pas.",
     svg:id=>`<svg viewBox="0 -16 120 116" aria-hidden="true"><ellipse cx="60" cy="100" rx="48" ry="6" fill="#3d2a35" opacity=".14"/>
   <g ${O} filter="url(#wobble)"><path d="M24 70 Q22 26 64 12 Q100 4 104 34 Q108 66 98 74Z" fill="#9ec3ef"/>${[[44,24,30,68],[62,14,58,72],[82,10,84,74]].map(([a,b,c,d])=>`<path d="M${a} ${b} Q${(a+c)/2+12} ${(b+d)/2} ${c} ${d}" fill="none" stroke="#fffaf2" stroke-width="7"/>`).join("")}</g>
@@ -88,7 +88,8 @@ const basketSVG=id=>OBJS.panier.svg(id); // gardé pour les anciens appels
 // les objets posés par terre se déplacent et se rangent comme la déco (01/11/2026, Joffray : posés au hasard, impossible de les bouger) ;
 // la cabane et la balançoire restent dans l'arbre. Leur place : R.objAt[k] = {x, y, f (retourné), away (rangé)}
 R.objAt=R.objAt||{};
-const objMoves=k=>!OBJS[k].photo,objOn=k=>!!R.obj[k]&&!(R.objAt[k]||{}).away;
+// le tunnel et le potager ont leur écran (terrain.js, 16/11/2026) : ils ne sont plus dans le jardin
+const objMoves=k=>!OBJS[k].photo&&!OBJS[k].zone,objOn=k=>!!R.obj[k]&&!OBJS[k].zone&&!(R.objAt[k]||{}).away;
 function addObjSpots(){
   if(R.obj.balancoire){SPOT.lampR.x=284;Object.assign(OBJS.panier.spot,{x:376,y:306})} // la balançoire prend la place sous la lanterne de droite, le panier va au pied de l'arbre
   for(const k in R.obj){const sp=OBJS[k].spot,a=R.objAt[k];if(a&&a.x!=null&&objMoves(k)){sp.x=a.x;sp.y=a.y}
@@ -121,4 +122,5 @@ function buyObj(k){const o=OBJS[k];if(R.obj[k]||R.glands<o.price)return;
   R.glands-=o.price;R.obj[k]=1;bip("buy");renderHud();
   // un objet par terre : on le pose tout de suite où on veut, en mode Décorer
   if(objMoves(k)){R.objAt[k]={away:1};save();addObjSpots();decoStart(null,"out");decoAdd("o:"+k);toast(`${o.name} : fais-le glisser où tu veux, puis touche Terminé.`);return}
+  if(o.zone){save();closeSheet();if(zone!==o.zone)goZone(o.zone);else if(o.zone==="jeux")renderJeux();else renderPotager();toast(o.zone==="potager"?"Copeau a bêché six parcelles. Touche-en une pour planter !":`${o.name} : Copeau l'installe au terrain de jeu.`);return}
   save();addObjSpots();drawObjs();drawBg();closeSheet();toast(`${o.name} : Copeau l'installe dans l'arbre. Qui va y grimper ?`)}

@@ -102,6 +102,8 @@ $("talk").onclick=()=>{if(typeof talkHeld!=="undefined"&&talkHeld)return;nextLin
 /* ---------- Petit Pois explique (05/11/2026, Joffray : « comme pour l'Italie et Paris ») ----------
    La première fois qu'on ouvre quelque chose, Petit Pois vient voir Roussette et explique en deux ou trois répliques (R.tips). */
 const PP_TIPS={
+  terrain:[["joy","Le terrain de jeu ! Copeau y monte de gros jeux, payés en clochettes."],["open","Touche un jeu pour le relancer : plus vite, plus haut. Ceux qui jouent ont droit à leur câlin."]],
+  potager:[["joy","Le potager ! On plante, on arrose deux fois, on récolte."],["open","Les baies et le miel remplissent la gamelle. La camomille part au Café, en Tisane calmante."]],
   gamelle:[["joy","La gamelle ! Ce que tu y mets attire des renards sauvages."],["open","Baies, poisson, miel : chacun attire d'autres renards. La petite jauge dessous dit ce qu'il reste."],["shy","Ils passent surtout quand tu n'es pas là. Mais ils laissent toujours une photo !"]],
   boutique:[["joy","La boutique ! Les objets du jour changent chaque nuit."],["open","Les pièces viennent du Café, les clochettes de tes étoiles. Les glands, eux, se trouvent ici, au refuge : chaque jour, un objet se paie en glands."],["joy","Dans Refuge, Copeau construit contre des glands. Dans Mes objets, tu retrouves tout ce que tu as."]],
   glands:[["surprise","Des glands ! Les renards du refuge t'en rapportent chaque jour."],["joy","Un câlin par renard et par jour en donne un, et les histoires beaucoup plus. Ramasse-les dans l'herbe !"]],
@@ -135,6 +137,9 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   if(b.dataset.dinfo!==undefined){const t=b.closest(".dtile");for(const o of $("sheet-in").querySelectorAll(".dtile.open"))if(o!==t)o.classList.remove("open");t.classList.toggle("open");return}
   if(b.dataset.buy)buyBowl(b.dataset.buy);
   else if(b.dataset.obj)buyObj(b.dataset.obj);
+  else if(b.dataset.jeu)buyJeu(b.dataset.jeu);
+  else if(b.dataset.crop){const [i,k]=b.dataset.crop.split("|");plantCrop(+i,k)}
+  else if(b.dataset.buyp)buyBowlPot(b.dataset.buyp);
   else if(b.dataset.dbuy)buyDeco(b.dataset.dbuy);
   else if(b.dataset.dtab)shopSheet(b.dataset.dtab);
   else if(b.dataset.dput)decoStart(b.dataset.dput);
@@ -157,7 +162,7 @@ function bowlSheet(){
   // (05/11/2026, Joffray : « trop de texte ») : ce qu'il reste en jauge, une ligne par gamelle
   const B=R.bowl&&BOWLS[R.bowl.type],fr=B?Math.max(0,Math.min(1,(R.bowl.until-Date.now())/(B.hours*36e5))):0;
   const cur=B?`<div class="bnow"><b>${B.name}</b> · ${hoursLeft()}<i class="bgauge"><b style="width:${(fr*100).toFixed(0)}%;background:${B.col}"></b></i></div>`:`<p class="sub">La gamelle est vide.</p>`;
-  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name} · ${B.hours} h</strong><span>${B.desc}</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button></div>`).join("")}<p class="sub">Chaque visiteur laisse une photo.${canFish()?"":" Le poisson se pêche dans la mare, avec une canne."}</p>`);
+  openSheet(`<h2>La gamelle</h2>${cur}${Object.entries(BOWLS).map(([k,B])=>`<div class="opt"><span class="thumb">${bowlSVG(k)}</span><div class="txt"><strong>${B.name} · ${B.hours} h</strong><span>${B.desc}</span></div><button class="btn" data-buy="${k}" type="button" ${R.glands<B.price||R.fish<(B.fish||0)||(B.fish&&!canFish())?"disabled":""}>${B.fish?`${fishSVG()} ${R.fish}/${B.fish}`:B.price?`${acornSVG()} ${B.price}`:"Gratuit"}</button>${POT_NEED[k]&&R.obj.potager?`<button class="btn ghost bpot" data-buyp="${k}" type="button" ${R.pot[k]<POT_NEED[k]?"disabled":""}>${potIcon[k]()} ${R.pot[k]}/${POT_NEED[k]}</button>`:""}</div>`).join("")}<p class="sub">Chaque visiteur laisse une photo.${canFish()?"":" Le poisson se pêche dans la mare, avec une canne."}</p>`);
 }
 function buyBowl(k){const B=BOWLS[k];if(R.glands<B.price||R.fish<(B.fish||0))return;
   R.glands-=B.price;R.fish-=B.fish||0;bip("kibble");R.bowl={type:k,until:Date.now()+B.hours*36e5};save();renderHud();closeSheet();

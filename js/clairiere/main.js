@@ -59,7 +59,7 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
    Tant qu'une feuille, la maison, le mode Décorer, l'appareil photo ou la pêche libre est ouvert, une entrée d'historique reste
    en réserve : le retour la consomme et recule d'un cran au lieu de quitter le jeu (comme au Café, main.js). */
 let backGuard=false;
-const backDeep=()=>!$("sheet").hidden||decoMode||shooting||!!houseEl||gameOn;
+const backDeep=()=>!$("sheet").hidden||decoMode||shooting||!!houseEl||gameOn||zone!=="jardin";
 function armBack(){if(!backGuard&&backDeep()){try{history.pushState({kc:1},"")}catch(e){return}backGuard=true}}
 addEventListener("popstate",()=>{if(!backGuard)return;backGuard=false;
   try{if(window.frameElement&&window.frameElement.hidden){history.back();return}}catch(e){}
@@ -70,5 +70,6 @@ addEventListener("popstate",()=>{if(!backGuard)return;backGuard=false;
   else if(shooting)camMode(false);
   else if(gameOn){const x=$("play").querySelector(".pclose");if(x)x.dispatchEvent(new PointerEvent("pointerdown",{bubbles:true}))}
   else if(houseEl){bip("door");leaveHouse()}
+  else if(zone!=="jardin")goZone(ZONES[ZONES.indexOf(zone)-1])
   setTimeout(armBack,50)});
 setInterval(()=>{if(!backGuard)armBack()},250);
