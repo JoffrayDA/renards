@@ -54,3 +54,21 @@ setInterval(()=>{
   renderHud();pushSync(pushPlan());
 },30000);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")pushSync(pushPlan());if(document.visibilityState==="visible"){simulate(false);renderHud();if($("talk").hidden&&$("sheet").hidden)showNews();envieTick()}});
+
+/* ---------- le bouton retour du téléphone (16/11/2026, Joffray : depuis sa fiche, le retour le sortait de la Clairière) ----------
+   Tant qu'une feuille, la maison, le mode Décorer, l'appareil photo ou la pêche libre est ouvert, une entrée d'historique reste
+   en réserve : le retour la consomme et recule d'un cran au lieu de quitter le jeu (comme au Café, main.js). */
+let backGuard=false;
+const backDeep=()=>!$("sheet").hidden||decoMode||shooting||!!houseEl||gameOn;
+function armBack(){if(!backGuard&&backDeep()){try{history.pushState({kc:1},"")}catch(e){return}backGuard=true}}
+addEventListener("popstate",()=>{if(!backGuard)return;backGuard=false;
+  try{if(window.frameElement&&window.frameElement.hidden){history.back();return}}catch(e){}
+  // plus rien d'ouvert (fermé par son bouton) : l'entrée en réserve ne sert plus, on recule pour de vrai
+  if(!backDeep()){history.back();return}
+  if(!$("sheet").hidden){const b=$("sheet-in").querySelector(".sheetback");if(b)b.click();else closeSheet()}
+  else if(decoMode)decoEnd();
+  else if(shooting)camMode(false);
+  else if(gameOn){const x=$("play").querySelector(".pclose");if(x)x.dispatchEvent(new PointerEvent("pointerdown",{bubbles:true}))}
+  else if(houseEl){bip("door");leaveHouse()}
+  setTimeout(armBack,50)});
+setInterval(()=>{if(!backGuard)armBack()},250);

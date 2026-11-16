@@ -42,7 +42,7 @@ function endNoel(){
   if(last&&st&&!S.noelKeep){S.noelKeep=1;news.push(itRow(foxSVG(FOX.guimauve,{pose:"happy"}),"Guimauve reste au café !","Elle a tant aimé la Grande nuit de Noël qu'elle viendra toute l'année, en invitée d'honneur.","background:#fde8ea"))}
   if(st&&!last&&!prev)news.push(itRow(sucreSVG,`${NOEL_NAMES[n]} ouverte !`,"La nuit suivante t'attend.","background:#fde8ea"));
   const bRow=buddyRow(),qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
-  S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
+  fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
   const canNext=st&&!last&&noelNightOpen(n+1);
   endFx(st);openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NOEL_NAMES[n-1]}</b><br>${nxt}</p>

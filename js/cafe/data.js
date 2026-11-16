@@ -161,16 +161,23 @@ const SPOTX={2:[31,69],3:[20,50,80],4:[14,38,62,86]};
 // clients ordinaires ; Roussette n'en fait plus partie : c'est le joueur
 const REG=[...FOXES.filter(f=>f.rar==="commun"&&f.id!=="roussette"&&!f.refuge),...FOXES.filter(f=>f.rar==="discret"&&!f.refuge)];
 const VIPS=FOXES.filter(f=>f.rar==="discret"&&!f.refuge);
+// quêtes du jour (16/11/2026, Joffray : « tu t'en remets pas une nouvelle quand elle est finie, sinon ça n'a plus de sens ») :
+// trois par jour réel, faisables en quelques journées ; une quête réussie reste affichée en vert jusqu'au lendemain
 const QUESTS=[
-  {k:"serve",r:"cafe",n:18,t:"Sers 18 cafés",g:40},{k:"serve",r:"croissant",n:18,t:"Sers 18 croissants",g:40},
-  {k:"serve",r:"the",n:18,t:"Sers 18 thés",g:45},{k:"serve",r:"cookie",n:20,t:"Sers 20 cookies",g:55},
-  {k:"serve",r:"choco",n:15,t:"Sers 15 chocolats chauds",g:65},{k:"serve",r:"smoothie",n:15,t:"Sers 15 smoothies",g:75},{k:"serve",r:"gateau",n:12,t:"Sers 12 parts de gâteau",g:85},
-  {k:"combo3",n:5,t:"Fais 5 combos ×3",g:40},{k:"combo",n:6,t:"Fais un combo ×6",g:60},
-  {k:"vip",n:3,t:"Sers 3 clients VIP",g:60},{k:"perfect",n:2,t:"Réussis 2 journées sans client fâché",g:70},
-  {k:"stars3",n:2,t:"Obtiens 3 étoiles sur 2 journées",g:90},{k:"orders",n:40,t:"Complète 40 commandes",g:50},
-  {k:"big",n:6,t:"Complète 6 commandes de 3 articles",g:60},{k:"green",n:15,t:"Sers 15 clients quand leur jauge est encore verte",g:50},
+  {k:"serve",r:"cafe",n:12,t:"Sers 12 cafés",g:40},{k:"serve",r:"croissant",n:12,t:"Sers 12 croissants",g:40},
+  {k:"serve",r:"the",n:10,t:"Sers 10 thés",g:45},{k:"serve",r:"cookie",n:10,t:"Sers 10 cookies",g:55},
+  {k:"serve",r:"choco",n:8,t:"Sers 8 chocolats chauds",g:65},{k:"serve",r:"smoothie",n:8,t:"Sers 8 smoothies",g:75},{k:"serve",r:"gateau",n:6,t:"Sers 6 parts de gâteau",g:85},
+  {k:"combo3",n:3,t:"Fais 3 combos ×3",g:40},{k:"combo",n:6,t:"Fais un combo ×6",g:60},
+  {k:"vip",n:2,t:"Sers 2 clients VIP",g:60},{k:"perfect",n:1,t:"Réussis une journée sans client fâché",g:70},
+  {k:"stars3",n:1,t:"Obtiens 3 étoiles sur une journée",g:90},{k:"orders",n:25,t:"Complète 25 commandes",g:50},
+  {k:"big",n:4,t:"Complète 4 commandes de 3 articles",g:60},{k:"green",n:10,t:"Sers 10 clients quand leur jauge est encore verte",g:50},
   {k:"costume",n:25,t:"Sers 25 clients déguisés",g:30,cdy:1,hw:1},{k:"hwguest",n:6,t:"Sers 6 invités d'Halloween",g:40,cdy:1,hw:1},
   {k:"candy",n:80,t:"Récolte 80 bonbons",g:30,cdy:1,hw:1},{k:"night",n:2,t:"Réussis 2 Nuits d'Halloween",g:40,cdy:1,hw:1}
+];
+// la quête de la semaine : longue, elle rapporte gros (une par semaine, du lundi au dimanche, la même pour tous)
+const WQUESTS=[
+  {k:"orders",n:150,t:"Complète 150 commandes",g:600,b:5},{k:"green",n:90,t:"Sers 90 clients quand leur jauge est encore verte",g:600,b:5},
+  {k:"vip",n:20,t:"Sers 20 clients VIP",g:650,b:5},{k:"combo3",n:30,t:"Fais 30 combos ×3",g:600,b:5},{k:"big",n:35,t:"Complète 35 commandes de 3 articles",g:650,b:5}
 ];
 const qText=q=>q.k==="serve"?`Sers ${q.n} ${REC[q.r].pl}`:q.t;
 const has=k=>{const r=REC[k];if(r&&r.w&&r.w!==WORLD)return false;return !recDay(k)||!!OWN()[k]};

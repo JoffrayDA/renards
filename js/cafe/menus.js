@@ -83,7 +83,7 @@ function nightSheet(n){
   ${boostHTML(()=>nightSheet(n))}
   <div class="col" style="margin-top:6px"><button class="btn big wide" data-nplay="${n}" type="button">Commencer la nuit</button><button class="btn ghost wide" data-act="hw" type="button">Retour</button></div>`);
 }
-function questsSheet(){openSheet(`<h2>Quêtes</h2><p class="sub">Elles avancent pendant les journées.</p>${questHTML()}`)}
+function questsSheet(){openSheet(`<h2>Quêtes</h2>${questHTML()}`)}
 let shopTab="equip";
 function shop(){
   let list;

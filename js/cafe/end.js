@@ -32,7 +32,7 @@ function endDay(){
   if(st&&S.day===nc.from&&nc.gate&&!gateOpen(nc))news.push(itRow(icon("chest"),`Porte de la saison ${nc.name} : ${starSum()} / ${nc.gate} ★`,`Rejoue des journées pour gagner les étoiles qui manquent.`));
   const bRow=buddyRow();
   const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
-  S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
+  fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1);
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
@@ -59,7 +59,7 @@ function endNight(){
   if(st&&n<5&&!prev)news.push(itRow(candySVG,`${NIGHT_NAMES[n]} ouverte !`,n===4?"La dernière nuit : réussis-la pour garder Feu Follet au café.":"La nuit suivante t'attend.","background:#efe4fb"));
   const bRow=buddyRow();
   const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
-  S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
+  fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?1.35:1.7))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Nuit parfaite !";
   const canNext=st&&n<5&&nightOpen(n+1);
   endFx(st);openSheet(`<h2>${st?"Nuit réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${NIGHT_NAMES[n-1]}</b><br>${nxt}</p>
@@ -71,5 +71,7 @@ function endNight(){
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
 }
 function questHTML(list=S.quests){
-  return `<p class="sub" style="margin:0 0 6px"><b>Quêtes</b></p><div class="col" style="margin-bottom:14px">${list.map(q=>`<div class="it" style="padding:8px 12px;${q.done?"background:#e3f2d6":""}"><span class="tx"><strong style="font-size:14px">${qText(q)}</strong><div class="obar" style="margin-top:4px"><i style="width:${q.p/q.n*100}%;background:${q.done?"var(--good)":"var(--gold)"}"></i></div></span><span class="side"><span class="price">${q.cdy?candySVG:coinSVG}${q.g}</span><span style="font-size:12px;color:var(--ink-soft)">${q.done?"<b style=\"color:#4f9a3e\">Réussie !</b>":`${q.p} / ${q.n}${q.gain>0?` <b style="color:#4f9a3e">+${q.gain}</b>`:""}`}</span></span></div>`).join("")}</div>${list.some(q=>q.done)?`<p class="sub" style="margin:-6px 0 12px;font-size:12px">Les quêtes réussies sont payées et remplacées par de nouvelles.</p>`:""}`;
+  const row=(q,gain,cls="")=>`<div class="it qrow ${cls}" style="padding:8px 12px;${q.done?"background:#e3f2d6":""}"><span class="tx"><strong style="font-size:14px">${qText(q)}</strong><div class="obar" style="margin-top:4px"><i style="width:${q.p/q.n*100}%;background:${q.done?"var(--good)":"var(--gold)"}"></i></div></span><span class="side"><span class="price">${q.cdy?candySVG:coinSVG}${q.g}${q.b?` ${bellSVG}${q.b}`:""}</span><span style="font-size:12px;color:var(--ink-soft)">${q.done?"<b style=\"color:#4f9a3e\">Réussie !</b>":`${q.p} / ${q.n}${gain>0?` <b style="color:#4f9a3e">+${gain}</b>`:""}`}</span></span></div>`;
+  const w=S.wq,wl=w?7-Math.floor((Date.now()-monday().getTime()+432e5)/864e5):0,wg=w&&G&&G.wq0!=null?w.p-G.wq0:0;
+  return `${w?`<p class="sub" style="margin:0 0 6px"><b>Quête de la semaine</b> · ${w.done?"à la semaine prochaine":wl>1?`encore ${wl} jours`:"dernier jour"}</p><div class="col" style="margin-bottom:12px">${row(w,wg,"wk")}</div>`:""}<p class="sub" style="margin:0 0 6px"><b>Quêtes du jour</b> · nouvelles demain</p><div class="col" style="margin-bottom:14px">${list.map(q=>row(q,q.gain)).join("")}</div>`;
 }

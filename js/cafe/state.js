@@ -45,20 +45,27 @@ const curDay=()=>{if(WORLD)return itCur();let d=Math.min(S.day,LASTDAY);while(d>
 function checkGuests(){const n=[];for(const c of CHAP)if(!S.guest[c.guest]&&chapStars(c)>=30){S.guest[c.guest]=1;n.push(c)}return n}
 checkGuests();
 function questAvail(q){if(q.hw)return HW&&(q.k!=="night"||nightOpen(1))&&(q.k!=="hwguest"||S.day>=3);return q.k==="serve"?has(q.r):q.k==="vip"?S.day>=3:q.k==="big"?S.day>=4:true}
-// quêtes d'avant le 21/10/2026 : celles qui n'existent plus sont remplacées, les autres gardent leur avancée
-// (22/10/2026 : quêtes plus longues, l'avancée est gardée en passant au nouvel objectif du même type)
-{const seenT=new Set();S.quests=S.quests.filter(q=>!q.done).map(q=>{const x=QUESTS.find(x=>x.t===q.t)||QUESTS.find(x=>x.k===q.k&&x.r===q.r);return x&&(!x.hw||HW)&&!seenT.has(x.t)&&seenT.add(x.t)?{...x,p:Math.min(q.p,x.n)}:null}).filter(Boolean)}
+// quêtes du jour et de la semaine (16/11/2026) : la liste se renouvelle au changement de jour réel, pas quand une quête est finie
+const monday=()=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7);return d};
 function fillQuests(){
-  // pendant Halloween, une 4e quête, toujours d'Halloween
-  if(HW&&!S.quests.some(q=>q.hw)){const o=QUESTS.filter(q=>q.hw&&questAvail(q));if(o.length)S.quests.push({...pick(o),p:0})}
-  while(S.quests.filter(q=>!q.hw).length<3){
-    const used=new Set(S.quests.map(q=>q.t)),opts=QUESTS.filter(q=>!q.hw&&questAvail(q)&&!used.has(q.t));
-    if(!opts.length)break;const q=pick(opts);S.quests.push({...q,p:0});
+  const td=todayStr();
+  if(S.qd!==td){S.qd=td;S.quests=[];
+    // pendant Halloween, une 4e quête, toujours d'Halloween
+    if(HW){const o=QUESTS.filter(q=>q.hw&&questAvail(q));if(o.length)S.quests.push({...pick(o),p:0})}
+    while(S.quests.filter(q=>!q.hw).length<3){
+      const used=new Set(S.quests.map(q=>q.t)),opts=QUESTS.filter(q=>!q.hw&&questAvail(q)&&!used.has(q.t));
+      if(!opts.length)break;const q=pick(opts);S.quests.push({...q,p:0});
+    }
   }
+  else S.quests=S.quests.map(q=>{const x=QUESTS.find(x=>x.t===q.t);return x&&(!x.hw||HW)?{...x,p:Math.min(q.p,x.n),done:q.done}:null}).filter(Boolean);
+  const m=monday(),wk=`${m.getFullYear()}-${m.getMonth()+1}-${m.getDate()}`;
+  if(!S.wq||S.wq.w!==wk){const i=Math.round(m.getTime()/6048e5)%WQUESTS.length;S.wq={...WQUESTS[i],w:wk,p:0}}
 }
 fillQuests();
 let G=null,last=0,dirty=true,qDone=[];
 function qEvent(k,v=1,r){if(G&&G.tuto)return; // la leçon ne compte pas
+  const w=S.wq;if(w&&!w.done&&w.k===k){if(k==="combo")w.p=Math.max(w.p,v);else w.p+=v;
+    if(w.p>=w.n){w.done=1;w.p=w.n;S.coins+=w.g;addBells(w.b);toast(`Quête de la semaine réussie ! +${w.g} pièces et ${w.b} clochettes`);if(G&&G.run)floatAt($("chips"),`Quête de la semaine ! +${w.g}`,true)}}
   S.quests.forEach(q=>{if(q.done||q.k!==k||(q.r&&q.r!==r))return;
     if(k==="combo"){q.p=Math.max(q.p,v)}else q.p+=v;
     if(q.p>=q.n){q.done=1;q.p=q.n;if(q.cdy)S.candy+=q.g;else{S.coins+=q.g;addBells(1)}qDone.push(q);toast(`Quête réussie : ${qText(q)} · +${q.g} ${q.cdy?"bonbons":"pièces et 1 clochette"}`);if(G&&G.run){const el=$("chips");floatAt(el,`Quête réussie ! +${q.g}`,true)}}});

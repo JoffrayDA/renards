@@ -588,8 +588,14 @@ function renderStory(){
   const s=c&&c.b.at.startsWith("@")&&TG[c.b.at.slice(1)];
   hotEl.hidden=!s;if(s){hotEl.style.cssText=pc(s.x,s.y);hotEl.setAttribute("aria-label",s.name)}
   if(!R.intro){$("goal").hidden=true;return}
-  const g=goalText();$("goal").hidden=!!g.wait;$("goal").innerHTML=`<span><b>${g.t}</b>${g.g}</span><i aria-hidden="true">›</i>`;
+  const g=goalText(),k=g.wait?"":g.t+g.g;
+  // la ligne d'objectif ne reste que 5 s quand elle change, puis elle s'efface (16/11/2026, Joffray : « ça reste 5 secondes, après ça dégage »)
+  if(k===goalKey)return;goalKey=k;clearTimeout(goalT);
+  const el=$("goal");el.classList.remove("fade");el.hidden=!k;if(!k)return;
+  el.innerHTML=`<span><b>${g.t}</b>${g.g}</span><i aria-hidden="true">›</i>`;
+  goalT=setTimeout(()=>{el.classList.add("fade");goalT=setTimeout(()=>{el.hidden=true;el.classList.remove("fade")},500)},5000);
 }
+let goalKey=null,goalT=0;
 
 /* ---------- le journal des histoires ---------- */
 function journal(){

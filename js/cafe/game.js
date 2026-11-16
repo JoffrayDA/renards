@@ -14,7 +14,7 @@ function newDay(d){
   for(const k in REC)if(REC[k].kind==="drink"&&onMenu(k,d)&&!(it&&k==="smoothie"))st[k]=Array.from({length:k==="cafe"?1+lv("double"):OWN().machines?2:1},()=>({t:0,busy:0,ready:0}));
   const vit={};for(const k in REC)if(REC[k].kind==="bake"&&onMenu(k,d))vit[k]=k==="croissant"?2:0;
   // commandes, VIP et arrivées tirées avec une graine propre au jour : une journée est la même à chaque essai
-  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?WD().sv().stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p])),cone:"",cone2:""};
+  G={rng:it?rng(it.base*7919+it.seed+1):rng(d*7919+SEED[d-1]+1),it:it?1:0,run:1,paused:0,day:d,t:0,cfg,spawned:0,next:1,cust:[],tray:[],st,oven:{state:"idle"},vit,earned:0,served:0,lost:0,combo:0,bestCombo:0,newFox:[],helperT:2,vipServed:0,boost:bo,candy:0,cost:0,gain:0,replay:((it?WD().sv().stars:S.stars)[d]||0)>0,q0:Object.fromEntries(S.quests.map(q=>[q.t,q.p])),wq0:S.wq?S.wq.p:0,cone:"",cone2:""};
   // les fours : un seul d'habitude, deux à Kyoto à partir du jour 8 (WD().ovens) ; G.oven reste le premier (leçon, conseils)
   G.ovens=Array.from({length:it&&WD().ovens?WD().ovens(d):1},()=>({state:"idle"}));G.oven=G.ovens[0];
   // pas de deuxième four sans un plat de sa rangée à la carte

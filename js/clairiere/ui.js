@@ -150,7 +150,7 @@ $("sheet").onclick=e=>{if(e.target.id==="sheet"||e.target.closest("[data-close]"
   else if(b.dataset.push==="off")pushOff().then(()=>{toast("D'accord, plus de notifications.");drawBell();closeSheet()});
   else if(b.dataset.guess){const [id,n]=b.dataset.guess.split("|");guessInco(id,n)}
   else if(b.dataset.ask)askInco(b.dataset.ask);
-  else if(b.dataset.pfold)photoFolder(b.dataset.pfold);else if(b.dataset.go==="carnet")carnet();else if(b.dataset.go==="journal")journal();else if(b.dataset.go==="moi")moiSheet();else if(b.dataset.me)meBuy(b.dataset.me);else if(b.dataset.metab)moiSheet(b.dataset.metab);else if(b.dataset.go==="photos")photos()};
+  else if(b.dataset.pfold)photoFolder(b.dataset.pfold);else if(b.dataset.go==="carnet")carnet();else if(b.dataset.go==="journal")journal();else if(b.dataset.go==="moi")moiSheet();else if(b.dataset.me)meBuy(b.dataset.me);else if(b.dataset.mcol!=null)meColor(b.dataset.mcol);else if(b.dataset.munlock)meUnlock(b.dataset.munlock);else if(b.dataset.mslide0){const m=meB();delete m[b.dataset.mslide0];mePut(m);meRefresh()}else if(b.dataset.metab)moiSheet(b.dataset.metab);else if(b.dataset.go==="photos")photos()};
 
 function hoursLeft(){if(!R.bowl)return "";const h=(R.bowl.until-Date.now())/36e5;return h>=1?`encore ${Math.round(h)} h`:"presque vide"}
 function bowlSheet(){
@@ -233,26 +233,53 @@ const favBtn=(id,from="")=>`<button class="btn ghost favbtn${R.fav[id]?" on":""}
 function buddyPick(){const ids=Object.keys(R.res).filter(canBuddy).sort((a,b)=>(R.fav[b]?1:0)-(R.fav[a]?1:0)||(b==="petitpois")-(a==="petitpois"));
   openSheet(`<h2>Compagnon au Café</h2><p class="sub">Il s'assoit à côté de toi pendant le service. Une journée ensemble = un cœur.</p><div class="grid">${ids.map(id=>`<button class="card${R.buddy===id?" on":""}" data-buddy="${id}" data-back="pick" type="button"><div class="pic ${RAR[FOX[id].rar].cls}">${foxArt(FOX[id],{expr:"joy",portrait:1})}</div><h3>${R.fav[id]?favStar(1)+" ":""}${FOX[id].name}</h3><p>${R.buddy===id?"Avec toi":(R.tog[id]?`${R.tog[id]} journée${R.tog[id]>1?"s":""}`:"")}</p></button>`).join("")}</div><p class="sub">Un renard peut venir quand son histoire est finie.</p>`,"carnet")}
 /* ---------- « C'est toi » : Roussette, ses chiffres et son look (js/moi.js) ---------- */
-let meTab="c",meBack="carnet"; // touchée dans la scène, la fiche se ferme au lieu de revenir au carnet
+let meTab="corps",meBack="carnet"; // touchée dans la scène, la fiche se ferme au lieu de revenir au carnet
 // un accessoire acheté dans la boutique Style du Café compte aussi
 const meHas=(k,id)=>meOwn(k,id)||(k==="a"&&!!((load(CAFEKEY)||{}).own||{})["st-acc-"+id]);
-function moiSheet(tab,back){if(tab)meTab=tab;if(back!==undefined)meBack=back;if(!ME_LIST[meTab])meTab="c";const m=meB(),L=ME_LIST[meTab],cur=m[meTab]??"";
+const mePrice=it=>it.cp?`${it.cp} coins`:it.b?`${bellSVG} ${it.b}`:`${coinIcon()} ${it.p}`,meCan=it=>it.cp?false:it.b?bellsN()>=it.b:cafeCoins()>=(it.p||0);
+// refaite le 16/11/2026 (Joffray : « il y a 10 000 trucs, ça va pas… impressionne-moi ») : l'aperçu reste en haut, quatre onglets,
+// des curseurs pour la forme et une palette pour la couleur des chapeaux, du cou, de l'objet et du motif
+function moiSheet(tab,back){if(tab)meTab=tab;if(back!==undefined)meBack=back;if(!ME_TABS.some(([k])=>k===meTab))meTab="corps";const m=meB();
   const done=Object.keys(R.souv).filter(id=>STORIES[id]).length,met=ROSTER.filter(id=>R.res[id]||R.met[id]).length,days=Math.max(1,Math.round((Date.now()-((R.res.petitpois||{}).at||Date.now()))/864e5));
-  // l'aperçu d'une vignette : tout le look actuel, avec cette pièce à la place
-  const prev=it=>foxArt({...FOX.roussette,...meLook(FOX.roussette,{[meTab]:it.id})},{pose:"sit",plain:1});
-  const card=it=>{const own=meHas(meTab,it.id),on=cur===it.id,can=it.b?bellsN()>=it.b:cafeCoins()>=(it.p||0);
-    return `<button class="card mecell${on?" on":""}" data-me="${meTab}|${it.id}" type="button" ${!own&&!can?"disabled":""}><div class="pic">${prev(it)}</div><h3>${it.name}</h3><p>${on?"Porté":own?"À toi":it.b?`${bellSVG} ${it.b}`:`${coinIcon()} ${it.p}`}</p></button>`};
-  openSheet(`<div class="foxhead"><div class="pic">${foxArt(FOX.roussette,{expr:"joy",portrait:1})}</div><div><h2>${ME()}</h2><span class="chip">C'est toi</span><div class="lvl">La gardienne du refuge, et la patronne du Café Frimousse.</div></div></div>
-    <div class="mestats"><div><b>${met} / ${ROSTER.length}</b>renards réunis</div><div><b>${done}</b>histoires finies</div><div><b>${R.photos.length}</b>photos</div><div><b>${R.fish||0}</b>poissons</div><div><b>${R.glands}</b>glands</div><div><b>${days}</b>jour${days>1?"s":""} au refuge</div></div>
-    <h3 class="sec">Ton look</h3><div class="mebig">${foxArt(FOX.roussette,{pose:"sit"})}</div><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span></div>
-    <div class="tabs metabs">${ME_SLOTS.map(([k,n])=>`<button class="tab${meTab===k?" on":""}" data-metab="${k}" type="button">${n}</button>`).join("")}</div>
-    <div class="grid megrid">${L.map(card).join("")}</div>${tenueHTML?tenueHTML("roussette"):""}`,meBack)}
+  const look=over=>({...FOX.roussette,...meLook(FOX.roussette,over)});
+  // une grille d'essais : chaque vignette montre tout le look avec cette pièce à la place (face = en portrait, pour les yeux et la tête)
+  const grid=(k,face)=>{const cur=m[k]??"";return `<div class="grid megrid">${ME_LIST[k].map(it=>{const own=meHas(k,it.id),on=cur===it.id;
+    return `<button class="card mecell${on?" on":""}" data-me="${k}|${it.id}" type="button" ${!own&&!meCan(it)?"disabled":""}><div class="pic">${face?foxArt(look({[k]:it.id}),{expr:"open",portrait:1,plain:1}):foxArt(look({[k]:it.id}),{pose:"sit",plain:1})}</div><h3>${it.name}</h3><p>${on?"Porté":own?"À toi":mePrice(it)}</p></button>`}).join("")}</div>`};
+  // des pastilles de couleur (pelage, yeux) : la pièce s'achète en touchant la pastille
+  const dots=(k,col)=>`<div class="medots">${ME_LIST[k].map(it=>{const own=meHas(k,it.id),on=(m[k]??"")===it.id||(k==="c"&&!m.c&&it.id==="roux");
+    return `<button class="medot${on?" on":""}${own?"":" buy"}" data-me="${k}|${it.id}" type="button" ${!own&&!meCan(it)&&!it.cp?"disabled":""} aria-label="${it.name}"><i style="background:${col(it)}"></i>${own?"":`<small>${mePrice(it)}</small>`}</button>`}).join("")}</div>`;
+  // la palette d'une pièce portée (gratuite) ; « d'origine » remet sa couleur de départ
+  const pal=ck=>`<div class="medots pal"><button class="medot orig${m[ck]?"":" on"}" data-mcol="${ck}|" type="button" aria-label="Couleur d'origine"><i></i></button>${ME_PAL.map(c=>`<button class="medot${m[ck]===c?" on":""}" data-mcol="${ck}|${c}" type="button" aria-label="Couleur"><i style="background:${c}"></i></button>`).join("")}</div>`;
+  const slider=sh=>{const own=!!m.own["s:"+sh.k],v=typeof m[sh.k]==="number"?m[sh.k]:1;
+    return `<div class="meslide"><span>${sh.name}</span>${own?`<input type="range" min="${sh.min}" max="${sh.max}" step="0.01" value="${v}" data-mslide="${sh.k}" aria-label="${sh.name}"><button class="mereset" data-mslide0="${sh.k}" type="button" aria-label="Normal">↺</button>`:`<button class="btn mini" data-munlock="${sh.k}" type="button" ${cafeCoins()<sh.p?"disabled":""}>Débloquer · ${coinIcon()} ${sh.p}</button>`}</div>`};
+  const sec=t=>`<h3 class="sec mesec">${t}</h3>`;
+  const body={
+    corps:()=>sec("Pelage")+dots("c",it=>`linear-gradient(135deg,${it.c.b} 60%,${it.c.ch} 60%)`)
+      +sec("Forme")+ME_SHAPE.map(slider).join("")
+      +sec("Forme de la queue")+grid("q")
+      +sec("Motif")+grid("m")+(ME_MCOL.includes(m.m)?sec("Couleur du motif")+pal("mc"):""),
+    visage:()=>sec("Regard")+grid("ys",1)+sec("Couleur des yeux")+dots("y",it=>it.e)+sec("Nez")+grid("n",1)+sec("Sur le visage")+grid("v",1),
+    tenue:()=>sec("Tête")+(m.a&&ACCOL[m.a]?pal("ac"):"")+grid("a",1)+sec("Cou")+(m.k&&ACCOL[m.k]?pal("kc"):"")+grid("k")+(tenueHTML?tenueHTML("roussette"):""),
+    objet:()=>sec("Dans la patte")+(m.p&&ACCOL[m.p]?pal("pc"):"")+grid("p").replace('megrid"','megrid held"')};
+  openSheet(`<div class="foxhead"><div class="pic">${foxArt(FOX.roussette,{expr:"joy",portrait:1})}</div><div><h2>${ME()}</h2><span class="chip">C'est toi</span></div></div>
+    <div class="mestats"><div><b>${met} / ${ROSTER.length}</b>renards</div><div><b>${done}</b>histoires</div><div><b>${days}</b>jour${days>1?"s":""}</div></div>
+    <div class="melook"><div class="merow"><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span></div><div class="mebig">${foxArt(FOX.roussette,{pose:"sit"})}</div></div>
+    <div class="tabs metabs">${ME_TABS.map(([k,n])=>`<button class="tab${meTab===k?" on":""}" data-metab="${k}" type="button">${n}</button>`).join("")}</div></div>
+    ${body[meTab]()}`,meBack)}
+function meRefresh(){$("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});if(!meF.walk)draw(meF);const y=$("sheet-in").scrollTop;moiSheet();$("sheet-in").scrollTop=y}
 function meBuy(v){const [k,id]=v.split("|"),L=ME_LIST[k],it=L&&L.find(x=>x.id===id),m=meB();if(!it)return;
-  if(!meHas(k,id)){if(it.b){if(bellsN()<it.b)return;addBells(-it.b)}else if(it.p&&!spendCoins(it.p))return;m.own[k+":"+id]=1;toast(`${it.name} : acheté !`)}
+  if(!meHas(k,id)&&it.cp){toast(`Trouve ${it.cp} coins préférés pour l'avoir (Boutique, Mes objets).`);return}
+  if(!meHas(k,id)){if(it.b){if(bellsN()<it.b)return;addBells(-it.b)}else if(it.p&&!spendCoins(it.p))return;m.own[k+":"+id]=1;bip("buy");toast(`${it.name} : acheté !`)}
   m[k]=id;mePut(m);
   // l'accessoire de tête est aussi celui de la carte du Café
   if(k==="a"){const C=load(CAFEKEY);if(C){C.style=C.style||{};C.style.acc=id;try{localStorage.setItem(CAFEKEY,JSON.stringify(C))}catch(e){}}}
-  $("logo").innerHTML=foxArt(FOX.roussette,{pose:"happy"});if(!meF.walk)draw(meF);const y=$("sheet-in").scrollTop;moiSheet();$("sheet-in").scrollTop=y}
+  meRefresh()}
+function meColor(v){const [ck,c]=v.split("|"),m=meB();if(c)m[ck]=c;else delete m[ck];mePut(m);meRefresh()}
+function meUnlock(k){const sh=ME_SHAPE.find(x=>x.k===k),m=meB();if(!sh||m.own["s:"+k])return;if(!spendCoins(sh.p))return;m.own["s:"+k]=1;mePut(m);bip("buy");toast(`${sh.name} : à toi de régler !`);meRefresh()}
+// un curseur : l'aperçu suit le doigt, on enregistre en le lâchant
+$("sheet").addEventListener("input",e=>{const k=e.target.dataset&&e.target.dataset.mslide;if(!k)return;const b=$("sheet-in").querySelector(".mebig");
+  if(b)b.innerHTML=foxArt({...FOX.roussette,...meLook(FOX.roussette,{[k]:+e.target.value})},{pose:"sit",plain:1})});
+$("sheet").addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.mslide;if(!k)return;const m=meB();m[k]=+e.target.value;mePut(m);meRefresh()});
 function foxSheet(id){
   const f=FOX[id],r=R.res[id],M=metIds(),s=status(id,M),show=s.ok||s.seen;
   openSheet(`<div class="foxhead"><div class="pic ${RAR[f.rar].cls}">${foxArt(f,{expr:r?"joy":"open",portrait:1,sil:!show})}</div><div><h2>${show?f.name:"???"}</h2><span class="chip ${RAR[f.rar].cls}">${RAR[f.rar].label}</span>${r?`<div class="lvl">${heartsHTML(r.h)} Niv. ${lvOf(r.h)} · ${LV_N[lvOf(r.h)]}</div>${favBtn(id)}`:""}</div></div><p>${show?f.bio:""}</p><p class="sub">${s.txt}${r?" Un câlin par jour fait grandir votre amitié : touche-le dans la clairière.":""}</p>${r?storyHTML(id)+buddyHTML(id):""}${r||id==="roussette"?tenueHTML(id):""}<button class="btn ghost close" data-go="carnet" type="button">Retour au carnet</button>`,"carnet");

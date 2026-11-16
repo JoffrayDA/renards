@@ -518,3 +518,4 @@ button.home{padding:0;cursor:pointer}
 @keyframes kp-title{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
 .kp-tap{position:absolute;left:0;right:0;bottom:3%;text-align:center;color:#fff6dc;font-size:13px;opacity:0;animation:hi-in-kp .6s ease-out 23s forwards}
 @keyframes hi-in-kp{from{opacity:0}to{opacity:.85}}
+.qrow.wk{border:2.5px solid var(--gold);box-shadow:0 2px 0 var(--ink)}

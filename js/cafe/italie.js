@@ -453,7 +453,7 @@ function endIt(){
   Q.news(d,st,prev,news,e);
   if(itStarSum()>=N*3&&!V.guest){V.guest=1;const f=FOX[Q.guest];news.push(itRow(foxSVG(f,{pose:"happy"}),`${f.name} rejoint tes cafés !`,`Tout le quartier (${Q.name}) en ★★★ : sa légende vient désormais en invitée d'honneur, dans tous tes cafés.`,"background:#fbf0cc"))}
   const bRow=buddyRow(),qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
-  S.quests=S.quests.filter(q=>!q.done);fillQuests();save();
+  fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} pièces pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} pièces pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<N&&d+1<=V.day;
   // la scène gagnée se joue tout de suite, avant l'écran de résultats (Joffray, 04/11/2026 : plusieurs journées d'affilée

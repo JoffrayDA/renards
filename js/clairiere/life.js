@@ -52,7 +52,9 @@ function place(f,sp){f.spot=sp;f.x=sp.x;f.y=sp.y;f.el.style.transitionDuration="
 // choisit une pose qui va avec l'endroit, l'heure et la pluie
 function settle(f){
   uncuddle(f);
-  const sp=f.spot;let poses=sp.poses.slice();
+  const sp=f.spot;
+  if(sp.deco&&sp.fav===f.id&&typeof cpFind==="function")cpFind(sp.deco,f.id); // son coin préféré (deco.js)
+let poses=sp.poses.slice();
   // le ventre en l'air et les jouets : de jour, au sec (10/11/2026, Joffray : « j'ai jamais vu ! »)
   if(phaseNow()==="nuit"||scn.rain)poses=poses.filter(p=>p!=="belly"&&p!=="play");if(!poses.length)poses=["sit"];
   if(phaseNow()==="nuit")poses=poses.concat(poses.filter(p=>p==="sleep"||p==="lie"),["sleep","sleep"].filter(()=>sp.poses.includes("sleep")));
@@ -155,7 +157,7 @@ function choose(f){
   // de temps en temps, un renard va grignoter à la gamelle quand il y a des croquettes
   if(R.bowl&&R.bowl.type==="croquettes"&&!taken(SPOT.bowl)&&Math.random()<.25)return SPOT.bowl;
   // son objet préféré l'attire souvent (deco.js), les autres objets du refuge aussi
-  const fav=free.find(s=>s.fav===f.id);if(fav&&!isTarget(f.id)&&Math.random()<.5)return fav;
+  const fav=free.find(s=>s.fav===f.id);if(fav&&!isTarget(f.id)&&Math.random()<((R.cp||{})[fav.deco]?.5:.95))return fav; // pas encore trouvé : il y file
   const ob=free.filter(s=>s.obj);if(ob.length&&!objOf(f.spot)&&!isTarget(f.id)&&Math.random()<.25)return ob[Math.floor(Math.random()*ob.length)];
   const pool=free.filter(s=>(!s.lamp||f.id==="luciole")&&!s.obj);
   return pool[Math.floor(Math.random()*pool.length)]||null;

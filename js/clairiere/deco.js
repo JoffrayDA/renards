@@ -251,7 +251,7 @@ function shopSheet(tab){if(tab)shopTab=tab;
   const sec=(home,t)=>{const ks=own.filter(k=>!!DECO[k].home===home);if(!ks.length||(home&&!houseOpen()))return "";
     return `<div class="dsec"><h3 class="sec">${t}</h3><button class="btn" data-deco="${home?"home":"out"}" type="button">Décorer</button></div><div class="dgrid">${ks.map(k=>card(k,0)).join("")}</div>`};
   const body=shopTab==="jour"?`<p class="sub">Nouveaux objets ${untilMidnight()}.</p><div class="dgrid">${shopToday().map(k=>card(k,1)).join("")}</div>`
-    :shopTab==="mes"?(own.length?sec(false,"Clairière")+sec(true,"Maison"):`<p class="sub">Aucun objet pour l'instant. Va voir la boutique du jour !</p>`)
+    :shopTab==="mes"?(own.length?sec(false,"Clairière")+sec(true,"Maison"):`<p class="sub">Aucun objet pour l'instant. Va voir la boutique du jour !</p>`)+cpHTML()
     :shopTab==="noel"?noelTab():objList();
   openSheet(`<h2>Boutique</h2><div class="wallet"><span>${coinIcon()} ${cafeCoins()}</span><span>${bellSVG} ${bellsN()}</span><span>${acornSVG()} ${R.glands}</span>${atelierOn()?`<span>${sucreSVG} ${sucresN()}</span><span>${pelSVG} ${pelN()}</span>`:""}</div>
     <div class="tabs">${[["jour","Du jour"],["mes","Mes objets"],["refuge","Refuge"],...(atelierOn()?[["noel","Noël"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-dtab="${k}" type="button">${n}</button>`).join("")}</div>${body}
@@ -296,7 +296,7 @@ function houseDecoSeats(ids,night){const rest=ids.slice(),seated=[];
   for(const d of R.deco.home){const o=DECO[d.k];if(!o.seat)continue;
     [o.seat,...(o.more||[]).map(([dx,dy])=>({dx,dy,poses:o.seat.poses}))].forEach((s,i)=>{
       let id=i===0&&rest.includes(o.fav)?o.fav:(i>0||Math.random()<.5)?rest.find(x=>x!==o.fav):null;if(!id)return;
-      rest.splice(rest.indexOf(id),1);seated.push({id,k:d.k,x:d.x+(d.f?-s.dx:s.dx),y:d.y+s.dy,z:d.y+1,pose:night&&s.poses.includes("sleep")?"sleep":s.poses[(i+id.length)%s.poses.length]})})}
+      rest.splice(rest.indexOf(id),1);if(id===o.fav)cpFind(d.k,id);seated.push({id,k:d.k,x:d.x+(d.f?-s.dx:s.dx),y:d.y+s.dy,z:d.y+1,pose:night&&s.poses.includes("sleep")?"sleep":s.poses[(i+id.length)%s.poses.length]})})}
   return {seated,rest}}
 function drawHouseDeco(seated){
   for(const s of seated){const el=document.createElement("div");el.className="fox hdfox";el.innerHTML=`<div class="flip">${foxArt(FOX[s.id],{pose:s.pose})}</div>`;
@@ -387,7 +387,7 @@ function decoStart(k,w){w=k?(DECO[k].home?"home":"out"):w||"out";
   decoMode=true;decoSel=null;$("scene").classList.add("decoing");
   decoSpots();$("decobar").hidden=false;document.querySelector(".actions").hidden=true;$("goal").classList.add("off");
   if(R.tips.deco)toast(w==="home"?"Fais glisser les objets du doigt : au mur, ou par terre autour du tapis.":"Fais glisser les objets du doigt. Touche-en un pour le retourner ou le ranger.");drawDBar();if(k)decoAdd(k);drawDeco();ppTip("deco")}
-function decoEnd(){decoMode=false;decoSel=null;$("scene").classList.remove("decoing");$("decobar").hidden=true;document.querySelector(".actions").hidden=false;$("goal").classList.remove("off");
+function decoEnd(){setTimeout(cpCall,600);decoMode=false;decoSel=null;$("scene").classList.remove("decoing");$("decobar").hidden=true;document.querySelector(".actions").hidden=false;$("goal").classList.remove("off");
   if(dWhere==="home"&&houseEl){leaveHouse();enterHouse()}
   addObjSpots();decoSpots();drawDeco();drawGlow()}
 $("decobar").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.dadd)decoAdd(b.dataset.dadd);else if(b.dataset.dend)decoEnd()};
@@ -398,3 +398,23 @@ decoBtn.innerHTML=`<svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="${INK}
 decoBtn.onpointerdown=e=>{e.stopPropagation();if(shooting)camMode(false);decoStart(null,houseEl?"home":"out")};
 $("scene").appendChild(decoBtn);
 decoSpots();drawDeco();
+
+/* ---------- les coins préférés (16/11/2026, Joffray : « j'ai plein d'objets, je ne sais pas à quoi ils servent ») ----------
+   Chaque objet où l'on s'assoit a son renard fan (fav). Posé, l'objet l'attire : il accourt, et la première fois qu'il s'y installe,
+   c'est un coin préféré trouvé (+20 glands, +3 clochettes). La collection (Boutique, Mes objets) donne des pelages introuvables ailleurs. */
+const CP_GOALS=[[3,"miel"],[8,"aurore"],[14,"galaxie"]];
+const cpKeys=()=>Object.keys(DECO).filter(k=>DECO[k].fav&&DECO[k].seat&&(!DECO[k].noel||R.deco.inv[k]||allDeco().some(d=>d.k===k)));
+const cpN=()=>Object.keys(R.cp||{}).filter(k=>DECO[k]).length;
+function cpFind(k,id){R.cp=R.cp||{};if(R.cp[k]||!DECO[k]||DECO[k].fav!==id||!R.res[id])return;
+  R.cp[k]=Date.now();R.glands+=20;addBells(3);const n=cpN(),g=CP_GOALS.find(([m])=>m===n);
+  let msg=`${nameOf(id)} a trouvé son coin préféré : ${DECO[k].name.toLowerCase()} ! +20 glands, +3 clochettes.`;
+  if(g){const m=meB(),fur=ME_FUR.find(x=>x.id===g[1]);m.own["c:"+g[1]]=1;mePut(m);msg+=` ${n} coins préférés : le pelage « ${fur.name} » est à toi (C'est toi, dans le carnet) !`}
+  save();renderHud();bip("cheer");toast(msg)}
+// juste après avoir posé des objets : chaque fan présent dehors, libre, accourt vers le sien
+function cpCall(){if(decoMode)return;for(const d of R.deco.out){const o=DECO[d.k];if(!o.fav||(R.cp||{})[d.k])continue;
+  const f=foxes.find(x=>x.id===o.fav&&!x.inside&&!x.walk&&!x.wild),sp=SPOT["dc"+d.u];if(!f||!sp||taken(sp)||isTarget(f.id)||!$("talk").hidden)continue;
+  f.fast=1;f.until=Date.now()+6e4;goTo(f,sp);toast(`${nameOf(f.id)} accourt vers ${DECO[d.k].name.toLowerCase()} !`)}}
+function cpHTML(){const ks=cpKeys(),n=cpN(),next=CP_GOALS.find(([m])=>m>n),tot=ks.length;
+  return `<div class="dsec"><h3 class="sec">Coins préférés · ${n} / ${tot}</h3></div><p class="sub">Chaque objet a son renard fan : pose-le, il accourt.${next?` Encore ${next[0]-n} pour un pelage rare.`:""}</p>
+    <div class="cpgrid">${ks.map(k=>{const id=DECO[k].fav,on=!!(R.cp||{})[k],mine=R.deco.inv[k]||allDeco().some(d=>d.k===k);
+      return `<div class="cptile${on?" on":""}${mine?"":" off"}"><div class="cpo">${dSvg(k,"all")}</div><div class="cpf">${foxArt(FOX[id],{portrait:1,expr:"joy",sil:!on})}</div><b>${on?nameOf(id):"???"}</b><small>${DECO[k].name}</small></div>`}).join("")}</div>`}
