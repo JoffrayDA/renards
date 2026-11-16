@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dialogues de la Clairière</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<!-- Propositions de place et de style pour la boîte de dialogue de la Clairière (16/11/2026, Joffray : « plus centrale ») -->
+<style>
+:root{--ink:#5b4250;--wood:#9a6440;--wood-d:#6e4a2f;--cream:#fff6e8}
+*{box-sizing:border-box}
+body{margin:0;background:#eef3e6;color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;padding:20px 16px 40px}
+h1{font-family:"Mochiy Pop One",system-ui;font-weight:400;font-size:22px;margin:0 0 4px;text-align:center}
+.intro{text-align:center;margin:0 auto 22px;max-width:640px;font-size:14px;line-height:1.45}
+.grid{display:flex;flex-wrap:wrap;gap:26px;justify-content:center}
+figure{margin:0;width:300px}
+figcaption{margin-top:10px;font-size:13.5px;line-height:1.4}
+figcaption b{display:block;font-family:"Mochiy Pop One",system-ui;font-weight:400;font-size:16px;margin-bottom:2px}
+.ph{position:relative;width:300px;height:555px;border-radius:26px;overflow:hidden;border:3px solid #fff;box-shadow:0 6px 20px rgba(61,42,53,.18);background:url(img/dialogues-fond.png) center/cover}
+.dim::after{content:"";position:absolute;inset:0;background:rgba(61,42,53,.28);z-index:1}
+.pic{background:linear-gradient(#f9e7cc,#f0d4ae);border:2.5px solid var(--wood);border-radius:14px;overflow:hidden;flex:none}
+.pic svg{display:block;width:100%}
+.nm{font-family:"Mochiy Pop One",system-ui;font-size:12px;color:var(--wood)}
+.tx{font-size:13px;line-height:1.35;font-weight:700}
+.nx{font-size:10px;color:#b08a6e;margin-top:2px}
+.box{background:var(--cream);border:3px solid var(--wood);box-shadow:0 4px 0 var(--wood-d),0 8px 18px rgba(61,42,53,.2)}
+/* A : en haut (la version en ligne) */
+.A .box{position:absolute;left:7px;right:7px;top:34px;display:flex;gap:8px;align-items:center;border-radius:16px;padding:7px;z-index:2}
+.A .pic{width:62px}
+/* B : au centre, carte posée au milieu */
+.B .box{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);border-radius:20px;padding:30px 14px 12px;z-index:2;text-align:center}
+.B .pic{width:84px;position:absolute;left:50%;top:-52px;transform:translateX(-50%);border-radius:50%;border-width:3px}
+.B .tx{font-size:14px}
+/* C : bulle de BD au-dessus du renard qui parle */
+.C .box{position:absolute;left:58px;right:14px;top:122px;border-radius:18px;padding:8px 10px 12px 54px;z-index:2}
+.C .box::after{content:"";position:absolute;right:52px;bottom:-15px;width:22px;height:22px;background:var(--cream);border:3px solid var(--wood);border-top:0;border-left:0;transform:rotate(45deg)}
+.C .pic{width:46px;position:absolute;left:5px;top:8px;border-radius:50%}
+.C .ring{position:absolute;left:210px;top:216px;width:56px;height:56px;border-radius:50%;border:3px dashed #fff;z-index:2;opacity:.9}
+/* D : comme au Café (grand portrait + panneau), un peu plus haut que le bas */
+.D .who{position:absolute;left:10px;top:210px;width:150px;z-index:2;filter:drop-shadow(0 5px 0 rgba(61,42,53,.25))}
+.D .who svg{display:block;width:100%}
+.D .box{position:absolute;left:10px;right:10px;top:330px;border-radius:20px;padding:20px 14px 10px;z-index:3}
+.D .nmp{position:absolute;top:-15px;left:16px;background:#f08a6c;color:#fff;font-family:"Mochiy Pop One",system-ui;font-size:12.5px;border:2.5px solid var(--wood-d);border-radius:999px;padding:2px 12px;box-shadow:0 2px 0 var(--wood-d)}
+.D .tx{font-size:14px}
+/* E : parchemin au milieu, portrait qui dépasse sur le côté */
+.E .box{position:absolute;left:34px;right:10px;top:46%;border-radius:14px;padding:10px 14px 10px 64px;z-index:2;background:linear-gradient(#fdf1dc,#f5e1bf);border-width:3px;border-style:solid;border-color:var(--wood)}
+.E .box::before,.E .box::after{content:"";position:absolute;top:-6px;bottom:-6px;width:12px;background:#d9b07c;border:2.5px solid var(--wood);border-radius:8px}
+.E .box::before{left:-8px}.E .box::after{right:-8px}
+.E .pic{width:78px;position:absolute;left:-26px;top:50%;transform:translateY(-50%) rotate(-4deg);z-index:3;border-width:3px;border-radius:16px;box-shadow:0 3px 0 var(--wood-d)}
+.reco{display:inline-block;background:#7fb48a;color:#fff;border-radius:999px;font-size:11px;padding:1px 9px;margin-left:6px;font-family:"Zen Maru Gothic";font-weight:900;vertical-align:2px}
+.peek{max-width:640px;margin:30px auto 0;font-size:14px;line-height:1.45;text-align:center}
+</style>
+</head>
+<body>
+<h1>Dialogues de la Clairière</h1>
+<p class="intro">Cinq façons de placer la bulle. Partout : cadre en bois marron, et la petite tête qui sautille avec un « ! » quand un renard veut te parler tout seul.</p>
+<div class="grid" id="grid"></div>
+<p class="peek">Dis-moi la lettre (ou un mélange : « B avec le parchemin de E »…).</p>
+<script src="../js/cafe/foxes.js"></script>
+<script src="../js/bourse.js"></script>
+<script src="../js/tenues.js"></script>
+<script src="../js/foxart.js"></script>
+<script>
+const PP=FOXES.find(f=>f.id==="petitpois"),T="Le terrain de jeu ! Copeau y monte de gros jeux, payés en clochettes.";
+const head=e=>foxArt(PP,{expr:e,portrait:1});
+const V=[
+ ["A","En haut (la version en ligne)","Tête à gauche, texte à droite, juste sous l'heure. Ne cache presque rien, mais loin du pouce et du renard qui parle.",
+  `<div class="box"><div class="pic">${head("joy")}</div><div><div class="nm">Petit Pois</div><div class="tx">${T}</div><div class="nx">Touche pour continuer</div></div></div>`],
+ ["B","Au milieu","Une carte au centre de l'écran, la tête ronde posée dessus, le jardin un peu assombri. Impossible de la rater.",
+  `<div class="box"><div class="pic">${head("joy")}</div><div class="nm">Petit Pois</div><div class="tx">${T}</div><div class="nx">Touche pour continuer</div></div>`,1],
+ ["C","Bulle de BD","La bulle sort du renard qui parle (ici Petit Pois, entouré). On voit qui parle dans la scène. Elle bouge d'un renard à l'autre.",
+  `<span class="ring"></span><div class="box"><div class="pic">${head("joy")}</div><div class="nm">Petit Pois</div><div class="tx">${T}</div></div>`],
+ ["D","Comme au Café","Le grand portrait et le panneau des quartiers (Lorenzo, Anatole), remontés au milieu. Plus de place pour l'expression.",
+  `<div class="who">${head("joy")}</div><div class="box"><span class="nmp">Petit Pois</span><div class="tx">${T}</div><div class="nx" style="text-align:right">Touche pour continuer ▸</div></div>`,1],
+ ["E","Parchemin","Un rouleau de papier au milieu, la tête qui déborde à gauche, un peu penchée. Plus « conte de la forêt ».",
+  `<div class="box"><div class="pic">${head("joy")}</div><div class="nm">Petit Pois</div><div class="tx">${T}</div><div class="nx">Touche pour continuer</div></div>`]
+];
+document.getElementById("grid").innerHTML=V.map(([k,t,d,h,dim])=>`<figure><div class="ph ${k}${dim?" dim":""}">${h}</div><figcaption><b>${k} · ${t}${k==="B"?'<span class="reco">mon choix</span>':""}</b>${d}</figcaption></figure>`).join("");
+</script>
+</body>
+</html>
