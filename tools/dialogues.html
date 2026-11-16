@@ -69,14 +69,25 @@ h2{font-family:"Mochiy Pop One",system-ui;font-weight:400;font-size:18px;text-al
 .zoom .z{position:relative;width:110px;height:120px;transform:scale(1.6);transform-origin:top center;margin-bottom:70px}
 .zoom .z .hd{left:22px;top:20px}
 .zoom .z span{position:absolute;left:0;right:0;bottom:-10px;text-align:center;font-family:"Mochiy Pop One",system-ui;font-size:9px}
+.wgrid{display:grid;grid-template-columns:auto repeat(3,120px);gap:14px 18px;justify-content:center;align-items:center;margin:18px auto 6px}
+.wgrid .th{font-family:"Mochiy Pop One",system-ui;font-size:13px;text-align:center}
+.wgrid .rh{font-family:"Mochiy Pop One",system-ui;font-size:13px;text-align:right}
+.wf{position:relative;width:96px;height:96px;margin:10px auto;animation:tpeek 1.6s ease-in-out infinite}
+.wf>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.wf .win{position:absolute;overflow:hidden;background:linear-gradient(#f9e7cc,#f0d4ae)}
+.wf .win svg{display:block;width:100%}
+.wf i{position:absolute;right:-8px;top:-8px;width:26px;height:26px;border-radius:50%;background:#ffd36a;border:3px solid #5b4250;display:grid;place-items:center;font:900 15px/1 "Mochiy Pop One",system-ui;font-style:normal;color:#5b4250;box-shadow:0 2px 0 #5b4250;z-index:2}
+.ph .wf{position:absolute;left:6px;top:42px;width:64px;height:64px;margin:0;z-index:2}
+.ph .wf i{width:20px;height:20px;font-size:11px;border-width:2.5px;right:-7px;top:-7px}
+@media(max-width:560px){.wgrid{grid-template-columns:auto repeat(3,84px);gap:10px}.wf{width:72px;height:72px}}
 </style>
 </head>
 <body>
 <h1>Dialogues de la Clairière</h1>
-<h2>1 · La petite tête qui t'appelle</h2>
-<p class="intro">Juste sous Jour / Nuit, 3 mm plus bas qu'en ligne, cadre marron plus épais. Elle sautille avec son « ! » ; on la touche, la bulle s'ouvre.</p>
+<h2>1 · La petite tête : cadres en bois</h2>
+<p class="intro">Tes trois formes (1 carré, 2 double cadre, 4 médaillon), en vrai bois : veines, nœud, coins assemblés, clous, cernes du rondin. Trois essences : miel, bouleau (clair) et bois flotté (gris doux). Elles sautillent avec leur « ! ».</p>
+<div class="wgrid" id="wood"></div>
 <div class="grid" id="heads"></div>
-<div class="zoom" id="zoom"></div>
 <h2>2 · La bulle, une fois la tête touchée</h2>
 <p class="intro">Plus centrale. Cadre en bois marron partout.</p>
 <div class="grid" id="grid"></div>
@@ -100,14 +111,49 @@ const V=[
  ["E","Parchemin","Un rouleau de papier au milieu, la tête qui déborde à gauche, un peu penchée. Plus « conte de la forêt ».",
   `<div class="box"><div class="pic">${head("joy")}</div><div class="nm">Petit Pois</div><div class="tx">${T}</div><div class="nx">Touche pour continuer</div></div>`]
 ];
-const HD=[
- ["1","Bois épais","Le carré d'aujourd'hui, avec un cadre deux fois plus épais."],
- ["2","Double cadre","Bois foncé avec un filet clair dedans, comme un cadre de tableau."],
- ["3","Photo","Petite photo penchée avec le prénom dessous, comme épinglée."],
- ["4","Médaillon","Rond, cadre épais, comme un pendentif."]];
-const hd=k=>`<div class="hd"><div class="pic">${head(k==="3"?"open":"surprise")}</div>${k==="3"?"<b>Petit Pois</b>":""}<i>!</i></div>`;
-document.getElementById("heads").innerHTML=HD.map(([k,t,d])=>`<figure><div class="ph h${k}">${hd(k)}</div><figcaption><b>${k} · ${t}</b>${d}</figcaption></figure>`).join("");
-document.getElementById("zoom").innerHTML=HD.map(([k,t])=>`<div class="z h${k}">${hd(k)}<span>${k} · ${t}</span></div>`).join("");
+// cadres en bois dessinés en SVG (viewBox 100), la tête dans une fenêtre par-dessus
+const WOOD={miel:{n:"Miel",b:"#e9b46c",g:"#c98a45",d:"#a86a32",l:"#f8d9a2",k:"#9a5f2c"},
+  bouleau:{n:"Bouleau",b:"#f3e4c6",g:"#d9c29a",d:"#bfa47a",l:"#fff6e4",k:"#a88a62"},
+  flotte:{n:"Bois flotté",b:"#cfc8b8",g:"#aaa293",d:"#8f877a",l:"#ece7dc",k:"#7b7468"}};
+const INKC="#5b4250";let uid=0;
+const wav=v=>(Math.sin(v*1.7)*2);
+function hgrain(W,x0,y0,x1,y1){let s="";for(let y=y0+2;y<y1;y+=4.2){const a=wav(y);
+  s+=`<path d="M${x0} ${y} C${x0+(x1-x0)*.3} ${y+a} ${x0+(x1-x0)*.6} ${y-a} ${x1} ${y+.5}" fill="none" stroke="${W.g}" stroke-width="1.3" stroke-linecap="round"/>`}return s}
+function vgrain(W,x0,y0,x1,y1){let s="";for(let x=x0+2;x<x1;x+=4.2){const a=wav(x);
+  s+=`<path d="M${x} ${y0} C${x+a} ${y0+(y1-y0)*.35} ${x-a} ${y0+(y1-y0)*.65} ${x+.5} ${y1}" fill="none" stroke="${W.g}" stroke-width="1.3" stroke-linecap="round"/>`}return s}
+// 1 : carré, quatre planches assemblées en onglet, veines, un nœud, quatre clous
+function fSquare(W,o,i,close=true){const id="w"+(uid++),I=100-i,O=100-o,h=(i-o)/2;
+  return `<svg viewBox="0 0 100 100"><defs><clipPath id="${id}t"><path d="M${o} ${o} H${O} L${I} ${i} H${i}Z"/></clipPath><clipPath id="${id}b"><path d="M${o} ${O} H${O} L${I} ${I} H${i}Z"/></clipPath>
+    <clipPath id="${id}l"><path d="M${o} ${o} L${i} ${i} V${I} L${o} ${O}Z"/></clipPath><clipPath id="${id}r"><path d="M${O} ${o} L${I} ${i} V${I} L${O} ${O}Z"/></clipPath></defs>
+    <rect x="${o}" y="${o+3}" width="${100-2*o}" height="${100-2*o}" rx="9" fill="${INKC}"/>
+    <rect x="${o}" y="${o}" width="${100-2*o}" height="${100-2*o}" rx="9" fill="${W.b}"/>
+    <g clip-path="url(#${id}t)">${hgrain(W,o,o,O,i)}<path d="M${o+6} ${o+3} H${O-6}" stroke="${W.l}" stroke-width="2" stroke-linecap="round"/></g>
+    <g clip-path="url(#${id}b)">${hgrain(W,o,I,O,O)}</g>
+    <g clip-path="url(#${id}l)">${vgrain(W,o,o,i,O)}<path d="M${o+3} ${o+8} V${O-8}" stroke="${W.l}" stroke-width="2" stroke-linecap="round"/></g>
+    <g clip-path="url(#${id}r)">${vgrain(W,I,o,O,O)}</g>
+    <ellipse cx="${O-h}" cy="62" rx="3" ry="4.6" fill="${W.d}" stroke="${W.k}" stroke-width="1"/><ellipse cx="${O-h}" cy="62" rx="1.2" ry="2" fill="${W.k}"/>
+    ${[[o,o,i,i],[O,o,I,i],[o,O,i,I],[O,O,I,I]].map(([a,b,c,d])=>`<path d="M${a} ${b} L${c} ${d}" stroke="${W.k}" stroke-width="1.6"/>`).join("")}
+    ${[[o+h,o+h],[O-h,o+h],[o+h,O-h],[O-h,O-h]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6" fill="#d8d2cc" stroke="${INKC}" stroke-width="1.2"/><circle cx="${x-.8}" cy="${y-.8}" r=".8" fill="#fff"/>`).join("")}
+    <rect x="${o}" y="${o}" width="${100-2*o}" height="${100-2*o}" rx="9" fill="none" stroke="${INKC}" stroke-width="3.2"/>
+    <rect x="${i}" y="${i}" width="${100-2*i}" height="${100-2*i}" rx="4" fill="none" stroke="${INKC}" stroke-width="2.6"/>${close?"</svg>":""}`}
+// 2 : double cadre, planches foncées dehors, filet de bois clair sculpté dedans
+function fDouble(W,o,i){const D={...W,b:W.d,g:W.k,l:W.b},m=i-6;
+  return fSquare(D,o,m,false)+`<rect x="${m}" y="${m}" width="${100-2*m}" height="${100-2*m}" rx="4" fill="${W.l}" stroke="${INKC}" stroke-width="2"/>
+    <rect x="${m+2.2}" y="${m+2.2}" width="${100-2*m-4.4}" height="${100-2*m-4.4}" rx="3" fill="none" stroke="${W.g}" stroke-width="1.4" stroke-dasharray="1 2.6"/>
+    <rect x="${i}" y="${i}" width="${100-2*i}" height="${100-2*i}" rx="3" fill="none" stroke="${INKC}" stroke-width="2.2"/></svg>`}
+// 4 : médaillon, une tranche de rondin : écorce, cernes, la tête au cœur
+function fRound(W,o,i){const R=50-o,r=50-i;let rings="",bark="";
+  for(let k=r+3.5,n=0;k<R-6;k+=3.4,n++)rings+=`<circle cx="50" cy="50" r="${k.toFixed(1)}" fill="none" stroke="${W.g}" stroke-width="1.2" ${n%2?'stroke-dasharray="16 3"':""}/>`;
+  for(let a=0;a<360;a+=18){const t=a*Math.PI/180,p=(q,u)=>`${(50+q*Math.cos(t+u)).toFixed(1)} ${(50+q*Math.sin(t+u)).toFixed(1)}`;bark+=`<path d="M${p(R-1,0)} L${p(R-5,.08)}" stroke="${W.k}" stroke-width="1.4" stroke-linecap="round"/>`}
+  const q=R-9;
+  return `<svg viewBox="0 0 100 100"><circle cx="50" cy="53" r="${R}" fill="${INKC}"/><circle cx="50" cy="50" r="${R}" fill="${W.d}"/>${bark}
+    <circle cx="50" cy="50" r="${R-6}" fill="${W.b}" stroke="${W.k}" stroke-width="1.4"/>${rings}
+    <path d="M${(50-q*.7).toFixed(1)} ${(50-q*.7).toFixed(1)} A${q} ${q} 0 0 1 ${(50+q*.2).toFixed(1)} ${(50-q*.98).toFixed(1)}" fill="none" stroke="${W.l}" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="50" cy="50" r="${R}" fill="none" stroke="${INKC}" stroke-width="3.2"/><circle cx="50" cy="50" r="${r}" fill="none" stroke="${INKC}" stroke-width="2.6"/></svg>`}
+const SHAPES=[["1","Carré",fSquare,7,22,0],["2","Double cadre",fDouble,6,25,0],["4","Médaillon",fRound,4,22,1]];
+const wf=(sh,w)=>{const [k,,fn,o,i,rd]=sh,p=i+1.3;return `<div class="wf">${fn(WOOD[w],o,i)}<div class="win" style="left:${p}%;top:${p}%;right:${p}%;bottom:${p}%;border-radius:${rd?"50%":"6%"}">${head("surprise")}</div><i>!</i></div>`};
+document.getElementById("wood").innerHTML=`<span></span>${Object.values(WOOD).map(w=>`<div class="th">${w.n}</div>`).join("")}`+SHAPES.map(sh=>`<div class="rh">${sh[0]} · ${sh[1]}</div>${Object.keys(WOOD).map(w=>wf(sh,w)).join("")}`).join("");
+document.getElementById("heads").innerHTML=[[SHAPES[0],"miel"],[SHAPES[1],"bouleau"],[SHAPES[2],"flotte"]].map(([sh,w])=>`<figure><div class="ph">${wf(sh,w)}</div><figcaption><b>${sh[0]} · ${sh[1]}, ${WOOD[w].n.toLowerCase()}</b>Dans la scène, à sa vraie taille.</figcaption></figure>`).join("");
 document.getElementById("grid").innerHTML=V.map(([k,t,d,h,dim])=>`<figure><div class="ph ${k}${dim?" dim":""}">${h}</div><figcaption><b>${k} · ${t}${k==="B"?'<span class="reco">mon choix</span>':""}</b>${d}</figcaption></figure>`).join("");
 </script>
 </body>
