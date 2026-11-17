@@ -85,7 +85,7 @@ h1 span{color:var(--coral-d)}
    (grand portrait au-dessus d'un panneau, « DA commune »), en bas de la scène (17/11 : Joffray la préfère en bas), cadre en bois ; le premier qui parle à gauche,
    les autres à droite. Au-dessus des écrans terrain, potager et maison (z-index), sinon elle passait derrière. */
 .talk{position:absolute;left:10px;right:10px;bottom:16px;z-index:2100;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.talk::before{content:"";position:absolute;left:-60px;right:-60px;top:-200vh;bottom:-200vh;background:rgba(61,42,53,.26);z-index:-1;animation:tfade .25s ease-out}
+.talk::before{content:"";position:absolute;left:-60px;right:-60px;top:-200vh;bottom:-200vh;z-index:-1}
 .talk .tw{width:min(44%,170px);position:relative;margin:0 0 -24px 6px;filter:drop-shadow(0 5px 0 rgba(61,42,53,.25))}
 .talk .tw svg{display:block;width:100%}
 .talk .tw.r{margin:0 6px -24px auto;transform:scaleX(-1)}
