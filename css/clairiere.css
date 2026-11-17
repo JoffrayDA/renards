@@ -82,9 +82,9 @@ h1 span{color:var(--coral-d)}
 
 /* boîte de dialogue : portrait à gauche, texte à droite */
 /* dialogues (16/11/2026, choix de Joffray sur tools/dialogues.html) : la bulle ouverte reprend le panneau des quartiers du Café
-   (grand portrait au-dessus d'un panneau, « DA commune »), au milieu de l'écran, cadre en bois ; le premier qui parle à gauche,
+   (grand portrait au-dessus d'un panneau, « DA commune »), en bas de la scène (17/11 : Joffray la préfère en bas), cadre en bois ; le premier qui parle à gauche,
    les autres à droite. Au-dessus des écrans terrain, potager et maison (z-index), sinon elle passait derrière. */
-.talk{position:absolute;left:10px;right:10px;top:31%;z-index:2100;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.talk{position:absolute;left:10px;right:10px;bottom:16px;z-index:2100;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .talk::before{content:"";position:absolute;left:-60px;right:-60px;top:-200vh;bottom:-200vh;background:rgba(61,42,53,.26);z-index:-1;animation:tfade .25s ease-out}
 .talk .tw{width:min(44%,170px);position:relative;margin:0 0 -24px 6px;filter:drop-shadow(0 5px 0 rgba(61,42,53,.25))}
 .talk .tw svg{display:block;width:100%}
@@ -102,7 +102,7 @@ h1 span{color:var(--coral-d)}
 @keyframes vnpopr{from{transform:scaleX(-1) translateY(24px) scale(.9);opacity:0}}
 @keyframes vnnext{50%{transform:translateY(3px)}}
 /* avant d'ouvrir : la tête de celui qui veut parler, dans un carré de bois miel, juste sous l'heure ; elle sautille avec un « ! » */
-.talk.peek{left:6px;right:auto;top:50px;width:68px;height:68px;animation:tdown .3s cubic-bezier(.3,1.4,.5,1),tpeek 1.6s ease-in-out .3s infinite;transform-origin:34px 0}
+.talk.peek{left:6px;right:auto;top:50px;bottom:auto;width:68px;height:68px;animation:tdown .3s cubic-bezier(.3,1.4,.5,1),tpeek 1.6s ease-in-out .3s infinite;transform-origin:34px 0}
 .talk.peek::before{display:none}
 .talk.peek>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .talk.peek .pic{position:absolute;left:23.5%;top:23.5%;right:23.5%;bottom:23.5%;overflow:hidden;border-radius:6%;background:linear-gradient(#f9e7cc,#f0d4ae)}
