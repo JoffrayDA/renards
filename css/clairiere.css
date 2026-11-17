@@ -573,10 +573,11 @@ h1 .la{font-style:normal}
 .play.zone.outL{animation:zoutL .3s ease-in forwards}.play.zone.outR{animation:zoutR .3s ease-in forwards}
 @keyframes zinR{from{transform:translateX(100%)}}@keyframes zinL{from{transform:translateX(-100%)}}
 @keyframes zoutL{to{transform:translateX(-100%)}}@keyframes zoutR{to{transform:translateX(100%)}}
-.znav{position:absolute;top:50%;z-index:8;transform:translateY(-50%);display:flex;align-items:center;gap:2px;padding:8px 6px;border:2.5px solid var(--ink);background:var(--card);box-shadow:0 3px 0 var(--ink);font:inherit;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.znav span{font:900 22px/1 system-ui}.znav small{writing-mode:vertical-rl;font-size:10.5px;font-weight:800;letter-spacing:.5px}
-.znav.zr{right:-3px;border-radius:14px 0 0 14px}.znav.zl{left:-3px;border-radius:0 14px 14px 0}
-.znav.zl small{transform:rotate(180deg)}
+/* flèches d'un écran à l'autre : discrètes (17/11/2026, Joffray : la languette « Terrain de jeu » était trop voyante) */
+.znav{position:absolute;top:50%;z-index:8;transform:translateY(-50%);display:grid;place-items:center;width:22px;height:46px;padding:0;border:2px solid rgba(91,66,80,.35);background:rgba(255,246,232,.55);font:inherit;color:rgba(91,66,80,.75);cursor:pointer;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px)}
+.znav span{font:900 20px/1 system-ui;display:grid;place-items:center}
+.znav.zr{right:-2px;border-radius:12px 0 0 12px;border-right:0}.znav.zl{left:-2px;border-radius:0 12px 12px 0;border-left:0}
+.znav.zlk{opacity:.6}
 .play.zone .znav{z-index:20}
 .scene:has(.house) #ztab,.scene:has(#play:not([hidden])) #ztab,.scene.decoing #ztab{display:none}
 .zbuild{position:absolute;left:10px;bottom:10px;z-index:20}

@@ -9,6 +9,10 @@
 const zAu={tourniquet:"au tourniquet",toboggan:"au toboggan",bascule:"à la bascule",trampoline:"au trampoline"};
 const ZONES=["jardin","jeux","potager"],ZNAME={jardin:"Jardin",jeux:"Terrain de jeu",potager:"Potager"};
 let zoneEl=null,zone="jardin",zoneRaf=0;
+// 17/11/2026, Joffray : le terrain et le potager s'ouvrent selon le nombre de renards du refuge
+const ZNEED={jeux:8,potager:15};
+const zCount=()=>Object.keys(R.res).filter(id=>FOX[id]&&id!=="roussette").length;
+const zOpen=z=>!ZNEED[z]||zCount()>=ZNEED[z];
 R.jeux=R.jeux||{};
 R.pot=R.pot||{p:[null,null,null,null,null,null],baies:0,miel:0};
 const zFox=(id,pose,w,o={})=>foxAt(id,0,0,w,{pose,...o}).replace(/ filter="url\(#wobble\)"/g,"");
@@ -44,11 +48,15 @@ function zoneOver(id){const ph=phaseNow(),P=PH[ph],wet=scn.rain;
   return s}
 
 /* ---------- aller d'un écran à l'autre ---------- */
+const zLock=`<svg viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.5a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="1.5" y="6" width="9" height="7" rx="1.8" fill="currentColor"/></svg>`;
+const zBtn=(z,side)=>`<button class="znav ${side}${zOpen(z)?"":" zlk"}" data-zgo="${z}" type="button" aria-label="${ZNAME[z]}"><span>${zOpen(z)?(side==="zl"?"‹":"›"):zLock}</span></button>`;
 function zoneNav(){const i=ZONES.indexOf(zone),l=ZONES[i-1],r=ZONES[i+1];
-  return (l?`<button class="znav zl" data-zgo="${l}" type="button" aria-label="${ZNAME[l]}"><span>‹</span><small>${ZNAME[l]}</small></button>`:"")
-    +(r?`<button class="znav zr" data-zgo="${r}" type="button" aria-label="${ZNAME[r]}"><small>${ZNAME[r]}</small><span>›</span></button>`:"")}
+  return (l?zBtn(l,"zl"):"")+(r?zBtn(r,"zr"):"")}
+// écran encore fermé : on dit combien de renards il manque
+function zLocked(z){if(zOpen(z))return false;const n=ZNEED[z]-zCount();
+  toast(`${ZNAME[z]} : encore ${n} renard${n>1?"s":""} au refuge pour l'ouvrir`);bip("knock");return true}
 function stopZone(){cancelAnimationFrame(zoneRaf);zoneRaf=0}
-function goZone(z){if(z===zone||!ZONES.includes(z))return;const from=ZONES.indexOf(zone),to=ZONES.indexOf(z),fwd=to>from;
+function goZone(z){if(z===zone||!ZONES.includes(z)||zLocked(z))return;const from=ZONES.indexOf(zone),to=ZONES.indexOf(z),fwd=to>from;
   stopZone();const old=zoneEl;zoneEl=null;zone=z;
   if(old){old.classList.add(fwd?"outL":"outR");old.style.pointerEvents="none";setTimeout(()=>old.remove(),320)}
   bip("whoosh");drawZoneTab();
@@ -59,9 +67,16 @@ function goZone(z){if(z===zone||!ZONES.includes(z))return;const from=ZONES.index
   if(z==="jeux"||!POT_SOON)ppTip(z==="jeux"?"terrain":"potager",null,true)}
 const leaveZone=()=>goZone("jardin");
 // la languette du jardin vers le terrain de jeu, sur le bord droit de la scène
-function drawZoneTab(){let t=$("ztab");if(!t){t=document.createElement("button");t.id="ztab";t.type="button";t.className="znav zr";t.setAttribute("aria-label",ZNAME.jeux);
-    t.innerHTML=`<small>${ZNAME.jeux}</small><span>›</span>`;t.onclick=e=>{e.stopPropagation();goZone("jeux")};$("scene").appendChild(t)}
+// discrète (17/11/2026, Joffray : « trop voyant ») : un petit chevron, ou un cadenas tant que le terrain est fermé
+function drawZoneTab(){let t=$("ztab");if(!t){t=document.createElement("button");t.id="ztab";t.type="button";t.setAttribute("aria-label",ZNAME.jeux);
+    t.onclick=e=>{e.stopPropagation();goZone("jeux")};$("scene").appendChild(t)}
+  const o=zOpen("jeux"),k=o?"o":"l";
+  if(t.dataset.k!==k){t.dataset.k=k;t.className="znav zr"+(o?"":" zlk");t.innerHTML=`<span>${o?"›":zLock}</span>`}
+  // la première fois qu'il s'ouvre, on le dit
+  R.zSeen=R.zSeen||{};
+  if(o&&!R.zSeen.jeux){R.zSeen.jeux=1;save();toast("Nouveau : le terrain de jeu est ouvert, à droite !")}
   t.hidden=zone!=="jardin"}
+setInterval(drawZoneTab,4000);
 function zoneClick(e){const n=e.target.closest("[data-zgo]");if(n){e.stopPropagation();goZone(n.dataset.zgo);return true}return false}
 // glisser du doigt : vers la gauche = l'écran de droite
 {let sw=null;const sc=$("scene");
