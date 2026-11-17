@@ -14,6 +14,18 @@ function endStats(o){const t=[o.g,Math.ceil(o.g*o.c2),Math.ceil(o.g*o.c3)],mx=Ma
   <div class="emini">${G.served} / ${G.cfg.c} clients servis · ${G.lost?`${G.lost} parti${G.lost>1?"s":""} fâché${G.lost>1?"s":""}`:"aucun fâché"}</div></div>`}
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
 const albumRow=()=>G.albumNew?itRow(foxSVG({...FOX.roussette,acc:"couronne"},{pose:"happy"}),"Album d'Halloween complet !",`Tu as servi les ${HWF.length} invités : ${ME()} gagne la Couronne de citrouilles (dans la boutique, onglet Style).`,"background:#efe4fb"):"";
+// le compagnon conseille d'améliorer le café (17/11/2026, Joffray : les testeurs font ★★ et ne savent pas qu'il faut acheter) :
+// sans ★★★, s'il manque un achat prévu à ce jour (KIT), ou après le jour 10 une amélioration encore possible ; une fois par journée
+function upTip(d,st){
+  if(st>=3||WORLD)return null;S.upTip=S.upTip||{};if(S.upTip[d])return null;
+  const nx=u=>u&&u.lv[lv(u.id)],ok=u=>nx(u)&&!upLocked(nx(u));
+  let u=KIT.filter(([k,n,kd])=>kd<=d&&lv(k)<n).map(([k])=>ALLUP.find(x=>x.id===k)).find(ok);
+  if(!u&&d>10)u=ALLUP.filter(ok).sort((a,b)=>upPrice(nx(a))-upPrice(nx(b)))[0];
+  if(!u)return null;
+  S.upTip[d]=1;save();const p=upPrice(nx(u)),b=buddy(),can=S.coins>=p;
+  return [[b,"open",`${st?"Bien joué":"Pas grave"}, ${ME()} ! Mais pour les trois étoiles, il faut un café mieux équipé.`],
+    [b,"joy",`Essaie « ${u.name} » : ${nx(u).d.charAt(0).toLowerCase()+nx(u).d.slice(1)}`],
+    [b,can?"joy":"shy",can?`Tu as de quoi l'acheter (${p} pièces) : c'est dans la boutique, onglet Améliorations !`:`Il coûte ${p} pièces : rejoue des journées pour les gagner, puis passe à la boutique !`]]}
 function endDay(){
   if(G.it)return endIt();
   if(G.noel)return endNoel();
@@ -42,15 +54,15 @@ function endDay(){
   const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} points pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} points pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
-  const canNext=st&&d<LASTDAY&&dayOpen(d+1);
+  const canNext=st&&d<LASTDAY&&dayOpen(d+1),tip=upTip(d,st);
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   ${endStats({e,g,c2,c3,coins:G.gain+chest,bells:bl,candy:HW?G.candy:0,replay:G.replay})}
   ${news.join("")}${albumRow()}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
-  <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
-  // la scène du Concours de la vallée (saisons.js), jouée avant les résultats
-  const dd=d;setTimeout(()=>seaScenes(dd,()=>{endFx(st);openSheet(sheet,true)}),0);
+  <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button>${tip?`<button class="btn ghost wide" data-act="shop" type="button">Améliorer le café</button>`:""}<button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
+  // la scène du Concours de la vallée (saisons.js), jouée avant les résultats, puis le conseil du compagnon
+  const dd=d;setTimeout(()=>seaScenes(dd,()=>{endFx(st);if(tip)itTalk(tip,()=>openSheet(sheet,true));else openSheet(sheet,true)}),0);
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
 }
 function endNight(){
