@@ -105,7 +105,11 @@ const lv=id=>+OWN()[id]||0;
 // améliorations, ★★★ est hors de portée. Le score de ★★★ ne bouge plus avec l'équipement (l'objectif relevé le compense)
 const S3=[1.98,2.07,2.56,2.6,2.6,2.4,2.25,2.32,2.46,2.6,2.07,2.14,2.53,2.55,1.98,1.9,2.07,1.92,2.27,1.98,2.28,2.42,1.95,1.9,1.98,2.08,1.84,1.86,1.94,2.03,2.08,2.52,1.84,1.99,1.84,2.07,1.76,1.83,1.85,1.76];
 // ★★ reste celui d'avant (1,35 × l'objectif, relevé de 12 % au plus avec l'équipement) : les portes des saisons restent passables ; plafond 2,6
-function cuts(d){const s0=(WORLD?WD().s3[d-1]:S3[d-1])||1.7,b=equipBonus(d),s2=Math.max(1.1,1.35*(1+Math.min(b,.12))/(1+b));return[1,s2,Math.max(s2+.1,s0/(1+b))]}
+// ★★★ du début (17/11/2026, premiers testeurs frustrés : « je fais tout parfaitement et pas ★★★ ») : aux jours 1 à 10 du
+// premier café, ★★★ = 94 % du jeu parfait avec les achats prévus ce jour-là (KIT), pas tout équipé ; aux jours 1 à 3, sans rien
+// acheter. Calculé par tools/balance-bot.py --debut. La suite garde « tout équipé ».
+const S3_DEBUT=[1.68,1.69,1.69,1.69,1.7,1.69,1.69,1.7,1.69,1.69];
+function cuts(d){const s0=(WORLD?WD().s3[d-1]:(S3_DEBUT[d-1]||S3[d-1]))||1.7,b=equipBonus(d),s2=Math.max(1.1,1.35*(1+Math.min(b,.12))/(1+b));return[1,s2,Math.max(s2+.1,s0/(1+b))]}
 // dans un quartier, l'équipement se rachète (moins cher : 20 journées pour tout racheter), et les achats des dernières saisons arrivent plus tôt
 const IT_FROM={21:8,31:12};
 const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ : 10 360 pièces pour le kit, inabordable ; python tools/balance-bot.py --italie --economie)

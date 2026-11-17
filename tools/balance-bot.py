@@ -116,7 +116,7 @@ PERFECT = 0.25   # réaction du bot « parfait » : ★★★ demande environ 94
 STAR3 = 1.8
 GOOD, PASS = 0.8, 1.08   # le bon joueur doit toujours réussir (★), avec un peu de marge
 SEEDS_TRIED = 16
-days = list(range(1, 41)) if STARS or CALIB or ECO or NUITS or NOEL or ITALIE else [int(a) for a in sys.argv[1:]] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
+days = list(range(1, 41)) if STARS or CALIB or ECO or NUITS or NOEL or ITALIE else [int(a) for a in sys.argv[1:] if a.isdigit()] or [1, 2, 3, 4, 6, 8, 10, 11, 13, 15, 17, 20, 21, 25, 30, 31, 35, 40]
 with sync_playwright() as p:
     browser = p.chromium.launch()
     page = browser.new_page()
@@ -265,6 +265,18 @@ with sync_playwright() as p:
             spent = sum(cost[k][n - 1] for k, n in buy)
             coins += gain + chest + 22 + 30 - spent
             print(f"jour {d:>2} : {'★' * st:<3} bénéfice {gain:>4}, coffre {chest:>3}, achats {spent:>5} -> solde {coins:>6}" + (" " + ", ".join(f"{k}{n}" for k, n in buy) if buy else ""))
+        browser.close(); sys.exit()
+    if "--debut" in sys.argv:
+        # ★★★ du début (17/11/2026, premiers testeurs frustrés : jeu parfait et pas ★★★) : aux jours 1 à 10 du premier café,
+        # ★★★ = 94 % du score du bot parfait avec les achats prévus ce jour-là (KIT), pas tout équipé (S3_DEBUT dans data.js)
+        out = []
+        for d in range(1, 11):
+            rs = [page.evaluate(BOT, [d, own_for(d), PERFECT]) for _ in range(RUNS)]
+            e = sorted(r[0] for r in rs)[len(rs) // 2]
+            g = rs[0][1]
+            out.append(round(min(2.6, 0.94 * e / g), 2))
+            print(f"jour {d:>2} : parfait avec le kit du jour {e:>4}, objectif {g:>4}, ★★★ à {out[-1]} × l'objectif")
+        print("const S3_DEBUT=[" + ",".join(str(x) for x in out) + "];")
         browser.close(); sys.exit()
     print(f"{'jour':>4} {'réaction':>8} {'recette':>8} {'objectif':>8} {'ratio':>6} {'étoiles':>7}  servis  fâchés")
     for day in days:
