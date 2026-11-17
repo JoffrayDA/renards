@@ -29,7 +29,16 @@ function newDay(d){
   if(!it&&SEA_DUEL[d])G.duel=seaDuelScore(d);
   $("closed").hidden=true;closeMap();renderDecor();dirty=true;(MUSIC.again||MUSIC.want)(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
-}
+  // au premier vrai service (après la leçon), le compagnon se présente : la partie attend la fin du dialogue (buddyIntro)
+  setTimeout(buddyIntro,0)}
+// 17/11/2026, Joffray : « qu'il explique que c'est super important, que ça change la manière de jouer » ; une seule fois par partie
+function buddyIntro(){
+  if(!G||G.tuto||G.night||G.noel||S.buddyIntro)return;S.buddyIntro=1;save();G.paused=1;const b=buddy();
+  itTalk([[b,"joy",`Coucou ${ME()} ! C'est moi, ton compagnon. Pendant le service, je reste juste à côté du comptoir.`],
+    [b,"open","Écoute bien, c'est super important : tu n'as pas besoin d'apporter chaque commande toi-même !"],
+    [b,"open","Pose sur le plateau ce que les clients attendent : je leur apporte tout seul, au plus pressé d'abord."],
+    [b,"shy","Par contre, je ne touche ni au four ni aux machines : ça, c'est ton travail !"],
+    [b,"joy","Toi, tu prépares sans t'arrêter, moi je cours. À nous deux, on va enchaîner les combos !"]],()=>{if(G)G.paused=0})}
 function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.seed+1);G.night=n;G.cfg={...G.cfg,goal:Math.round(N.goal*(1+equipBonus(N.base,!(S.hwStars[n]>0),.12)))};G.replay=(S.hwStars[n]||0)>0;dirty=true;MUSIC.want("fantomes")}
 // Un client vit ainsi : file d'attente à la porte (queue), il entre en trottinant (walkin), attend sa commande (wait),
 // reste un instant content ou fâché (happy, angry), puis repart en marchant (walkout). Sa patience ne baisse qu'en « wait ».
