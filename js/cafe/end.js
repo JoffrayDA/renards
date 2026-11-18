@@ -10,7 +10,7 @@ function endStats(o){const t=[o.g,Math.ceil(o.g*o.c2),Math.ceil(o.g*o.c3)],mx=Ma
   const gain=(ic,n)=>n?`<span>${ic}<b>+${n}</b></span>`:"";
   return`<div class="escore"><div class="erow"><span class="enum">Score<b>${o.e}</b></span><div class="ebar"><i style="width:${pc(o.e)}%"></i>${t.map((x,i)=>`<span class="etk${o.e>=x?" on":""}" style="left:${pc(x)}%"><b>${"★".repeat(i+1)}</b></span>`).join("")}</div></div>
   <div class="egain">${gain(coinSVG,o.coins)||`<span>${coinSVG}<b>+0</b></span>`}${gain(bellSVG,o.bells)}${gain(candySVG,o.candy)}${gain(sucreSVG,o.sucres)}</div>
-  ${o.replay?`<div class="emini">Journée rejouée : 25 % des pièces</div>`:""}
+  ${o.replay?`<div class="emini">Journée rejouée : 40 % des pièces</div>`:""}
   <div class="emini">${G.served} / ${G.cfg.c} clients servis · ${G.lost?`${G.lost} parti${G.lost>1?"s":""} fâché${G.lost>1?"s":""}`:"aucun fâché"}</div></div>`}
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
 const albumRow=()=>G.albumNew?itRow(foxSVG({...FOX.roussette,acc:"couronne"},{pose:"happy"}),"Album d'Halloween complet !",`Tu as servi les ${HWF.length} invités : ${ME()} gagne la Couronne de citrouilles (dans la boutique, onglet Style).`,"background:#efe4fb"):"";
