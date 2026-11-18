@@ -28,13 +28,13 @@ const MSG = {
   inco: { t: "Quelqu'un est passé à la gamelle", b: "Il a laissé une photo. Viens voir qui c'est !" },
   arr: { t: "Un nouveau renard au refuge", b: "Un client du Café vient s'installer à la Clairière." },
   av: { t: "Une case t'attend !", b: "Le calendrier de l'Avent a une surprise pour toi aujourd'hui." },
-  // relance du Café, une phrase différente selon le jour
+  // relance du Café le matin (10 h), quand les quêtes du jour viennent de se renouveler ; une phrase différente selon le jour
   cafe: [
-    { t: "Le Café a faim !", b: "Des renards font la queue devant la porte… et leur ventre gargouille." },
-    { t: "Le four est chaud", b: "Les croissants n'attendent que toi. Les clients non plus !" },
-    { t: "Toc toc toc", b: "Petit Pois a ouvert les volets. Des clients t'attendent au Café." },
-    { t: "Un client pressé !", b: "Quelqu'un réclame son café crème. Tu viens le servir ?" },
-    { t: "Ça sent bon la cannelle", b: "Le Café est prêt à ouvrir. Il ne manque plus que toi !" }
+    { t: "Nouvelles quêtes du jour !", b: "Trois quêtes t'attendent au Café… et des renards qui ont le ventre qui gargouille." },
+    { t: "Le Café a faim !", b: "Les quêtes du jour sont là. Des renards font déjà la queue devant la porte." },
+    { t: "Toc toc toc", b: "Petit Pois a ouvert les volets et affiché les quêtes du jour. Tu viens ?" },
+    { t: "Le four est chaud", b: "Nouvelles quêtes, nouvelles pièces : les croissants n'attendent que toi." },
+    { t: "Un client pressé !", b: "Quelqu'un réclame son café crème. Et tes quêtes du jour sont prêtes !" }
   ],
   test: { t: "Coucou de la Clairière", b: "Les notifications marchent. Petit Pois te fait signe !" }
 };
@@ -62,7 +62,7 @@ do {
     const k = TEST ? "test" : ["av", "fox", "inco", "arr", "cafe"].find(k => d[k] && d[k] <= now && d[k] > (d["s_" + k] || 0));
     if (!k) continue;
     if (DRY) { console.log("enverrait", k, "à", doc.name.split("/").pop()); continue; }
-    try { await webpush.sendNotification(JSON.parse(d.sub), JSON.stringify({ ...(Array.isArray(MSG[k]) ? MSG[k][Math.floor(now / 864e5) % MSG[k].length] : MSG[k]), k, u: k === "av" ? "./" : k === "cafe" ? "cafe.html" : "clairiere.html" }), { TTL: 6 * 3600 }); }
+    try { await webpush.sendNotification(JSON.parse(d.sub), JSON.stringify({ ...(Array.isArray(MSG[k]) ? MSG[k][Math.floor(now / 864e5) % MSG[k].length] : MSG[k]), k, u: k === "av" ? "./" : k === "cafe" ? "cafe.html" : "clairiere.html" }), { TTL: 6 * 3600, urgency: "high" }); }
     catch (e) {
       // abonnement périmé (app désinstallée, notifications coupées) : on oublie la fiche
       if (e.statusCode === 404 || e.statusCode === 410) await fetch(`https://firestore.googleapis.com/v1/${doc.name}`, { method: "DELETE", headers: H });

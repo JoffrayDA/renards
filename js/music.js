@@ -8,12 +8,17 @@ const MUSIC=(()=>{
   let host=null;try{if(window.parent!==window&&window.parent.MUSIC&&window.parent.openGame)host=window.parent}catch(e){}
   if(host){
     const H=host.MUSIC;
+    // l'accueil reste ouvert pendant qu'on joue : il peut tourner avec une ancienne liste de morceaux (téléphone pas redémarré
+    // depuis la mise à jour). Un morceau qu'il ne connaît pas = silence (18/11/2026, Joffray : musique muette un jour sur deux) :
+    // on prend alors son cousin, ou on garde ce qui joue.
+    const OLD={rush:"service",swing:"galop"};
+    const fit=id=>!H.tracks||!id||H.tracks[id]||String(id).startsWith("jingle")?id:H.tracks[OLD[id]]?OLD[id]:H.current||"service";
     const paint=()=>document.querySelectorAll("[data-sound]").forEach(b=>{b.innerHTML=H.icon();b.setAttribute("aria-label",H.on?"Couper la musique":"Remettre la musique")});
     document.addEventListener("click",e=>{if(e.target.closest("[data-sound]")){H.setOn(!H.on);paint()}
       const a=e.target.closest("a.home");if(a){e.preventDefault();host.closeGame()}});
     const st=document.createElement("style");st.textContent=H.css;document.head.appendChild(st);
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paint);else paint();
-    return{want:id=>H.want(id),again:id=>H.again?H.again(id):H.want(id),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(id),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),sfx:(k,n)=>H.sfx&&H.sfx(k,n),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
+    return{want:id=>H.want(fit(id)),again:id=>H.again?H.again(fit(id)):H.want(fit(id)),setOn:v=>{H.setOn(v);paint()},paint,play:id=>H.want(fit(id)),stop(){},volume(){},jingle:id=>H.jingle&&H.jingle(id),note:m=>H.note&&H.note(m),sfx:(k,n)=>H.sfx&&H.sfx(k,n),jingleEnd:()=>H.jingleEnd&&H.jingleEnd(),get on(){return H.on},get current(){return H.current}};
   }
   let C=null,master,rev,bus=null,timer=null,cur=null,noise,vol=.7;
   const MUSIC_GREL="B"; // le grelot choisi par Joffray (sfx, plus bas)

@@ -49,4 +49,4 @@ async function pushOff(){const P=pget();P.on=0;P.sig=null;pset(P);
 const pushSync=when=>{if(pushOn())pushWrite(when).catch(()=>{})};
 // relance du Café (18/11/2026, Joffray : « des renards t'attendent et ont faim ») : le lendemain de la dernière partie, à 18 h ;
 // rejouer la repousse. Les autres pages ne l'écrivent pas : elle est gardée dans la fiche (Q.w).
-function cafePlan(){const d=new Date();d.setDate(d.getDate()+1);d.setHours(18,0,0,0);return {cafe:d.getTime()}}
+function cafePlan(){const d=new Date();d.setDate(d.getDate()+1);d.setHours(10,0,0,0);return {cafe:d.getTime()}}
