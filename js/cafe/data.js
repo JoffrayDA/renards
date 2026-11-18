@@ -110,9 +110,10 @@ const S3=[1.98,2.07,2.56,2.6,2.6,2.4,2.25,2.32,2.46,2.6,2.07,2.14,2.53,2.55,1.98
 // acheter. Calculé par tools/balance-bot.py --debut. La suite garde « tout équipé ».
 const S3_DEBUT=[1.68,1.69,1.69,1.69,1.7,1.69,1.69,1.7,1.69,1.69];
 // ★★★ des jours 11 à 40 un peu plus facile (18/11/2026, Joffray bloqué à 49 / 50 étoiles devant la porte du Printemps
-// après 20 parties rejouées) : S3 × 0,93, soit environ 88 % du jeu parfait tout équipé au lieu de 94 %
+// après 20 parties rejouées) : S3 × 0,93, soit environ 88 % du jeu parfait tout équipé au lieu de 94 % ;
+// sauf le jour 40, le défi final avec Comète, qui garde l'ancienne difficulté (Joffray)
 const S3K=.93;
-function cuts(d){const s0=(WORLD?WD().s3[d-1]:(S3_DEBUT[d-1]||S3[d-1]*S3K))||1.7,b=equipBonus(d),s2=Math.max(1.1,1.35*(1+Math.min(b,.12))/(1+b));return[1,s2,Math.max(s2+.1,s0/(1+b))]}
+function cuts(d){const s0=(WORLD?WD().s3[d-1]:(S3_DEBUT[d-1]||S3[d-1]*(d===40?1:S3K)))||1.7,b=equipBonus(d),s2=Math.max(1.1,1.35*(1+Math.min(b,.12))/(1+b));return[1,s2,Math.max(s2+.1,s0/(1+b))]}
 // dans un quartier, l'équipement se rachète (moins cher : 20 journées pour tout racheter), et les achats des dernières saisons arrivent plus tôt
 const IT_FROM={21:8,31:12};
 const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ : 10 360 pièces pour le kit, inabordable ; python tools/balance-bot.py --italie --economie)
