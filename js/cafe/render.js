@@ -28,7 +28,7 @@ function render(){
     const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}`,bub=!walking&&!inQ?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${CROWN}${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
     // « Nouveau » sous le renard, posé sur le comptoir (18/11/2026, Joffray : le message gris en haut ne se voyait pas) :
     // calque à part, au-dessus du comptoir ; le VIP garde son badge doré sur la bulle (Joffray l'aimait), juste plus visible
-    if(!inQ&&!walking&&c.nw&&!c.vip)tags+=`<span class="ctag new" style="left:${left}%"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 L12.4 7.2 L18.5 7.7 L13.8 11.6 L15.3 17.6 L10 14.4 L4.7 17.6 L6.2 11.6 L1.5 7.7 L7.6 7.2Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.8" stroke-linejoin="round"/></svg>Nouveau<i class="tw a"></i><i class="tw b"></i></span>`;
+    if(!inQ&&!walking&&c.nw&&!c.vip)tags+=`<span class="ctag new" style="left:${left}%"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 L12.4 7.2 L18.5 7.7 L13.8 11.6 L15.3 17.6 L10 14.4 L4.7 17.6 L6.2 11.6 L1.5 7.7 L7.6 7.2Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.8" stroke-linejoin="round"/></svg>Nouveau client<i class="tw a"></i><i class="tw b"></i></span>`;
     const inner=bub+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit"});
     let el=custEl(c);
     // un nouveau client apparaît hors champ à gauche, puis la transition CSS le fait marcher jusqu'à sa place
