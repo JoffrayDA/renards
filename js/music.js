@@ -406,6 +406,30 @@ const MUSIC=(()=>{
         [1,3].forEach(x=>{I.accord(c.map(m=>m+12),t+x*B,B*.45,.03);I.snare(t+x*B,.05)});for(let i=0;i<4;i++)I.hat(t+i*B,.025);
         if(b===7)[2,2.5,3,3.5].forEach((x,i)=>I.snare(t+x*B,.05+i*.02));
         melody((m,tt,d)=>{I.accord([m],tt,d*.85,.045);I.box(m+12,tt,.04,.4)},this.mel,b,t,B)}},
+    // deuxième morceau du service au premier café (18/11/2026, Joffray : « une, ce n'est pas assez ») : sautillant,
+    // glockenspiel et guitare à contretemps (sol majeur), en alternance avec « Coup de feu » une journée sur deux
+    rush:{name:"Le rush du goûter",bpm:150,beats:4,bars:8,
+      ch:[[55,59,62],[52,55,59],[48,52,55],[50,54,57],[55,59,62],[52,55,59],[45,48,52],[50,54,57,60]],
+      mel:[[[79,.5],[83,.5],[86,1],[83,.5],[86,.5],[88,1]],[[86,.5],[83,.5],[79,1],[76,1],[null,1]],[[76,.5],[79,.5],[84,1],[83,.5],[81,.5],[79,1]],[[78,.5],[81,.5],[86,1],[84,.5],[83,.5],[81,1]],
+           [[83,.5],[83,.5],[86,.5],[83,.5],[91,1],[86,1]],[[88,.5],[86,.5],[83,.5],[79,.5],[76,1],[79,1]],[[81,.5],[84,.5],[88,.5],[84,.5],[81,1],[78,1]],[[79,1.5],[null,.5],[74,.5],[78,.5],[81,1]]],
+      bar(b,t,B){const c=this.ch[b],r=c[0]-12;
+        [[0,0],[1,7],[2,0],[3,7]].forEach(([x,o])=>I.bass(r+o,t+x*B,B*.6,.21));
+        [0,2].forEach(x=>I.kick(t+x*B,.32));[1,3].forEach(x=>{I.snare(t+x*B,.07);I.clap(t+x*B,.03)});
+        for(let i=0;i<8;i++)I.shaker(t+i*B/2,i%2?.03:.018);
+        [.5,1.5,2.5,3.5].forEach(x=>c.forEach((m,i)=>I.pluck(m+12,t+x*B+i*.008,.035,.22,3000)));
+        if(b%4===3)[3,3.5].forEach(x=>I.wood(t+x*B,.08));
+        melody((m,tt,d)=>{I.box(m,tt,.15,Math.max(.6,d*1.4));I.pizz(m-12,tt,.06)},this.mel,b,t,B)}},
+    // deuxième morceau du service à Paris (18/11/2026) : swing manouche en majeur, guitare en pompe, contrebasse qui marche,
+    // accordéon au chant (sol majeur), en alternance avec le galop une journée sur deux
+    swing:{name:"Swing du petit noir",bpm:184,beats:4,bars:8,
+      ch:[[55,59,62,64],[52,56,59,62],[57,60,64],[50,54,57,60],[55,59,62],[55,59,62,65],[48,52,55],[50,54,57,60]],
+      mel:[[[74,.67],[76,.33],[79,1],[83,1],[81,.67],[79,.33]],[[80,1.5],[76,.5],[74,1],[71,1]],[[72,.67],[76,.33],[81,1],[84,1],[83,.67],[81,.33]],[[78,1],[81,1],[84,1],[null,1]],
+           [[83,.67],[81,.33],[79,.67],[76,.33],[74,1],[79,1]],[[77,1],[83,.67],[81,.33],[79,1],[77,1]],[[76,.67],[79,.33],[84,1],[88,1],[86,.67],[84,.33]],[[81,1],[78,.67],[74,.33],[72,1],[78,1]]],
+      bar(b,t,B){const c=this.ch[b],nx=this.ch[(b+1)%8][0]-12,w=[c[0]-12,c[1]-12,c[2]-12,nx-1];
+        w.forEach((m,i)=>I.bass(m,t+i*B,B*.85,.2));
+        [0,1,2,3].forEach(x=>c.forEach((m,i)=>I.pluck(m,t+x*B+i*.01,x%2?.05:.028,x%2?.14:.1,2600)));
+        [1,3].forEach(x=>I.snare(t+x*B,.035));[0,.67,1,1.67,2,2.67,3,3.67].forEach((x,i)=>I.hat(t+x*B,i%2?.016:.026));
+        melody((m,tt,d)=>{I.accord([m],tt,d*.9,.04);I.flute(m+12,tt,d*.9,.018,0)},this.mel,b,t,B)}},
     // le service : punchy et funky, pour garder le rythme
     service:{name:"Coup de feu",bpm:132,beats:4,bars:8,
       ch:[[53,57,60],[57,60,64],[58,62,65],[60,64,67],[53,57,60],[57,60,64],[58,62,65],[60,64,67]],

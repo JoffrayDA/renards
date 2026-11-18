@@ -84,6 +84,8 @@ Halloween, la **Nuit des citrouilles** (branche `halloween`, octobre 2026) : act
 
 **Plus de phrase sous les tuiles** (09/11/2026, Joffray : « pas besoin de la phrase tout en bas ») : un conseil ponctuel (`hint`) passe dans une petite bulle en bas de la salle qui s'efface après 3,5 s (`#htoast`) ; la ligne `#hint` ne sert plus qu'aux conseils guidés des jours 1 et 2 du premier café (`autoHint`), et se cache vide.
 
+**Deux musiques de service** (18/11/2026, Joffray : « une, ce n'est pas assez ») : au premier café, Coup de feu (`service`, jours pairs) et Le rush du goûter (`rush`, jours impairs) ; à Paris, le galop (jours impairs) et le Swing du petit noir (`swing`, swing manouche en majeur, jours pairs). À écouter sur `tools/service-musique.html`.
+
 **La musique repart du début à chaque journée** (`MUSIC.again` dans `newDay`, 09/11/2026, Joffray : en enchaînant les niveaux, elle ne se relançait pas ; à Kyoto, l'intro des tambours rejoue).
 
 **Bouton Recommencer** dans la pause (`data-act="restart"`, la même journée, nuit ou leçon, avec les mêmes bonus, 09/11/2026). **Bouton retour du téléphone** (`armBack`, `popstate` dans main.js) : tant qu'une fiche, une journée ou une carte est ouverte, une entrée d'historique est gardée en réserve ; le retour ferme la fiche, met en pause (ou reprend depuis la pause), ramène de la carte à l'écran des mondes ; depuis l'écran des mondes, il quitte le jeu (Joffray revenait à l'accueil en voulant revenir à la carte).

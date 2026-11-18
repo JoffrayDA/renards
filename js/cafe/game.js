@@ -27,7 +27,8 @@ function newDay(d){
   if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
   // au premier café, les défis du Concours de la vallée (saisons.js)
   if(!it&&SEA_DUEL[d])G.duel=seaDuelScore(d);
-  $("closed").hidden=true;closeMap();renderDecor();dirty=true;(MUSIC.again||MUSIC.want)(it?WD().music(d):"service"); // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026)
+  $("closed").hidden=true;closeMap();renderDecor();dirty=true;(MUSIC.again||MUSIC.want)(it?WD().music(d):d%2?"service":"rush");
+  // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026) ; au premier café, Coup de feu et Rush du goûter (18/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
   // au premier vrai service (après la leçon), le compagnon se présente : la partie attend la fin du dialogue (buddyIntro)
   setTimeout(buddyIntro,0)}

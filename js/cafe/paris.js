@@ -458,7 +458,8 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Frimousse",short:"Café",sv:()
   optNew:"Touche « Chantilly », au bout du plateau, pour en mettre sur un café liégeois ou un éclair.",
   guest:"celeste",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",
   reg:()=>[...PAF_REG,...PAF_REG,...PAF_REG,...(S.pa.peace?[FOX.firmin]:[])],
-  music:()=>"galop",mapMusic:"quais", // la promenade sur les quais (choix de Joffray parmi six ; la musette en mineur « faisait Halloween »)
+  music:d=>d%2?"galop":"swing", // le galop et le swing manouche, une journée sur deux (18/11/2026, Joffray : « une, ce n'est pas assez »)
+  mapMusic:"quais", // la promenade sur les quais (choix de Joffray parmi six ; la musette en mineur « faisait Halloween »)
   isOpen:()=>paOpen(),lockMsg:"Réussis les 20 journées de la Petite Italie pour ouvrir Paris.",
   layout:()=>paLayout(),mapSVG:L=>paMapSVG(L),outside:()=>outsidePa(),
   duel:PA_DUEL,duelScore:d=>duelScore(d),duelRow:d=>itRow(icon("croissant","paris"),d===20?"La finale du concours !":"Jour de défi !",`Firmin a fait <b>${duelScore(d)} pièces</b>. Fais mieux que lui${S.pa.duel[d]?" (déjà battu)":""}.`,"background:#fde8ec"),
