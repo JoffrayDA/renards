@@ -71,9 +71,9 @@ function spawn(){
   // dans la file, il patiente aussi, mais plus longtemps (il voit qu'on s'active)
   // un sumo venu en client ordinaire commande aussi quatre plats, et patiente un peu plus
   const big=!!f.big,pt=big?pat*1.3:pat;
-  G.cust.push({id:++uid,fox:f.id,spot:-1,order:big?sumoOrder():genOrder(),pat:pt,patMax:pt,state:"queue",qp:pat*1.2,vip,born:G.t,costume});
+  G.cust.push({id:++uid,fox:f.id,spot:-1,order:big?sumoOrder():genOrder(),pat:pt,patMax:pt,state:"queue",qp:pat*1.2,vip,born:G.t,costume,nw:!S.seen[f.id]});
   if(costume){const ck=f.id+":"+costume;if(!S.costSeen[ck]&&S.seen[f.id])toast(`Nouveau déguisement : ${f.name} ${COSTNAME[costume]} !`);S.costSeen[ck]=(S.costSeen[ck]||0)+1}
-  if(vip)toast(f.event==="noel"?`${f.name} est là ! Sers-le vite : il paie ×3 et donne un sucre d'orge.`:f.event?`${f.name} est là ! Sers-le vite : il paie ×3 et donne 5 bonbons.`:`VIP pressé : ${f.name} ! Sers-le vite, il paie ×3.`);else if(!S.seen[f.id])toast(`Nouveau client : ${f.name} !`);
+  // plus de message pour un VIP ou un nouveau client : une étiquette sous le renard le dit (render.js)
   if(!S.seen[f.id])G.newFox.push(f.name);
   S.seen[f.id]=(S.seen[f.id]||0)+1;
   G.spawned++;dirty=true;return true;

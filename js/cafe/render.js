@@ -6,6 +6,8 @@ function renderHud(){
   if(HW)$("hwbtn").innerHTML=`Halloween <span class="hwn">${candySVG}${S.candy}</span>`;
   // pendant le service, plus de pièces en haut (07/11/2026, Joffray : la barre de l'objectif était toute petite) : la barre prend la place
   document.querySelector("header").classList.toggle("playing",!!(G&&G.run));
+  // pastille sur le bouton Boutique de la carte quand une amélioration peut s'acheter
+  if(!G||!G.run){const sb=document.querySelector('.mbar [data-act="shop"]');if(sb)sb.classList.toggle("hasdot",upAny())}
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${WORLD?itStarSum():starSum()}</span>`;$("chips").innerHTML="";return}
   if(G.tuto){$("hud").innerHTML=`<span class="pill day">Leçon de Petit Pois</span>`;$("chips").innerHTML="";return}
   const g=G.cfg.goal,cu=G.night||G.noel?[1,1.35,1.7]:cuts(G.day),mx=g*cu[2],e=G.earned;
@@ -14,16 +16,19 @@ function renderHud(){
 }
 function render(){
   dirty=false;renderHud();
-  if(!G||!G.run){$("custs").innerHTML="";renderKitchen();renderTray();return}
+  if(!G||!G.run){$("custs").innerHTML="";const tl=$("ctags");if(tl){tl.innerHTML="";tl._h=""}renderKitchen();renderTray();return}
   const X=SPOTX[spotsN()];
   const box=$("custs"),keep=new Set();
-  let qi=0;
+  let qi=0,tags="";
   for(const c of G.cust){const f=FOX[c.fox];
     const fx=c.costume?{...f,acc:c.costume}:f,walking=c.state==="walkin"||c.state==="walkout",inQ=c.state==="queue"||(c.gave&&c.state==="angry");
     // position : la file à gauche (petits renards), sa place au comptoir, ou la sortie à droite
     const left=inQ?5+(qi++)*6:c.state==="walkout"?114:X[c.spot];
     const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(itemKey(o))}</span>`).join("");
-    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}`,bub=!walking&&!inQ?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}`,bub=!walking&&!inQ?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${CROWN}${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
+    // « Nouveau » sous le renard, posé sur le comptoir (18/11/2026, Joffray : le message gris en haut ne se voyait pas) :
+    // calque à part, au-dessus du comptoir ; le VIP garde son badge doré sur la bulle (Joffray l'aimait), juste plus visible
+    if(!inQ&&!walking&&c.nw&&!c.vip)tags+=`<span class="ctag new" style="left:${left}%"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 L12.4 7.2 L18.5 7.7 L13.8 11.6 L15.3 17.6 L10 14.4 L4.7 17.6 L6.2 11.6 L1.5 7.7 L7.6 7.2Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.8" stroke-linejoin="round"/></svg>Nouveau<i class="tw a"></i><i class="tw b"></i></span>`;
     const inner=bub+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit"});
     let el=custEl(c);
     // un nouveau client apparaît hors champ à gauche, puis la transition CSS le fait marcher jusqu'à sa place
@@ -34,11 +39,14 @@ function render(){
     keep.add(el);
   }
   [...box.children].forEach(e=>{if(!keep.has(e))e.remove()});
+  let tl=$("ctags");if(!tl){tl=document.createElement("div");tl.id="ctags";$("scene").insertBefore(tl,$("helper"))}
+  if(tl._h!==tags){tl.innerHTML=tags;tl._h=tags}
   renderKitchen();renderTray();updateBars();
   // gelato (ou macarons à Paris) : on explique le comptoir aux trois premières commandes (gtip du quartier)
   if(G.it&&(WD().sv().gtip||0)<3){const c=G.cust.find(c=>c.state==="wait"&&!c.gt&&c.order.some(o=>o.g));
     if(c){c.gt=1;const V=WD().sv();V.gtip=(V.gtip||0)+1;const o=c.order.find(o=>o.g);hint(o.r==="dango"?WD().gel2.hint(o.g):WD().gelHint(o.g))}}
 }
+const CROWN=`<svg viewBox="0 0 20 14" aria-hidden="true"><path d="M2 12.5 L2.8 3.5 L7.2 7.5 L10 1.5 L12.8 7.5 L17.2 3.5 L18 12.5 Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.7" stroke-linejoin="round"/></svg>`;
 function renderTray(){
   const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;
   const pk=G&&G.run&&G.pick&&G.pick.until>performance.now()?G.pick.o:null,pks=pk?optFits(pk):[];
@@ -88,13 +96,13 @@ function updateBars(){
   G.ovens.forEach((o,i)=>{const sx=i?"-"+i:"";if(o.state==="bake"){const e=$("ov-p"+sx);if(e)e.style.width=(o.t/o.dur*100)+"%"}
     if(o.state==="ready"){const e=$("ov-b"+sx);if(e)e.style.width=(o.burn/o.burnMax*100)+"%";const u=$("unl"+sx);if(u)u.classList.toggle("danger",o.burn<2)}});
   const gf=$("gfill");if(gf)gf.style.width=Math.min(100,G.earned/(G.cfg.goal*(G.night||G.noel?1.7:cuts(G.day)[2]))*100)+"%";
-  if(G.tuto&&!(TU&&TU_STEPS[TU.i]&&TU_STEPS[TU.i].free)){if($("hint").innerHTML)$("hint").innerHTML=""}else if(G.day<=2&&!hintLock)autoHint(); // pendant la leçon, Petit Pois parle à la place
+  if(G.tuto&&!(TU&&TU_STEPS[TU.i]&&TU_STEPS[TU.i].free)){if($("hint").innerHTML)$("hint").innerHTML=""}else if(G.day<=1&&!G.it&&!hintLock)autoHint();else if($("hint").innerHTML)$("hint").innerHTML=""; // pendant la leçon, Petit Pois parle à la place
 }
 let hintLock=0;
 // un conseil ponctuel (« le four est occupé »…) passe dans une petite bulle en bas de la salle, qui s'efface :
 // plus de phrase sous les tuiles (09/11/2026, Joffray : « pas besoin de la phrase tout en bas ») ;
 // la ligne du bas ne reste que pour les conseils guidés des jours 1 et 2 du premier café (autoHint)
-function hint(h){hintLock=1;clearTimeout(hint.t);hint.t=setTimeout(()=>{hintLock=0;const t=$("htoast");if(t)t.classList.remove("on")},3500);
+function hint(h){hintLock=1;clearTimeout(hint.t);hint.t=setTimeout(()=>{hintLock=0;const t=$("htoast");if(t)t.classList.remove("on")},G&&G.day<=1&&!G.it?3500:2500);
   if(G&&G.tuto)return;
   let t=$("htoast");if(!t){t=document.createElement("div");t.id="htoast";$("scene").appendChild(t)}
   t.innerHTML=h;t.classList.add("on")}

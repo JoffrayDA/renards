@@ -455,15 +455,15 @@ function endIt(){
   const bRow=buddyRow(),qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
   fillQuests();save();
   const nxt=st<3?(e<g?`Il manquait ${g-e} points pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} points pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
-  const canNext=st&&d<N&&d+1<=V.day;
+  const canNext=st&&d<N&&d+1<=V.day,tip=upTip(d,st);
   // la scène gagnée se joue tout de suite, avant l'écran de résultats (Joffray, 04/11/2026 : plusieurs journées d'affilée
   // laissaient une pile de scènes sur la carte, sans qu'on comprenne d'où elles venaient)
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${Q.name} · jour ${d}</b><br>${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   ${endStats({e,g,c2,c3,coins:G.gain+chest,bells:bl,replay:G.replay})}
-  ${news.join("")}${bRow}
+  ${tip&&tip.note?`<button class="unote" data-upgo="${tip.id}" type="button"><i class="udot"></i>Des améliorations sont disponibles : fais un tour dans la boutique.</button>`:""}${news.join("")}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
-  <div class="col">${canNext?`<button class="btn big wide" data-itday="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-itplay="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button><button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
+  <div class="col">${canNext?`<button class="btn big wide" data-itday="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-itplay="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button>${tip?`<button class="btn ghost wide" data-upgo="${tip.id}" type="button">Améliorer le café</button>`:""}<button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
-  Q.scenes(()=>{endFx(st);openSheet(sheet,true)});
+  Q.scenes(()=>{endFx(st);if(tip&&tip.lines)itTalk(tip.lines,()=>openSheet(sheet,true));else openSheet(sheet,true)});
 }

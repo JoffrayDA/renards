@@ -15,17 +15,31 @@ function endStats(o){const t=[o.g,Math.ceil(o.g*o.c2),Math.ceil(o.g*o.c3)],mx=Ma
 const itRow=(ic,t,s,st="")=>`<div class="it" style="margin-bottom:8px;${st}"><span class="ic">${ic}</span><span class="tx"><strong>${t}</strong><span>${s}</span></span></div>`;
 const albumRow=()=>G.albumNew?itRow(foxSVG({...FOX.roussette,acc:"couronne"},{pose:"happy"}),"Album d'Halloween complet !",`Tu as servi les ${HWF.length} invités : ${ME()} gagne la Couronne de citrouilles (dans la boutique, onglet Style).`,"background:#efe4fb"):"";
 // le compagnon conseille d'améliorer le café (17/11/2026, Joffray : les testeurs font ★★ et ne savent pas qu'il faut acheter) :
-// sans ★★★, s'il manque un achat prévu à ce jour (KIT), ou après le jour 10 une amélioration encore possible ; une fois par journée
+// sans ★★★, s'il manque un achat prévu à ce jour (KIT), ou après le jour 10 une amélioration encore possible.
+// Rythme (18/11/2026, Joffray : « là c'est à chaque fois, c'est super chiant ») : un conseil complet une seule fois
+// au premier café, une fois en Petite Italie (l'équipement y est à racheter), avec l'explication des deux coins ;
+// puis un rappel après 3 journées d'affilée sans ★★★, un dernier après 5 d'affilée, et c'est fini. Si on achète
+// après un conseil (on l'a écouté), plus de dialogue. Ensuite, juste une ligne « des améliorations sont disponibles ».
+// État par monde dans S.upT[monde] = {n: conseils donnés, miss: journées d'affilée sans ★★★, lv: niveaux achetés au conseil, ok}
 function upTip(d,st){
-  if(st>=3||WORLD)return null;S.upTip=S.upTip||{};if(S.upTip[d])return null;
+  const w=WORLD||"cafe",A=S.upT||(S.upT={cafe:{n:S.upTip&&Object.keys(S.upTip).length?1:0,miss:0,lv:0}}),T=A[w]||(A[w]={n:0,miss:0,lv:0});
+  const tot=ALLUP.reduce((s,u)=>s+lv(u.id),0),kit=WORLD?WD().kit:KIT;
+  T.miss=st>=3?0:T.miss+1;
+  if(T.n&&tot>T.lv)T.ok=1;
+  if(st>=3){save();return null}
   const nx=u=>u&&u.lv[lv(u.id)],ok=u=>nx(u)&&!upLocked(nx(u));
-  let u=KIT.filter(([k,n,kd])=>kd<=d&&lv(k)<n).map(([k])=>ALLUP.find(x=>x.id===k)).find(ok);
+  let u=kit.filter(([k,n,kd])=>kd<=d&&lv(k)<n).map(([k])=>ALLUP.find(x=>x.id===k)).find(ok);
   if(!u&&d>10)u=ALLUP.filter(ok).sort((a,b)=>upPrice(nx(a))-upPrice(nx(b)))[0];
-  if(!u)return null;
-  S.upTip[d]=1;save();const p=upPrice(nx(u)),b=buddy(),can=S.coins>=p;
-  return [[b,"open",`${st?"Bien joué":"Pas grave"}, ${ME()} ! Mais pour les trois étoiles, il faut un café mieux équipé.`],
-    [b,"joy",`Essaie « ${u.name} » : ${nx(u).d.charAt(0).toLowerCase()+nx(u).d.slice(1)}`],
-    [b,can?"joy":"shy",can?`Tu as de quoi l'acheter (${p} pièces) : c'est dans la boutique, onglet Améliorations !`:`Il coûte ${p} pièces : rejoue des journées pour les gagner, puis passe à la boutique !`]]}
+  const talk=u&&!T.ok&&(w==="cafe"||w==="italie")&&(T.n===0||T.n===1&&T.miss>=3||T.n===2&&T.miss>=5);
+  if(!talk){save();const c=ALLUP.filter(upCan).sort((a,b)=>upPrice(nx(a))-upPrice(nx(b)))[0];return c?{note:1,id:c.id}:null}
+  T.n++;T.miss=0;T.lv=tot;save();
+  const p=upPrice(nx(u)),b=buddy(),can=S.coins>=p,coin=upSideOf(u.id)==="deco"?"Salle":"Comptoir",eff=nx(u).d.charAt(0).toLowerCase()+nx(u).d.slice(1);
+  const buyL=[b,can?"joy":"shy",can?`Tu as de quoi l'acheter (${p} pièces) : touche « Améliorer le café ».`:`Il coûte ${p} pièces : rejoue des journées pour les gagner.`];
+  const lines=T.n===1?[[b,"open",WORLD?`Ici, ${ME()}, l'équipement du ${WD().short} est à racheter : pour les trois étoiles, passe à la boutique !`:`${st?"Bien joué":"Pas grave"}, ${ME()} ! Mais pour les trois étoiles, il faut un café mieux équipé.`],
+    [b,"open","Dans la boutique, il y a deux coins : le Comptoir, pour préparer plus vite, et la Salle, pour la patience, les pourboires et les VIP."],
+    [b,"joy",`Essaie « ${u.name} », dans le coin ${coin} : ${eff}`],buyL]
+   :[[b,"shy",`Ça fait ${T.n===2?3:5} journées d'affilée sans les trois étoiles… Tu te souviens de la boutique ?`],[b,"open",`« ${u.name} » est disponible dans le coin ${coin} : ${eff}`],buyL];
+  return {lines,id:u.id}}
 function endDay(){
   if(G.it)return endIt();
   if(G.noel)return endNoel();
@@ -57,12 +71,12 @@ function endDay(){
   const canNext=st&&d<LASTDAY&&dayOpen(d+1),tip=upTip(d,st);
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   ${endStats({e,g,c2,c3,coins:G.gain+chest,bells:bl,candy:HW?G.candy:0,replay:G.replay})}
-  ${news.join("")}${albumRow()}${bRow}
+  ${tip&&tip.note?`<button class="unote" data-upgo="${tip.id}" type="button"><i class="udot"></i>Des améliorations sont disponibles : fais un tour dans la boutique.</button>`:""}${news.join("")}${albumRow()}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
-  <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button>${tip?`<button class="btn ghost wide" data-act="shop" type="button">Améliorer le café</button>`:""}<button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
+  <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button>${tip?`<button class="btn ghost wide" data-upgo="${tip.id}" type="button">Améliorer le café</button>`:""}<button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;
   // la scène du Concours de la vallée (saisons.js), jouée avant les résultats, puis le conseil du compagnon
-  const dd=d;setTimeout(()=>seaScenes(dd,()=>{endFx(st);if(tip)itTalk(tip,()=>openSheet(sheet,true));else openSheet(sheet,true)}),0);
+  const dd=d;setTimeout(()=>seaScenes(dd,()=>{endFx(st);if(tip&&tip.lines)itTalk(tip.lines,()=>openSheet(sheet,true));else openSheet(sheet,true)}),0);
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
 }
 function endNight(){

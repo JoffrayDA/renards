@@ -84,7 +84,12 @@ function nightSheet(n){
   <div class="col" style="margin-top:6px"><button class="btn big wide" data-nplay="${n}" type="button">Commencer la nuit</button><button class="btn ghost wide" data-act="hw" type="button">Retour</button></div>`);
 }
 function questsSheet(){openSheet(`<h2>Quêtes</h2>${questHTML()}`)}
-let shopTab="equip";
+let shopTab="equip",upSide="",upFocus="";
+// les améliorations en deux coins, Comptoir et Salle (18/11/2026, Joffray : le Four de boulanger à 1 800 faisait mur,
+// il n'était jamais descendu jusqu'à la salle) ; une pastille sur le coin où il y a de quoi acheter
+const upSideOf=id=>UPG.deco.some(x=>x.id===id)?"deco":"equip";
+const upCan=u=>{const nx=u.lv[lv(u.id)];return !!nx&&!upLocked(nx)&&S.coins>=upPrice(nx)};
+const upAny=g=>(g?UPG[g]:ALLUP).some(upCan);
 function shop(){
   let list;
   if(shopTab==="hw"&&!HW)shopTab="style";
@@ -99,13 +104,14 @@ function shop(){
       const key=`st-${k}-${it.id}`,own=(!it.c&&!it.cb&&!it.album)||S.own[key],on=styleOf(k).id===it.id;
       const sw=k==="acc"?foxSVG({...FOX.roussette,acc:it.id||undefined},{pose:"happy"}):k==="wall"?`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="22" rx="4" fill="${it.w}" ${K}/>${[[11,11],[23,11],[17,18],[29,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="${it.d}"/>`).join("")}<rect x="4" y="26" width="32" height="10" rx="3" fill="${it.b}" ${K}/></svg>`:`<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="10" width="34" height="7" rx="3" fill="${it.t}" ${K}/><rect x="5" y="17" width="30" height="18" fill="${it.f}" ${K}/><rect x="9" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/><rect x="22" y="21" width="9" height="10" rx="2" fill="none" stroke="${it.p}" stroke-width="2"/></svg>`;
       return `<div class="it"><span class="ic">${sw}</span><span class="tx"><strong>${it.name}</strong><span>${it.album?`Sers les ${HWF.length} invités d'Halloween pour l'obtenir.`:k==="acc"?`${ME()} la porte sur la carte.`:"Change la couleur de ton café."}</span></span><span class="side">${on?`<span class="owned">Choisi</span>`:own?`<button class="btn ghost" data-style="${k}:${it.id}" type="button">Choisir</button>`:it.album?`<span class="owned">Album ${ak} / ${HWF.length}</span>`:it.cb?`<span class="price cnd">${candySVG}${it.cb}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.candy>=it.cb?"":"disabled"}>Acheter</button>`:`<span class="price">${coinSVG}${it.c}</span><button class="btn" data-sbuy="${k}:${it.id}" type="button" ${S.coins>=it.c?"":"disabled"}>Acheter</button>`}</span></div>`}).join("")).join("");
-  }else list=[["equip","Au comptoir : préparer plus vite"],["deco","Dans la salle : patience, pourboires, VIP"]].map(([g,t])=>`<p class="sub upg">${t}</p>`+UPG[g].map(u=>{
+  }else{const sd=upSide||"equip";list=`<div class="useg">${[["equip","Comptoir","préparer plus vite"],["deco","Salle","patience, pourboires, VIP"]].map(([g,t,s])=>`<button class="${sd===g?"on":""}" data-uside="${g}" type="button">${upAny(g)?`<i class="udot" aria-label="À acheter"></i>`:""}<span class="ic">${icon(g==="equip"?"double":"plantes")}</span><b>${t}</b><small>${s}</small></button>`).join("")}</div>`+[sd].map(g=>UPG[g].map(u=>{
     const n=lv(u.id),max=u.lv.length,nx=u.lv[n],early=nx&&upLocked(nx);
     const dots=max>1?`<span class="lvd">${u.lv.map((_,i)=>`<i${i<n?' class="on"':""}></i>`).join("")}</span>`:"";
     const desc=nx?(n?`<b>Niv. ${n+1} :</b> ${nx.d}`:nx.d)+(early?(WORLD?` <b>Se débloque au jour ${IT_FROM[nx.from]} du quartier.</b>`:` <b>Se débloque avec la saison ${chapOf(nx.from).name}.</b>`):""):lvDesc(u,n);
-    return `<div class="it"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${upPrice(nx)}</span>${early?`<span class="ulock" aria-label="Se débloque : ${upWhen(nx)}"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2.5" fill="#f2c75c" ${K}/><path d="M7 9 V6.5 a3 3 0 0 1 6 0 V9" fill="none" ${K}/></svg>${upWhen(nx)}</span>`:`<button class="btn" data-buy="${u.id}" type="button" ${S.coins>=upPrice(nx)?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`}`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("")).join("");
+    return `<div class="it${upFocus===u.id?" ufocus":""}" data-uid="${u.id}"><span class="ic">${icon((nx||u.lv[n-1]).ic||u.id)}</span><span class="tx"><strong>${u.name}${dots}</strong><span>${desc}</span></span><span class="side">${nx?`<span class="price">${coinSVG}${upPrice(nx)}</span>${early?`<span class="ulock" aria-label="Se débloque : ${upWhen(nx)}"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2.5" fill="#f2c75c" ${K}/><path d="M7 9 V6.5 a3 3 0 0 1 6 0 V9" fill="none" ${K}/></svg>${upWhen(nx)}</span>`:`<button class="btn" data-buy="${u.id}" type="button" ${S.coins>=upPrice(nx)?"":"disabled"}>${n?"Améliorer":"Acheter"}</button>`}`:`<span class="owned">${max>1?"Niveau max":"Acheté"}</span>`}</span></div>`}).join("")).join("")}
   openSheet(`<h2>${WORLD?`Boutique du ${WD().short}`:"Boutique"}</h2>${WORLD?`<p class="sub" style="background:#fff3d6;border-radius:12px;padding:8px 10px">L'équipement d'ici ne sert qu'au ${WD().cafe}. Bonus et style : communs.</p>`:""}<div class="tabs">${[["equip","Améliorations"],["boost","Bonus"],["style","Style"],...(HW?[["hw","Halloween"]]:[])].map(([k,n])=>`<button class="tab${shopTab===k?" on":""}" data-tab="${k}" type="button">${n}</button>`).join("")}</div><div class="shop">${list}</div>`);
   const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
+  if(upFocus){const e=sc.querySelector(".ufocus");if(e)e.scrollIntoView({block:"center"});upFocus=""}
 }
 function carnet(){
   // Copeau et Sésame ne vivent qu'à la Clairière ; les gens d'un quartier une fois le quartier ouvert, rangés par monde (Kyoto ajouté le 09/11/2026)

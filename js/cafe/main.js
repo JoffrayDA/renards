@@ -43,6 +43,8 @@ onTap($("tray"),e=>{const p=e.target.closest("[data-opt]");if(p&&G&&G.run){apply
   dirty=true});
 $("back").onclick=()=>{if(G&&G.run)pauseMenu();else openMap()};
 $("open-menu").onclick=openMap;
+// ouvre la boutique sur le coin de l'amélioration conseillée, qui clignote
+function upGo(id){shopTab="equip";upSide=upSideOf(id);upFocus=id;shop()}
 function onAct(a){
   if(a==="shop")shop();else if(a==="carnet")carnet();else if(a==="hw")hwSheet();else if(a==="noel"){const yr=new Date().getFullYear();if(S.noelIntro!==yr){S.noelIntro=yr;save();noelIntro(noelSheet)}else noelSheet()}else if(a==="noelintro"){closeSheet();noelIntro(noelSheet)}else if(a==="costumes")costumesSheet();else if(a==="hwintro"){closeSheet();hwIntro(hwSheet)}else if(a==="quests")questsSheet();
   else if(a==="map")openMap();else if(a==="worlds")openWorlds();
@@ -65,6 +67,8 @@ $("sheet").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.close!==undefined){closeSheet();return}
   if(b.dataset.tab){shopTab=b.dataset.tab;shop();return}
+  if(b.dataset.uside){upSide=b.dataset.uside;shop();return}
+  if(b.dataset.upgo){upGo(b.dataset.upgo);return}
   if(b.dataset.boost){const id=b.dataset.boost;boostSel.has(id)?boostSel.delete(id):boostSel.add(id);const y=$("sheet-in").scrollTop;boostCtx();$("sheet-in").scrollTop=y;return}
   if(b.dataset.bbuy){const bo=BOOSTS.find(x=>x.id===b.dataset.bbuy);if(S.coins<bo.c)return;S.coins-=bo.c;S.boost[bo.id]=(S.boost[bo.id]||0)+1;save();renderHud();toast(`${bo.name} : +1 en réserve`);
     const y=$("sheet-in").scrollTop;if(boostCtx){boostSel.add(bo.id);boostCtx()}else shop();$("sheet-in").scrollTop=y;return}
