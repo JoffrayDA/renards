@@ -573,3 +573,10 @@ button.home{padding:0;cursor:pointer}
 @media (max-width:520px){.ctag{font-size:11px}.ctag.new{padding:3px 8px 3px 5px}.ctag.new svg{width:13px;height:13px}}
 .unote.pask{border-style:solid;cursor:default;display:flex;flex-direction:column;gap:8px}
 .unote.pask .row{display:flex;gap:8px}.unote.pask .btn{flex:1}
+/* boutique : la cagnotte collée en haut */
+.shophd{position:sticky;top:-18px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-18px -6px 8px;padding:14px 6px 8px;background:var(--card,#fffaf2)}
+.shophd h2{margin:0}
+.wallet{display:flex;gap:6px}
+.wallet span{display:flex;align-items:center;gap:5px;padding:4px 12px 4px 6px;border-radius:99px;background:#fff3d6;border:2.5px solid var(--gold-d);box-shadow:0 2px 0 rgba(91,66,80,.15)}
+.wallet svg{width:24px;height:24px;display:block}
+.wallet b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--ink)}
