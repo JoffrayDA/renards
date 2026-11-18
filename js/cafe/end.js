@@ -40,6 +40,9 @@ function upTip(d,st){
     [b,"joy",`Essaie « ${u.name} », dans le coin ${coin} : ${eff}`],buyL]
    :[[b,"shy",`Ça fait ${T.n===2?3:5} journées d'affilée sans les trois étoiles… Tu te souviens de la boutique ?`],[b,"open",`« ${u.name} » est disponible dans le coin ${coin} : ${eff}`],buyL];
   return {lines,id:u.id}}
+// proposer les notifications une fois, à la fin d'une journée réussie à partir du jour 3 (18/11/2026) :
+// sans ça, un joueur du Café seul n'est jamais abonné (la cloche n'est qu'à la Clairière)
+const pushAsk=st=>st&&!S.pushAsk&&!WORLD&&S.day>3&&pushOk()&&!pushOn()?`<div class="unote pask"><b>Je te préviens quand des clients t'attendent ?</b><span class="row"><button class="btn" data-push="on" type="button">Oui !</button><button class="btn ghost" data-push="no" type="button">Non merci</button></span></div>`:"";
 function endDay(){
   if(G.it)return endIt();
   if(G.noel)return endNoel();
@@ -66,12 +69,12 @@ function endDay(){
   if(st&&S.day===nc.from&&nc.gate&&!gateOpen(nc))news.push(itRow(icon("chest"),`Porte de la saison ${nc.name} : ${starSum()} / ${nc.gate} ★`,`Rejoue des journées pour gagner les étoiles qui manquent.`));
   const bRow=buddyRow();
   const qShow=S.quests.map(q=>({...q,gain:q.p-(G.q0[q.t]||0)}));
-  fillQuests();save();
+  fillQuests();save();pushSync(cafePlan());
   const nxt=st<3?(e<g?`Il manquait ${g-e} points pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} points pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1),tip=upTip(d,st);
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
   ${endStats({e,g,c2,c3,coins:G.gain+chest,bells:bl,candy:HW?G.candy:0,replay:G.replay})}
-  ${tip&&tip.note?`<button class="unote" data-upgo="${tip.id}" type="button"><i class="udot"></i>Des améliorations sont disponibles : fais un tour dans la boutique.</button>`:""}${news.join("")}${albumRow()}${bRow}
+  ${pushAsk(st)}${tip&&tip.note?`<button class="unote" data-upgo="${tip.id}" type="button"><i class="udot"></i>Des améliorations sont disponibles : fais un tour dans la boutique.</button>`:""}${news.join("")}${albumRow()}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}
   <div class="col">${canNext?`<button class="btn big wide" data-day="${d+1}" type="button">Jour ${d+1}</button>`:""}<button class="btn ${canNext?"ghost":"big"} wide" data-play="${d}" type="button">${st?"Rejouer":"Réessayer"} le jour ${d}</button>${tip?`<button class="btn ghost wide" data-upgo="${tip.id}" type="button">Améliorer le café</button>`:""}<button class="btn ghost wide" data-act="map" type="button">Voir la carte</button></div>`;

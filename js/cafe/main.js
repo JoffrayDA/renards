@@ -68,6 +68,9 @@ $("sheet").addEventListener("click",e=>{
   if(b.dataset.close!==undefined){closeSheet();return}
   if(b.dataset.tab){shopTab=b.dataset.tab;shop();return}
   if(b.dataset.uside){upSide=b.dataset.uside;shop();return}
+  if(b.dataset.push){S.pushAsk=1;save();const box=b.closest(".pask");
+    if(b.dataset.push==="no"){if(box)box.remove();return}
+    pushEnable(cafePlan()).then(ok=>{toast(ok?"C'est noté : Petit Pois te préviendra.":"Les notifications sont bloquées. Tu peux les autoriser dans les réglages du téléphone.");if(box)box.remove()}).catch(()=>{toast("Impossible pour l'instant. Réessaie plus tard.");if(box)box.remove()});return}
   if(b.dataset.upgo){upGo(b.dataset.upgo);return}
   if(b.dataset.boost){const id=b.dataset.boost;boostSel.has(id)?boostSel.delete(id):boostSel.add(id);const y=$("sheet-in").scrollTop;boostCtx();$("sheet-in").scrollTop=y;return}
   if(b.dataset.bbuy){const bo=BOOSTS.find(x=>x.id===b.dataset.bbuy);if(S.coins<bo.c)return;S.coins-=bo.c;S.boost[bo.id]=(S.boost[bo.id]||0)+1;save();renderHud();toast(`${bo.name} : +1 en réserve`);
@@ -88,7 +91,8 @@ $("sheet").addEventListener("click",e=>{
   if(b.dataset.day){daySheet(+b.dataset.day);return}
   if(b.dataset.act)onAct(b.dataset.act);
 });
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&G&&G.run&&!G.paused)pauseMenu()});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&G&&G.run&&!G.paused)pauseMenu();if(document.hidden)pushSync(cafePlan())});
+pushSync(cafePlan());
 
 /* ---------- le bouton retour du téléphone (09/11/2026, Joffray : « je reviens sur l'accueil, je veux revenir sur la map ») ----------
    Tant qu'une fiche, une journée ou une carte est ouverte, on garde une entrée d'historique en réserve : le retour la consomme

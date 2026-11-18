@@ -27,14 +27,14 @@ function avPush(){try{const b=typeof bourse==="function"?bourse():{},d=new Date(
   for(let k=d.getDate();k<=24;k++)if(!o[k])return new Date(y,11,k,9).getTime();return 0}catch(e){return 0}}
 async function pushWrite(when){
   // l'accueil n'écrit que la case du calendrier : on garde les heures de la Clairière déjà connues
-  {const Q=pget();when={...(Q.w||{}),...when};Q.w={fox:when.fox,inco:when.inco,arr:when.arr};pset(Q)}
+  {const Q=pget();when={...(Q.w||{}),...when};Q.w={fox:when.fox,inco:when.inco,arr:when.arr,cafe:when.cafe};pset(Q)}
   const reg=await navigator.serviceWorker.ready;
   let sub=await reg.pushManager.getSubscription();
   // abonné avec une ancienne clé (changée le 29/10/2026) : on se réabonne avec la nouvelle
   const key=b64u(PUSH.vapid),old=sub&&sub.options.applicationServerKey&&new Uint8Array(sub.options.applicationServerKey);
   if(sub&&old&&old.join()!==key.join()){await sub.unsubscribe();sub=null}
   if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
-  const f={sub:JSON.stringify(sub),fox:when.fox||0,inco:when.inco||0,arr:when.arr||0,av:avPush(),tz:new Date().getTimezoneOffset()},sig=JSON.stringify(f);
+  const f={sub:JSON.stringify(sub),fox:when.fox||0,inco:when.inco||0,arr:when.arr||0,cafe:when.cafe||0,av:avPush(),tz:new Date().getTimezoneOffset()},sig=JSON.stringify(f);
   if(pget().sig===sig)return;
   const P=await pushToken(),fields=Object.fromEntries(Object.entries(f).map(([k,v])=>[k,typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:v}]));
   const r=await fetch(docUrl(P.uid)+"?"+Object.keys(f).map(k=>"updateMask.fieldPaths="+k).join("&"),{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+P.it},body:JSON.stringify({fields})});
@@ -47,3 +47,6 @@ async function pushOff(){const P=pget();P.on=0;P.sig=null;pset(P);
   try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe()}catch(e){}
   try{const T=await pushToken();await fetch(docUrl(T.uid),{method:"DELETE",headers:{Authorization:"Bearer "+T.it}})}catch(e){}}
 const pushSync=when=>{if(pushOn())pushWrite(when).catch(()=>{})};
+// relance du Café (18/11/2026, Joffray : « des renards t'attendent et ont faim ») : le lendemain de la dernière partie, à 18 h ;
+// rejouer la repousse. Les autres pages ne l'écrivent pas : elle est gardée dans la fiche (Q.w).
+function cafePlan(){const d=new Date();d.setDate(d.getDate()+1);d.setHours(18,0,0,0);return {cafe:d.getTime()}}

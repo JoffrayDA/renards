@@ -552,7 +552,7 @@ button.home{padding:0;cursor:pointer}
 @keyframes udot{50%{transform:scale(1.18)}}
 .it.ufocus{animation:ufocus 1s ease-in-out 3;border-color:var(--coral)!important}
 @keyframes ufocus{50%{box-shadow:0 0 0 5px rgba(245,154,139,.55)}}
-.unote{position:relative;display:block;width:100%;margin:0 0 10px;padding:9px 12px;border-radius:14px;border:2px dashed var(--coral);background:#fff3ee;color:var(--ink);font:inherit;font-size:13.5px;text-align:left;cursor:pointer}
+.unote{position:relative;display:block;box-sizing:border-box;width:100%;margin:0 0 10px;padding:9px 12px;border-radius:14px;border:2px dashed var(--coral);background:#fff3ee;color:var(--ink);font:inherit;font-size:13.5px;text-align:left;cursor:pointer}
 .unote .udot{top:-6px;right:-6px}
 .mbar .btn.hasdot{position:relative}
 .mbar .btn.hasdot::after{content:"";position:absolute;top:-5px;right:-5px;width:13px;height:13px;border-radius:50%;background:#e5534b;border:2.5px solid #fff}
@@ -571,3 +571,5 @@ button.home{padding:0;cursor:pointer}
 @keyframes twk{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
 .scene.short .ctag{top:calc(72% + 4px)}
 @media (max-width:520px){.ctag{font-size:11px}.ctag.new{padding:3px 8px 3px 5px}.ctag.new svg{width:13px;height:13px}}
+.unote.pask{border-style:solid;cursor:default;display:flex;flex-direction:column;gap:8px}
+.unote.pask .row{display:flex;gap:8px}.unote.pask .btn{flex:1}

@@ -1,6 +1,6 @@
 // Envoie les notifications du refuge. Lancé toutes les 30 min par .github/workflows/push.yml (node tools/push-send.mjs).
 // Chaque téléphone a sa fiche push/{uid} dans Firestore (écrite par js/push.js) : sub = abonnement Web Push,
-// fox / inco / arr = heures prévues en ms (0 = rien), tz = décalage horaire du téléphone en minutes.
+// fox / inco / arr / cafe = heures prévues en ms (0 = rien), tz = décalage horaire du téléphone en minutes.
 // Le script y note ce qu'il a envoyé (s_fox, s_inco, s_arr, last). Une notification par jour au plus, entre 9 h et 21 h.
 // Secrets GitHub : FIREBASE_SA (le fichier JSON du compte de service), VAPID_PRIVATE. --dry : affiche sans rien envoyer.
 // Lancé en boucle toutes les 5 min par le workflow (GitHub ne tenait pas le cron).
@@ -28,6 +28,14 @@ const MSG = {
   inco: { t: "Quelqu'un est passé à la gamelle", b: "Il a laissé une photo. Viens voir qui c'est !" },
   arr: { t: "Un nouveau renard au refuge", b: "Un client du Café vient s'installer à la Clairière." },
   av: { t: "Une case t'attend !", b: "Le calendrier de l'Avent a une surprise pour toi aujourd'hui." },
+  // relance du Café, une phrase différente selon le jour
+  cafe: [
+    { t: "Le Café a faim !", b: "Des renards font la queue devant la porte… et leur ventre gargouille." },
+    { t: "Le four est chaud", b: "Les croissants n'attendent que toi. Les clients non plus !" },
+    { t: "Toc toc toc", b: "Petit Pois a ouvert les volets. Des clients t'attendent au Café." },
+    { t: "Un client pressé !", b: "Quelqu'un réclame son café crème. Tu viens le servir ?" },
+    { t: "Ça sent bon la cannelle", b: "Le Café est prêt à ouvrir. Il ne manque plus que toi !" }
+  ],
   test: { t: "Coucou de la Clairière", b: "Les notifications marchent. Petit Pois te fait signe !" }
 };
 
@@ -51,10 +59,10 @@ do {
     const d = Object.fromEntries(Object.entries(doc.fields || {}).map(([k, v]) => [k, val(v)]));
     const hour = new Date(now - (d.tz || 0) * 6e4).getUTCHours();
     if (!d.sub || !TEST && (hour < 9 || hour >= 21 || now - (d.last || 0) < 20 * 36e5)) continue;
-    const k = TEST ? "test" : ["av", "fox", "inco", "arr"].find(k => d[k] && d[k] <= now && d[k] > (d["s_" + k] || 0));
+    const k = TEST ? "test" : ["av", "fox", "inco", "arr", "cafe"].find(k => d[k] && d[k] <= now && d[k] > (d["s_" + k] || 0));
     if (!k) continue;
     if (DRY) { console.log("enverrait", k, "à", doc.name.split("/").pop()); continue; }
-    try { await webpush.sendNotification(JSON.parse(d.sub), JSON.stringify({ ...MSG[k], k, u: k === "av" ? "./" : "clairiere.html" }), { TTL: 6 * 3600 }); }
+    try { await webpush.sendNotification(JSON.parse(d.sub), JSON.stringify({ ...(Array.isArray(MSG[k]) ? MSG[k][Math.floor(now / 864e5) % MSG[k].length] : MSG[k]), k, u: k === "av" ? "./" : k === "cafe" ? "cafe.html" : "clairiere.html" }), { TTL: 6 * 3600 }); }
     catch (e) {
       // abonnement périmé (app désinstallée, notifications coupées) : on oublie la fiche
       if (e.statusCode === 404 || e.statusCode === 410) await fetch(`https://firestore.googleapis.com/v1/${doc.name}`, { method: "DELETE", headers: H });
