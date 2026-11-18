@@ -152,7 +152,7 @@ with sync_playwright() as p:
     if ITALIE and ECO:
         # Petite Italie, --italie --economie : comme --economie, sur les 20 journées du quartier, avec l'équipement à racheter
         # (prix ×WPRICE du quartier arrondis à la dizaine, comme upPrice dans data.js) et le coffre au rythme du jour de référence
-        cost = page.evaluate(f"() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map(l => Math.round(l.c * WPRICE.{WN} / 10) * 10)]))")
+        cost = page.evaluate(f"() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map((l, i) => Math.round(l.c * WPRICE.{WN} * (i ? LV2 : 1) / 10) * 10)]))")
         bases = page.evaluate(f"() => WORLDS.{WN}.days.map(x => x.base)")
         coins, low, total = 1500, 1500, 0   # ce qui reste en moyenne du premier café (--economie : environ 1 850 au jour 40)
         s3 = page.evaluate(f"() => WORLDS.{WN}.s3")
@@ -255,7 +255,7 @@ with sync_playwright() as p:
     if ECO:
         # Bon joueur, premier passage de chaque jour : pièces gagnées (bénéfice + coffre + ~1 quête par jour + bonus
         # quotidien), moins les achats du kit le jour prévu. Un solde négatif = le kit n'est pas abordable à temps.
-        cost = page.evaluate("() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map(l => Math.round(l.c * WPRICE[''] / 10) * 10)]))")
+        cost = page.evaluate("() => Object.fromEntries(ALLUP.map(u => [u.id, u.lv.map((l, i) => Math.round(l.c * WPRICE[''] * (i ? LV2 : 1) / 10) * 10)]))")
         coins, prev, low = 0, 0, 0
         for d in days:
             e, g, *_, gain = page.evaluate(BOT, [d, own_for(d), GOOD, None])

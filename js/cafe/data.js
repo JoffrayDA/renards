@@ -115,8 +115,10 @@ const IT_FROM={21:8,31:12};
 const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ : 10 360 pièces pour le kit, inabordable ; python tools/balance-bot.py --italie --economie)
 // prix de l'équipement selon le monde (11/11/2026, Joffray : « 10 000 balles, je peux tout m'acheter ») : ×1,5 au premier café,
 // puis de plus en plus cher ; le kit d'un monde demande de rejouer des journées (python tools/balance-bot.py --economie)
-const WPRICE={"":1.5,italie:1,paris:1.1,kyoto:1.2};
-const upPrice=nx=>Math.round(nx.c*(WPRICE[WORLD]||1.5)/10)*10;
+// baisse du 18/11/2026 (Joffray : « baisse un petit peu, surtout les deuxièmes évolutions ») : -7 % environ partout,
+// et les niveaux 2 et 3 coûtent un quart de moins (LV2) ; le n° de niveau est posé sur chaque palier (l.i) après ALLUP
+const WPRICE={"":1.4,italie:.95,paris:1.05,kyoto:1.1},LV2=.75;
+const upPrice=nx=>Math.round(nx.c*(WPRICE[WORLD]||1.4)*(nx.i?LV2:1)/10)*10;
 // achats des dernières saisons : au premier café, avec leur saison ; dans un quartier, aux jours 8 et 12 (IT_FROM). Joffray tient
 // à ce blocage (11/11/2026), mais il n'était écrit nulle part : la boutique montre maintenant un cadenas et le jour (upWhen)
 const upLocked=nx=>!!nx.from&&(WORLD?WD().sv().day<IT_FROM[nx.from]:S.day<nx.from);
@@ -160,6 +162,7 @@ const STYLE={
 };
 const styleOf=k=>{const it=STYLE[k].items;return it.find(x=>x.id===(S.style||{})[k])||it[0]};
 const ALLUP=[...UPG.equip,...UPG.deco];
+ALLUP.forEach(u=>u.lv.forEach((l,i)=>{l.i=i}));
 const lvDesc=(u,n)=>u.lv[Math.max(0,n-1)].d;
 const SPOTX={2:[31,69],3:[20,50,80],4:[14,38,62,86]};
 // clients ordinaires ; Roussette n'en fait plus partie : c'est le joueur
