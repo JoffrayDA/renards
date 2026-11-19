@@ -608,3 +608,8 @@ button.home{padding:0;cursor:pointer}
 .rk i{font-style:normal;font-weight:700;text-align:center}.rk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rk b{font-family:"Mochiy Pop One",sans-serif}.rk small{opacity:.7;font-size:12px}
 .rk.p1{background:#fff3c4}.rk.p2{background:#eef1f6}.rk.p3{background:#f8e4d4}.rk.me{outline:3px solid #f59a8b;outline-offset:1px}.rk.sep{margin-top:8px}
 .pill.rinf{font-size:18px;padding:2px 12px}
+
+/* défi des sumos (20/11/2026) : deux bulles par sumo, écartées de part et d'autre de son corps (12 % de la salle) */
+.cust{--cw:17}.cust.twin{z-index:1;pointer-events:none}.cust.twin .bub{pointer-events:auto}
+.cust .bub.bl{left:calc(50% - 1200% / var(--cw))}.cust .bub.br{left:calc(50% + 1200% / var(--cw))}
+@media (max-width:520px){.cust{--cw:23}}

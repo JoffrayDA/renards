@@ -38,8 +38,8 @@ const KYF_REG=KYF.filter(f=>f.rar==="commun"&&!f.big);
 // rythme d'un jour de référence du premier monde, de 24 à 40, puis au-delà (hard : plus de clients, plus serrés, moins patients) ;
 // graine et objectif par `python tools/balance-bot.py --kyoto`
 // plus dur partout (09/11/2026, Joffray : « assez facile, surtout avec les améliorations ») : hard de 1,1 au jour 1 à 1,6 au jour 25
-const KY_DAYS=[{base:24,hard:1.1,seed:4,goal:210},{base:25,hard:1.12,seed:3,goal:219},{base:26,hard:1.14,seed:10,goal:239},{base:27,hard:1.16,seed:13,goal:270},{base:28,hard:1.18,seed:13,goal:268},{base:29,hard:1.21,seed:14,goal:308},{base:30,hard:1.23,seed:13,goal:323},{base:31,hard:1.25,seed:10,goal:351},{base:32,hard:1.27,seed:8,goal:379},{base:33,hard:1.29,seed:9,goal:400},{base:34,hard:1.31,seed:4,goal:405},{base:35,hard:1.33,seed:11,goal:467},{base:36,hard:1.35,seed:13,goal:484},{base:37,hard:1.37,seed:12,goal:520},{base:38,hard:1.39,seed:15,goal:507},{base:39,hard:1.42,seed:13,goal:529},{base:40,hard:1.44,seed:14,goal:460},{base:40,hard:1.46,seed:7,goal:563},{base:40,hard:1.48,seed:7,goal:583},{base:40,hard:1.5,seed:2,goal:621},{base:40,hard:1.52,seed:10,goal:639},{base:40,hard:1.54,seed:10,goal:656},{base:40,hard:1.56,seed:3,goal:574},{base:40,hard:1.58,seed:12,goal:676},{base:40,hard:1.6,seed:12,goal:681},{base:40,hard:1.63,seed:12,goal:693},{base:40,hard:1.66,seed:12,goal:719},{base:40,hard:1.69,seed:12,goal:730},{base:40,hard:1.72,seed:4,goal:730},{base:40,hard:1.75,seed:4,goal:723}];
-const KY_S3=[2.02,2.04,2.3,2.5,2.37,2.32,2.5,1.95,2.15,2.6,2.33,2.15,2.24,2.0,2.25,2.23,2.36,2.13,1.84,1.93,1.8,1.81,2.3,1.99,1.94,1.95,2.09,2.08,1.91,1.97];
+const KY_DAYS=[{base:24,hard:1.1,seed:4,goal:210},{base:25,hard:1.12,seed:3,goal:219},{base:26,hard:1.14,seed:4,goal:236},{base:27,hard:1.16,seed:11,goal:257},{base:28,hard:1.18,seed:5,goal:278},{base:29,hard:1.21,seed:8,goal:304},{base:30,hard:1.23,seed:13,goal:323},{base:31,hard:1.25,seed:10,goal:351},{base:32,hard:1.27,seed:13,goal:380},{base:33,hard:1.29,seed:8,goal:418},{base:34,hard:1.31,seed:13,goal:379},{base:35,hard:1.33,seed:11,goal:467},{base:36,hard:1.35,seed:13,goal:484},{base:37,hard:1.37,seed:12,goal:520},{base:38,hard:1.39,seed:15,goal:507},{base:39,hard:1.42,seed:5,goal:550},{base:40,hard:1.44,seed:7,goal:404},{base:40,hard:1.46,seed:9,goal:597},{base:40,hard:1.48,seed:2,goal:613},{base:40,hard:1.5,seed:2,goal:621},{base:40,hard:1.52,seed:2,goal:649},{base:40,hard:1.54,seed:12,goal:683},{base:40,hard:1.56,seed:6,goal:521},{base:40,hard:1.58,seed:6,goal:713},{base:40,hard:1.6,seed:4,goal:699},{base:40,hard:1.63,seed:4,goal:715},{base:40,hard:1.66,seed:12,goal:719},{base:40,hard:1.69,seed:12,goal:730},{base:40,hard:1.72,seed:4,goal:730},{base:40,hard:1.75,seed:4,goal:723}];
+const KY_S3=[2.02,2.04,2.6,2.35,2.6,2.38,2.5,1.95,2.12,2.29,2.6,2.15,2.23,2.0,2.25,1.97,2.6,1.83,1.89,1.93,1.84,2.0,2.6,1.91,1.88,1.76,2.09,2.1,1.91,2.01];
 // l'équipement prévu pour chaque journée : celui de l'Italie (30 journées toutes les deux depuis le 19/11/2026)
 const KY_KIT=IT_KIT;
 // la journée qui fait gagner chaque recette ou option (elle arrive à la suivante) ; 0 = dès le jour 1
@@ -62,13 +62,13 @@ const KY_SUMO_TALK={
      ["chanko","open","Pousse-toi, Ōyama. Cette cantine, c'est MON territoire."],
      ["oyama","open","Ton territoire ? Dohohoho ! Regarde-toi : on dirait un mochi dégonflé."],
      ["chanko","surprise","Un mochi… DÉGONFLÉ ?!"],
-     ["yuzu","shy","Défi des sumos ! Ils restent au milieu toute la journée et recommandent quatre plats dès qu'ils sont servis. Les autres clients attendront qu'ils soient assis."]],
+     ["yuzu","shy","Défi des sumos ! Aujourd'hui, la cantine est rien qu'à eux : chacun commande deux plateaux à la fois, et en redemande dès qu'il est servi."]],
   11:[["oyama","open","Tiens, le mochi dégonflé est revenu."],["chanko","open","Et toi, la boulette ! Tu as mis ta ceinture à l'envers, ce matin ?"],
       ["oyama","surprise","… C'est vrai ?"],["chanko","joy","Gwahahaha ! Il a vérifié !"],
       ["yuzu","shy","Deuxième défi des sumos… Courage, on va en cuire, des onigiris !"]],
   17:[["chanko","open","La belle. Celui qui perd porte le plateau de l'autre pendant un an."],["oyama","open","Un an ? Prépare tes petits bras, Chanko."],
-      ["chanko","surprise","Gwahaha… ha… Ce n'était pas une blague, hein ?"],
-      ["yuzu","joy","Troisième défi des sumos ! Ils ne repartiront qu'à la fermeture."]],
+      ["chanko","surprise","Gwahaha…"],
+      ["yuzu","surprise","Vite, refais du stock ! Ils ne repartiront qu'à la fermeture."]],
   23:[["chanko","joy","Entraînement pour le Matsuri ! Ōyama, mon frère de ventre, viens t'asseoir à côté de moi !"],
       ["oyama","joy","Je t'ai gardé la meilleure place, Chanko ! Dohohoho !"],["chanko","joy","Gwahahaha !"],
       ["yuzu","open","Dernier défi des sumos : nourris-les jusqu'au bout, ils ont un concours à gagner !"]]};
@@ -329,7 +329,7 @@ const KY_SCENES={
   4:[["daifuku","joy","Des beignets de crevettes ! Croustillants dehors, tout doux dedans. Comme moi."],["yuzu","open","Elle en a mangé six. Pour vérifier."]],
   5:[["chanko","joy","Gwahahaha ! Un plateau de plus que toi, grosse boulette de riz !"],["oyama","surprise","Impossible ! Ce comptoir penche de ton côté, c'est truqué !"],
      ["chanko","joy","Gwahahaha ! Le ventre de Chanko est le plus grand du quartier !"],["oyama","sad","Hmpf. Revanche dans six jours. Et cette fois, je mange avec les deux mains."],
-     ["yuzu","shy","Ils ont vidé toute la vitrine… et ils ne se sont pas regardés une seule fois."]],
+     ["yuzu","shy","Ils ont vidé toute la vitrine…"]],
   6:[["yuzu","surprise","Ce matin, toutes les lanternes de la rue étaient réparées. Personne n'a rien vu…"],
      ["origami","shy","Ce n'est pas moi. Moi, je plie. Je ne répare pas."],["yuzu","open","Un mystère…"]],
   7:[["yuzu","joy","Les dango ! Au Matsuri, c'est LA douceur : trois boules sur une brochette."],
@@ -365,7 +365,7 @@ const KY_SCENES={
       ["kage","shy","J'ai… peut-être ajouté quelques lanternes."]],
   23:[["oyama","joy","Quatre plateaux chacun ! On est prêts, Chanko !"],["chanko","shy","Ōyama… merci d'avoir été mon rival. Tu es mon meilleur ami."],
       ["oyama","shy","Arrête, tu vas me faire pleurer dans mes sushis…"],["chanko","joy","Gwahahaha !"],["oyama","joy","Dohohoho !"],
-      ["yuzu","shy","Il y a trois semaines, ils se traitaient de mochi dégonflé…"]],
+      ["yuzu","shy","Ooh… c'est trop mignon."]],
   30:[["yuzu","surprise","C'est le soir du Matsuri ! Regarde notre stand !"],["daifuku","joy","Les sushis partent comme des petits pains !"],
       ["kage","surprise","… Là-haut. Sur le chemin des torii."],
       ["kyubi","open","Que de lumière, cette année… Je n'avais pas vu un stand aussi joyeux depuis cent ans."],
@@ -410,7 +410,7 @@ function kyCarnet(){
 WORLDS.kyoto={id:"kyoto",name:"Kyoto",cafe:"Kitsune Shokudō",short:"Shokudō",sv:()=>S.ky,days:KY_DAYS,s3:KY_S3,kit:KY_KIT,
   recDays:KY_REC,sumo:KY_SUMO,sumoTalk:KY_SUMO_TALK,
   mark:d=>KY_SUMO[d]&&!S.ky.sumo[d]?foxArt(FOX.chanko,{portrait:1,expr:"joy"}):"",
-  dayRow:d=>KY_SUMO[d]?itRow(foxSVG(FOX.chanko,{pose:"happy"}),"Défi des sumos !",`Chanko et Ōyama s'installent pour toute la journée et recommandent dès qu'ils sont servis. Sers-les vite !${S.ky.sumo[d]?" (déjà réussi)":" +40 pièces la première fois."}`,"background:#e8eefa"):"",
+  dayRow:d=>KY_SUMO[d]?itRow(foxSVG(FOX.chanko,{pose:"happy"}),"Défi des sumos !",`Rien qu'eux deux, deux commandes chacun, jusqu'à la fermeture. Sers-les vite !${S.ky.sumo[d]?" (déjà réussi)":" +40 pièces la première fois."}`,"background:#e8eefa"):"",
 ovens:d=>d>=14?2:1,ovenOf:{croissant:0,cookie:0,taiyaki:0,mochi:1,gateau:1},
   opt:{lait:"Lait",chantilly:"Crème"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Matcha latte":`${REC[r].name} à la crème`,optWord:"la crème",optWords:{lait:"le lait",chantilly:"la crème"},
   optNews:{lait:"Touche « Lait », au bout du plateau, pour transformer un matcha en matcha latte."},

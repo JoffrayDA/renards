@@ -21,11 +21,15 @@ function newDay(d){
   if(G.ovens.length>1&&!Object.keys(vit).some(k=>(WD().ovenOf||{})[k]===1))G.ovens.length=1;
   // Kyoto, les défis des sumos (WD().sumo) : deux gros clients entrent lentement, s'installent pour toute la journée
   // et recommandent dès qu'ils sont servis (Joffray, 09/11/2026) ; il vient moins d'autres clients ces jours-là
-  if(it&&WD().sumo&&WD().sumo[d]){G.cfg={...G.cfg,c:Math.round(G.cfg.c*.6)};G.sumo=1;
+  // (20/11/2026, Joffray : « qu'il n'y ait qu'eux, mais du coup ils auraient 2 bulles ») : plus aucun autre client ; chaque sumo a deux
+  // commandes à la fois, deux bulles (deux clients liés : le sumo, et son « twin » invisible qui ne porte que la seconde bulle) ;
+  // ils restent le temps d'une journée normale (G.sumoT), puis finissent leur dernière commande et s'en vont
+  if(it&&WD().sumo&&WD().sumo[d]){G.sumo=1;G.sumoT=G.cfg.c*G.cfg.gap+20;
     // (20/11/2026, Joffray) une petite scène d'abord (sumoIntro), pendant laquelle ils attendent dehors (« door ») ; puis ils entrent
     // seuls jusqu'aux deux places du milieu (1 et 2, sur la grille de quatre places : SPOTX[4]) ; les autres clients attendent qu'ils soient assis
     G.sumoWait=1;
-    WD().sumo[d].forEach((id,i)=>{const sp=i+1,pat=G.cfg.pat*patMult()*1.3;G.cust.push({id:++uid,fox:id,spot:sp,order:sumoOrder(),pat,patMax:pat,state:"door",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:""});S.seen[id]=(S.seen[id]||0)+1});setTimeout(sumoIntro,0)}
+    WD().sumo[d].forEach((id,i)=>{const pat=G.cfg.pat*patMult()*1.3,one=tw=>({id:++uid,fox:id,spot:2*i+tw,order:sumoOrder(),pat,patMax:pat,state:"door",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:"",twin:tw});
+      const a=one(0),b=one(1);a.pair=b.id;b.pair=a.id;G.cust.push(a,b);S.seen[id]=(S.seen[id]||0)+1});setTimeout(sumoIntro,0)}
   // à Paris, les jours de défi : le score de Firmin, à battre (paris.js)
   if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
   // au premier café, les défis du Concours de la vallée (saisons.js)
@@ -67,10 +71,11 @@ function genOrder(){
     return{r,g,o:op&&roll<.35?op:undefined,done:0}});
 }
 const quake=()=>{const e=$("scene");if(!e)return;e.classList.remove("quake");void e.offsetWidth;e.classList.add("quake")};
-// une commande de sumo : toujours quatre plats (Joffray, 09/11/2026 : « 4 choses minimum s'ils sont là »)
+// une commande de sumo : toujours quatre plats (Joffray, 09/11/2026 : « 4 choses minimum s'ils sont là ») ; les jours de défi,
+// deux bulles de deux plats chacune
 // leurs rires (20/11/2026, Joffray : « donne-leur des rires marrants ») : Chanko le bruyant, Ōyama le grand champion
 const SUMO_LAUGH={chanko:"Gwahahaha !",oyama:"Dohohoho !"};
-function sumoOrder(){let o=[];while(o.length<4)o=o.concat(genOrder());return o.slice(0,4)}
+function sumoOrder(n){n=n||(G&&G.sumo?2:4);let o=[];while(o.length<n)o=o.concat(genOrder());return o.slice(0,n)}
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
   const here=new Set(G.cust.map(c=>c.fox));
@@ -98,17 +103,20 @@ function update(dt){
   // jour de sumos : ils entrent après la petite scène, et personne d'autre tant qu'ils ne sont pas assis
   if(G.sumo&&!G.sumoWait)for(const c of G.cust)if(c.state==="door"){c.state="walkin";dirty=true}
   const sumoIn=G.sumo&&G.cust.some(c=>c.stay&&(c.state==="door"||c.state==="walkin"));if(sumoIn)G.next=Math.max(G.next,G.t+.6);
-  if(G.spawned<G.cfg.c&&G.t>=G.next&&!sumoIn){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
+  // jour de défi : le temps qui reste, à la place du nombre de clients (render.js)
+  if(G.sumo){if(!G.sumoDone&&G.t>=G.sumoT){G.sumoDone=1;dirty=true}const e=$("sumot"),v=sumoLeft();if(e&&e._v!==v){e.textContent=v;e._v=v}}
+  if(!G.sumo&&G.spawned<G.cfg.c&&G.t>=G.next&&!sumoIn){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
   for(const c of G.cust){
     // un sumo qui marche : boum à chaque pas, et la salle tremble
     if(c.slow&&(c.state==="walkin"||c.state==="walkout")){c.stepT=(c.stepT||0)-dt;if(c.stepT<=0){c.stepT=.62;bip("stomp");quake()}}
-    if(c.state==="wait"){c.pat-=dt;if(c.pat<=0&&c.stay){G.lost++;G.combo=0;bip("angry");floatAt(custEl(c),"Grrr !");c.order=sumoOrder();c.pat=c.patMax;c.low=0;dirty=true}
+    if(c.state==="wait"){c.pat-=dt;if(c.pat<=0&&c.stay){G.lost++;G.combo=0;bip("angry");floatAt(custEl(c),"Grrr !");if(G.sumoDone)c.state="fin";else{c.order=sumoOrder();c.pat=c.patMax;c.low=0}dirty=true}
       else if(c.pat<=0){c.state="angry";c.leave=1.3;c.lostIt=1;G.lost++;G.combo=0;dirty=true;bip("angry");setTimeout(()=>{const e=custEl(c);if(e)floatAt(e,"Hmpf !")},60)}
       else if(c.pat/c.patMax<.3&&!c.low){c.low=1;dirty=true}}
     else if(c.state==="queue"){c.qp-=dt;if(c.qp<=0){c.state="angry";c.leave=.9;c.gave=1;c.lostIt=1;G.lost++;G.combo=0;dirty=true;bip("angry")}}
     else if(c.state==="walkin"){c.walk-=dt;if(c.walk<=0){c.state="wait";c.born=G.t;dirty=true}}
     else if(c.state==="walkout"){c.walk-=dt;if(c.walk<=0){c.gone=1;dirty=true}}
-    else if(c.stay&&c.state==="happy"){c.leave-=dt;if(c.leave<=0){const lf=SUMO_LAUGH[c.fox];if(lf)floatAt(custEl(c),lf);c.state="wait";c.order=sumoOrder();c.pat=c.patMax;c.low=0;c.born=G.t;dirty=true}}
+    else if(c.state==="fin"){}
+    else if(c.stay&&c.state==="happy"){c.leave-=dt;if(c.leave<=0&&G.sumoDone){c.state="fin";dirty=true}else if(c.leave<=0){const lf=!c.twin&&SUMO_LAUGH[c.fox];if(lf)floatAt(custEl(c),lf);c.state="wait";c.order=sumoOrder();c.pat=c.patMax;c.low=0;c.born=G.t;dirty=true}}
     else{c.leave-=dt;if(c.leave<=0){if(c.gave)c.gone=1;else{c.state="walkout";c.walk=c.lostIt?1:WALK};dirty=true}}
   }
   G.cust=G.cust.filter(c=>!c.gone);
@@ -130,9 +138,12 @@ function update(dt){
       if(got){floatAt(custEl(c),`${FOX[buddy()].name} !`);bip("pop");buddyHop();buddyTip();if(c.order.every(x=>x.done))complete(c);dirty=true;break}}
 }}
   // les sumos ne repartent qu'une fois tous les autres clients partis
-  if(G.sumo&&G.spawned>=G.cfg.c&&G.cust.length&&!G.cust.some(c=>!c.stay))for(const c of G.cust){c.stay=0;c.state="walkout";c.walk=WALK*2.4;dirty=true}
+  // jour de défi : le temps écoulé, ils finissent leurs commandes en cours, puis repartent ensemble
+  if(G.sumo&&G.sumoDone&&G.cust.length&&G.cust.every(c=>c.state==="fin"))for(const c of G.cust){c.stay=0;c.state="walkout";c.walk=WALK*2.4;dirty=true}
+  if(G.sumo&&G.sumoDone&&!G.cust.length){G.cfg={...G.cfg,c:G.served+G.lost};endDay();return}
   if(G.spawned>=G.cfg.c&&!G.cust.length)endDay();
 }
+const sumoLeft=()=>{const s=Math.max(0,Math.ceil(G.sumoT-G.t));return G.sumoDone?"Dernières commandes !":`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`};
 const custEl=c=>document.querySelector(`[data-cust="${c.id}"]`);
 // une option s'ajoute au premier article du plateau qui peut la recevoir et n'en a pas encore
 // les articles du plateau qui peuvent recevoir l'option

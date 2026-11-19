@@ -26,7 +26,10 @@ function burst(el){const [x,y]=rel(el);for(let i=0;i<3;i++){const s=document.cre
 // Sur iPhone, le clic n'arrive qu'au relâcher et se perd si la tuile a été redessinée pendant l'appui :
 // en jeu, on agit dès que le doigt touche l'écran (le clic clavier, detail 0, marche toujours).
 function onTap(el,fn){el.addEventListener("pointerdown",e=>{if(e.button)return;fn(e)});el.addEventListener("click",e=>{if(e.detail===0)fn(e)})}
-onTap($("custs"),e=>{const b=e.target.closest("[data-cust]");if(!b||!G||!G.run)return;const c=G.cust.find(x=>x.id==b.dataset.cust);if(c)deliver(c,b)});
+onTap($("custs"),e=>{const b=e.target.closest("[data-cust]");if(!b||!G||!G.run)return;let c=G.cust.find(x=>x.id==b.dataset.cust);
+  // un sumo de défi a deux bulles : toucher son corps sert celle des deux qui peut l'être
+  if(c&&c.pair){const can=x=>x&&x.state==="wait"&&x.order.some(o=>!o.done&&G.tray.includes(itemKey(o))),p=G.cust.find(x=>x.id===c.pair);if(!can(c)&&can(p))c=p}
+  if(c)deliver(c,b)});
 onTap($("kitchen"),e=>{const b=e.target.closest("button");if(!b||!G||!G.run)return;
   if(b.dataset.gel){scoop(b.dataset.gel,b);return}
   if(b.dataset.cone!==undefined){if(G.cone){G.cone="";dirty=true}else hint(WD().coneHint);return}

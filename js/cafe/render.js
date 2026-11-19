@@ -13,6 +13,7 @@ function renderHud(){
   if(G.rush){$("hud").innerHTML=rushHud();$("chips").innerHTML=G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:"";return}
   const g=G.cfg.goal,cu=G.night||G.noel?[1,1.35,1.7]:cuts(G.day),mx=g*cu[2],e=G.earned;
   $("hud").innerHTML=`<span class="pill day">${G.noel?`Noël ${G.noel}`:G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${cu.map(m=>`<span class="tick${e>=Math.ceil(g*m)?" on":""}" style="left:${m/cu[2]*100}%">★</span>`).join("")}${G.duel?`<span class="tick duel${e>=G.duel?" on":""}" style="left:${Math.min(100,G.duel/mx*100)}%" title="Firmin : ${G.duel}">${icon("croissant","paris")}</span>`:""}<b class="gnum">${e} / ${g}</b></div></div>`;
+  if(G.sumo){$("chips").innerHTML=`<span class="pill" id="sumot">${sumoLeft()}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}`;return}
   $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait"||c.state==="walkin"||c.state==="queue").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW&&!G.noel?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
 }
 function render(){
@@ -24,16 +25,17 @@ function render(){
   for(const c of G.cust){if(c.state==="door")continue;const f=FOX[c.fox];
     const fx=c.costume?{...f,acc:c.costume}:f,walking=c.state==="walkin"||c.state==="walkout",inQ=c.state==="queue"||(c.gave&&c.state==="angry");
     // position : la file à gauche (petits renards), sa place au comptoir, ou la sortie à droite
-    const left=inQ?5+(qi++)*6:c.state==="walkout"?114:X[c.spot];
+    // un sumo de défi : son corps entre ses deux places, une bulle de chaque côté (le twin ne dessine que sa bulle)
+    const pr=c.pair!=null&&c.spot>=0,left=inQ?5+(qi++)*6:c.state==="walkout"?114:pr?(X[c.spot-c.twin]+X[c.spot-c.twin+1])/2:X[c.spot];
     // fâché (19/11/2026, Joffray : « c'est limite si on le voit pas partir ») : sourcils froncés, nuage d'orage au-dessus de la tête,
     // il trépigne, puis sort à droite d'un pas rapide et lourd (classe mad, css)
     const mad=!!c.lostIt&&(c.state==="angry"||c.state==="walkout");
     const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(itemKey(o))}</span>`).join("");
-    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}${mad?" mad":""}`,bub=!walking&&!inQ&&!mad?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${CROWN}${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}${mad?" mad":""}${pr?(c.twin?" twin":" sumo2"):""}`,bub=!walking&&!inQ&&!mad&&c.state!=="fin"?`<span class="bub${c.vip?" vipb":""}${pr?(c.twin?" br":" bl"):""}">${c.vip?`<em class="vip">${CROWN}${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
     // « Nouveau » sous le renard, posé sur le comptoir (18/11/2026, Joffray : le message gris en haut ne se voyait pas) :
     // calque à part, au-dessus du comptoir ; le VIP garde son badge doré sur la bulle (Joffray l'aimait), juste plus visible
     if(!inQ&&!walking&&!mad&&c.nw&&!c.vip)tags+=`<span class="ctag new" style="left:${left}%"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 L12.4 7.2 L18.5 7.7 L13.8 11.6 L15.3 17.6 L10 14.4 L4.7 17.6 L6.2 11.6 L1.5 7.7 L7.6 7.2Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.8" stroke-linejoin="round"/></svg>Nouveau client<i class="tw a"></i><i class="tw b"></i></span>`;
-    const inner=bub+(mad?STORM:"")+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit",expr:mad?"angry":undefined});
+    const inner=c.twin?bub+`<svg viewBox="0 -16 120 116" aria-hidden="true"></svg>`:bub+(mad?STORM:"")+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit",expr:mad?"angry":undefined});
     let el=custEl(c);
     // un nouveau client apparaît hors champ à gauche, puis la transition CSS le fait marcher jusqu'à sa place
     if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);el.style.left="-14%";if(c.slow)el.style.transition="left 3.8s linear,opacity .5s";box.appendChild(el);void el.offsetWidth}
