@@ -36,6 +36,7 @@ BOT = """(args) => {
   WORLD = world || ""; if (WORLD) { WORLDS[WORLD].sv().own = own; WORLDS[WORLD].sv().stars = {}; } else S.own = own;
   S.coins = 0; S.guest = {}; S.stars = {}; window.toast = () => {};
   closeSheet(); newDay(day); if (seed != null) G.rng = rng((WORLD ? WORLDS[WORLD].days[day - 1].base : day) * 7919 + seed + 1);
+  G.sumoWait = 0;  // jour de sumos : pas de petite scène pour le bot
   const cfg = G.cfg; let t = 0, next = 0, res = null;
   const origEnd = endDay;
   endDay = () => { res = [G.earned, cfg.goal, G.served, cfg.c, G.lost, G.gain]; G = null; };

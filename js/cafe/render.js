@@ -18,10 +18,10 @@ function renderHud(){
 function render(){
   dirty=false;renderHud();
   if(!G||!G.run){$("custs").innerHTML="";const tl=$("ctags");if(tl){tl.innerHTML="";tl._h=""}renderKitchen();renderTray();return}
-  const X=SPOTX[spotsN()];
+  const X=SPOTX[G.sumo?4:spotsN()];
   const box=$("custs"),keep=new Set();
   let qi=0,tags="";
-  for(const c of G.cust){const f=FOX[c.fox];
+  for(const c of G.cust){if(c.state==="door")continue;const f=FOX[c.fox];
     const fx=c.costume?{...f,acc:c.costume}:f,walking=c.state==="walkin"||c.state==="walkout",inQ=c.state==="queue"||(c.gave&&c.state==="angry");
     // position : la file à gauche (petits renards), sa place au comptoir, ou la sortie à droite
     const left=inQ?5+(qi++)*6:c.state==="walkout"?114:X[c.spot];

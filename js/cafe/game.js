@@ -22,7 +22,10 @@ function newDay(d){
   // Kyoto, les défis des sumos (WD().sumo) : deux gros clients entrent lentement, s'installent pour toute la journée
   // et recommandent dès qu'ils sont servis (Joffray, 09/11/2026) ; il vient moins d'autres clients ces jours-là
   if(it&&WD().sumo&&WD().sumo[d]){G.cfg={...G.cfg,c:Math.round(G.cfg.c*.6)};G.sumo=1;
-    for(const id of WD().sumo[d]){const sp=freeSpot(),pat=G.cfg.pat*patMult()*1.3;G.cust.push({id:++uid,fox:id,spot:sp,order:sumoOrder(),pat,patMax:pat,state:"walkin",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:""});S.seen[id]=(S.seen[id]||0)+1}}
+    // (20/11/2026, Joffray) une petite scène d'abord (sumoIntro), pendant laquelle ils attendent dehors (« door ») ; puis ils entrent
+    // seuls jusqu'aux deux places du milieu (1 et 2, sur la grille de quatre places : SPOTX[4]) ; les autres clients attendent qu'ils soient assis
+    G.sumoWait=1;
+    WD().sumo[d].forEach((id,i)=>{const sp=i+1,pat=G.cfg.pat*patMult()*1.3;G.cust.push({id:++uid,fox:id,spot:sp,order:sumoOrder(),pat,patMax:pat,state:"door",walk:WALK*2.4,qp:pat,born:0,stay:1,slow:1,vip:false,costume:""});S.seen[id]=(S.seen[id]||0)+1});setTimeout(sumoIntro,0)}
   // à Paris, les jours de défi : le score de Firmin, à battre (paris.js)
   if(it&&WD().duel&&WD().duel[d])G.duel=WD().duelScore(d);
   // au premier café, les défis du Concours de la vallée (saisons.js)
@@ -31,8 +34,14 @@ function newDay(d){
   // en Petite Italie, tarentelle et polka une journée sur deux (Joffray, 04/11/2026) ; au premier café, Coup de feu et Rush du goûter (18/11/2026)
   const bn=BOOSTS.filter(b=>bo[b.id]).map(b=>b.name);if(bn.length){save();toast(`Bonus actif${bn.length>1?"s":""} : ${bn.join(", ")}`)}
   // au premier vrai service (après la leçon), le compagnon se présente : la partie attend la fin du dialogue (buddyIntro)
-  setTimeout(buddyIntro,0)}
+  setTimeout(()=>{if(!G||!G.sumoWait)buddyIntro()},0)}
 // 17/11/2026, Joffray : « qu'il explique que c'est super important, que ça change la manière de jouer » ; une seule fois par partie
+// la petite scène d'un jour de défi des sumos (20/11/2026, Joffray : « savoir que c'est bien une journée de sumo ») ; les répliques
+// sont dans WD().sumoTalk (kyoto.js) ; le bot d'équilibrage remet G.sumoWait à 0 lui-même
+function sumoIntro(){
+  if(!G||!G.sumoWait)return;const L=WD().sumoTalk&&WD().sumoTalk[G.day];
+  if(!L){G.sumoWait=0;return}
+  G.paused=1;bip("stomp");quake();itTalk(L,()=>{if(G){G.sumoWait=0;G.paused=0;dirty=true}})}
 function buddyIntro(){
   if(!G||G.tuto||G.night||G.noel||S.buddyIntro)return;S.buddyIntro=1;save();G.paused=1;const b=buddy();
   itTalk([[b,"joy",`Coucou ${ME()} ! C'est moi, ton compagnon. Pendant le service, je reste juste à côté du comptoir.`],
@@ -44,7 +53,10 @@ function newNight(n){const N=NIGHTS[n-1];newDay(N.base);G.rng=rng(N.base*7919+N.
 // Un client vit ainsi : file d'attente à la porte (queue), il entre en trottinant (walkin), attend sa commande (wait),
 // reste un instant content ou fâché (happy, angry), puis repart en marchant (walkout). Sa patience ne baisse qu'en « wait ».
 const WALK=1.6,QMAX=3;
-function freeSpot(){const n=spotsN(),used=new Set(G.cust.filter(c=>c.spot>=0&&c.state!=="walkout").map(c=>c.spot));for(let i=0;i<n;i++)if(!used.has(i))return i;return -1}
+// les jours de défi des sumos, ils prennent les deux places du milieu : les autres clients ont celles des bords
+// (autant de places libres qu'avant : 1 avec trois places au comptoir, 2 avec quatre)
+const spotIds=()=>G&&G.sumo?(spotsN()>=4?[0,3]:[0]):[...Array(spotsN()).keys()];
+function freeSpot(){const used=new Set(G.cust.filter(c=>c.spot>=0&&c.state!=="walkout").map(c=>c.spot));for(const i of spotIds())if(!used.has(i))return i;return -1}
 function genOrder(){
   const un=Object.keys(REC).filter(k=>onMenu(k)),m=G.cfg.max,r=G.rng();
   const n=m===1?1:m===2?(r<.6?1:2):(r<.42?1:r<.78?2:3);
@@ -81,7 +93,10 @@ function spawn(){
 }
 function update(dt){
   G.t+=dt;if(G.rush)rushTick(); // le Grand rush (infini.js) : la difficulté monte avec le temps
-  if(G.spawned<G.cfg.c&&G.t>=G.next){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
+  // jour de sumos : ils entrent après la petite scène, et personne d'autre tant qu'ils ne sont pas assis
+  if(G.sumo&&!G.sumoWait)for(const c of G.cust)if(c.state==="door"){c.state="walkin";dirty=true}
+  const sumoIn=G.sumo&&G.cust.some(c=>c.stay&&(c.state==="door"||c.state==="walkin"));if(sumoIn)G.next=Math.max(G.next,G.t+.6);
+  if(G.spawned<G.cfg.c&&G.t>=G.next&&!sumoIn){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
   for(const c of G.cust){
     // un sumo qui marche : boum à chaque pas, et la salle tremble
     if(c.slow&&(c.state==="walkin"||c.state==="walkout")){c.stepT=(c.stepT||0)-dt;if(c.stepT<=0){c.stepT=.62;bip("stomp");quake()}}
