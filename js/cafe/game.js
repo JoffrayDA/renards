@@ -80,19 +80,19 @@ function spawn(){
   G.spawned++;dirty=true;return true;
 }
 function update(dt){
-  G.t+=dt;
+  G.t+=dt;if(G.rush)rushTick(); // le Grand rush (infini.js) : la difficulté monte avec le temps
   if(G.spawned<G.cfg.c&&G.t>=G.next){if(spawn())G.next=G.t+G.cfg.gap*(.7+G.rng()*.6);else G.next=G.t+.5}
   for(const c of G.cust){
     // un sumo qui marche : boum à chaque pas, et la salle tremble
     if(c.slow&&(c.state==="walkin"||c.state==="walkout")){c.stepT=(c.stepT||0)-dt;if(c.stepT<=0){c.stepT=.62;bip("stomp");quake()}}
     if(c.state==="wait"){c.pat-=dt;if(c.pat<=0&&c.stay){G.lost++;G.combo=0;bip("angry");floatAt(custEl(c),"Grrr !");c.order=sumoOrder();c.pat=c.patMax;c.low=0;dirty=true}
-      else if(c.pat<=0){c.state="angry";c.leave=.9;G.lost++;G.combo=0;dirty=true;bip("angry")}
+      else if(c.pat<=0){c.state="angry";c.leave=1.3;c.lostIt=1;G.lost++;G.combo=0;dirty=true;bip("angry");setTimeout(()=>{const e=custEl(c);if(e)floatAt(e,"Hmpf !")},60)}
       else if(c.pat/c.patMax<.3&&!c.low){c.low=1;dirty=true}}
-    else if(c.state==="queue"){c.qp-=dt;if(c.qp<=0){c.state="angry";c.leave=.9;c.gave=1;G.lost++;G.combo=0;dirty=true;bip("angry")}}
+    else if(c.state==="queue"){c.qp-=dt;if(c.qp<=0){c.state="angry";c.leave=.9;c.gave=1;c.lostIt=1;G.lost++;G.combo=0;dirty=true;bip("angry")}}
     else if(c.state==="walkin"){c.walk-=dt;if(c.walk<=0){c.state="wait";c.born=G.t;dirty=true}}
     else if(c.state==="walkout"){c.walk-=dt;if(c.walk<=0){c.gone=1;dirty=true}}
     else if(c.stay&&c.state==="happy"){c.leave-=dt;if(c.leave<=0){c.state="wait";c.order=sumoOrder();c.pat=c.patMax;c.low=0;c.born=G.t;dirty=true}}
-    else{c.leave-=dt;if(c.leave<=0){if(c.gave)c.gone=1;else{c.state="walkout";c.walk=WALK};dirty=true}}
+    else{c.leave-=dt;if(c.leave<=0){if(c.gave)c.gone=1;else{c.state="walkout";c.walk=c.lostIt?1:WALK};dirty=true}}
   }
   G.cust=G.cust.filter(c=>!c.gone);
   // une place se libère : le premier de la file entre

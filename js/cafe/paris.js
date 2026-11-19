@@ -1,5 +1,5 @@
 /* Café Frimousse : Paris, deuxième quartier de la Ville (04/11/2026, maquette validée par Joffray : tools/paris.html,
-   renards sur tools/parisiens.html). 20 journées, comme la Petite Italie, avec son café, le Café Frimousse, et son équipement
+   renards sur tools/parisiens.html). 30 journées (20 avant le 19/11/2026), comme la Petite Italie, avec son café, le Café Frimousse, et son équipement
    (S.pa.own, même prix que l'Italie) ; les pièces, les quêtes, les bonus et le style restent communs.
    Mêmes clés de recettes, prix et cuissons : seuls le nom et le dessin changent (VAR.paris, ICON["clé@paris"]) :
    petit noir (+ Crème = café crème), pain au chocolat (le croissant reste celui du premier café, Joffray), diabolo grenadine,
@@ -7,7 +7,7 @@
    macarons dans l'ordre du client, de gauche à droite), éclair, chantilly.
    Histoire (choix de Joffray) : le grand concours du pain au chocolat. Anatole, le garçon de café, accompagne tout du long,
    comme Lorenzo ; Firmin, le boulanger d'en face, est le rival : aux jours de défi (PA_DUEL), il annonce son score, et le battre
-   donne une scène et un cadeau ; à la finale (jour 20), Céleste, la Diva de l'Opéra, goûte les deux pains au chocolat.
+   donne une scène et un cadeau ; à la finale (jour 30, 20 avant le 19/11/2026), Céleste, la Diva de l'Opéra, goûte les deux pains au chocolat.
    On y entre par le panneau à droite du Caffè, en haut de la carte de la Petite Italie, une fois ses 20 journées réussies
    (?paris=1 pour tester). Sauvegarde : S.pa = {day, stars, best, own, intro, guest, read, duel, peace, gtip}. */
 
@@ -27,11 +27,13 @@ const PAF_REG=PAF.filter(f=>f.rar==="commun");
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde (plus dur que l'Italie : le jour 1 se joue comme le jour 18), graine et objectif par
 // `python tools/balance-bot.py --paris`
-const PA_DAYS=[{base:18,seed:7,goal:154},{base:19,seed:9,goal:173},{base:20,seed:2,goal:172},{base:21,seed:6,goal:197},{base:22,seed:7,goal:224},{base:23,seed:2,goal:230},{base:24,seed:7,goal:259},{base:25,seed:12,goal:278},{base:26,seed:5,goal:308},{base:27,seed:6,goal:323},{base:28,seed:14,goal:339},{base:29,seed:15,goal:358},{base:30,seed:13,goal:381},{base:31,seed:13,goal:402},{base:32,seed:7,goal:433},{base:33,seed:15,goal:462},{base:34,seed:9,goal:450},{base:36,seed:13,goal:463},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
-const PA_S3=[2.2,2.02,2.25,2.09,2.39,2.0,2.08,2.21,1.86,1.98,1.96,2.09,1.95,2.12,1.81,1.97,1.87,1.91,1.75,1.82];
+const PA_DAYS=[{base:18,seed:7,goal:154},{base:19,seed:14,goal:152},{base:20,seed:3,goal:169},{base:21,seed:11,goal:183},{base:22,seed:8,goal:201},{base:23,seed:0,goal:213},{base:24,seed:14,goal:226},{base:25,seed:6,goal:244},{base:26,seed:11,goal:253},{base:27,seed:0,goal:267},{base:28,seed:2,goal:272},{base:29,seed:0,goal:285},{base:30,seed:13,goal:312},{base:31,seed:14,goal:324},{base:32,seed:14,goal:352},{base:33,seed:8,goal:368},{base:34,seed:4,goal:376},{base:35,seed:11,goal:407},{base:36,seed:4,goal:422},{base:37,seed:10,goal:430},{base:38,seed:5,goal:442},{base:39,seed:11,goal:456},{base:40,seed:14,goal:456},{base:40,hard:1.03,seed:4,goal:476},{base:40,hard:1.06,seed:1,goal:488},{base:40,hard:1.09,seed:9,goal:499},{base:40,hard:1.12,seed:12,goal:511},{base:40,hard:1.15,seed:12,goal:532},{base:40,hard:1.18,seed:10,goal:534},{base:40,hard:1.21,seed:4,goal:539}];
+const PA_S3=[2.2,2.38,2.32,2.42,2.49,2.22,2.05,2.32,2.25,2.26,1.96,2.0,1.9,2.19,1.98,1.85,1.84,2.29,1.85,1.85,1.75,1.75,1.82,1.76,1.89,2.15,1.7,1.7,1.77,1.8];
 const PA_KIT=IT_KIT;
 // jours de défi de Firmin (le 20 est la finale du concours)
-const PA_DUEL={5:1,10:1,15:1,20:1};
+const PA_DUEL={5:1,10:1,15:1,20:1,25:1,30:1};
+// la finale, jugée par Céleste (jour 20 avant le 19/11/2026)
+const PA_FIN=30;
 S.pa=S.pa||{day:1,stars:{},best:{},own:{},intro:0,guest:0,read:{},duel:{}};
 S.pa.read=S.pa.read||{};S.pa.duel=S.pa.duel||{};
 if(new URLSearchParams(location.search).get("paris")==="1"){S.paOpen=1;save()} // pour tester sans avoir fini la Petite Italie
@@ -108,9 +110,13 @@ function outsidePa(){
 // la rue (jours 1-5), la Seine et Notre-Dame (entre 5 et 6), le Champ-de-Mars et la tour Eiffel (7-12), Montmartre (13-18), le café (19-20)
 const PA_X=[200,120,110,200,290,300,210,110,100,150,110,190,280,300,230,290,300,220,130,200];
 function paLayout(){
-  const P=[];for(let d=1;d<=PA_DAYS.length;d++)P[d]={d,x:PA_X[d-1],u:230+(d-1)*96};
-  const top=P[PA_DAYS.length].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
-  return {P,way,H,guest:{x:322,u:P[PA_DAYS.length].u+14},ana:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},seine:(P[5].u+P[6].u)/2};
+  // 30 journées (19/11/2026) : 80 entre deux étapes ; la carte, dessinée pour 20 journées à 96, s'étire d'autant :
+  // V(j) = où était le jour j (même à virgule), Z(u) = une hauteur de l'ancienne carte ; le tracé suit l'ancien (PA_X)
+  const N=PA_DAYS.length,k=(N-1)*80/(19*96),Z=u=>Math.round(230+(u-230)*k),V=j=>Z(230+(j-1)*96);
+  const ox=f=>{const i=Math.max(0,Math.min(18,Math.floor(f))),t=Math.max(0,Math.min(1,f-i));return Math.round(PA_X[i]+(PA_X[i+1]-PA_X[i])*t)};
+  const P=[];for(let d=1;d<=N;d++)P[d]={d,x:ox((d-1)*80/k/96),u:230+(d-1)*80};
+  const top=P[N].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
+  return {P,way,H,k,Z,V,guest:{x:322,u:P[N].u+14},ana:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},seine:V(5.5)};
 }
 /* les dessins de la carte, refaits le 04/11/2026 (Joffray : « la map est ignoble » à côté de la Clairière) : dégradés, volumes,
    ombres douces, détails ; chaque monument une seule fois. Les dégradés sont dans les defs de paMapSVG (ids "pa-…"). */
@@ -317,8 +323,8 @@ const paBakeryAt=(x,y)=>{const L=x-42,R=x+42;let g=shadow(x,y,50);
   return g};
 function paArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#a9b6c6" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Paris</text>`}
 function paMapSVG(L){
-  const {P,way,H,cafe}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
-  const u7=P[7].u,u12=P[12].u,u13=P[13].u,u18=P[18].u;
+  const {P,way,H,cafe,Z,V}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
+  const u7=V(7),u12=V(12),u13=V(13),u18=V(18);
   const defs=PA_DEFS+`<pattern id="pa-pave" width="44" height="30" patternUnits="userSpaceOnUse"><g fill="none" stroke="#dccfbd" stroke-width="2"><rect x="2" y="2" width="18" height="11" rx="5"/><rect x="24" y="2" width="18" height="11" rx="5"/><rect x="-9" y="17" width="18" height="11" rx="5"/><rect x="13" y="17" width="18" height="11" rx="5"/><rect x="35" y="17" width="18" height="11" rx="5"/></g></pattern>
     <linearGradient id="pa-gnd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}"><stop offset="0" stop-color="#efe3d0"/><stop offset=".5" stop-color="#f2e8da"/><stop offset="1" stop-color="#ece2d4"/></linearGradient>
     <linearGradient id="pa-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4b9c4"/><stop offset=".55" stop-color="#fad8cc"/><stop offset="1" stop-color="#fdeee0"/></linearGradient>
@@ -354,8 +360,8 @@ function paMapSVG(L){
   // ce qui est posé, chaque chose une fois
   const it=[];const at=(x,u,f)=>it.push({x,u,f});
   // la rue : immeubles des deux côtés, métro, colonne Morris, terrasse, lampadaires, platanes
-  [[0,150,62,100,"#c0485a"],[338,180,66,92,"#5f7fb0"],[0,370,58,84,"#d98a6a"],[340,420,64,88,"#3f7a5a"],[0,520,56,64,"#5f7fb0"]].forEach(([x,u,w,h,c])=>at(x+w/2,u,(cx,y)=>paHaus(x,y-h,w,h,c)));
-  at(300,282,paMetro);at(286,440,paMorris);at(252,190,paLamp);at(168,566,paLamp);at(300,522,paTable);at(40,248,(x,y)=>paTree(x,y,.95));at(372,330,(x,y)=>paTree(x,y,.85));
+  [[0,150,62,100,"#c0485a"],[338,180,66,92,"#5f7fb0"],[0,370,58,84,"#d98a6a"],[340,420,64,88,"#3f7a5a"],[0,520,56,64,"#5f7fb0"]].forEach(([x,u,w,h,c])=>at(x+w/2,Z(u),(cx,y)=>paHaus(x,y-h,w,h,c)));
+  at(300,Z(282),paMetro);at(286,Z(440),paMorris);at(252,Z(190),paLamp);at(168,Z(566),paLamp);at(300,Z(522),paTable);at(40,Z(248),(x,y)=>paTree(x,y,.95));at(372,Z(330),(x,y)=>paTree(x,y,.85));
   // les quais : bouquinistes, un platane
   at(36,L.seine-60,(x,y)=>paBouq(x-17,y));at(84,L.seine-60,(x,y)=>paBouq(x-17,y));at(132,L.seine-60,(x,y)=>paBouq(x-17,y));at(380,L.seine-64,(x,y)=>paTree(x,y,.75));
   // le Champ-de-Mars : la tour, des platanes, un banc, un lampadaire
@@ -374,7 +380,7 @@ function paMapSVG(L){
   at(290,u18+60,paWallace);at(66,u18+238,paFlowers);at(358,u12+6,paCarousel);at(250,u18+150,(x,y)=>paTree(x,y,.8,"pa-leaf2"));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=paArchSVG(200,Y(60))+paCafeSVG(cafe.x,Y(cafe.u));
-  // le panneau vers Kyoto (kyoto.js), au-dessus du café à droite, une fois les 20 journées réussies
+  // le panneau vers Kyoto (kyoto.js), au-dessus du café à droite, une fois les 30 journées réussies
   if(typeof kyOpen==="function"&&kyOpen()){const px=cafe.x+128,py=Y(cafe.u+136);s+=`<rect x="${px-4}" y="${py-6}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${px-44} ${py-30} H${px+34} L${px+46} ${py-18} L${px+34} ${py-6} H${px-44}Z" fill="#fffaf2" ${BO}/><text x="${px}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">Kyoto</text>`}
   s+=`<rect width="400" height="${H}" fill="url(#pa-vig)" pointer-events="none"/>`;
   return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
@@ -389,25 +395,30 @@ const PA_SCENES={
      ["anatole","open","Musette joue de l'accordéon sur les marches de Montmartre. Si tu l'entends, c'est que le quartier est de bonne humeur."]],
   3:[["leon","open","Une chocolatine, s'il vous plaît."],["firmin","surprise","(de l'autre côté de la rue) PAIN AU CHOCOLAT !"],
      ["anatole","shy","Ici, on comprend les deux. Et on sert les deux."]],
-  4:[["leon","shy","Une madeleine… Elle me rappelle un livre très, très long. Je ne l'ai jamais fini."],
+  6:[["leon","shy","Une madeleine… Elle me rappelle un livre très, très long. Je ne l'ai jamais fini."],
      ["anatole","joy","Léon tient une boîte de bouquiniste sur les quais. Il lit même en marchant."]],
   5:[["firmin","surprise","Quoi ?! Plus de pièces que moi ?"],["firmin","open","C'était un échauffement. Au prochain défi, je sors le grand jeu."],
      ["anatole","joy","Premier défi gagné ! Regarde sa tête…"]],
-  6:[["bobine","joy","Clic ! Ton café liégeois est trop photogénique."],["anatole","open","Bobine prend tout le quartier en photo. Son album est plus gros que lui."]],
-  7:[["anatole","surprise","Tu as vu le monsieur en lunettes noires, derrière son journal ?"],["firmin","shy","Je… lis le journal. À l'envers. C'est la mode."],
+  8:[["bobine","joy","Clic ! Ton café liégeois est trop photogénique."],["anatole","open","Bobine prend tout le quartier en photo. Son album est plus gros que lui."]],
+  9:[["anatole","surprise","Tu as vu le monsieur en lunettes noires, derrière son journal ?"],["firmin","shy","Je… lis le journal. À l'envers. C'est la mode."],
      ["anatole","joy","Il espionne ! C'est bon signe : il a peur."]],
-  9:[["anatole","joy","Les macarons ! Chaque client veut sa boîte dans son ordre à lui : framboise, violette, caramel…"],
+  13:[["anatole","joy","Les macarons ! Chaque client veut sa boîte dans son ordre à lui : framboise, violette, caramel…"],
      ["anatole","open","On les pose de gauche à droite. Raté ? Touche la boîte pour la vider, et recommence."]],
   10:[["firmin","sad","Deux fois. Deux fois de suite."],["musette","joy","Alors Firmin, on joue un petit air pour te consoler ?"],
       ["firmin","open","… Un petit, alors."]],
-  11:[["anatole","joy","La chantilly ! Sur un café liégeois, ou sur un éclair."],["bobine","joy","Clic ! Celle-là, je l'encadre."]],
-  12:[["bobine","open","J'ai pris ta vitrine en photo. Elle fait la une de mon album !"],["firmin","sad","Et la mienne ? Elle n'a pas de photo, la mienne ?"]],
-  13:[["firmin","shy","Un éclair… pas mal. Le mien a plus de chocolat."],["anatole","joy","Il vient d'en acheter trois. Pour « étudier la concurrence »."]],
+  16:[["anatole","joy","La chantilly ! Sur un café liégeois, ou sur un éclair."],["bobine","joy","Clic ! Celle-là, je l'encadre."]],
+  17:[["bobine","open","J'ai pris ta vitrine en photo. Elle fait la une de mon album !"],["firmin","sad","Et la mienne ? Elle n'a pas de photo, la mienne ?"]],
+  18:[["firmin","shy","Un éclair… pas mal. Le mien a plus de chocolat."],["anatole","joy","Il vient d'en acheter trois. Pour « étudier la concurrence »."]],
   15:[["firmin","open","Bon. D'accord. Tu as du talent. Beaucoup."],["firmin","surprise","Mais la finale, c'est autre chose. Céleste en personne goûtera nos deux pains au chocolat !"],
       ["anatole","surprise","La Diva de l'Opéra… Elle ne vient que dans les cafés parfaits."]],
-  17:[["leon","open","J'ai trouvé un vieux programme de l'Opéra sur les quais. Céleste y chante depuis des années."],
+  22:[["leon","open","J'ai trouvé un vieux programme de l'Opéra sur les quais. Céleste y chante depuis des années."],
       ["leon","shy","On dit qu'elle reconnaît un bon pain au chocolat à son bruit, quand on le croque."]],
-  20:[["anatole","surprise","C'est le jour de la finale ! Céleste est là !"],
+  20:[["firmin","surprise","Encore battu ?! J'avais mis double beurre !"],
+      ["anatole","joy","Le beurre ne remplace pas le sourire, Firmin."],["firmin","shy","… Je note. Dans mon petit carnet."]],
+  25:[["firmin","open","Dernier défi avant la finale. J'ai répété toute la nuit."],["firmin","sad","Et toujours pas assez. Comment tu fais ?"],
+      ["musette","joy",`${ME()} sert avec le cœur ! Ça s'entend jusqu'à Montmartre.`],
+      ["anatole","surprise","La finale, c'est au jour 30. Céleste a confirmé !"]],
+  30:[["anatole","surprise","C'est le jour de la finale ! Céleste est là !"],
       ["celeste","open","Deux pains au chocolat. Un seul gagnant."],
       ["celeste","joy","Celui du Café Frimousse. Croustillant, fondant, et servi avec le sourire."],
       ["firmin","sad","…"],["firmin","shy","Il est meilleur que le mien. Bravo. Vraiment."],
@@ -427,14 +438,14 @@ function anatoleIntro(){
 // à la fin d'une journée, la scène gagnée se joue tout de suite (avant l'écran de résultats) ; sur la carte, celles restées en attente
 function paScenes(done){
   const d=Object.keys(PA_SCENES).map(Number).find(paSceneDue);
-  if(d){itTalk(PA_SCENES[d],()=>{S.pa.read[d]=1;if(d===20&&!S.pa.peace){S.pa.peace=1;toast("Firmin viendra maintenant au café.")}save();paScenes(done)});return}
+  if(d){itTalk(PA_SCENES[d],()=>{S.pa.read[d]=1;if(d===PA_FIN&&!S.pa.peace){S.pa.peace=1;toast("Firmin viendra maintenant au café.")}save();paScenes(done)});return}
   done();
 }
 function paStory(){paScenes(()=>{renderMapIt();dailyBonus()})}
 function paCarnet(){
   const rows=Object.keys(PA_SCENES).map(Number).map(d=>S.pa.read[d]
-    ?`<div data-pascene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[PA_SCENES[d][0][0]],{pose:"happy"}),PA_DUEL[d]?(d===20?"La finale":`Défi du jour ${d}`):`Jour ${d}`,PA_SCENES[d][0][2],"background:#fbf3dc")}</div>`
-    :`<div style="opacity:.55">${itRow(foxSVG(FOX.anatole,{sil:1}),PA_DUEL[d]?(d===20?"La finale":`Défi du jour ${d}`):"Scène à découvrir",PA_DUEL[d]?`Bats Firmin au jour ${d}.`:`Réussis le jour ${d} du quartier.`)}</div>`).join("");
+    ?`<div data-pascene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[PA_SCENES[d][0][0]],{pose:"happy"}),PA_DUEL[d]?(d===PA_FIN?"La finale":`Défi du jour ${d}`):`Jour ${d}`,PA_SCENES[d][0][2],"background:#fbf3dc")}</div>`
+    :`<div style="opacity:.55">${itRow(foxSVG(FOX.anatole,{sil:1}),PA_DUEL[d]?(d===PA_FIN?"La finale":`Défi du jour ${d}`):"Scène à découvrir",PA_DUEL[d]?`Bats Firmin au jour ${d}.`:`Réussis le jour ${d} du quartier.`)}</div>`).join("");
   openSheet(`<h2>Le journal du concours</h2><div style="width:120px;margin:0 auto">${foxSVG(FOX.anatole,{pose:"happy"})}</div>
   <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis l'ouverture du Café Frimousse. Touche une scène pour la revoir.</p>${rows}
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="anatoleintro" type="button">Revoir l'accueil d'Anatole</button></div>`);
@@ -445,7 +456,7 @@ function paFinaleSheet(){
   const n=Object.keys(PA_DUEL).filter(d=>S.pa.duel[d]).length,f=FOX.firmin;
   openSheet(`<h2>${f.name}, le rival</h2><div style="width:140px;margin:0 auto">${foxSVG(f,{pose:S.pa.peace?"happy":"sit"})}</div>
   <p class="sub" style="text-align:center">${S.pa.peace?"Depuis la finale, il vient prendre son petit noir au Café Frimousse tous les matins.":`« Le meilleur pain au chocolat de Paris, c'est le mien. » Les jours de défi (${Object.keys(PA_DUEL).join(", ")}), il annonce son score : fais mieux que lui.`}</p>
-  ${Object.keys(PA_DUEL).map(Number).map(d=>itRow(icon("croissant","paris"),d===20?"La finale (jour 20)":`Défi du jour ${d}`,S.pa.duel[d]?`Gagné ! Ton record : ${S.pa.best[d]} pièces, Firmin : ${duelScore(d)}.`:`Firmin a fait ${duelScore(d)} pièces.${S.pa.best[d]?` Ton record : ${S.pa.best[d]}.`:""}`,S.pa.duel[d]?"background:#e3f2d6":"")).join("")}`);
+  ${Object.keys(PA_DUEL).map(Number).map(d=>itRow(icon("croissant","paris"),d===PA_FIN?`La finale (jour ${PA_FIN})`:`Défi du jour ${d}`,S.pa.duel[d]?`Gagné ! Ton record : ${S.pa.best[d]} pièces, Firmin : ${duelScore(d)}.`:`Firmin a fait ${duelScore(d)} pièces.${S.pa.best[d]?` Ton record : ${S.pa.best[d]}.`:""}`,S.pa.duel[d]?"background:#e3f2d6":"")).join("")}`);
 }
 
 /* ---------- le quartier dans le registre des mondes (data.js) ---------- */
@@ -460,9 +471,9 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Frimousse",short:"Café",sv:()
   reg:()=>[...PAF_REG,...PAF_REG,...PAF_REG,...(S.pa.peace?[FOX.firmin]:[])],
   music:d=>d%2?"galop":"swing", // le galop et le swing manouche, une journée sur deux (18/11/2026, Joffray : « une, ce n'est pas assez »)
   mapMusic:"quais", // la promenade sur les quais (choix de Joffray parmi six ; la musette en mineur « faisait Halloween »)
-  isOpen:()=>paOpen(),lockMsg:"Réussis les 20 journées de la Petite Italie pour ouvrir Paris.",
+  isOpen:()=>paOpen(),lockMsg:`Réussis les ${IT_LAST} journées de la Petite Italie pour ouvrir Paris.`,
   layout:()=>paLayout(),mapSVG:L=>paMapSVG(L),outside:()=>outsidePa(),
-  duel:PA_DUEL,duelScore:d=>duelScore(d),duelRow:d=>itRow(icon("croissant","paris"),d===20?"La finale du concours !":"Jour de défi !",`Firmin a fait <b>${duelScore(d)} pièces</b>. Fais mieux que lui${S.pa.duel[d]?" (déjà battu)":""}.`,"background:#fde8ec"),
+  duel:PA_DUEL,duelScore:d=>duelScore(d),duelRow:d=>itRow(icon("croissant","paris"),d===PA_FIN?"La finale du concours !":"Jour de défi !",`Firmin a fait <b>${duelScore(d)} pièces</b>. Fais mieux que lui${S.pa.duel[d]?" (déjà battu)":""}.`,"background:#fde8ec"),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.ana.x,L.ana.u)}" data-act="anatole" type="button" aria-label="Anatole">${foxSVG(FOX.anatole,{pose:"happy"})}<em>Anatole</em></button>`
     +`<button class="mguest${S.pa.peace?" ok":""}" style="${pc(L.cafe.x+142,L.cafe.u-36)}" data-act="finale" type="button" aria-label="Firmin">${foxSVG(FOX.firmin,{pose:S.pa.peace?"happy":"sit"})}<em>Firmin</em></button>`
     +`<button class="mnext" style="${pc(200,52)}" data-act="italie" type="button" aria-label="Retour en Petite Italie"></button>`
@@ -471,7 +482,7 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Frimousse",short:"Café",sv:()
   scenes:done=>paScenes(done),
   news:(d,st,prev,news,e)=>{
     if(PA_DUEL[d]&&st){const f=duelScore(d);
-      if(e>=f&&!S.pa.duel[d]){S.pa.duel[d]=1;S.coins+=40;news.push(itRow(foxSVG(FOX.firmin,{pose:"sit"}),d===20?"Tu as gagné la finale !":"Tu as battu Firmin !",`${e} pièces contre ${f}. +40 pièces !`,"background:#fde8ec"))}
+      if(e>=f&&!S.pa.duel[d]){S.pa.duel[d]=1;S.coins+=40;news.push(itRow(foxSVG(FOX.firmin,{pose:"sit"}),d===PA_FIN?"Tu as gagné la finale !":"Tu as battu Firmin !",`${e} pièces contre ${f}. +40 pièces !`,"background:#fde8ec"))}
       else if(!S.pa.duel[d])news.push(itRow(foxSVG(FOX.firmin,{pose:"happy"}),"Firmin a gagné ce défi…",`Il a fait ${f} pièces, toi ${e}. Rejoue cette journée pour le battre.`,"background:#fde8ec"))}
 }
 };

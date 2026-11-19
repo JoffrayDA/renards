@@ -1,5 +1,5 @@
 /* Café Frimousse : la Petite Italie, Monde 2 (03/11/2026, maquette validée par Joffray : tools/italie.html).
-   20 journées (Joffray : « avec autant de produits, on peut faire 20 niveaux »), un nouveau café, le Caffè Frimousse, avec son propre
+   30 journées (20 au départ, Joffray : « avec autant de produits, on peut faire 20 niveaux » ; 30 depuis le 19/11/2026), un nouveau café, le Caffè Frimousse, avec son propre
    équipement (S.it.own, prix ×IT_PRICE) ; les pièces, les quêtes, les bonus et le style restent communs. Les gestes ne changent pas :
    mêmes clés de recettes, mêmes prix et cuissons, seuls le nom et le dessin changent (VAR.italie, ICON["clé@italie"]).
    Chaque journée reprend le rythme d'un jour de référence du premier monde (base), avec sa graine et son objectif calculés par
@@ -14,7 +14,7 @@ const ITF=[
   {id:"ricotta",name:"Ricotta",rar:"commun",acc:"tablier",c:{b:"#fbf4ea",ch:"#ffffff",e:"#d8b8a8",s:"#c9a896",t:"#ffffff"},bio:"Toute ronde, toute blanche. Pétrit la pâte à cornetti avant l'aube."},
   {id:"tito",name:"Tito",rar:"commun",acc:"paille",scale:.8,c:{b:"#c98552",ch:"#fff3e2",e:"#7a4a2c",s:"#6a3c26",t:"#fff3e2"},bio:"Le plus petit du quartier. Pêche des pièces au fond de la fontaine."},
   {id:"donnalimone",name:"Donna Limone",rar:"legend",acc:"citrons",c:{b:"#f7d46a",ch:"#fffbe8",e:"#c99a3a",s:"#b88a2a",t:"#fffbe8"},bio:"L'invitée d'honneur du quartier. Ses citronniers donnent la meilleure granita du monde."},
-  // le grand-père de Lorenzo (histoire du carnet, choix de Joffray) : ne vient au Caffè qu'après le jour 20 (S.it.nonno)
+  // le grand-père de Lorenzo (histoire du carnet, choix de Joffray) : ne vient au Caffè qu'après le jour 30 (S.it.nonno)
   {id:"nonno",name:"Nonno",rar:"rare",acc:"garcon",mark:"vieux",c:{b:"#d4a684",ch:"#fbf5ec",e:"#8a6a54",s:"#7d5e4a",t:"#fbf5ec"},bio:"Le grand-père de Lorenzo. Il tenait le Caffè Frimousse autrefois, et son carnet de recettes s'était envolé dans tout le quartier."}
 ];
 ITF.forEach(f=>{f.world="italie";FOX[f.id]=f});
@@ -22,14 +22,26 @@ const ITF_REG=ITF.filter(f=>f.rar==="commun");
 
 /* ---------- les journées ---------- */
 // rythme d'un jour de référence du premier monde (le jour 1 du quartier se joue déjà comme le jour 15), graine et objectif par --italie
-const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:10,goal:162},{base:17,seed:3,goal:173},{base:18,seed:14,goal:191},{base:19,seed:3,goal:211},{base:20,seed:3,goal:219},{base:21,seed:1,goal:242},{base:22,seed:11,goal:267},{base:23,seed:13,goal:277},{base:24,seed:7,goal:304},{base:25,seed:0,goal:319},{base:26,seed:10,goal:337},{base:27,seed:3,goal:357},{base:28,seed:13,goal:383},{base:30,seed:15,goal:414},{base:32,seed:7,goal:433},{base:34,seed:9,goal:450},{base:36,seed:1,goal:459},{base:38,seed:5,goal:442},{base:40,seed:14,goal:456}];
+const IT_DAYS=[{base:15,seed:6,goal:143},{base:16,seed:12,goal:151},{base:17,seed:0,goal:167},{base:18,seed:8,goal:186},{base:19,seed:5,goal:197},{base:20,seed:7,goal:208},{base:21,seed:10,goal:216},{base:22,seed:9,goal:226},{base:23,seed:13,goal:237},{base:24,seed:7,goal:259},{base:25,seed:5,goal:274},{base:26,seed:15,goal:298},{base:27,seed:4,goal:302},{base:28,seed:12,goal:321},{base:29,seed:1,goal:329},{base:30,seed:11,goal:341},{base:31,seed:0,goal:365},{base:32,seed:14,goal:382},{base:33,seed:4,goal:423},{base:34,seed:9,goal:434},{base:35,seed:6,goal:457},{base:36,seed:1,goal:459},{base:37,seed:2,goal:458},{base:38,seed:5,goal:442},{base:39,seed:5,goal:462},{base:40,seed:14,goal:456},{base:40,hard:1.04,seed:14,goal:476},{base:40,hard:1.08,seed:4,goal:489},{base:40,hard:1.12,seed:4,goal:507},{base:40,hard:1.16,seed:4,goal:513}];
 // ★★★ de chaque journée, en multiple de l'objectif (cuts dans data.js). Baissé le 04/11/2026 puis remis à 1,7 partout le même jour :
 // Joffray croyait avoir tout l'équipement, il lui manquait la déco. Le mécanisme reste pour régler une journée à part si besoin.
-const IT_S3=[2.06,2.11,2.6,1.95,1.94,1.98,1.92,2.43,2.03,1.98,2.11,2.04,1.85,1.87,1.84,1.81,1.87,1.89,1.75,1.82];
+const IT_S3=[2.06,2.27,2.52,2.44,2.34,2.4,2.15,2.28,2.37,2.08,2.3,2.3,2.05,1.97,1.85,1.85,1.84,1.85,1.85,1.94,1.88,1.89,1.93,1.75,1.75,1.82,1.81,1.76,1.76,1.76];
 const IT_LAST=IT_DAYS.length;
 // équipement prévu pour chaque journée du quartier (calibrage, et objectif relevé au-delà, comme KIT)
-const IT_KIT=[["plantes",1,1],["comptoir1",1,2],["double",1,2],["guirlande",1,3],["fourpro",1,3],["barista",1,4],["plateau",1,4],["comptoir1",2,6],["disque",1,6],["coussins",1,7],["machines",1,9],["plateau",2,10],["fauteuils",1,11],["four2",1,13],["lanternes",1,15]];
+const IT_KIT=[["plantes",1,1],["comptoir1",1,3],["double",1,3],["guirlande",1,4],["fourpro",1,4],["barista",1,5],["plateau",1,5],["comptoir1",2,8],["disque",1,8],["coussins",1,10],["machines",1,13],["plateau",2,14],["fauteuils",1,16],["four2",1,18],["lanternes",1,21]];
 S.it=S.it||{day:1,stars:{},best:{},own:{},intro:0,guest:0};
+// 30 journées par quartier (19/11/2026, Joffray : « 20 niveaux c'est pas assez ») : une partie qui avait fini un quartier
+// à 20 journées garde le suivant ouvert, et les pages de Nonno déjà lues suivent leur nouveau jour
+if(!S.v30){
+  if(S.it.day>20)S.paOpen=1;
+  if(S.pa&&S.pa.day>20)S.kyOpen=1;
+  const M={4:5,6:8,9:13,11:16,13:18,17:24},r=S.it.read;
+  if(r){const n={};for(const k in r)n[M[k]||k]=1;S.it.read=n}
+  const P={4:6,6:8,7:9,9:13,11:16,12:17,13:18,17:22},q=S.pa&&S.pa.read;
+  if(q){const n={};for(const k in q)n[P[k]||k]=1;S.pa.read=n}
+  // Kyoto : le soir du Matsuri passe du jour 25 au jour 30
+  const y=S.ky&&S.ky.read;if(y&&y[25]){delete y[25];y[30]=1}
+  S.v30=1;save()}
 // l'équipement du quartier coûtait ×1,3 avant le 04/11/2026 (inabordable) : on rembourse une fois la différence avec IT_PRICE
 if(!S.it.px){let back=0;for(const id in S.it.own){const u=ALLUP.find(x=>x.id===id);if(u)for(let i=0;i<S.it.own[id]&&i<u.lv.length;i++)back+=Math.round(u.lv[i].c*1.3/10)*10-Math.round(u.lv[i].c*IT_PRICE/10)*10}
   S.it.px=1;if(back>0){S.coins+=back;setTimeout(()=>toast(`Petite Italie : l'équipement est moins cher, +${back} pièces remboursées`),1200)}save()}
@@ -110,14 +122,16 @@ function outsideIt(){
   return {defs,st,an};
 }
 
-/* ---------- la carte du quartier : 20 journées, de l'arche d'entrée au Caffè Frimousse, la tour au milieu ---------- */
+/* ---------- la carte du quartier : 30 journées, de l'arche d'entrée au Caffè Frimousse, la tour au milieu ---------- */
 const ITW=400;
 let ITL=null;
 function itLayout(){
-  const P=[];for(let d=1;d<=IT_LAST;d++)P[d]={d,x:Math.round(200+112*Math.sin((d-1)*.82)),u:230+(d-1)*96};
+  // 30 journées (19/11/2026) : 80 entre deux étapes ; les dessins, placés pour 20 journées à 96, s'étirent d'autant (k, Z)
+  const k=(IT_LAST-1)*80/(19*96),Z=u=>Math.round(230+(u-230)*k);
+  const P=[];for(let d=1;d<=IT_LAST;d++)P[d]={d,x:Math.round(200+112*Math.sin((d-1)*.82/k*80/96)),u:230+(d-1)*80};
   const top=P[IT_LAST].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
-  const tu=(P[11].u+P[12].u)/2,tower={x:pathX(way,tu)<200?306:94,u:tu-40};
-  return {P,way,H,tower,guest:{x:P[IT_LAST].x>200?P[IT_LAST].x-122:P[IT_LAST].x+122,u:P[IT_LAST].u+14},lor:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190}};
+  const tu=Z(230+10.5*96),tower={x:pathX(way,tu)<200?306:94,u:tu-40};
+  return {P,way,H,tower,k,Z,guest:{x:P[IT_LAST].x>200?P[IT_LAST].x-122:P[IT_LAST].x+122,u:P[IT_LAST].u+14},lor:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190}};
 }
 /* les dessins de la carte : chacun posé une seule fois, à la main (Joffray, 03/11/2026 : « les mêmes éléments à chaque fois »,
    et pas de coupes entre les parties : le sol passe de la rue pavée au pré puis aux collines en dégradé) */
@@ -243,7 +257,7 @@ function itCafeSVG(x,y){
 function itArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#f7c99a" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Petite Italie</text>`}
 const IT_ROSE=`<radialGradient id="it-rose"><stop offset="0" stop-color="#ffe08a"/><stop offset=".4" stop-color="#f49ab0"/><stop offset=".8" stop-color="#7fa6dc"/><stop offset="1" stop-color="#5a6fae"/></radialGradient>`;
 function itMapSVG(L){
-  const {P,way,H,tower,cafe}=L,Y=u=>H-u,o=u=>((H-u)/H).toFixed(4),hz=Y(cafe.u)+34;
+  const {P,way,H,tower,cafe,Z}=L,Y=u=>H-u,o=u=>((H-Z(u))/H).toFixed(4),hz=Y(cafe.u)+34;
   // le sol, d'un seul tenant : pavés de la rue, la place, le pré de la tour, puis les champs dorés des collines
   let defs=`<linearGradient id="it-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9c9a8"/><stop offset=".55" stop-color="#fbe3c0"/><stop offset="1" stop-color="#fdf0d6"/></linearGradient>
     <radialGradient id="it-sun"><stop offset="0" stop-color="#fff2b8" stop-opacity=".9"/><stop offset="1" stop-color="#fff2b8" stop-opacity="0"/></radialGradient>
@@ -258,7 +272,7 @@ function itMapSVG(L){
   let s=`<rect width="400" height="${H}" fill="url(#it-gnd)"/>`+["pave","herbe","champ"].map(k=>`<rect width="400" height="${H}" fill="url(#it-${k})" mask="url(#it-m${k}x)"/>`).join("");
   s+=itSkySVG(H,hz);
   // le canal en travers de la rue, entre les jours 4 et 5, sa gondole
-  const cu=(P[4].u+P[5].u)/2,cy=Y(cu),bx=pathX(way,cu);
+  const cu=Z(230+3.5*96),cy=Y(cu),bx=pathX(way,cu);
   s+=`<path d="M0 ${cy-14} Q100 ${cy-22} 200 ${cy-12} T400 ${cy-16} V${cy+16} Q300 ${cy+24} 200 ${cy+12} T0 ${cy+16}Z" fill="#9fd3e8" ${BO}/><path d="M30 ${cy} q10 -4 20 0 M150 ${cy+4} q10 -4 20 0 M330 ${cy-2} q10 -4 20 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
   s+=`<g><animateTransform attributeName="transform" type="translate" values="0 0;${bx<200?30:-30} 0;0 0" dur="14s" repeatCount="indefinite"/>${itGondola(bx<200?280:124,cy+6)}</g>`;
   // le chemin pavé et la part déjà faite
@@ -267,10 +281,10 @@ function itMapSVG(L){
   const k=way.findIndex(p=>p.d===itCur());if(k>0)s+=`<path d="${smooth(pts.slice(0,k+1))}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   s+=`<path d="M${bx-30} ${cy-2} Q${bx} ${cy-26} ${bx+30} ${cy-2} V${cy+14} H${bx-30}Z" fill="#f2d9b8" ${BO}/><path d="M${bx-34} ${cy-6} Q${bx} ${cy-32} ${bx+34} ${cy-6}" fill="none" ${BO}/>`;
   // ce qui est posé, chaque chose une fois, de bas en haut : la rue, la place, le pré de la tour, la campagne, les collines
-  const it=[];const at=(x,u,f)=>it.push({x,u,f});
+  const it=[];const at=(x,u,f)=>it.push({x,u:u===tower.u?u:Z(u),f});
   // les maisons de la rue, au bord de la carte des deux côtés (enseignes : boulangerie, fleuriste, pizzeria, épicerie)
   const shops={1:["Forno","#f2c94c"],4:["Pizza","#f47f6a"],12:["Fiori","#f47f9a"],15:["Pasta","#7fb48a"]};
-  let n=0;for(let u=150;u<=900;u+=72)for(const side of [0,1]){if(Math.abs(u-cu)<52)continue;
+  let n=0;for(let u=150;u<=900;u+=72)for(const side of [0,1]){if(Math.abs(Z(u)-cu)<52)continue;
     const i=n++,w=56+(i*7)%12,h=66+(i*13)%28,x=side?352-(i%3)*3:-10+(i%3)*3;
     at(x+w/2,u,(cx,y)=>itH(x,y-h,w,h,IT_COL[i%IT_COL.length],{sh:IT_SH[i%IT_SH.length],shop:shops[i],balcony:i%4===2,v:i}))}
   at(264,150,itLemonPot);at(306,262,(x,y)=>itScooter(x,y,"#f9b8c6"));at(112,300,itTerrace);at(150,432,itStall);at(116,514,(x,y)=>itScooter(x,y,"#9fd8c4"));
@@ -301,6 +315,9 @@ function renderMapIt(){
     const badge=rk&&!V.own[rk]?`<span class="nb">${icon(rk,WORLD)}</span>`:Q.duel&&Q.duel[d]&&op&&!(V.duel||{})[d]?`<span class="nb">${icon("croissant",WORLD)}</span>`:Q.mark&&op&&Q.mark(d)?`<span class="nb">${Q.mark(d)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
     h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-itday="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
   }
+  // le Grand rush (infini.js) : le rond doré « ∞ » sur le chemin, entre le dernier jour et le café
+  {const ro=rushOpen(),R=rushRec(),ru=P[N].u+Math.round((L.cafe.u-P[N].u)*.45);
+    h+=`<button class="node rush${ro?"":" lock"}" style="${pc(200,ru)}" data-rush type="button" aria-label="Grand rush, niveau infini"><b>∞</b>${ro&&R.best?`<span class="rbest">${R.best}</span>`:""}</button>`}
   const ok=V.guest,dl=FOX[Q.guest];
   h+=`<button class="mguest${ok?" ok":""}" style="${pc(L.guest.x,L.guest.u)}" data-itguest type="button" aria-label="Invitée d'honneur">${foxSVG(dl,{pose:ok?"happy":"sit",sil:!ok})}<em>${ok?dl.name:`${itStarSum()}/${N*3} ★`}</em></button>`;
   h+=Q.mapExtra(L,pc);
@@ -352,7 +369,7 @@ function lorenzoIntro(){
 
 /* ---------- l'histoire : le carnet de Nonno (choix de Joffray parmi deux histoires, 03/11/2026) ----------
    Une page se retrouve à la première réussite de certaines journées (celles des nouvelles recettes, et quelques autres) ;
-   elle se lit en revenant sur la carte (S.it.read). Au jour 20, Nonno descend des collines goûter le tiramisù (S.it.nonno),
+   elle se lit en revenant sur la carte (S.it.read). Au jour 30 (20 avant le 19/11/2026), Nonno descend des collines goûter le tiramisù (S.it.nonno),
    puis vient au Caffè comme client. Toucher Lorenzo sur la carte ouvre le carnet. */
 const IT_PAGES={
   1:{q:"L'espresso, c'est vingt-cinq secondes. Pas vingt-quatre, pas vingt-six. Et on sourit en le servant.",lines:[
@@ -361,24 +378,24 @@ const IT_PAGES={
   2:{q:"Granita : les citrons de la petite D., du sucre et de la patience. On gratte toutes les demi-heures.",lines:[
     ["lorenzo","joy","Une page coincée dans le citronnier de la place ! La granita citron arrive au Caffè !"],["page","",""],
     ["lorenzo","surprise","La petite D.… Qui ça peut bien être ?"]]},
-  4:{q:"Cannoli : la ricotta la plus fraîche du quartier. La demander à la boulangère, avant l'aube.",lines:[
+  5:{q:"Cannoli : la ricotta la plus fraîche du quartier. La demander à la boulangère, avant l'aube.",lines:[
     ["pistache","joy","Lorenzo ! Elle était coincée sous la selle de mon scooter. Je l'ai pas lue, promis !"],["page","",""],
     ["lorenzo","surprise","La boulangère d'avant l'aube… c'est Ricotta ! Elle connaissait Nonno ?"],
     ["ricotta","shy","Bien sûr. Il venait chercher sa ricotta tous les matins. Il me manque, à moi aussi."]]},
-  6:{q:"Cioccolata : si épaisse que la cuillère tient debout. Pour les jours de pluie et les cœurs gros.",lines:[
+  8:{q:"Cioccolata : si épaisse que la cuillère tient debout. Pour les jours de pluie et les cœurs gros.",lines:[
     ["tito","joy","Je l'ai pêchée dans la fontaine ! Elle est un peu mouillée…"],["page","",""],
     ["lorenzo","shy","Nonno m'en faisait toujours quand j'étais triste. Merci, Tito."]]},
-  9:{q:"Gelato : trois boules, pistacchio, fragola, limone. Mais c'est le client qui choisit l'ordre : l'ordre, c'est la moitié du goût.",lines:[
+  13:{q:"Gelato : trois boules, pistacchio, fragola, limone. Mais c'est le client qui choisit l'ordre : l'ordre, c'est la moitié du goût.",lines:[
     ["lorenzo","joy","Celle-là était collée sous le pont du canal ! Le gelato arrive au Caffè !"],["page","",""],
     ["lorenzo","open","Nonno se souvenait de l'ordre de chaque habitué. Moi, je vais devoir bien écouter."]]},
-  11:{q:"La panna se fouette à la main, et jamais trop. Comme les compliments.",lines:[
+  16:{q:"La panna se fouette à la main, et jamais trop. Comme les compliments.",lines:[
     ["lorenzo","surprise","Le vent l'avait poussée jusqu'en haut de la tour qui penche ! J'ai monté les 294 marches !"],["page","",""],
     ["lorenzo","open","Il n'en reste plus qu'une. La plus importante, je crois…"]]},
-  13:{q:"Tiramisù : ça veut dire « remonte-moi le moral ». Celui-là, je le garde pour Lorenzo, le jour où il en aura besoin.",lines:[
+  18:{q:"Tiramisù : ça veut dire « remonte-moi le moral ». Celui-là, je le garde pour Lorenzo, le jour où il en aura besoin.",lines:[
     ["lorenzo","surprise","La dernière page ! Elle était dans le grenier du Caffè, depuis le début…"],["page","",""],
     ["lorenzo","sad","Pour… moi ? Il a écrit mon nom."],
     ["lorenzo","joy",`Le carnet est complet, ${ME()} ! Je vais écrire à Nonno. Il faut qu'il goûte le tiramisù du Caffè.`]]},
-  17:{q:"Lorenzo, je descendrai des collines quand le Caffè sera aussi bon que de mon temps. Pas avant. Je t'embrasse. Nonno.",lines:[
+  24:{q:"Lorenzo, je descendrai des collines quand le Caffè sera aussi bon que de mon temps. Pas avant. Je t'embrasse. Nonno.",lines:[
     ["lorenzo","joy","Une lettre ! Nonno m'a répondu !"],["page","",""],
     ["lorenzo","open",`Aussi bon que de son temps… Alors on donne tout jusqu'au bout du quartier, ${ME()} !`]]}
 };
@@ -393,7 +410,7 @@ const IT_NONNO=[
 const itPageLines=d=>IT_PAGES[d].lines.map(l=>l[0]==="page"?["page","",IT_PAGES[d].q]:l);
 const itPending=()=>Object.keys(IT_PAGES).map(Number).find(d=>S.it.stars[d]&&!(S.it.read||{})[d]);
 const itNonnoDue=()=>!S.it.nonno&&!!S.it.stars[IT_LAST];
-// en revenant sur la carte : la page retrouvée, puis Nonno au jour 20 ; sinon le bonus du jour
+// en revenant sur la carte : la page retrouvée, puis Nonno au jour 30 ; sinon le bonus du jour
 function itScenes(done){
   const d=itPending();
   if(d){itTalk(itPageLines(d),()=>{S.it.read=S.it.read||{};S.it.read[d]=1;save();itScenes(done)});return}

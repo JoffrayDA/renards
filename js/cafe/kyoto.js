@@ -1,5 +1,5 @@
 /* Café Frimousse : Kyoto, troisième quartier de la Ville (08/11/2026, choix de Joffray parmi Japon, Montagne, Plage, Londres),
-   refait le 09/11/2026 en vrai défi de fin (Joffray : « faut que ça se complique ! ») : 25 journées plus dures, la petite cantine
+   refait le 09/11/2026 en vrai défi de fin (Joffray : « faut que ça se complique ! ») : 30 journées plus dures (25 avant le 19/11/2026), la petite cantine
    de Yuzu, le Kitsune Shokudō, et le menu le plus riche du jeu, choisi avec Joffray :
    - boissons : matcha (+ Lait = matcha latte), ramune, hōjicha (+ Crème) ;
    - au four, en vitrine : onigiri, tempura de crevettes, taiyaki, mochi fraise, dorayaki (+ Crème), avec DEUX fours dès le jour 14
@@ -10,8 +10,8 @@
    On commence avec deux boissons et deux plats (Joffray : « les gens comprennent maintenant »), le reste se gagne (KY_REC).
    Taiyaki, mochi et dango sont des recettes propres au quartier (REC avec w:"kyoto", data.js).
    Histoire (choix de Joffray) : le Matsuri. Yuzu monte une équipe pour le stand du festival d'été ; à chaque étape, un renard
-   du quartier la rejoint ; le soir du Matsuri (jour 25), Kyūbi, la Dame aux neuf queues, descend du chemin des torii.
-   On y entre depuis l'écran des mondes, ou par le panneau au-dessus du Café de Paris, une fois ses 20 journées réussies
+   du quartier la rejoint ; le soir du Matsuri (jour 30, 25 avant le 19/11/2026), Kyūbi, la Dame aux neuf queues, descend du chemin des torii.
+   On y entre depuis l'écran des mondes, ou par le panneau au-dessus du Café de Paris, une fois ses 30 journées réussies
    (?kyoto=1 pour tester). Sauvegarde : S.ky = {day, stars, best, own, intro, guest, read, gtip}. */
 
 /* ---------- les renards du quartier (dans FOX, pas dans FOXES : ni la Clairière, ni le grand portrait) ---------- */
@@ -38,10 +38,10 @@ const KYF_REG=KYF.filter(f=>f.rar==="commun"&&!f.big);
 // rythme d'un jour de référence du premier monde, de 24 à 40, puis au-delà (hard : plus de clients, plus serrés, moins patients) ;
 // graine et objectif par `python tools/balance-bot.py --kyoto`
 // plus dur partout (09/11/2026, Joffray : « assez facile, surtout avec les améliorations ») : hard de 1,1 au jour 1 à 1,6 au jour 25
-const KY_DAYS=[{base:24,hard:1.1,seed:4,goal:210},{base:25,hard:1.12,seed:3,goal:219},{base:26,hard:1.14,seed:2,goal:233},{base:27,hard:1.16,seed:11,goal:257},{base:28,hard:1.18,seed:0,goal:275},{base:29,hard:1.21,seed:8,goal:304},{base:30,hard:1.23,seed:13,goal:323},{base:31,hard:1.25,seed:14,goal:360},{base:32,hard:1.27,seed:8,goal:382},{base:33,hard:1.29,seed:9,goal:400},{base:34,hard:1.31,seed:2,goal:369},{base:35,hard:1.33,seed:11,goal:459},{base:36,hard:1.35,seed:13,goal:482},{base:37,hard:1.37,seed:6,goal:505},{base:38,hard:1.39,seed:15,goal:547},{base:39,hard:1.42,seed:9,goal:556},{base:40,hard:1.44,seed:2,goal:464},{base:40,hard:1.46,seed:2,goal:603},{base:40,hard:1.48,seed:2,goal:637},{base:40,hard:1.5,seed:14,goal:647},{base:40,hard:1.52,seed:2,goal:649},{base:40,hard:1.54,seed:12,goal:683},{base:40,hard:1.56,seed:12,goal:683},{base:40,hard:1.58,seed:12,goal:676},{base:40,hard:1.6,seed:12,goal:681}];
-const KY_S3=[2.02,2.04,2.17,2.35,2.6,2.38,2.5,2.05,2.13,2.6,2.6,2.19,2.24,2.13,2.08,1.97,2.47,1.88,1.82,1.97,1.84,2.0,1.89,1.99,1.94];
-// l'équipement prévu pour chaque journée : celui de l'Italie, étalé sur 25 journées
-const KY_KIT=IT_KIT.map(([k,n,d])=>[k,n,Math.max(1,Math.round(d*1.25))]);
+const KY_DAYS=[{base:24,hard:1.1,seed:4,goal:210},{base:25,hard:1.12,seed:3,goal:219},{base:26,hard:1.14,seed:10,goal:239},{base:27,hard:1.16,seed:13,goal:270},{base:28,hard:1.18,seed:15,goal:281},{base:29,hard:1.21,seed:14,goal:308},{base:30,hard:1.23,seed:13,goal:323},{base:31,hard:1.25,seed:10,goal:351},{base:32,hard:1.27,seed:8,goal:379},{base:33,hard:1.29,seed:9,goal:400},{base:34,hard:1.31,seed:4,goal:389},{base:35,hard:1.33,seed:11,goal:467},{base:36,hard:1.35,seed:13,goal:482},{base:37,hard:1.37,seed:12,goal:520},{base:38,hard:1.39,seed:15,goal:507},{base:39,hard:1.42,seed:13,goal:526},{base:40,hard:1.44,seed:0,goal:424},{base:40,hard:1.46,seed:7,goal:563},{base:40,hard:1.48,seed:9,goal:613},{base:40,hard:1.5,seed:2,goal:621},{base:40,hard:1.52,seed:10,goal:639},{base:40,hard:1.54,seed:10,goal:655},{base:40,hard:1.56,seed:1,goal:531},{base:40,hard:1.58,seed:12,goal:676},{base:40,hard:1.6,seed:12,goal:681},{base:40,hard:1.63,seed:12,goal:693},{base:40,hard:1.66,seed:12,goal:719},{base:40,hard:1.69,seed:12,goal:738},{base:40,hard:1.72,seed:4,goal:730},{base:40,hard:1.75,seed:4,goal:738}];
+const KY_S3=[2.02,2.04,2.3,2.5,2.37,2.32,2.5,1.95,2.15,2.6,2.33,2.15,2.24,2.0,2.25,2.23,2.36,2.13,1.84,1.93,1.8,1.81,2.3,1.99,1.94,1.95,2.09,2.08,1.91,1.97];
+// l'équipement prévu pour chaque journée : celui de l'Italie (30 journées toutes les deux depuis le 19/11/2026)
+const KY_KIT=IT_KIT;
 // la journée qui fait gagner chaque recette ou option (elle arrive à la suivante) ; 0 = dès le jour 1
 const KY_REC={cafe:0,the:0,croissant:0,cookie:0,taiyaki:2,lait:3,choco:5,dango:7,smoothie:10,mochi:13,chantilly:16,gateau:19};
 S.ky=S.ky||{day:1,stars:{},best:{},own:{},intro:0,guest:0,read:{}};
@@ -53,7 +53,9 @@ for(const k in KY_REC)if(KY_REC[k]&&S.ky.stars[KY_REC[k]]&&!S.ky.own[k])S.ky.own
 function kyReset(){S.ky={day:1,stars:{},best:{},own:{},intro:0,guest:0,read:{},sumo:{}};save();closeSheet();WLAY.kyoto=null;toast("Kyoto recommence au jour 1 !");openMapIt()}
 // les défis des sumos (09/11/2026, idée de Joffray) : ces jours-là, Chanko et Ōyama passent toute la journée au comptoir ;
 // la scène de fin dit qui a gagné le concours : Chanko, puis Ōyama, puis égalité
-const KY_SUMO={5:["chanko","oyama"],11:["oyama","chanko"],17:["chanko","oyama"]};
+const KY_SUMO={5:["chanko","oyama"],11:["oyama","chanko"],17:["chanko","oyama"],23:["oyama","chanko"]};
+// le soir du Matsuri (jour 25 avant le 19/11/2026)
+const KY_FIN=30;
 if(new URLSearchParams(location.search).get("kyoto")==="1"){S.kyOpen=1;save()} // pour tester sans avoir fini Paris
 const kyOpen=()=>S.pa.day>PA_DAYS.length||!!S.kyOpen;
 
@@ -148,9 +150,13 @@ function outsideKy(){
 // le chemin des torii de Fushimi Inari (15-22), la pagode, les stands du Matsuri et la cantine (23-25)
 const KY_X=[200,290,300,210,110,100,190,290,300,220,120,100,150,250,300,290,200,110,100,170,260,300,230,140,200];
 function kyLayout(){
-  const P=[];for(let d=1;d<=KY_DAYS.length;d++)P[d]={d,x:KY_X[d-1],u:230+(d-1)*96};
-  const top=P[KY_DAYS.length].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
-  return {P,way,H,guest:{x:340,u:P[22].u+60},yuz:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},river:(P[6].u+P[7].u)/2};
+  // 30 journées (19/11/2026) : la carte garde sa hauteur (dessinée pour 25 journées à 96), les étapes se resserrent ;
+  // V(j) = où était le jour j, le tracé suit l'ancien (KY_X)
+  const N=KY_DAYS.length,sp=24*96/(N-1),V=j=>230+(j-1)*96;
+  const ox=f=>{const i=Math.max(0,Math.min(23,Math.floor(f))),t=Math.max(0,Math.min(1,f-i));return Math.round(KY_X[i]+(KY_X[i+1]-KY_X[i])*t)};
+  const P=[];for(let d=1;d<=N;d++)P[d]={d,x:ox((d-1)*sp/96),u:Math.round(230+(d-1)*sp)};
+  const top=P[N].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
+  return {P,way,H,V,guest:{x:340,u:V(22)+60},yuz:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},river:V(6.5)};
 }
 const KY_DEFS=`<linearGradient id="ky-wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9a6a46"/><stop offset="1" stop-color="#6e4630"/></linearGradient>
   <linearGradient id="ky-roof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7486a0"/><stop offset="1" stop-color="#4c5a72"/></linearGradient>
@@ -240,8 +246,8 @@ function kyCafeSVG(x,y){
 // la grande porte d'entrée : un torii, comme ceux du chemin
 function kyArchSVG(x,y){return kyTorii(x,y+24,2.4)}
 function kyMapSVG(L){
-  const {P,way,H,cafe}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
-  const u7=P[8].u,u12=P[14].u,u13=P[15].u,u18=P[22].u;
+  const {P,way,H,cafe,V}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
+  const u7=V(8),u12=V(14),u13=V(15),u18=V(22);
   const defs=KY_DEFS+`<pattern id="ky-grav" width="40" height="34" patternUnits="userSpaceOnUse"><g fill="#d9ceb6"><circle cx="6" cy="8" r="1.6"/><circle cx="24" cy="4" r="1.2"/><circle cx="32" cy="20" r="1.6"/><circle cx="14" cy="26" r="1.2"/></g></pattern>
     <linearGradient id="ky-gnd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}"><stop offset="0" stop-color="#ece4d0"/><stop offset=".5" stop-color="#efe8d8"/><stop offset="1" stop-color="#ebe3d2"/></linearGradient>
     <linearGradient id="ky-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9a4b4"/><stop offset=".55" stop-color="#f8cfc2"/><stop offset="1" stop-color="#fdeedd"/></linearGradient>
@@ -298,7 +304,7 @@ function kyMapSVG(L){
 // une scène se joue à la fin de la journée, à sa première réussite (Q.scenes, comme Paris)
 const KY_SCENES={
   1:[["yuzu","joy","Ton premier service au Kitsune Shokudō ! Les clients ont adoré."],
-     ["yuzu","open","Dans vingt-cinq jours, c'est le Matsuri, le grand festival d'été. Chaque année, on y tient un stand…"],
+     ["yuzu","open","Dans trente jours, c'est le Matsuri, le grand festival d'été. Chaque année, on y tient un stand…"],
      ["yuzu","shy","Mais cette année, je suis toute seule. Tu m'aides à monter une équipe ?"]],
   2:[["daifuku","joy","Une ramune ! J'adore le petit bruit de la bille."],["daifuku","surprise","Un stand au Matsuri ? Je veux en être ! Je goûterai tout. Pour vérifier."],
      ["yuzu","joy","Daifuku rejoint l'équipe ! Surtout côté dégustation…"]],
@@ -338,7 +344,9 @@ const KY_SCENES={
   22:[["origami","joy","Les mille oiseaux en papier sont prêts ! Enfin, neuf cent quatre-vingt-dix-neuf. Daifuku s'est assise sur le dernier."],
       ["hoji","open","On raconte que si les lanternes du chemin des torii brillent assez fort, la Dame aux neuf queues descend de la montagne."],
       ["kage","shy","J'ai… peut-être ajouté quelques lanternes."]],
-  25:[["yuzu","surprise","C'est le soir du Matsuri ! Regarde notre stand !"],["daifuku","joy","Les sushis partent comme des petits pains !"],
+  23:[["chanko","joy","Entraînement pour le concours de mangeurs du Matsuri ! Quatre plateaux… chacun !"],["oyama","joy","On mange à deux, on gagne à deux !"],
+      ["yuzu","shy","Ils ont encore vidé la cantine… mais c'est pour la bonne cause !"]],
+  30:[["yuzu","surprise","C'est le soir du Matsuri ! Regarde notre stand !"],["daifuku","joy","Les sushis partent comme des petits pains !"],
       ["kage","surprise","… Là-haut. Sur le chemin des torii."],
       ["kyubi","open","Que de lumière, cette année… Je n'avais pas vu un stand aussi joyeux depuis cent ans."],
       ["kyubi","joy","Un plateau de sushis, et des dango, s'il te plaît. … Délicieux. On sent l'omotenashi."],
@@ -360,20 +368,20 @@ function yuzuIntro(){
 function kyScenes(done){
   const d=Object.keys(KY_SCENES).map(Number).find(kySceneDue);
   if(d){itTalk(KY_SCENES[d],()=>{S.ky.read[d]=1;if(d===19)toast("Sensei Hōji viendra maintenant au Shokudō.");save();
-    // après la scène du jour 25, le défilé du Matsuri (matsuri.js), une seule fois
-    if(d===25&&!S.ky.parade){S.ky.parade=1;save();kyParade(()=>kyScenes(done));return}
+    // après la scène du soir du Matsuri (KY_FIN), le défilé (matsuri.js), une seule fois
+    if(d===KY_FIN&&!S.ky.parade){S.ky.parade=1;save();kyParade(()=>kyScenes(done));return}
     kyScenes(done)});return}
   done();
 }
 function kyStory(){kyScenes(()=>{renderMapIt();dailyBonus()})}
 function kyCarnet(){
   const rows=Object.keys(KY_SCENES).map(Number).map(d=>S.ky.read[d]
-    ?`<div data-kyscene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[KY_SCENES[d][0][0]],{pose:"happy"}),d===25?"Le soir du Matsuri":`Jour ${d}`,KY_SCENES[d][0][2],"background:#fde8ec")}</div>`
-    :`<div style="opacity:.55">${itRow(foxSVG(FOX.yuzu,{sil:1}),d===25?"Le soir du Matsuri":"Scène à découvrir",`Réussis le jour ${d} du quartier.`)}</div>`).join("");
+    ?`<div data-kyscene="${d}" style="cursor:pointer">${itRow(foxSVG(FOX[KY_SCENES[d][0][0]],{pose:"happy"}),d===KY_FIN?"Le soir du Matsuri":`Jour ${d}`,KY_SCENES[d][0][2],"background:#fde8ec")}</div>`
+    :`<div style="opacity:.55">${itRow(foxSVG(FOX.yuzu,{sil:1}),d===KY_FIN?"Le soir du Matsuri":"Scène à découvrir",`Réussis le jour ${d} du quartier.`)}</div>`).join("");
   openSheet(`<h2>Le carnet du Matsuri</h2><div style="width:120px;margin:0 auto">${foxSVG(FOX.yuzu,{pose:"happy"})}</div>
   <p class="sub" style="text-align:center">Tout ce qui s'est passé depuis ton arrivée au Kitsune Shokudō. Touche une scène pour la revoir.</p>${rows}
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="kyreset" type="button">Recommencer Kyoto depuis le jour 1</button></div>
-  ${S.ky.read[25]?`<div class="col" style="margin-top:10px"><button class="btn wide" data-act="kyparade" type="button">Revoir le défilé du Matsuri</button></div>`:""}
+  ${S.ky.read[KY_FIN]?`<div class="col" style="margin-top:10px"><button class="btn wide" data-act="kyparade" type="button">Revoir le défilé du Matsuri</button></div>`:""}
   <div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="yuzuintro" type="button">Revoir l'accueil de Yuzu</button></div>`);
   $("sheet-in").querySelectorAll("[data-kyscene]").forEach(b=>b.onclick=()=>itTalk(KY_SCENES[+b.dataset.kyscene],kyCarnet));
 }
@@ -402,7 +410,7 @@ ovens:d=>d>=14?2:1,ovenOf:{croissant:0,cookie:0,taiyaki:0,mochi:1,gateau:1},
   // musique du service, choix de Joffray le 09/11/2026 : le Matsuri « plus rapide » et le grand odaiko (accéléré à 158 bpm)
   // les jours des sumos, toujours les gros tambours (Joffray)
   music:d=>KY_SUMO[d]||d%2===0?"taiko5":"matsuri2",mapMusic:"torii",
-  isOpen:()=>kyOpen(),lockMsg:"Réussis les 20 journées de Paris pour ouvrir Kyoto.",
+  isOpen:()=>kyOpen(),lockMsg:`Réussis les ${PA_DAYS.length} journées de Paris pour ouvrir Kyoto.`,
   layout:()=>kyLayout(),mapSVG:L=>kyMapSVG(L),outside:()=>outsideKy(),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.yuz.x,L.yuz.u)}" data-act="yuzu" type="button" aria-label="Yuzu">${foxSVG(FOX.yuzu,{pose:"happy"})}<em>Yuzu</em></button>`
     +(S.ky.read[19]?`<button class="mguest ok" style="${pc(L.cafe.x-142,L.cafe.u-36)}" data-act="yuzu" type="button" aria-label="Sensei Hōji">${foxSVG(FOX.hoji,{pose:"sit"})}<em>Hōji</em></button>`:"")

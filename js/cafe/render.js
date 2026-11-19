@@ -10,6 +10,7 @@ function renderHud(){
   if(!G||!G.run){const sb=document.querySelector('.mbar [data-act="shop"]');if(sb)sb.classList.toggle("hasdot",upAny())}
   if(!G||!G.run){$("hud").innerHTML=`<span class="pill day">Jour ${curDay()}</span><span class="pill">★ ${WORLD?itStarSum():starSum()}</span>`;$("chips").innerHTML="";return}
   if(G.tuto){$("hud").innerHTML=`<span class="pill day">Leçon de Petit Pois</span>`;$("chips").innerHTML="";return}
+  if(G.rush){$("hud").innerHTML=rushHud();$("chips").innerHTML=G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:"";return}
   const g=G.cfg.goal,cu=G.night||G.noel?[1,1.35,1.7]:cuts(G.day),mx=g*cu[2],e=G.earned;
   $("hud").innerHTML=`<span class="pill day">${G.noel?`Noël ${G.noel}`:G.night?`Nuit ${G.night}`:`Jour ${G.day}`}</span><div class="goal"><div class="gbar"><i id="gfill" style="width:${Math.min(100,e/mx*100)}%"></i>${cu.map(m=>`<span class="tick${e>=Math.ceil(g*m)?" on":""}" style="left:${m/cu[2]*100}%">★</span>`).join("")}${G.duel?`<span class="tick duel${e>=G.duel?" on":""}" style="left:${Math.min(100,G.duel/mx*100)}%" title="Firmin : ${G.duel}">${icon("croissant","paris")}</span>`:""}<b class="gnum">${e} / ${g}</b></div></div>`;
   $("chips").innerHTML=`<span class="pill">Clients ${G.cfg.c-G.spawned+G.cust.filter(c=>c.state==="wait"||c.state==="walkin"||c.state==="queue").length}</span>${G.combo>=2?`<span class="pill combo">Combo ×${G.combo}</span>`:""}${HW&&!G.noel?`<span class="pill cnd">${candySVG}${S.candy}</span>`:""}`;
@@ -24,16 +25,20 @@ function render(){
     const fx=c.costume?{...f,acc:c.costume}:f,walking=c.state==="walkin"||c.state==="walkout",inQ=c.state==="queue"||(c.gave&&c.state==="angry");
     // position : la file à gauche (petits renards), sa place au comptoir, ou la sortie à droite
     const left=inQ?5+(qi++)*6:c.state==="walkout"?114:X[c.spot];
+    // fâché (19/11/2026, Joffray : « c'est limite si on le voit pas partir ») : sourcils froncés, nuage d'orage au-dessus de la tête,
+    // il trépigne, puis sort à droite d'un pas rapide et lourd (classe mad, css)
+    const mad=!!c.lostIt&&(c.state==="angry"||c.state==="walkout");
     const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(itemKey(o))}</span>`).join("");
-    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}`,bub=!walking&&!inQ?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${CROWN}${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
+    const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}${mad?" mad":""}`,bub=!walking&&!inQ&&!mad?`<span class="bub${c.vip?" vipb":""}">${c.vip?`<em class="vip">${CROWN}${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
     // « Nouveau » sous le renard, posé sur le comptoir (18/11/2026, Joffray : le message gris en haut ne se voyait pas) :
     // calque à part, au-dessus du comptoir ; le VIP garde son badge doré sur la bulle (Joffray l'aimait), juste plus visible
-    if(!inQ&&!walking&&c.nw&&!c.vip)tags+=`<span class="ctag new" style="left:${left}%"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 L12.4 7.2 L18.5 7.7 L13.8 11.6 L15.3 17.6 L10 14.4 L4.7 17.6 L6.2 11.6 L1.5 7.7 L7.6 7.2Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.8" stroke-linejoin="round"/></svg>Nouveau client<i class="tw a"></i><i class="tw b"></i></span>`;
-    const inner=bub+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit"});
+    if(!inQ&&!walking&&!mad&&c.nw&&!c.vip)tags+=`<span class="ctag new" style="left:${left}%"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 L12.4 7.2 L18.5 7.7 L13.8 11.6 L15.3 17.6 L10 14.4 L4.7 17.6 L6.2 11.6 L1.5 7.7 L7.6 7.2Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.8" stroke-linejoin="round"/></svg>Nouveau client<i class="tw a"></i><i class="tw b"></i></span>`;
+    const inner=bub+(mad?STORM:"")+foxSVG(fx,{pose:c.state==="happy"||c.state==="walkout"&&!c.lostIt?"happy":"sit",expr:mad?"angry":undefined});
     let el=custEl(c);
     // un nouveau client apparaît hors champ à gauche, puis la transition CSS le fait marcher jusqu'à sa place
     if(!el){el=document.createElement("button");el.type="button";el.dataset.cust=c.id;el.setAttribute("aria-label",f.name);el.style.left="-14%";if(c.slow)el.style.transition="left 3.8s linear,opacity .5s";box.appendChild(el);void el.offsetWidth}
     if(el.dataset.c!==cls){el.className=cls;el.dataset.c=cls}
+    if(mad&&c.state==="walkout"&&!el._mad){el._mad=1;el.style.transition="left .95s cubic-bezier(.5,0,1,1),opacity .5s"}
     if(el._l!==left){el.style.left=left+"%";el._l=left}
     if(el._h!==inner){el.innerHTML=inner;el._h=inner}
     keep.add(el);
@@ -46,6 +51,8 @@ function render(){
   if(G.it&&(WD().sv().gtip||0)<3){const c=G.cust.find(c=>c.state==="wait"&&!c.gt&&c.order.some(o=>o.g));
     if(c){c.gt=1;const V=WD().sv();V.gtip=(V.gtip||0)+1;const o=c.order.find(o=>o.g);hint(o.r==="dango"?WD().gel2.hint(o.g):WD().gelHint(o.g))}}
 }
+// le petit nuage d'orage du client fâché, avec son éclair qui clignote
+const STORM=`<span class="storm" aria-hidden="true"><svg viewBox="0 0 60 44"><path class="bolt" d="M30 24 L24 35 H30 L26 44 L38 30 H32 L36 24Z" fill="#ffd84a" stroke="#5b4250" stroke-width="2" stroke-linejoin="round"/><path d="M12 26 Q3 26 4 18 Q5 11 13 12 Q15 3 25 4 Q33 1 37 8 Q46 5 50 12 Q58 13 56 21 Q55 27 47 26Z" fill="#6f6577" stroke="#5b4250" stroke-width="2.6" stroke-linejoin="round"/><path d="M14 18 Q18 13 24 15" fill="none" stroke="#9c93a6" stroke-width="2.2" stroke-linecap="round"/></svg></span>`;
 const CROWN=`<svg viewBox="0 0 20 14" aria-hidden="true"><path d="M2 12.5 L2.8 3.5 L7.2 7.5 L10 1.5 L12.8 7.5 L17.2 3.5 L18 12.5 Z" fill="#fff3c4" stroke="#5b4250" stroke-width="1.7" stroke-linejoin="round"/></svg>`;
 function renderTray(){
   const cap=trayCap(),t=G&&G.run?G.tray:[],arm=G&&G.run&&G.arm&&G.arm.until>performance.now()?G.arm.i:-1;

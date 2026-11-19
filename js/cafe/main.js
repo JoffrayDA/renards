@@ -53,11 +53,12 @@ function onAct(a){
   else if(a==="tuto"){closeSheet();startTuto()}
   // recommencer (09/11/2026, Joffray : « un bouton recommencer ») : la même journée (ou nuit, ou leçon) depuis le début, avec les mêmes bonus
   else if(a==="restart"){closeSheet();const g=G;if(g.tuto){tuEnd(false);G=null;startTuto();return}
-    G=null;if(g.noel)newNoel(g.noel);else if(g.night)newNight(g.night);else newDay(g.day);if(G)G.boost=g.boost;dirty=true}
+    G=null;if(g.rush){newRush();dirty=true;return}if(g.noel)newNoel(g.noel);else if(g.night)newNight(g.night);else newDay(g.day);if(G)G.boost=g.boost;dirty=true}
   else if(a==="quit"){closeSheet();tuEnd(false);G=null;$("closed").hidden=false;$("hint").textContent="";dirty=true;save();openMap()}
 }
 $("map").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.rush!==undefined){rushSheet();return}
   if(b.dataset.itday)itDaySheet(+b.dataset.itday);else if(b.dataset.itguest!==undefined)itGuestSheet();
   else if(b.dataset.day)daySheet(+b.dataset.day);else if(b.dataset.gate)gateSheet(+b.dataset.gate);else if(b.dataset.guest)guestSheet(+b.dataset.guest);else if(b.dataset.act)onAct(b.dataset.act);
 });
@@ -85,6 +86,9 @@ $("sheet").addEventListener("click",e=>{
     if(b.dataset.sbuy){if(it.cb){if(S.candy<it.cb)return;S.candy-=it.cb}else{if(S.coins<it.c)return;S.coins-=it.c}S.own[key]=1;toast(`${it.name} : acheté !`)}
     S.style=S.style||{};S.style[k]=id;save();if(k==="acc"){const m=meB();m.a=id;if(id)m.own["a:"+id]=1;mePut(m)} // la page « C'est toi » suit (js/moi.js)
     renderDecor();renderHud();if(MAPL&&!$("map").hidden)renderMap();shop.y=$("sheet-in").scrollTop;shop();return}
+  if(b.dataset.rushplay!==undefined){closeSheet();newRush();return}
+  if(b.dataset.rushall!==undefined){rushAll();return}
+  if(b.dataset.rushback!==undefined){rushSheet();return}
   if(b.dataset.itplay){closeSheet();newDay(+b.dataset.itplay);return}
   if(b.dataset.itday){itDaySheet(+b.dataset.itday);return}
   if(b.dataset.play){closeSheet();newDay(+b.dataset.play);return}

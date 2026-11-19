@@ -66,6 +66,19 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .tp:active{transform:translateY(2px);box-shadow:none}
 .cust.q.angry{opacity:0;transition:opacity .9s}
 .cust>svg{display:block;width:100%}
+/* client fâché (19/11/2026) : il trépigne sous son nuage, puis part à grands pas lourds avec de la poussière */
+.cust.mad>svg{animation:madfume .16s linear infinite}
+.cust.mad.walkout>svg{animation:madstomp .22s ease-in-out infinite alternate}
+@keyframes madfume{0%,100%{transform:translateX(0)}25%{transform:translateX(-3.5%) rotate(-2deg)}75%{transform:translateX(3.5%) rotate(2deg)}}
+@keyframes madstomp{0%{transform:translateY(0) rotate(-5deg)}100%{transform:translateY(-7%) rotate(5deg)}}
+.storm{position:absolute;left:50%;bottom:84%;width:70%;transform:translateX(-50%);pointer-events:none;animation:stormin .25s ease-out both,stormbob .4s ease-in-out .25s infinite alternate}
+.storm svg{display:block;width:100%;overflow:visible}
+.storm .bolt{animation:stormbolt .5s steps(1) infinite}
+@keyframes stormin{from{opacity:0;transform:translateX(-50%) scale(.3)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+@keyframes stormbob{from{margin-bottom:0}to{margin-bottom:4%}}
+@keyframes stormbolt{0%,40%{opacity:1}41%,100%{opacity:0}}
+.cust.mad.walkout::after{content:"";position:absolute;left:-18%;bottom:2%;width:34%;aspect-ratio:2/1;border-radius:50%;background:radial-gradient(circle at 30% 60%,#e9dccb 0 28%,transparent 30%),radial-gradient(circle at 70% 40%,#efe4d6 0 24%,transparent 26%);animation:maddust .22s ease-out infinite;pointer-events:none}
+@keyframes maddust{from{opacity:.9;transform:scale(.6)}to{opacity:0;transform:scale(1.3) translateX(-30%)}}
 .cust.happy>svg{animation:joy .5s ease-out 2 alternate}
 @keyframes joy{to{transform:translateY(-9%)}}
 .cust.low>svg{animation:fidget .5s infinite}
@@ -580,3 +593,18 @@ button.home{padding:0;cursor:pointer}
 .wallet span{display:flex;align-items:center;gap:5px;padding:4px 12px 4px 6px;border-radius:99px;background:#fff3d6;border:2.5px solid var(--gold-d);box-shadow:0 2px 0 rgba(91,66,80,.15)}
 .wallet svg{width:24px;height:24px;display:block}
 .wallet b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--ink)}
+
+/* le Grand rush, niveau infini (infini.js, 19/11/2026) */
+.node.rush{width:66px;height:66px;background:radial-gradient(circle at 40% 35%,#fff6c8,#f2c45a);border-color:var(--ink)}
+.node.rush b{font-size:34px;line-height:1;margin-top:-4px}
+.node.rush.lock{background:#e8e0da;filter:grayscale(.6);opacity:.85}
+.node.rush .rbest{position:absolute;top:100%;left:50%;transform:translate(-50%,4px);background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:1px 7px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.rsc b{font-size:16px}.pill.rlife{display:inline-flex;gap:2px;padding:3px 7px}.pill.rlife svg{width:18px;height:16px;display:block}
+.rrec{display:flex;justify-content:center;margin:6px 0 10px}.rrec div{display:flex;flex-direction:column;align-items:center;background:#fff6dc;border:3px solid var(--ink);border-radius:16px;padding:6px 22px}
+.rrec b,.rbig b{font-family:"Mochiy Pop One",sans-serif;font-size:30px;line-height:1.15}.rrec small,.rbig small{font-size:12px;opacity:.8}
+.rbig{display:flex;flex-direction:column;align-items:center;margin:4px 0 6px}.rbig b{font-size:46px}
+.rtop{margin:8px 0 12px;display:flex;flex-direction:column;gap:5px}
+.rk{display:grid;grid-template-columns:30px 1fr auto auto;gap:8px;align-items:center;background:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:5px 10px;font-size:14px}
+.rk i{font-style:normal;font-weight:700;text-align:center}.rk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rk b{font-family:"Mochiy Pop One",sans-serif}.rk small{opacity:.7;font-size:12px}
+.rk.p1{background:#fff3c4}.rk.p2{background:#eef1f6}.rk.p3{background:#f8e4d4}.rk.me{outline:3px solid #f59a8b;outline-offset:1px}.rk.sep{margin-top:8px}
+.pill.rinf{font-size:18px;padding:2px 12px}

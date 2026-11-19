@@ -324,11 +324,14 @@ function foxArt(f,o={}){
       h=base+eyes;
       if(mode==="up")h=h.replace(/<path d="M56 [^"]*"[^>]*\/>/,"")+mouthO(Y);
     }
-    if(["sad","surprise","shy","ko"].includes(mode)){
+    if(["sad","surprise","shy","ko","angry"].includes(mode)){
       const noMouth=face(Y,true).replace(/<path d="M44 [^"]*" fill="none" stroke-width="2.6"\/>/,"").replace(/<path d="M56 [^"]*"[^>]*\/>/,"");
       // Feu Follet garde ses grands yeux brillants dans toutes les expressions
       const dot=(x,y,rx,ry,hl)=>gh?`<ellipse cx="${x-.9}" cy="${y-.5}" rx="${(rx*1.6).toFixed(1)}" ry="${(ry*1.77).toFixed(1)}" fill="${dark}" stroke="none"/><circle cx="${x+.5}" cy="${(y-ry*.9).toFixed(1)}" r="${(hl*1.8).toFixed(1)}" fill="#fff" stroke="none"/><circle cx="${x-2.4}" cy="${(y+ry*.75).toFixed(1)}" r=".8" fill="#fff" stroke="none"/>`:`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${ey}" stroke="none"/><circle cx="${x+.9}" cy="${y-ry*.4}" r="${hl}" fill="#fff" stroke="none"/>`;
-      if(mode==="sad")h=noMouth+dot(48,Y+.6,2.8,3.2,.9)+dot(72,Y+.6,2.8,3.2,.9)
+      // fâché (Café, 19/11/2026 : le client qui part sans être servi) : sourcils en V, petits yeux, bouche boudeuse, joues rouges
+      if(mode==="angry")h=noMouth+dot(48.6,Y+.4,2.7,2.9,.8)+dot(71.4,Y+.4,2.7,2.9,.8)
+        +`<path d="M41.5 ${Y-10} L53 ${Y-5.4} M78.5 ${Y-10} L67 ${Y-5.4}" fill="none" stroke-width="2.8"/><path d="M54.5 ${Y+10} Q60 ${Y+5.4} 65.5 ${Y+10}" fill="none" stroke-width="2"/><ellipse cx="40" cy="${Y+6}" rx="5" ry="2.6" fill="#f0707a" opacity=".7" stroke="none"/><ellipse cx="80" cy="${Y+6}" rx="5" ry="2.6" fill="#f0707a" opacity=".7" stroke="none"/>`;
+      else if(mode==="sad")h=noMouth+dot(48,Y+.6,2.8,3.2,.9)+dot(72,Y+.6,2.8,3.2,.9)
         +`<path d="M42.5 ${Y-6} L51 ${Y-8.6} M77.5 ${Y-6} L69 ${Y-8.6}" fill="none" stroke-width="2"/><path d="M56 ${Y+9} Q60 ${Y+6} 64 ${Y+9}" fill="none" stroke-width="1.8"/><path d="M44 ${Y+5} q-2.6 4 0 5.4 q2.6 -1.4 0 -5.4Z" fill="#9ec3ef" stroke-width="1.2"/>`;
       // K.O. : yeux en croix et bouche en zigzag (Barbe-Neige après le crash)
       else if(mode==="ko")h=noMouth+`<path d="M44.5 ${Y-4.5} l7 7 M51.5 ${Y-4.5} l-7 7 M68.5 ${Y-4.5} l7 7 M75.5 ${Y-4.5} l-7 7" fill="none" stroke-width="2.4"/><path d="M54 ${Y+8} l3 -2 l3 2 l3 -2 l3 2" fill="none" stroke-width="1.8"/>`;
@@ -423,7 +426,7 @@ function foxArt(f,o={}){
     body=`<g transform="rotate(${2.5*k} 60 88)">`+tailBack(8*k)+ears(0,-3)+bun(T,88,35)+faceOf(Y,"open")+paws(89,50,70,o.frame?[0,4]:[4,0])+`</g>`;
   }else{
     const ex=o.expr||"open";
-    body=tailBack(ex==="surprise"?-14:0)+ears(ex==="surprise"?-3:0,ex==="sad"?-26:ex==="shy"?-12:0)+bun(T,88,36)+faceOf(Y,ex==="joy"||ex==="open"?ex:ex)+paws(89);
+    body=tailBack(ex==="surprise"?-14:0)+ears(ex==="surprise"?-3:0,ex==="sad"?-26:ex==="shy"||ex==="angry"?-12:0)+bun(T,88,36)+faceOf(Y,ex==="joy"||ex==="open"?ex:ex)+paws(89);
   }
   // Mûre : le bout du museau teint par les baies
   // la tenue d'hiver (js/tenues.js) : le bonnet remplace ce qu'il porte sur la tête, l'écharpe ce qu'il porte au cou

@@ -16,6 +16,7 @@ Usage     : python tools/balance-bot.py [jours...]   (par défaut : une sélecti
             python tools/balance-bot.py --italie         (propose la table IT_DAYS des 20 journées de la Petite Italie)
             python tools/balance-bot.py --paris          (propose la table PA_DAYS des 20 journées de Paris ; --paris --economie aussi)
             python tools/balance-bot.py --kyoto          (propose la table KY_DAYS des 20 journées de Kyoto ; --kyoto --economie aussi)
+            python tools/balance-bot.py --rush           (Grand rush, niveau infini : combien de temps tiennent le bot parfait, l'expert et le bon joueur)
             python tools/balance-bot.py --etoiles        (propose les tables S3 de ★★★ : tout équipé, pour les quatre mondes)
 
 Une journée tire ses commandes avec une graine propre au jour : le même jour se rejoue à l'identique,
@@ -128,6 +129,20 @@ with sync_playwright() as p:
     IT_KIT = [tuple(x) for x in page.evaluate(f"() => WORLDS.{WN}.kit")]
     # les recettes du quartier (Kyoto a sa propre table, WORLDS.kyoto.recDays)
     IT_RECIPES = page.evaluate(f"() => WORLDS.{WN}.recDays || IT_DAY")
+    if "--rush" in sys.argv:
+        # Grand rush (infini.js) : tout équipé, menu complet ; on joue jusqu'au 3e client fâché (20 min au plus)
+        rb = BOT.replace("closeSheet(); newDay(day); if (seed != null) G.rng = rng((WORLD ? WORLDS[WORLD].days[day - 1].base : day) * 7919 + seed + 1);",
+                         "WORLDS[WORLD].sv().stars[WORLDS[WORLD].days.length] = 1; closeSheet(); newRush();")
+        rb = rb.replace("while (G && G.run && t < 600)", "while (G && G.run && !G.rushEnd && t < 1200)")
+        rb = rb.replace("endDay = origEnd; G = null;", "const out = [Math.round(t), G ? G.earned : 0]; endDay = origEnd; G = null;").replace("return res;", "return out;")
+        full = {u["id"]: u["n"] for u in page.evaluate("() => ALLUP.map(u => ({id: u.id, n: u.lv.length}))")}
+        for wn in ["italie", "paris", "kyoto"]:
+            rec = page.evaluate(f"() => WORLDS.{wn}.recDays || IT_DAY")
+            own = {**{r: 1 for r in rec}, **full}
+            for name, react in [("parfait", PERFECT), ("expert", .45), ("bon", GOOD)]:
+                t, sc = page.evaluate(rb, [1, own, react, None, wn])
+                print(f"{wn:<7} {name:<8} tient {t // 60}:{t % 60:02d}, score {sc} ({sc / max(t, 1):.2f} par seconde)", flush=True)
+        browser.close(); sys.exit()
     if STARS:
         # ★★★ tout équipé (11/11/2026, Joffray : la copine faisait ★★★ au jour 6 de Kyoto sans rien acheter ; « le but c'est de
         # galérer aux premiers niveaux et revenir après ») : ★★★ demande 94 % du score du bot parfait avec TOUTES les améliorations
