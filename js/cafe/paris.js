@@ -324,7 +324,7 @@ const paBakeryAt=(x,y)=>{const L=x-42,R=x+42;let g=shadow(x,y,50);
 function paArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#a9b6c6" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Paris</text>`}
 function paMapSVG(L){
   const {P,way,H,cafe,Z,V}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
-  const u7=V(7),u12=V(12),u13=V(13),u18=V(18);
+  const u7=V(7),u12=V(12),u13=V(13),u18=V(18),mu=u13+110; // mu : Montmartre, remonté dans la colline (20/11/2026, Joffray)
   const defs=PA_DEFS+`<pattern id="pa-pave" width="44" height="30" patternUnits="userSpaceOnUse"><g fill="none" stroke="#dccfbd" stroke-width="2"><rect x="2" y="2" width="18" height="11" rx="5"/><rect x="24" y="2" width="18" height="11" rx="5"/><rect x="-9" y="17" width="18" height="11" rx="5"/><rect x="13" y="17" width="18" height="11" rx="5"/><rect x="35" y="17" width="18" height="11" rx="5"/></g></pattern>
     <linearGradient id="pa-gnd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}"><stop offset="0" stop-color="#efe3d0"/><stop offset=".5" stop-color="#f2e8da"/><stop offset="1" stop-color="#ece2d4"/></linearGradient>
     <linearGradient id="pa-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4b9c4"/><stop offset=".55" stop-color="#fad8cc"/><stop offset="1" stop-color="#fdeee0"/></linearGradient>
@@ -346,8 +346,8 @@ function paMapSVG(L){
     s+=[cut[1],cut[2]].map(u=>`<circle cx="316" cy="${Y(u)}" r="7" fill="url(#pa-grass)" ${K2}/>`+[0,1,2,3,4].map(i=>`<circle cx="${(316+Math.cos(i*1.26)*4).toFixed(1)}" cy="${(Y(u)+Math.sin(i*1.26)*4).toFixed(1)}" r="1.8" fill="${i%2?"#f49ab0":"#fff"}"/>`).join("")).join("")}
   // la butte Montmartre : une colline arrondie, plus claire au sommet
   s+=`<path d="M-10 ${Y(u13+6)} Q-4 ${Y(u18-20)} 96 ${Y(u18-24)} Q190 ${Y(u18-40)} 206 ${Y(u18-200)} Q214 ${Y(u13+90)} 176 ${Y(u13+24)} Q96 ${Y(u13-24)} -10 ${Y(u13+6)}Z" fill="url(#pa-hill)" ${BO}/>`;
-  s+=`<path d="M70 ${Y(u13+20)} Q40 ${Y(u13+90)} 90 ${Y(u13+130)} Q150 ${Y(u13+170)} 100 ${Y(u13+210)} Q70 ${Y(u13+236)} 96 ${Y(u13+262)}" fill="none" stroke="${INK}" stroke-width="15" stroke-linecap="round"/><path d="M70 ${Y(u13+20)} Q40 ${Y(u13+90)} 90 ${Y(u13+130)} Q150 ${Y(u13+170)} 100 ${Y(u13+210)} Q70 ${Y(u13+236)} 96 ${Y(u13+262)}" fill="none" stroke="#efe4d2" stroke-width="11" stroke-linecap="round"/><path d="M70 ${Y(u13+20)} Q40 ${Y(u13+90)} 90 ${Y(u13+130)} Q150 ${Y(u13+170)} 100 ${Y(u13+210)} Q70 ${Y(u13+236)} 96 ${Y(u13+262)}" fill="none" stroke="#d8c8ac" stroke-width="2" stroke-dasharray="3 4"/>`;
-  s+=[[30,u13+60],[150,u13+180],[60,u18-70],[170,u13+260],[22,u13+190]].map(([x,u])=>`<path d="M${x} ${Y(u)} l3 -6 l3 6 M${x+40} ${Y(u)+10} l3 -6 l3 6" fill="none" stroke="#8cc070" stroke-width="2" stroke-linecap="round"/>`).join("");
+  s+=`<path d="M70 ${Y(mu+20)} Q40 ${Y(mu+90)} 90 ${Y(mu+130)} Q150 ${Y(mu+170)} 100 ${Y(mu+210)} Q70 ${Y(mu+236)} 96 ${Y(mu+262)}" fill="none" stroke="${INK}" stroke-width="15" stroke-linecap="round"/><path d="M70 ${Y(mu+20)} Q40 ${Y(mu+90)} 90 ${Y(mu+130)} Q150 ${Y(mu+170)} 100 ${Y(mu+210)} Q70 ${Y(mu+236)} 96 ${Y(mu+262)}" fill="none" stroke="#efe4d2" stroke-width="11" stroke-linecap="round"/><path d="M70 ${Y(mu+20)} Q40 ${Y(mu+90)} 90 ${Y(mu+130)} Q150 ${Y(mu+170)} 100 ${Y(mu+210)} Q70 ${Y(mu+236)} 96 ${Y(mu+262)}" fill="none" stroke="#d8c8ac" stroke-width="2" stroke-dasharray="3 4"/>`;
+  s+=[[30,mu+60],[150,mu+180],[60,u18-70],[170,mu+260],[22,mu+190]].map(([x,u])=>`<path d="M${x} ${Y(u)} l3 -6 l3 6 M${x+40} ${Y(u)+10} l3 -6 l3 6" fill="none" stroke="#8cc070" stroke-width="2" stroke-linecap="round"/>`).join("");
   // la Seine, ses quais de pierre, des reflets
   const sy=Y(L.seine),bx=pathX(way,L.seine);
   s+=`<path d="M-10 ${sy-48} Q100 ${sy-56} 200 ${sy-48} T410 ${sy-52} V${sy-34} H-10Z" fill="url(#pa-quai)" ${BO}/><path d="M-10 ${sy-34} Q100 ${sy-40} 200 ${sy-32} T410 ${sy-36} V${sy+32} Q300 ${sy+42} 200 ${sy+34} T-10 ${sy+38}Z" fill="url(#pa-water)" ${BO}/><path d="M-10 ${sy+38} Q100 ${sy+32} 200 ${sy+36} T410 ${sy+32} V${sy+52} H-10Z" fill="url(#pa-quai)" ${BO}/>`;
@@ -375,12 +375,12 @@ function paMapSVG(L){
   at(314,u12-34,paEcole);at(272,u7+300,(x,y)=>`<g transform="translate(${x} ${y}) scale(.6) translate(${-x} ${-y})">${itPicnic(x,y)}</g>`);
   at(358,u7+420,(x,y)=>`<g transform="translate(${x} ${y}) scale(.55) translate(${-x} ${-y})">${itPicnic(x,y)}</g>`);
   // Montmartre : le Sacré-Cœur, les escaliers, le moulin, deux maisons, les chevalets
-  at(96,u13+266,(x,y)=>paSacre(x,y,1.1));at(104,u13+100,(x,y)=>paStairs(x,y));at(160,u13+340,(x,y)=>paEasel(x,y,"#9fc0e8"));at(64,u18-34,(x,y)=>paEasel(x,y,"#f49ab0"));
-  at(158,u18-80,paMill);at(70,u13-6,paMoulinRouge);at(118,u13+150,paTertre);at(150,u13+40,(x,y)=>paVigne(x-28,y));
+  at(96,mu+266,(x,y)=>paSacre(x,y,1.1));at(104,mu+100,(x,y)=>paStairs(x,y));at(160,mu+340,(x,y)=>paEasel(x,y,"#9fc0e8"));at(64,u18-34,(x,y)=>paEasel(x,y,"#f49ab0"));
+  at(158,u18-80,paMill);at(70,mu-6,paMoulinRouge);at(118,mu+150,paTertre);at(150,mu+40,(x,y)=>paVigne(x-28,y));
   // la ruelle pavée qui monte vers le Sacré-Cœur, la Maison Rose, des arbres de la butte
-  at(60,u13+226,paMaisonRose);at(178,u13+260,(x,y)=>paTree(x,y,.7));at(14,u13+250,(x,y)=>paTree(x,y,.65,"pa-leaf2"));at(176,u13+92,(x,y)=>paTree(x,y,.6));
+  at(60,mu+226,paMaisonRose);at(178,mu+260,(x,y)=>paTree(x,y,.7));at(14,mu+250,(x,y)=>paTree(x,y,.65,"pa-leaf2"));at(176,mu+92,(x,y)=>paTree(x,y,.6));
   // les maisons qui montent la butte, serrées
-  [[6,u13+60,24,40,"#f6e8d0","#7fb4d8"],[32,u13+70,22,52,"#f2dcc0","#f2a2b0"],[140,u13+196,24,44,"#f8ecd8","#8fbf5a"],[166,u13+206,20,34,"#efd9be","#c9a8ec"],[8,u13+170,22,46,"#f4e2c8","#e2546e"],[30,u13+176,20,36,"#f8ecd8","#7fb4d8"],[156,u13+120,22,30,"#f6e8d0","#f2a2b0"]].forEach(([hx,hu,w,h,c,sh])=>at(hx+w/2,hu,(cx,y)=>paMontHouse(hx,y,w,h,c,sh)));
+  [[6,mu+60,24,40,"#f6e8d0","#7fb4d8"],[32,mu+70,22,52,"#f2dcc0","#f2a2b0"],[140,mu+196,24,44,"#f8ecd8","#8fbf5a"],[166,mu+206,20,34,"#efd9be","#c9a8ec"],[8,mu+170,22,46,"#f4e2c8","#e2546e"],[30,mu+176,20,36,"#f8ecd8","#7fb4d8"],[156,mu+120,22,30,"#f6e8d0","#f2a2b0"]].forEach(([hx,hu,w,h,c,sh])=>at(hx+w/2,hu,(cx,y)=>paMontHouse(hx,y,w,h,c,sh)));
   at(370,u13+150,(x,y)=>paTree(x,y,.75));at(372,u18-44,(x,y)=>paTree(x,y,.7));at(30,u18-120,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
   // devant le café : la boulangerie de Firmin, en face ; un platane
   at(356,cafe.u+20,paBakery);at(40,cafe.u-40,(x,y)=>paTree(x,y,.85));
@@ -390,7 +390,7 @@ function paMapSVG(L){
   at(50,585,paBoutique);at(250,420,paBikes);at(42,300,(x,y)=>paBike(x,y,"#c0485a",1));at(360,650,(x,y)=>paBike(x,y,"#5f7fb0",1,1));
   at(330,690,paLamp);at(214,1450,paLamp);at(40,2330,paLamp);at(250,560,paLamp);
   at(42,1240,paCrepes);at(40,1360,(x,y)=>paBike(x,y,"#4f8a6a",1));
-  at(358,1945,paArc);at(300,2395,(x,y)=>`<g transform="translate(${x} ${y}) scale(.85) translate(${-x} ${-y})">${paLouvre(x,y)}</g>`);
+  at(358,1945,paArc);at(300,2382,paLouvre);
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=paArchSVG(200,Y(60))+paCafeSVG(cafe.x,Y(cafe.u));
   // le panneau vers Kyoto (kyoto.js), au-dessus du café à droite, une fois les 30 journées réussies

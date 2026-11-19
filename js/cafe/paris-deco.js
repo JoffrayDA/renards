@@ -3,13 +3,23 @@
    Chargé juste après paris.js ; posés par paMapSVG (paris.js). Les dégradés « pa-… » sont dans PA_DEFS. */
 
 // la Joconde, en petit : fond de paysage brumeux, cheveux sombres, robe sombre, mains croisées, le sourire, cadre doré
-const paMona=(x,y,w=22,h=30)=>{const cx=x+w/2,f=n=>+n.toFixed(1);
-  return `<rect x="${x-2.4}" y="${y-2.4}" width="${w+4.8}" height="${h+4.8}" rx="1.5" fill="#d9a83a" stroke="${INK}" stroke-width="1.4"/>`
-    +`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#7f8a5a"/><path d="M${x} ${f(y+h*.42)} Q${f(x+w*.25)} ${f(y+h*.3)} ${f(x+w*.5)} ${f(y+h*.4)} T${x+w} ${f(y+h*.36)} V${y+h} H${x}Z" fill="#6a6a44"/>`
-    +`<path d="M${f(cx-w*.3)} ${y+h} Q${f(cx-w*.32)} ${f(y+h*.55)} ${cx} ${f(y+h*.52)} Q${f(cx+w*.32)} ${f(y+h*.55)} ${f(cx+w*.3)} ${y+h}Z" fill="#3a3026"/>`
-    +`<ellipse cx="${cx}" cy="${f(y+h*.34)}" rx="${f(w*.2)}" ry="${f(h*.17)}" fill="#3a2a1e"/><ellipse cx="${cx}" cy="${f(y+h*.34)}" rx="${f(w*.14)}" ry="${f(h*.14)}" fill="#e8c890"/>`
-    +`<path d="M${f(cx-w*.05)} ${f(y+h*.4)} q${f(w*.05)} ${f(h*.025)} ${f(w*.1)} 0" stroke="#7a4a36" stroke-width=".7" fill="none"/>`
-    +`<ellipse cx="${f(cx-w*.03)}" cy="${f(y+h*.82)}" rx="${f(w*.16)}" ry="${f(h*.05)}" fill="#e8c890"/>`};
+const paMona=(x,y,w=22,h=30)=>{const f=n=>+n.toFixed(1),X=t=>f(x+w*t),Yy=t=>f(y+h*t);
+  // le paysage en sfumato : ciel pâle, montagnes bleutées, chemin, terre sombre en bas
+  let g=`<rect x="${x-2.6}" y="${y-2.6}" width="${w+5.2}" height="${h+5.2}" rx="1.6" fill="#d9a83a" stroke="${INK}" stroke-width="1.4"/><rect x="${x-1}" y="${y-1}" width="${w+2}" height="${h+2}" fill="none" stroke="#f6d27a" stroke-width=".8"/>`
+    +`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#c9cc9a"/>`
+    +`<path d="M${x} ${Yy(.36)} Q${X(.12)} ${Yy(.26)} ${X(.24)} ${Yy(.33)} L${X(.3)} ${Yy(.5)} H${x}Z" fill="#8fa48c"/><path d="M${x+w} ${Yy(.3)} Q${X(.88)} ${Yy(.22)} ${X(.76)} ${Yy(.32)} L${X(.7)} ${Yy(.5)} H${x+w}Z" fill="#8fa48c"/>`
+    +`<path d="M${x} ${Yy(.5)} H${x+w} V${y+h} H${x}Z" fill="#6f6a44"/><path d="M${X(.08)} ${Yy(.46)} q${f(w*.06)} ${f(h*.03)} ${f(w*.12)} 0" stroke="#d8c890" stroke-width=".6" fill="none"/>`;
+  // les cheveux longs et le voile, les épaules, la robe sombre, les manches couleur miel
+  g+=`<path d="M${X(.3)} ${Yy(.5)} Q${X(.28)} ${Yy(.12)} ${X(.5)} ${Yy(.1)} Q${X(.72)} ${Yy(.12)} ${X(.7)} ${Yy(.5)} Z" fill="#3a2a1e"/>`;
+  g+=`<path d="M${X(.12)} ${y+h} Q${X(.14)} ${Yy(.56)} ${X(.36)} ${Yy(.5)} H${X(.64)} Q${X(.86)} ${Yy(.56)} ${X(.88)} ${y+h}Z" fill="#2f2a22"/>`
+    +`<path d="M${X(.38)} ${Yy(.5)} Q${X(.5)} ${Yy(.6)} ${X(.62)} ${Yy(.5)}" fill="#e2bf86"/>`
+    +`<path d="M${X(.14)} ${y+h} Q${X(.2)} ${Yy(.72)} ${X(.42)} ${Yy(.8)} L${X(.4)} ${y+h}Z M${X(.86)} ${y+h} Q${X(.8)} ${Yy(.72)} ${X(.58)} ${Yy(.8)} L${X(.6)} ${y+h}Z" fill="#a87a3a"/>`
+    +`<ellipse cx="${X(.52)}" cy="${Yy(.86)}" rx="${f(w*.17)}" ry="${f(h*.055)}" fill="#e8c890"/><path d="M${X(.4)} ${Yy(.86)} q${f(w*.12)} ${f(-h*.03)} ${f(w*.24)} 0" stroke="#c9a070" stroke-width=".5" fill="none"/>`;
+  // le visage, le regard, le sourire
+  g+=`<ellipse cx="${X(.5)}" cy="${Yy(.31)}" rx="${f(w*.13)}" ry="${f(h*.14)}" fill="#e8c890"/><path d="M${X(.37)} ${Yy(.22)} Q${X(.5)} ${Yy(.14)} ${X(.63)} ${Yy(.22)}" stroke="#3a2a1e" stroke-width="${f(w*.05)}" fill="none"/>`
+    +`<circle cx="${X(.45)}" cy="${Yy(.3)}" r="${f(w*.018+.2)}" fill="#3a2a1e"/><circle cx="${X(.56)}" cy="${Yy(.3)}" r="${f(w*.018+.2)}" fill="#3a2a1e"/>`
+    +`<path d="M${X(.45)} ${Yy(.38)} Q${X(.5)} ${Yy(.4)} ${X(.56)} ${Yy(.375)}" stroke="#8a4a36" stroke-width=".7" fill="none" stroke-linecap="round"/>`;
+  return g};
 
 // le Louvre : le palais (aile à toits d'ardoise, pavillon central à dôme carré), la pyramide de verre et ses deux petites,
 // les bassins, et la bannière de la Joconde sur la façade
@@ -20,9 +30,9 @@ const paLouvre=(x,y)=>{let g=shadow(x,y-6,96);const f=n=>+n.toFixed(1);
   g+=`<path d="M${x-96} ${wy-44} L${x-88} ${wy-58} H${x+88} L${x+96} ${wy-44}Z" fill="#7d8aa0" ${BO}/>`+Array.from({length:12},(_,i)=>`<rect x="${x-82+i*14}" y="${wy-55}" width="5" height="7" rx="1.5" fill="#eef2f8" stroke="${INK}" stroke-width="1"/>`).join("");
   g+=Array.from({length:2},(_,r)=>Array.from({length:14},(_,i)=>`<rect x="${x-86+i*12.6}" y="${wy-38+r*18}" width="6" height="11" rx="2.6" fill="#bcd2e4" stroke="${INK}" stroke-width="1"/>`).join("")).join("");
   g+=`<rect x="${x-20}" y="${wy-58}" width="40" height="58" fill="url(#pa-stone)" ${BO}/><path d="M${x-24} ${wy-58} L${x-16} ${wy-80} H${x+16} L${x+24} ${wy-58}Z" fill="#6f7d94" ${BO}/><path d="M${x-8} ${wy-80} L${x} ${wy-88} L${x+8} ${wy-80}" fill="#6f7d94" ${BO2}/>`;
-  g+=`<path d="M${x-12} ${wy} V${wy-14} Q${x-12} ${wy-24} ${x} ${wy-24} Q${x+12} ${wy-24} ${x+12} ${wy-14} V${wy}Z" fill="#8a6a54" ${BO2}/>`;
+  g+=`<path d="M${x-9} ${wy} V${wy-8} Q${x-9} ${wy-15} ${x} ${wy-15} Q${x+9} ${wy-15} ${x+9} ${wy-8} V${wy}Z" fill="#8a6a54" ${BO2}/>`;
   // la bannière de la Joconde, sur le pavillon
-  g+=`<rect x="${x-13}" y="${wy-56}" width="26" height="32" fill="#c0485a" ${BO2}/>`+paMona(x-9,wy-52,18,22)+`<text x="${x}" y="${wy-27.4}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="4.4" fill="#fff">La Joconde</text>`;
+  g+=`<path d="M${x-18} ${wy-60} H${x+18} V${wy-17} L${x} ${wy-21} L${x-18} ${wy-17}Z" fill="#c0485a" ${BO2}/>`+paMona(x-12,wy-56,24,28)+`<text x="${x}" y="${wy-23}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="4.4" fill="#fff">La Joconde</text>`;
   // le pavé de la cour et les bassins
   g+=`<path d="M${x-96} ${y+4} L${x-86} ${wy+2} H${x+86} L${x+96} ${y+4}Z" fill="#efe6d6" stroke="#d8c8ac" stroke-width="1.6"/>`;
   g+=[-58,58].map(a=>`<path d="M${x+a-22} ${y-6} L${x+a-18} ${y-16} H${x+a+18} L${x+a+22} ${y-6}Z" fill="#9fd3e8" ${K2}/><path d="M${x+a-12} ${y-11} q4 -2 8 0" stroke="#fff" stroke-width="1.2" fill="none"/>`).join("");
