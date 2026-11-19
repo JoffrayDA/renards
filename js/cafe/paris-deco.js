@@ -58,8 +58,8 @@ const paBikes=(x,y)=>shadow(x,y,40)+`<rect x="${x-40}" y="${y-2}" width="80" hei
 
 // l'Arc de Triomphe : un gros bloc de pierre, la grande arche, l'attique, les bas-reliefs, le drapeau
 const paArc=(x,y)=>{let g=shadow(x,y,46);
-  g+=`<rect x="${x-38}" y="${y-74}" width="76" height="74" fill="url(#pa-stone)" ${BO}/><rect x="${x-41}" y="${y-86}" width="82" height="12" fill="url(#pa-stoneV)" ${BO}/><rect x="${x-39}" y="${y-92}" width="78" height="6" fill="url(#pa-stoneV)" ${BO2}/>`;
-  g+=`<path d="M${x-14} ${y} V${y-36} Q${x-14} ${y-52} ${x} ${y-52} Q${x+14} ${y-52} ${x+14} ${y-36} V${y}Z" fill="#7a6a5e" ${BO}/><path d="M${x-14} ${y-36} Q${x} ${y-50} ${x+14} ${y-36}" stroke="#a89280" stroke-width="1.4" fill="none"/>`;
+  g+=`<path d="M${x-38} ${y-74} H${x+38} V${y} H${x+14} V${y-36} Q${x+14} ${y-52} ${x} ${y-52} Q${x-14} ${y-52} ${x-14} ${y-36} V${y}H${x-38}Z" fill="url(#pa-stone)" ${BO}/><rect x="${x-41}" y="${y-86}" width="82" height="12" fill="url(#pa-stoneV)" ${BO}/><rect x="${x-39}" y="${y-92}" width="78" height="6" fill="url(#pa-stoneV)" ${BO2}/>`;
+  g+=`<path d="M${x-14} ${y-38} Q${x} ${y-48} ${x+14} ${y-38}" stroke="#c9b394" stroke-width="1.4" fill="none"/>`;
   g+=[-27,27].map(a=>`<rect x="${x+a-8}" y="${y-44}" width="16" height="22" rx="1" fill="#e2d3b6" stroke="#c9b394" stroke-width="1.2"/><path d="M${x+a-4} ${y-26} q4 -12 8 0 M${x+a} ${y-38} v8" stroke="#b8a282" stroke-width="1.2" fill="none"/>`).join("");
   g+=`<path d="M${x-38} ${y-62} H${x+38}" stroke="#d6c4a2" stroke-width="2"/><path d="M${x} ${y-92} V${y-112}" stroke="${INK}" stroke-width="1.6"/><path d="M${x} ${y-112} h5 v8 h-5Z" fill="#5f7fb0" stroke="${INK}" stroke-width=".8"/><path d="M${x+5} ${y-112} h5 v8 h-5Z" fill="#fff" stroke="${INK}" stroke-width=".8"/><path d="M${x+10} ${y-112} h5 v8 h-5Z" fill="#c0485a" stroke="${INK}" stroke-width=".8"/>`;
   return g};
@@ -69,3 +69,13 @@ const paCrepes=(x,y)=>shadow(x,y,26)+`<circle cx="${x-14}" cy="${y-5}" r="5" fil
   +`<rect x="${x-20}" y="${y-26}" width="40" height="8" rx="2" fill="#fffaf2" ${K2}/><text x="${x}" y="${y-20}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="5.6" fill="${INK}">Crêpes</text>`
   +`<path d="M${x-26} ${y-30} V${y-56} M${x+26} ${y-30} V${y-56}" stroke="${INK}" stroke-width="1.6"/><path d="M${x-30} ${y-56} H${x+30} L${x+26} ${y-48} H${x-26}Z" fill="#fff" ${K2}/>`+[0,1,2,3,4].map(i=>`<path d="M${x-28+i*12} ${y-56} h6 l-.8 8 h-6Z" fill="#c0485a"/>`).join("")
   +`<ellipse cx="${x+6}" cy="${y-31}" rx="9" ry="2.4" fill="#f2c27a" ${K2}/><path d="M${x+4} ${y-36} q1 -3 0 -6 M${x+9} ${y-36} q1 -3 0 -6" stroke="#c9b3a8" stroke-width="1.2" fill="none"/>`;
+
+// l'École militaire, au bout du Champ-de-Mars : longue façade de pierre, pavillon central à colonnes et dôme carré, drapeau
+const paEcole=(x,y)=>{let g=shadow(x,y,66);
+  g+=`<rect x="${x-62}" y="${y-30}" width="124" height="30" fill="url(#pa-stoneV)" ${BO2}/><path d="M${x-65} ${y-30} L${x-58} ${y-40} H${x+58} L${x+65} ${y-30}Z" fill="#7d8aa0" ${BO2}/>`
+    +Array.from({length:12},(_,i)=>i===5||i===6?"":`<rect x="${x-57+i*9.8}" y="${y-24}" width="5" height="9" rx="2" fill="#bcd2e4" stroke="${INK}" stroke-width=".9"/>`).join("");
+  g+=`<rect x="${x-17}" y="${y-44}" width="34" height="44" fill="url(#pa-stone)" ${BO2}/>`+[-12,-4,4,12].map(a=>`<rect x="${x+a-1.6}" y="${y-36}" width="3.2" height="28" fill="#fffaf2" stroke="#c9b394" stroke-width=".8"/>`).join("")
+    +`<path d="M${x-19} ${y-44} L${x} ${y-54} L${x+19} ${y-44}Z" fill="#f6eedf" ${BO2}/><path d="M${x-10} ${y-54} Q${x-10} ${y-66} ${x} ${y-68} Q${x+10} ${y-66} ${x+10} ${y-54}Z" fill="#6f7d94" ${BO2}/>`
+    +`<path d="M${x} ${y-68} V${y-80}" stroke="${INK}" stroke-width="1.4"/><path d="M${x} ${y-80} h4 v6 h-4Z" fill="#5f7fb0" stroke="${INK}" stroke-width=".7"/><path d="M${x+4} ${y-80} h4 v6 h-4Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><path d="M${x+8} ${y-80} h4 v6 h-4Z" fill="#c0485a" stroke="${INK}" stroke-width=".7"/>`
+    +`<path d="M${x-6} ${y} V${y-10} Q${x} ${y-15} ${x+6} ${y-10} V${y}Z" fill="#8a6a54" stroke="${INK}" stroke-width="1.2"/>`;
+  return g};

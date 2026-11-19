@@ -336,8 +336,14 @@ function paMapSVG(L){
   s+=[[0,64],[48,80],[92,58],[146,84],[204,66],[258,82],[314,60],[356,76]].map(([x,h],i)=>`<path d="M${x} ${hz} V${hz-h} L${x+8} ${hz-h-15} H${x+42} L${x+50} ${hz-h} V${hz}Z" fill="${i%2?"#d6dbe6":"#cbd2df"}" stroke="${INK}" stroke-width="1.8"/>`+[0,1].map(j=>`<rect x="${x+12+j*16}" y="${hz-h-11}" width="7" height="7" rx="2.5" fill="#f2f5fa" stroke="${INK}" stroke-width="1.2"/>`).join("")+(i%2?`<rect x="${x+36}" y="${hz-h-26}" width="6" height="12" fill="#d98a6a" stroke="${INK}" stroke-width="1.4"/>`:"")).join("");
   s+=`<g><animateTransform attributeName="transform" type="translate" values="-60 0;460 -10" dur="26s" repeatCount="indefinite"/>${[[0,hz-180],[14,hz-188],[26,hz-178]].map(([x,y])=>`<path d="M${x-6} ${y} q3 -4 6 0 q3 -4 6 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join("")}</g>`;
   s+=`<path d="M0 ${hz} H400" stroke="${INK}" stroke-width="2"/>`;
-  // le Champ-de-Mars : une grande pelouse bordée d'allées
-  s+=`<path d="M232 ${Y(u7+40)} Q318 ${Y(u7+16)} 410 ${Y(u7+30)} V${Y(u12-4)} Q326 ${Y(u12+8)} 246 ${Y(u12-26)}Z" fill="url(#pa-grass)" ${BO}/><path d="M248 ${Y(u7+56)} Q320 ${Y(u7+34)} 404 ${Y(u7+46)}" stroke="#bfdc9c" stroke-width="3" fill="none"/>`;
+  // le Champ-de-Mars, comme le vrai (20/11/2026, Joffray : l'ancienne pelouse était « beaucoup trop grande et vide ») : une esplanade
+  // de sable, deux longues pelouses en parterres de chaque côté de l'allée centrale, la tour au bout côté Seine, l'École militaire
+  // à l'autre bout ; les rangées d'arbres, les bancs et les pique-niques sont posés plus bas (at)
+  {const a=u7+40,b=u12-30;s+=`<rect x="226" y="${Y(b)}" width="172" height="${b-a}" rx="10" fill="#efe2c8" stroke="#d8c8a8" stroke-width="2"/>`;
+    const cut=[a+70,a+(b-a)*.42,a+(b-a)*.72,b-46];
+    for(const [L0,R0] of [[242,304],[328,388]])for(let i=0;i<3;i++){const lo=cut[i]+(i?8:0),hi=cut[i+1]-(i<2?8:0);
+      s+=`<rect x="${L0}" y="${Y(hi)}" width="${R0-L0}" height="${hi-lo}" rx="5" fill="url(#pa-grass)" ${K2}/><rect x="${L0+5}" y="${Y(hi)+5}" width="${R0-L0-10}" height="${hi-lo-10}" rx="3" fill="none" stroke="#bfdc9c" stroke-width="2"/>`}
+    s+=[cut[1],cut[2]].map(u=>`<circle cx="316" cy="${Y(u)}" r="7" fill="url(#pa-grass)" ${K2}/>`+[0,1,2,3,4].map(i=>`<circle cx="${(316+Math.cos(i*1.26)*4).toFixed(1)}" cy="${(Y(u)+Math.sin(i*1.26)*4).toFixed(1)}" r="1.8" fill="${i%2?"#f49ab0":"#fff"}"/>`).join("")).join("")}
   // la butte Montmartre : une colline arrondie, plus claire au sommet
   s+=`<path d="M-10 ${Y(u13+6)} Q-4 ${Y(u18-20)} 96 ${Y(u18-24)} Q190 ${Y(u18-40)} 206 ${Y(u18-200)} Q214 ${Y(u13+90)} 176 ${Y(u13+24)} Q96 ${Y(u13-24)} -10 ${Y(u13+6)}Z" fill="url(#pa-hill)" ${BO}/>`;
   s+=`<path d="M70 ${Y(u13+20)} Q40 ${Y(u13+90)} 90 ${Y(u13+130)} Q150 ${Y(u13+170)} 100 ${Y(u13+210)} Q70 ${Y(u13+236)} 96 ${Y(u13+262)}" fill="none" stroke="${INK}" stroke-width="15" stroke-linecap="round"/><path d="M70 ${Y(u13+20)} Q40 ${Y(u13+90)} 90 ${Y(u13+130)} Q150 ${Y(u13+170)} 100 ${Y(u13+210)} Q70 ${Y(u13+236)} 96 ${Y(u13+262)}" fill="none" stroke="#efe4d2" stroke-width="11" stroke-linecap="round"/><path d="M70 ${Y(u13+20)} Q40 ${Y(u13+90)} 90 ${Y(u13+130)} Q150 ${Y(u13+170)} 100 ${Y(u13+210)} Q70 ${Y(u13+236)} 96 ${Y(u13+262)}" fill="none" stroke="#d8c8ac" stroke-width="2" stroke-dasharray="3 4"/>`;
@@ -355,17 +361,19 @@ function paMapSVG(L){
   const k=way.findIndex(p=>p.d===itCur());if(k>0)s+=`<path d="${smooth(pts.slice(0,k+1))}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   // le pont de pierre : tablier, balustrade, deux arches sur l'eau, un lampadaire à chaque bout
   s+=`<path d="M${bx-38} ${sy-40} H${bx+38} V${sy+40} H${bx-38}Z" fill="url(#pa-stoneV)" ${BO}/><path d="M${bx-30} ${sy-40} V${sy+40} M${bx+30} ${sy-40} V${sy+40}" stroke="#d8c8a8" stroke-width="2"/>`
-    +[-1,1].map(sd=>`<path d="M${bx+sd*38} ${sy-40} V${sy+40}" stroke="${INK}" stroke-width="4"/>`+Array.from({length:9},(_,i)=>`<rect x="${bx+sd*38-2.4}" y="${sy-37+i*9}" width="4.8" height="5" rx="1.6" fill="#f6eedf" stroke="${INK}" stroke-width="1.1"/>`).join("")).join("")
-    +[-1,1].map(sd=>`<path d="M${bx+sd*44} ${sy+2} Q${bx+sd*62} ${sy-16} ${bx+sd*80} ${sy+2}" fill="none" stroke="#e9dcc4" stroke-width="5"/>`).join("");
+    +[-1,1].map(sd=>`<path d="M${bx+sd*38} ${sy-40} V${sy+40}" stroke="${INK}" stroke-width="4"/>`+Array.from({length:9},(_,i)=>`<rect x="${bx+sd*38-2.4}" y="${sy-37+i*9}" width="4.8" height="5" rx="1.6" fill="#f6eedf" stroke="${INK}" stroke-width="1.1"/>`).join("")).join("");
   // ce qui est posé, chaque chose une fois
   const it=[];const at=(x,u,f)=>it.push({x,u,f});
   // la rue : immeubles des deux côtés, métro, colonne Morris, terrasse, lampadaires, platanes
   [[0,150,62,100,"#c0485a"],[338,180,66,92,"#5f7fb0"],[0,370,58,84,"#d98a6a"],[340,420,64,88,"#3f7a5a"]].forEach(([x,u,w,h,c])=>at(x+w/2,Z(u),(cx,y)=>paHaus(x,y-h,w,h,c)));
   at(300,Z(282),paMetro);at(286,Z(440),paMorris);at(252,Z(190),paLamp);at(168,Z(566),paLamp);at(300,Z(522),paTable);at(40,Z(248),(x,y)=>paTree(x,y,.95));at(372,Z(330),(x,y)=>paTree(x,y,.85));
   // les quais : bouquinistes, un platane
-  at(36,L.seine-60,(x,y)=>paBouq(x-17,y));at(84,L.seine-60,(x,y)=>paBouq(x-17,y));at(132,L.seine-60,(x,y)=>paBouq(x-17,y));at(380,L.seine-64,(x,y)=>paTree(x,y,.75));
+  at(36,L.seine-60,(x,y)=>paBouq(x-17,y));at(84,L.seine-60,(x,y)=>paBouq(x-17,y));at(132,L.seine-60,(x,y)=>paBouq(x-17,y));at(348,L.seine-60,(x,y)=>paBouq(x-17,y));at(386,L.seine-60,(x,y)=>paBouq(x-17,y));at(182,L.seine-60,(x,y)=>paBouq(x-17,y));
   // le Champ-de-Mars : la tour, des platanes, un banc, un lampadaire
-  at(320,u7+70,(x,y)=>paEiffel(x,y,360));at(30,u7+60,(x,y)=>paTree(x,y,.8));at(384,u7+24,(x,y)=>paTree(x,y,.6));at(36,u12-140,(x,y)=>paTree(x,y,.8));at(232,u12-176,paBench);at(54,u12+6,paLamp);
+  at(320,u7+70,(x,y)=>paEiffel(x,y,360));at(30,u7+60,(x,y)=>paTree(x,y,.8));at(36,u12-140,(x,y)=>paTree(x,y,.8));at(54,u12+6,paLamp);
+  for(let u=u7+120;u<u12-60;u+=58){at(232,u,(x,y)=>paTree(x,y,.5));at(394,u,(x,y)=>paTree(x,y,.5))}
+  at(314,u12-34,paEcole);at(272,u7+300,(x,y)=>`<g transform="translate(${x} ${y}) scale(.6) translate(${-x} ${-y})">${itPicnic(x,y)}</g>`);
+  at(358,u7+420,(x,y)=>`<g transform="translate(${x} ${y}) scale(.55) translate(${-x} ${-y})">${itPicnic(x,y)}</g>`);
   // Montmartre : le Sacré-Cœur, les escaliers, le moulin, deux maisons, les chevalets
   at(96,u13+266,(x,y)=>paSacre(x,y,1.1));at(104,u13+100,(x,y)=>paStairs(x,y));at(160,u13+340,(x,y)=>paEasel(x,y,"#9fc0e8"));at(64,u18-34,(x,y)=>paEasel(x,y,"#f49ab0"));
   at(158,u18-80,paMill);at(70,u13-6,paMoulinRouge);at(118,u13+150,paTertre);at(150,u13+40,(x,y)=>paVigne(x-28,y));
@@ -377,10 +385,10 @@ function paMapSVG(L){
   // devant le café : la boulangerie de Firmin, en face ; un platane
   at(356,cafe.u+20,paBakery);at(40,cafe.u-40,(x,y)=>paTree(x,y,.85));
   // entre la butte et le café : la fontaine Wallace, le fleuriste ; entre la tour et la butte : le manège
-  at(40,u18+120,paWallace);at(66,u18+238,paFlowers);at(358,u12+6,paCarousel);at(26,u18+186,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
+  at(40,u18+120,paWallace);at(66,u18+238,paFlowers);at(362,u12+92,paCarousel);at(26,u18+186,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
   // ce qui respire Paris (20/11/2026, paris-deco.js) : la mode, les vélos, les lampadaires, le Louvre et la Joconde, l'Arc de Triomphe
-  at(50,640,paBoutique);at(250,420,paBikes);at(42,300,(x,y)=>paBike(x,y,"#c0485a",1));at(360,650,(x,y)=>paBike(x,y,"#5f7fb0",1,1));
-  at(330,690,paLamp);at(22,560,paLamp);at(380,1480,paLamp);at(40,2330,paLamp);at(250,560,paLamp);
+  at(50,585,paBoutique);at(250,420,paBikes);at(42,300,(x,y)=>paBike(x,y,"#c0485a",1));at(360,650,(x,y)=>paBike(x,y,"#5f7fb0",1,1));
+  at(330,690,paLamp);at(214,1450,paLamp);at(40,2330,paLamp);at(250,560,paLamp);
   at(42,1240,paCrepes);at(40,1360,(x,y)=>paBike(x,y,"#4f8a6a",1));
   at(358,1945,paArc);at(300,2395,(x,y)=>`<g transform="translate(${x} ${y}) scale(.85) translate(${-x} ${-y})">${paLouvre(x,y)}</g>`);
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
