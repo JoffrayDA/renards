@@ -360,7 +360,7 @@ function paMapSVG(L){
   // ce qui est posé, chaque chose une fois
   const it=[];const at=(x,u,f)=>it.push({x,u,f});
   // la rue : immeubles des deux côtés, métro, colonne Morris, terrasse, lampadaires, platanes
-  [[0,150,62,100,"#c0485a"],[338,180,66,92,"#5f7fb0"],[0,370,58,84,"#d98a6a"],[340,420,64,88,"#3f7a5a"],[0,520,56,64,"#5f7fb0"]].forEach(([x,u,w,h,c])=>at(x+w/2,Z(u),(cx,y)=>paHaus(x,y-h,w,h,c)));
+  [[0,150,62,100,"#c0485a"],[338,180,66,92,"#5f7fb0"],[0,370,58,84,"#d98a6a"],[340,420,64,88,"#3f7a5a"]].forEach(([x,u,w,h,c])=>at(x+w/2,Z(u),(cx,y)=>paHaus(x,y-h,w,h,c)));
   at(300,Z(282),paMetro);at(286,Z(440),paMorris);at(252,Z(190),paLamp);at(168,Z(566),paLamp);at(300,Z(522),paTable);at(40,Z(248),(x,y)=>paTree(x,y,.95));at(372,Z(330),(x,y)=>paTree(x,y,.85));
   // les quais : bouquinistes, un platane
   at(36,L.seine-60,(x,y)=>paBouq(x-17,y));at(84,L.seine-60,(x,y)=>paBouq(x-17,y));at(132,L.seine-60,(x,y)=>paBouq(x-17,y));at(380,L.seine-64,(x,y)=>paTree(x,y,.75));
@@ -377,7 +377,12 @@ function paMapSVG(L){
   // devant le café : la boulangerie de Firmin, en face ; un platane
   at(356,cafe.u+20,paBakery);at(40,cafe.u-40,(x,y)=>paTree(x,y,.85));
   // entre la butte et le café : la fontaine Wallace, le fleuriste ; entre la tour et la butte : le manège
-  at(290,u18+60,paWallace);at(66,u18+238,paFlowers);at(358,u12+6,paCarousel);at(250,u18+150,(x,y)=>paTree(x,y,.8,"pa-leaf2"));
+  at(40,u18+120,paWallace);at(66,u18+238,paFlowers);at(358,u12+6,paCarousel);at(26,u18+186,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
+  // ce qui respire Paris (20/11/2026, paris-deco.js) : la mode, les vélos, les lampadaires, le Louvre et la Joconde, l'Arc de Triomphe
+  at(50,640,paBoutique);at(250,420,paBikes);at(42,300,(x,y)=>paBike(x,y,"#c0485a",1));at(360,650,(x,y)=>paBike(x,y,"#5f7fb0",1,1));
+  at(330,690,paLamp);at(22,560,paLamp);at(380,1480,paLamp);at(40,2330,paLamp);at(250,560,paLamp);
+  at(42,1240,paCrepes);at(40,1360,(x,y)=>paBike(x,y,"#4f8a6a",1));
+  at(358,1945,paArc);at(300,2395,(x,y)=>`<g transform="translate(${x} ${y}) scale(.85) translate(${-x} ${-y})">${paLouvre(x,y)}</g>`);
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=paArchSVG(200,Y(60))+paCafeSVG(cafe.x,Y(cafe.u));
   // le panneau vers Kyoto (kyoto.js), au-dessus du café à droite, une fois les 30 journées réussies
