@@ -296,17 +296,19 @@ function kyMapSVG(L){
   at(300,282,kyToro);at(110,250,kyToro);at(250,610,kyToro);at(300,520,(x,y)=>kySakura(x,y,.9));at(40,250,(x,y)=>kySakura(x,y,.8));
   // ajouts du 11/11/2026 (Joffray : « le Japon c'est trop trop vide »), placés entre les détours du chemin
   at(118,330,kyNodate);at(150,462,(x,y)=>kySakura(x,y,.85));at(272,598,kyRickshaw);at(352,560,(x,y)=>kyMomiji(x,y,.9));at(56,470,kyToro);
-  at(150,960,(x,y)=>kyMomiji(x,y,.85));at(330,1150,kyZen);at(370,1300,(x,y)=>kyMomiji(x,y,1));at(300,1020,(x,y)=>kyBamboo(x,y,.7));
-  at(110,1600,(x,y)=>kyMomiji(x,y,.9));at(320,1830,kyHokora);at(372,1900,kyToro);at(330,1960,(x,y)=>kyMomiji(x,y,.8));at(340,2090,kyEma);at(40,1840,(x,y)=>kyBamboo(x,y,.7));
-  at(60,856,(x,y)=>kySakura(x,y,.8));at(132,884,kyToro);at(360,1062,(x,y)=>kySakura(x,y,.75));at(350,1400,kyToro);at(150,1706,kyToro);at(64,2150,(x,y)=>kyMomiji(x,y,.85));at(170,2196,(x,y)=>kySakura(x,y,.7));
+  at(150,960,(x,y)=>kyMomiji(x,y,.85));at(330,1150,kyZen);at(386,1262,(x,y)=>kyMomiji(x,y,.8));at(300,1020,(x,y)=>kyBamboo(x,y,.7));
+  at(320,1830,kyHokora);at(372,1900,kyToro);at(372,2104,kyEma);at(40,1840,(x,y)=>kyBamboo(x,y,.7));
+  at(60,856,(x,y)=>kySakura(x,y,.8));at(132,884,kyToro);at(360,1062,(x,y)=>kySakura(x,y,.75));at(350,1400,kyToro);at(176,1690,kyToro);at(170,2196,(x,y)=>kySakura(x,y,.7));
   at(340,2500,kyKingyo);at(44,2384,kyTaiko);at(355,2300,(x,y)=>kyMomiji(x,y,.8));
   // les bambous et le pavillon d'or
   at(60,u7+90,(x,y)=>kyBamboo(x,y,1));at(26,u7+40,(x,y)=>kyBamboo(x,y,.8));at(160,u7+160,(x,y)=>kyBamboo(x,y,.9));at(36,u12-60,(x,y)=>kyBamboo(x,y,1.1));at(380,u7+60,(x,y)=>kyPine(x,y,.8));
   at(110,u12-180,(x,y)=>kyKinkaku(x,y));at(370,u12-40,(x,y)=>kyPine(x,y,.9));at(380,u12+30,kyToro);
   // la montagne d'Inari : renards de pierre, le sanctuaire en haut ; les torii sont posés sur le chemin plus bas
-  at(250,u13+60,(x,y)=>kyFoxStatue(x,y,1));at(340,u13+40,(x,y)=>kyFoxStatue(x,y,-1));at(100,u18+20,kyShrine);at(372,u13+200,(x,y)=>kyPine(x,y,.8));at(40,u13+120,(x,y)=>kySakura(x,y,.9));at(30,u18-60,(x,y)=>kyPine(x,y,.8));at(160,u13+230,kyToro);
+  at(250,u13+60,(x,y)=>kyFoxStatue(x,y,1));at(340,u13+40,(x,y)=>kyFoxStatue(x,y,-1));at(100,u18+20,kyShrine);at(372,u13+200,(x,y)=>kyPine(x,y,.8));at(30,u13+180,(x,y)=>kySakura(x,y,.75));at(30,u18-60,(x,y)=>kyPine(x,y,.8));at(160,u13+230,kyToro);
   // devant le salon de thé : les stands du Matsuri, une guirlande de lanternes
   at(70,cafe.u-90,(x,y)=>kyYatai(x,y,"#e0503c"));at(330,cafe.u-96,(x,y)=>kyYatai(x,y,"#7a9ad8"));at(60,cafe.u-200,(x,y)=>kySakura(x,y,1));at(350,u18+150,(x,y)=>kySakura(x,y,.8));
+  // le Japon d'autrefois (20/11/2026, kyoto-deco.js) : terrain de sumo, château, grand Bouddha, temple sur pilotis, Jizō
+  at(290,1210,kyDohyo);at(84,1612,(x,y)=>kyCastle(x,y,.95));at(58,2036,kyDaibutsu);at(326,1960,kyKiyomizu);at(352,1720,kyJizo);
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   // le chemin des torii : une porte rouge tous les 34 pas, sauf sur les journées
   for(let u=u13-60;u<u18+40;u+=34){if(P.some(p=>Math.abs(p.u-u)<24))continue;s+=kyTorii(pathX(way,u),Y(u)+14,.82)}
