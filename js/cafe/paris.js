@@ -324,7 +324,7 @@ const paBakeryAt=(x,y)=>{const L=x-42,R=x+42;let g=shadow(x,y,50);
 function paArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#a9b6c6" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Paris</text>`}
 function paMapSVG(L){
   const {P,way,H,cafe,Z,V}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
-  const u7=V(7),u12=V(12),u13=V(13),u18=V(18),mu=u13+110; // mu : Montmartre, remonté dans la colline (20/11/2026, Joffray)
+  const u7=V(7),u12=V(12),u13=V(13),u18=V(18),mu=u13+45; // mu : Montmartre, posé dans la colline (20/11/2026, Joffray)
   const defs=PA_DEFS+`<pattern id="pa-pave" width="44" height="30" patternUnits="userSpaceOnUse"><g fill="none" stroke="#dccfbd" stroke-width="2"><rect x="2" y="2" width="18" height="11" rx="5"/><rect x="24" y="2" width="18" height="11" rx="5"/><rect x="-9" y="17" width="18" height="11" rx="5"/><rect x="13" y="17" width="18" height="11" rx="5"/><rect x="35" y="17" width="18" height="11" rx="5"/></g></pattern>
     <linearGradient id="pa-gnd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}"><stop offset="0" stop-color="#efe3d0"/><stop offset=".5" stop-color="#f2e8da"/><stop offset="1" stop-color="#ece2d4"/></linearGradient>
     <linearGradient id="pa-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4b9c4"/><stop offset=".55" stop-color="#fad8cc"/><stop offset="1" stop-color="#fdeee0"/></linearGradient>
@@ -372,13 +372,14 @@ function paMapSVG(L){
   // le Champ-de-Mars : la tour, des platanes, un banc, un lampadaire
   at(320,u7+70,(x,y)=>paEiffel(x,y,360));at(30,u7+60,(x,y)=>paTree(x,y,.8));at(36,u12-140,(x,y)=>paTree(x,y,.8));at(54,u12+6,paLamp);
   for(let u=u7+120;u<u12-60;u+=58){at(232,u,(x,y)=>paTree(x,y,.5));at(394,u,(x,y)=>paTree(x,y,.5))}
-  at(314,u12-34,paEcole);at(272,u7+300,(x,y)=>`<g transform="translate(${x} ${y}) scale(.6) translate(${-x} ${-y})">${itPicnic(x,y)}</g>`);
+  at(314,u12-34,paEcole);
+  [[268,u7+148],[374,u7+138],[372,u7+272],[262,u7+400],[366,u7+452]].forEach(([x,u],i)=>at(x,u,(x,y)=>paPicnicTable(x,y,i%2)));at(272,u7+300,(x,y)=>`<g transform="translate(${x} ${y}) scale(.6) translate(${-x} ${-y})">${itPicnic(x,y)}</g>`);
   at(358,u7+420,(x,y)=>`<g transform="translate(${x} ${y}) scale(.55) translate(${-x} ${-y})">${itPicnic(x,y)}</g>`);
   // Montmartre : le Sacré-Cœur, les escaliers, le moulin, deux maisons, les chevalets
   at(96,mu+266,(x,y)=>paSacre(x,y,1.1));at(104,mu+100,(x,y)=>paStairs(x,y));at(160,mu+340,(x,y)=>paEasel(x,y,"#9fc0e8"));at(64,u18-34,(x,y)=>paEasel(x,y,"#f49ab0"));
-  at(158,u18-80,paMill);at(70,mu-6,paMoulinRouge);at(118,mu+150,paTertre);at(150,mu+40,(x,y)=>paVigne(x-28,y));
+  at(158,u18-80,paMill);at(70,mu-6,paMoulinRouge);at(118,mu+150,paTertre);at(84,mu+478,(x,y)=>paVigne(x-28,y));
   // la ruelle pavée qui monte vers le Sacré-Cœur, la Maison Rose, des arbres de la butte
-  at(60,mu+226,paMaisonRose);at(178,mu+260,(x,y)=>paTree(x,y,.7));at(14,mu+250,(x,y)=>paTree(x,y,.65,"pa-leaf2"));at(176,mu+92,(x,y)=>paTree(x,y,.6));
+  at(158,mu+36,paMaisonRose);at(178,mu+260,(x,y)=>paTree(x,y,.7));at(14,mu+250,(x,y)=>paTree(x,y,.65,"pa-leaf2"));at(40,mu+226,(x,y)=>paTree(x,y,.6));
   // les maisons qui montent la butte, serrées
   [[6,mu+60,24,40,"#f6e8d0","#7fb4d8"],[32,mu+70,22,52,"#f2dcc0","#f2a2b0"],[140,mu+196,24,44,"#f8ecd8","#8fbf5a"],[166,mu+206,20,34,"#efd9be","#c9a8ec"],[8,mu+170,22,46,"#f4e2c8","#e2546e"],[30,mu+176,20,36,"#f8ecd8","#7fb4d8"],[156,mu+120,22,30,"#f6e8d0","#f2a2b0"]].forEach(([hx,hu,w,h,c,sh])=>at(hx+w/2,hu,(cx,y)=>paMontHouse(hx,y,w,h,c,sh)));
   at(370,u13+150,(x,y)=>paTree(x,y,.75));at(372,u18-44,(x,y)=>paTree(x,y,.7));at(30,u18-120,(x,y)=>paTree(x,y,.7,"pa-leaf2"));

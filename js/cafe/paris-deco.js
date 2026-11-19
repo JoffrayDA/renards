@@ -89,3 +89,12 @@ const paEcole=(x,y)=>{let g=shadow(x,y,66);
     +`<path d="M${x} ${y-68} V${y-80}" stroke="${INK}" stroke-width="1.4"/><path d="M${x} ${y-80} h4 v6 h-4Z" fill="#5f7fb0" stroke="${INK}" stroke-width=".7"/><path d="M${x+4} ${y-80} h4 v6 h-4Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><path d="M${x+8} ${y-80} h4 v6 h-4Z" fill="#c0485a" stroke="${INK}" stroke-width=".7"/>`
     +`<path d="M${x-6} ${y} V${y-10} Q${x} ${y-15} ${x+6} ${y-10} V${y}Z" fill="#8a6a54" stroke="${INK}" stroke-width="1.2"/>`;
   return g};
+
+// une table de pique-nique en bois, nappe à carreaux, deux bancs, et ce qu'il faut dessus (20/11/2026, autour de la tour Eiffel)
+const paPicnicTable=(x,y,v=0)=>{let g=shadow(x,y,22);
+  g+=[-1,1].map(sd=>`<rect x="${x-20}" y="${y-(sd<0?3:15)}" width="40" height="4" rx="1.5" fill="#b8824a" ${K2}/>`).join("");
+  g+=`<path d="M${x-14} ${y} L${x-10} ${y-9} M${x+14} ${y} L${x+10} ${y-9}" stroke="#8a5a34" stroke-width="2.4" stroke-linecap="round"/>`;
+  g+=`<path d="M${x-18} ${y-9} H${x+18} L${x+15} ${y-17} H${x-15}Z" fill="#fff" ${K2}/>`+[0,1,2,3,4,5].map(i=>`<path d="M${x-16+i*6} ${y-9} l1.5 -8 h3 l-1.5 8Z" fill="${v?"#5f7fb0":"#f47f7f"}" opacity=".8"/>`).join("")+`<path d="M${x-18} ${y-13} H${x+18}" stroke="${v?"#5f7fb0":"#f47f7f"}" stroke-width="2.4" opacity=".5"/><path d="M${x-18} ${y-9} H${x+18} L${x+15} ${y-17} H${x-15}Z" fill="none" ${K2}/>`;
+  g+=v?`<path d="M${x-8} ${y-15} l14 -4" stroke="#e2a45e" stroke-width="3.4" stroke-linecap="round"/><circle cx="${x+9}" cy="${y-17}" r="2.4" fill="#e8434f" stroke="${INK}" stroke-width=".8"/>`
+    :`<rect x="${x-6}" y="${y-22}" width="10" height="7" rx="2" fill="#d9a46a" stroke="${INK}" stroke-width="1"/><path d="M${x-5} ${y-22} q4 -6 8 0" fill="none" stroke="${INK}" stroke-width="1"/><path d="M${x+8} ${y-15} v-7 h3 v7Z" fill="#7fb06a" stroke="${INK}" stroke-width=".8"/>`;
+  return g};
