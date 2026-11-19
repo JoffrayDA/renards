@@ -311,3 +311,25 @@ const kySakuraC=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(
   g+=kyBlob(P,X,Yy,k,"#e98aa6","#f6b4c6","#ffdce6");
   g+=[[30,-50],[-30,-66],[14,-68],[44,-48]].map(([a,b])=>`<ellipse cx="${X(a)}" cy="${Yy(b)}" rx="${kyF(2.4*k)}" ry="${kyF(1.2*k)}" fill="#c75a4a" stroke="${INK}" stroke-width=".6"/>`).join("");
   return g+kyPetals(x,y,k)};
+
+// trois autres propositions (20/11/2026, Joffray : « j'adore le C mais pas assez touffu », « un mix de B et C ») :
+// D : le C bien touffu, E : tronc du C et étages plats du B, F : le C touffu avec des grappes qui retombent
+const kyTrunkC=(X,Yy,k)=>{const tr=`M${X(-4)} ${Yy(0)} C${X(-10)} ${Yy(-14)} ${X(6)} ${Yy(-22)} ${X(-2)} ${Yy(-36)} M${X(-2)} ${Yy(-33)} Q${X(14)} ${Yy(-44)} ${X(40)} ${Yy(-42)} M${X(-2)} ${Yy(-36)} Q${X(-14)} ${Yy(-50)} ${X(-26)} ${Yy(-58)} M${X(4)} ${Yy(-38)} Q${X(10)} ${Yy(-50)} ${X(8)} ${Yy(-62)}`;
+  return `<path d="${tr}" fill="none" stroke="${INK}" stroke-width="${kyF(8.6*k)}" stroke-linecap="round"/><path d="${tr}" fill="none" stroke="url(#ky-trunk)" stroke-width="${kyF(6*k)}" stroke-linecap="round"/><path d="M${X(-6)} ${Yy(-6)} q${kyF(2*k)} ${kyF(-6*k)} ${kyF(-1*k)} ${kyF(-10*k)}" stroke="#a87060" stroke-width="${kyF(1.2*k)}" fill="none"/>`};
+// un nuage de fleurs : n petites bosses serrées autour d'un centre
+const kyCloud=(cx,cy,w,h,n,r)=>Array.from({length:n},(_,i)=>{const a=i/n*Math.PI*2+i*.7,d=.55+((i*37)%10)/22;return [cx+Math.cos(a)*w*d*.5,cy+Math.sin(a)*h*d*.5,r*(.8+((i*13)%5)/12),r*(.7+((i*7)%4)/12)]}).concat([[cx,cy,w*.36,h*.4]]);
+const kySakuraD=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(x,y,36*k)+kyTrunkC(X,Yy,k);
+  const P=[...kyCloud(34,-46,30,16,8,6),...kyCloud(14,-54,26,16,7,6),...kyCloud(-24,-62,30,18,8,6.4),...kyCloud(-6,-72,24,14,7,5.6),...kyCloud(8,-64,22,14,6,5.6),...kyCloud(-34,-52,18,12,5,5),...kyCloud(46,-40,14,10,4,4.6)];
+  g+=kyBlob(P,X,Yy,k,"#e98aa6","#f6b4c6","#ffdce6");
+  g+=[[30,-52],[-30,-68],[14,-70],[48,-44],[-8,-58]].map(([a,b])=>`<ellipse cx="${X(a)}" cy="${Yy(b)}" rx="${kyF(2.4*k)}" ry="${kyF(1.2*k)}" fill="#c75a4a" stroke="${INK}" stroke-width=".6"/>`).join("");
+  return g+kyPetals(x,y,k)};
+const kySakuraE=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(x,y,40*k)+kyTrunkC(X,Yy,k);
+  g+=kyBlob([[40,-44,16,7],[22,-48,20,9],[-26,-60,20,8],[-40,-55,12,6],[6,-58,16,7],[-10,-68,18,8],[10,-72,14,6],[52,-41,9,5],[-16,-52,12,6]],X,Yy,k,"#f2adc2","#fbd4df","#fff2f6");
+  g+=[[-30,-50],[0,-50],[34,-38],[-14,-60],[18,-64]].map(([a,b])=>`<circle cx="${X(a)}" cy="${Yy(b)}" r="${kyF(1.5*k)}" fill="#f2adc2" stroke="${INK}" stroke-width=".6"/>`).join("");
+  return g+kyPetals(x,y,k)};
+const kySakuraF=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(x,y,36*k)+kyTrunkC(X,Yy,k);
+  const D=[[44,-40],[36,-40],[26,-44],[16,-48],[-16,-54],[-26,-56],[-36,-50],[-6,-62],[6,-58]],dr=D.map(([a,b],i)=>`M${X(a)} ${Yy(b)} q${kyF(1*k)} ${kyF(6*k)} ${kyF((i%2?-1:1)*1.4*k)} ${kyF((10+(i*5)%7)*k)}`).join(" ");
+  g+=`<path d="${dr}" fill="none" stroke="${INK}" stroke-width="${kyF(5.4*k)}" stroke-linecap="round"/><path d="${dr}" fill="none" stroke="#ef9fb6" stroke-width="${kyF(3.2*k)}" stroke-linecap="round"/><path d="${dr}" fill="none" stroke="#ffe0e8" stroke-width="${kyF(1.4*k)}" stroke-linecap="round" stroke-dasharray="${kyF(.1*k)} ${kyF(3.4*k)}"/>`;
+  const P=[...kyCloud(32,-46,30,14,8,5.6),...kyCloud(12,-54,24,14,6,5.6),...kyCloud(-24,-60,28,16,8,6),...kyCloud(-4,-70,22,12,6,5.4),...kyCloud(-36,-52,16,10,5,4.6)];
+  g+=kyBlob(P,X,Yy,k,"#e98aa6","#f6b4c6","#ffdce6");
+  return g+kyPetals(x,y,k)};

@@ -126,7 +126,7 @@ function update(dt){
   for(const k in G.st)for(const s of G.st[k])if(s.busy){s.t+=dt*sp;if(s.t>=REC[k].time){s.busy=0;s.ready=1;dirty=true}}
   for(const o of G.ovens){
   if(o.state==="bake"){o.t+=dt;if(o.t>=o.dur){o.state="ready";o.burn=o.burnMax=[4.5,5.2,6][lv("fourpro")];dirty=true;bip("ding")}}
-  else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;bip("burn");S.coins=Math.max(0,S.coins-lost);G.gain-=lost;G.cost+=lost;toast(`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
+  else if(o.state==="ready"){o.burn-=dt;if(o.burn<=0){const lost=Math.round(REC[o.r].cost*batchOf(o.r));o.state="burnt";o.t=1.4;dirty=true;bip("burn");if(!G.rush){S.coins=Math.max(0,S.coins-lost);G.gain-=lost}G.cost+=lost;toast(G.rush?`Oh non, les ${REC[o.r].pl} ont brûlé !`:`Oh non, les ${REC[o.r].pl} ont brûlé ! −${lost} pièces d'ingrédients`)}}
   else if(o.state==="burnt"){o.t-=dt;if(o.t<=0){o.state="idle";dirty=true}}
   }
   // le compagnon (Petit Pois par défaut) : toutes les 0,5 s, il apporte au client le plus pressé ce qui l'attend sur le plateau
@@ -169,7 +169,7 @@ function complete(c){
   const cb=G.combo>=3?Math.min(G.combo,6)-1:0;
   let tot=base+tip+cb;if(c.vip){tot*=3;G.vipServed++;qEvent("vip")}
   // la recette (objectif, étoiles) compte le prix payé ; on ne garde en pièces que le bénéfice, et la moitié quand on rejoue (30 % avant le 30/10/2026)
-  const cost=c.order.reduce((a,o)=>a+itemCost(itemKey(o)),0),gain=Math.max(0,Math.round((tot-cost)*(G.replay?.4:1)));
+  const cost=c.order.reduce((a,o)=>a+itemCost(itemKey(o)),0),gain=G.rush?0:Math.max(0,Math.round((tot-cost)*(G.replay?.4:1)));
   G.earned+=tot;G.cost+=cost;G.gain+=gain;S.coins+=gain;S.total+=gain;G.served++;S.served++;
   c.order.forEach(o=>qEvent("serve",1,o.r));qEvent("orders");if(c.order.length>=3)qEvent("big");
   if(frac>=.6)qEvent("green");

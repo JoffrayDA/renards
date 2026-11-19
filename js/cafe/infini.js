@@ -3,10 +3,11 @@
    meilleur score »). Il s'ouvre quand le dernier jour du quartier est réussi ; c'est le rond doré « ∞ » entre le jour 30 et le café.
    Les clients arrivent sans fin, de plus en plus serrés et de moins en moins patients (rushTick) ; trois clients fâchés et c'est
    fini. Le score, c'est la recette (G.earned). La graine est la même pour tout le monde : le classement mesure le jeu, pas la chance.
-   Pas de bonus à usage unique (même chance pour tous). Les pièces se gagnent comme quand on rejoue une journée (G.replay).
+   Pas de bonus à usage unique (même chance pour tous). Pièces : 10 par minute tenue, versées à la fin (RUSH_PAY ; 20/11/2026, Joffray avait gagné 2 100 pièces en 9 min, « on devrait gagner
+   genre 10 par minute max ») ; rien n'est gagné ni perdu pendant le rush.
    Record dans S.rush[monde] = {best, sec} ; classement en ligne dans Firestore, une fiche par joueur (rush_<monde>/<uid>,
    connexion anonyme de push.js), les règles sont dans docs/classement.md. */
-const RUSH_LIVES=3;
+const RUSH_LIVES=3,RUSH_PAY=10;
 const rushOpen=w=>{const Q=WORLDS[w||WORLD];return !!Q&&!!Q.sv().stars[Q.days.length]};
 const rushRec=w=>{S.rush=S.rush||{};const k=w||WORLD;return S.rush[k]||(S.rush[k]={best:0,sec:0})};
 const rushTime=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`;
@@ -50,7 +51,7 @@ function endRush(){
   if(!G||!G.rush)return;
   const R=rushRec(),e=G.earned,sec=Math.floor(G.t),rec=e>R.best;
   G.run=0;if(rec){R.best=e;R.sec=sec}
-  const coins=G.gain,bRow=buddyRow();
+  const coins=Math.floor(sec/60*RUSH_PAY),bRow=buddyRow();S.coins+=coins;S.total+=coins;
   fillQuests();save();
   G=null;$("closed").hidden=false;$("hint").textContent="";renderDecor();dirty=true;
   endFx(rec?3:1);

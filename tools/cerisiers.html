@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Trois cerisiers</title>
+<title>Cerisiers de Kyoto</title>
 <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;900&display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#efe8d8;font-family:"Zen Maru Gothic",sans-serif;color:#5b4250;padding:16px}
@@ -10,14 +10,15 @@ h1{font-family:"Mochiy Pop One",sans-serif;font-size:22px;margin:4px 0 14px}
 .c b{font-family:"Mochiy Pop One",sans-serif;font-size:20px}.c p{margin:4px 0 0;font-size:14px}
 svg{width:100%;height:auto;display:block}
 </style></head><body>
-<h1>Trois cerisiers pour Kyoto</h1>
+<h1>Cerisiers pour Kyoto</h1>
 <div class="g" id="g"></div>
 <p>En petit : à la taille de la carte.</p>
 <iframe id="game" src="../cafe.html?kyoto=1" style="position:absolute;left:-9999px;top:0;width:400px;height:800px;border:0" tabindex="-1" aria-hidden="true"></iframe>
 <script>
-const M=[["A","Le pleureur","Shidare-zakura : les branches retombent en cascade de fleurs.","kySakuraA"],
-  ["B","Le parasol","Yoshino : large, plat, en étages de nuages pâles.","kySakuraB"],
-  ["C","L'estampe","Tronc noueux qui penche, longue branche, bouquets plats et jeunes feuilles rouges.","kySakuraC"]];
+const M=[["C","L'estampe","Le modèle de départ : tronc noueux, longue branche, bouquets plats.","kySakuraC"],
+  ["D","L'estampe touffue","Même tronc, la couronne pleine de gros nuages de fleurs.","kySakuraD"],
+  ["E","Estampe et parasol","Le tronc du C, les étages plats et pâles du B.","kySakuraE"],
+  ["F","Touffu et grappes","Le D avec des grappes de fleurs qui retombent sous les branches.","kySakuraF"]];
 document.getElementById("game").onload=()=>{const w=document.getElementById("game").contentWindow;
   const go=()=>{if(!w.eval("typeof kySakuraA")||w.eval("typeof kySakuraA")==="undefined")return setTimeout(go,200);
     document.getElementById("g").innerHTML=M.map(([l,n,d,f])=>`<div class="c"><b>${l} · ${n}</b>
