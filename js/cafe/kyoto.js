@@ -201,11 +201,6 @@ const kyBamboo=(x,y,k=1)=>shadow(x,y,22*k)+[[-12,96,0],[-4,118,1],[5,104,2],[13,
   return g+`<path d="M${X} ${y-H*.7} q${(i%2?10:-10)*k} ${-6*k} ${(i%2?18:-18)*k} ${-2*k} q${(i%2?-8:8)*k} ${4*k} ${(i%2?-18:18)*k} ${2*k}Z M${X} ${y-H*.9} q${(i%2?-9:9)*k} ${-8*k} ${(i%2?-16:16)*k} ${-5*k} q${(i%2?7:-7)*k} ${5*k} ${(i%2?16:-16)*k} ${5*k}Z" fill="#9ccf72" ${K2}/>`}).join("");
 const kyPine=(x,y,k=1)=>shadow(x,y,24*k)+`<path d="M${x} ${y} Q${x-4*k} ${y-20*k} ${x+6*k} ${y-34*k}" fill="none" stroke="#8a6a4a" stroke-width="${5*k}" stroke-linecap="round"/>`+[[-14,-30,20],[10,-40,22],[-2,-52,16]].map(([a,b,r])=>`<ellipse cx="${x+a*k}" cy="${y+b*k}" rx="${r*k}" ry="${r*.45*k}" fill="url(#ky-leaf)" ${K2}/>`).join("");
 const kyFoxStatue=(x,y,f=1)=>shadow(x,y,13)+`<g transform="translate(${x} ${y}) scale(${f} 1)"><rect x="-11" y="-8" width="22" height="8" rx="2" fill="#bdb4a4" ${K2}/><path d="M-7 -8 Q-9 -26 -2 -30 L-5 -40 L1 -33 L5 -40 L5 -29 Q9 -24 7 -8Z" fill="#e6dfd0" ${K2}/><path d="M7 -12 Q16 -18 12 -30 Q8 -22 5 -18Z" fill="#e6dfd0" ${K2}/><path d="M-6 -22 Q0 -16 6 -22 L4 -16 Q0 -13 -4 -16Z" fill="#e0503c" ${K2}/></g>`;
-const kyKinkaku=(x,y)=>{let g=`<ellipse cx="${x}" cy="${y+10}" rx="86" ry="22" fill="url(#ky-water)" ${BO}/><path d="M${x-40} ${y+14} q8 -4 16 0 M${x+20} ${y+20} q8 -4 16 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-  g+=`<rect x="${x-34}" y="${y-30}" width="68" height="30" fill="#f6efe2" ${BO}/><path d="M${x-44} ${y-30} Q${x} ${y-38} ${x+44} ${y-30} L${x+36} ${y-40} H${x-36}Z" fill="#5a4a3a" ${BO}/>`;
-  g+=`<rect x="${x-28}" y="${y-62}" width="56" height="22" fill="url(#ky-gold)" ${BO}/><path d="M${x-38} ${y-62} Q${x} ${y-70} ${x+38} ${y-62} L${x+30} ${y-72} H${x-30}Z" fill="#5a4a3a" ${BO}/>`;
-  g+=`<rect x="${x-18}" y="${y-88}" width="36" height="16" fill="url(#ky-gold)" ${BO}/><path d="M${x-28} ${y-88} Q${x} ${y-96} ${x+28} ${y-88} L${x} ${y-104}Z" fill="#5a4a3a" ${BO}/><path d="M${x} ${y-104} V${y-112}" stroke="#e0b860" stroke-width="3"/><circle cx="${x}" cy="${y-114}" r="3" fill="#ffe08a" ${K2}/>`;
-  return g+[-20,-6,8,22].map(a=>`<path d="M${x+a} ${y-26} V${y-4}" stroke="#d8ccb6" stroke-width="1.6"/>`).join("")+`<path d="M${x-22} ${y-58} V${y-44} M${x} ${y-58} V${y-44} M${x+22} ${y-58} V${y-44}" stroke="#c99a3a" stroke-width="1.6"/>`};
 const kyShrine=(x,y)=>shadow(x,y,46)+`<rect x="${x-40}" y="${y-8}" width="80" height="8" fill="#cfc6b6" ${BO}/><rect x="${x-32}" y="${y-40}" width="64" height="32" fill="#f6efe2" ${BO}/><rect x="${x-26}" y="${y-36}" width="10" height="28" fill="#e0503c" ${K2}/><rect x="${x+16}" y="${y-36}" width="10" height="28" fill="#e0503c" ${K2}/><path d="M${x-48} ${y-40} Q${x} ${y-50} ${x+48} ${y-40} L${x+30} ${y-64} H${x-30}Z" fill="#7a5a44" ${BO}/><path d="M${x-12} ${y-36} H${x+12}" stroke="#e0503c" stroke-width="3"/><circle cx="${x}" cy="${y-28}" r="5" fill="#f7d77a" ${K2}/>`;
 const kyYatai=(x,y,c)=>shadow(x,y,30)+`<rect x="${x-26}" y="${y-22}" width="52" height="22" fill="#c99a6a" ${BO}/><path d="M${x-26} ${y-22} V${y-48} M${x+26} ${y-22} V${y-48}" stroke="${INK}" stroke-width="3"/><path d="M${x-32} ${y-46} H${x+32} L${x+28} ${y-36} H${x-28}Z" fill="${c}" ${BO}/>`+[0,1,2,3,4].map(i=>`<path d="M${x-28+i*14} ${y-36} q7 6 14 0" fill="${c}" ${K2}/>`).join("")+`<rect x="${x-18}" y="${y-18}" width="36" height="8" rx="2" fill="#fff6e4" ${K2}/>`;
 const kyStones=(x,y)=>[[-46,-4],[-22,6],[0,-4],[22,6],[46,-4]].map(([a,b],i)=>`<ellipse cx="${x+a}" cy="${y+b}" rx="${i%2?12:10}" ry="7" fill="#d8d0c0" ${BO2}/><ellipse cx="${x+a-3}" cy="${y+b-2}" rx="4" ry="1.6" fill="#fff" opacity=".7"/>`).join("");
@@ -215,9 +210,6 @@ const kyStones=(x,y)=>[[-46,-4],[-22,6],[0,-4],[22,6],[46,-4]].map(([a,b],i)=>`<
 const kyMomiji=(x,y,k=1)=>shadow(x,y,24*k)+`<path d="M${x-3*k} ${y} Q${x-1*k} ${y-16*k} ${x} ${y-24*k} M${x} ${y-16*k} Q${x+8*k} ${y-22*k} ${x+12*k} ${y-30*k}" fill="none" stroke="#6e4630" stroke-width="${4*k}" stroke-linecap="round"/>`
   +[[-12,-30,13,"#e0503c"],[8,-36,14,"#f06a4c"],[-2,-46,14,"#f2894a"],[14,-24,10,"#d9443a"],[-16,-42,9,"#f2a04a"]].map(([a,b,r,c])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${r*k}" fill="${c}" ${BO2}/>`).join("")
   +[[-6,-40],[6,-30],[2,-50],[-12,-26]].map(([a,b])=>`<path d="M${x+a*k} ${y+b*k} l1.6 -3 l1.6 3 l-1.6 1Z" fill="#ffd1a0"/>`).join("");
-const kyNodate=(x,y)=>shadow(x,y,30)+`<path d="M${x-22} ${y} V${y-10} M${x+22} ${y} V${y-10}" stroke="#6e4630" stroke-width="3"/><rect x="${x-26}" y="${y-14}" width="52" height="6" rx="1.6" fill="#d9443a" ${BO2}/><path d="M${x-26} ${y-8} h52 v4 h-52Z" fill="#b8342c" stroke="${INK}" stroke-width="1.4"/>`
-  +`<path d="M${x+8} ${y-12} V${y-58}" stroke="${INK}" stroke-width="2.4"/><path d="M${x-26} ${y-50} Q${x+8} ${y-80} ${x+42} ${y-50}Z" fill="#e0503c" ${BO}/>`+Array.from({length:7},(_,i)=>`<path d="M${x+8} ${y-66} L${x-26+i*11.3} ${y-50}" stroke="#f6a08a" stroke-width="1.1"/>`).join("")+`<path d="M${x-26} ${y-50} Q${x+8} ${y-80} ${x+42} ${y-50}Z" fill="none" ${BO}/>`
-  +`<path d="M${x-14} ${y-15} h6 v-4 h-6Z" fill="#a9cf7a" stroke="${INK}" stroke-width="1.2"/><circle cx="${x-2}" cy="${y-17}" r="2.6" fill="#f6a8be" stroke="${INK}" stroke-width="1"/>`;
 const kyRickshaw=(x,y)=>shadow(x,y,30)+`<circle cx="${x-6}" cy="${y-14}" r="14" fill="none" stroke="${INK}" stroke-width="3"/>`+[0,45,90,135].map(a=>`<path d="M${x-6} ${y-14} l${(13*Math.cos(a*Math.PI/180)).toFixed(1)} ${(13*Math.sin(a*Math.PI/180)).toFixed(1)} M${x-6} ${y-14} l${(-13*Math.cos(a*Math.PI/180)).toFixed(1)} ${(-13*Math.sin(a*Math.PI/180)).toFixed(1)}" stroke="#6e4630" stroke-width="1.2"/>`).join("")
   +`<path d="M${x-22} ${y-26} H${x+8} V${y-40} Q${x-6} ${y-60} ${x-24} ${y-46}Z" fill="#2f2a3a" ${BO2}/><path d="M${x-20} ${y-26} h26 v6 h-26Z" fill="#d9443a" ${BO2}/><path d="M${x+6} ${y-24} L${x+38} ${y-16}" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/><path d="M${x+6} ${y-24} L${x+38} ${y-16}" stroke="#c99a5a" stroke-width="1.8" stroke-linecap="round"/>`;
 const kyZen=(x,y)=>shadow(x,y,52)+`<rect x="${x-50}" y="${y-34}" width="100" height="34" rx="4" fill="#efe8d6" ${BO}/>`+[0,1,2,3,4].map(i=>`<path d="M${x-46} ${y-29+i*6} Q${x-20} ${y-31+i*6} ${x} ${y-29+i*6} T${x+46} ${y-29+i*6}" fill="none" stroke="#d6cab0" stroke-width="1.4"/>`).join("")
@@ -241,17 +233,19 @@ function kyCafeSVG(x,y){
   s+=`<rect x="${x-72}" y="${y-92}" width="144" height="20" rx="3" fill="#f4e8cf" ${BO}/><text x="${x}" y="${y-77}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Kitsune Shokudō</text>`;
   s+=`<rect x="${x-24}" y="${y-64}" width="48" height="64" fill="#3a2a24" ${BO}/>`+[0,1,2].map(i=>`<rect x="${x-28+i*19}" y="${y-66}" width="18" height="28" fill="#3d4e7a" ${K2}/>`).join("")+`<circle cx="${x}" cy="${y-52}" r="7" fill="#fffaf2" ${K2}/><path d="M${x-5} ${y-56} l1 -5 l3 3 M${x+5} ${y-56} l-1 -5 l-3 3" fill="#fffaf2" ${K2}/>`;
   s+=kyLantern(x-74,y-64,1.1)+kyLantern(x+74,y-64,1.1);
-  // la terrasse (refaite le 11/11/2026, Joffray : « refais la terrasse au Japon ») : la véranda de bois (engawa) le long de la
-  // façade, deux bancs à feutre rouge sous leur ombrelle avec un plateau de thé et de dango, une vasque de pierre et son
-  // bambou qui goutte, deux bonsaïs en pot
-  s+=`<rect x="${x-118}" y="${y-2}" width="236" height="12" fill="#b88a5e" ${BO}/>`+Array.from({length:12},(_,i)=>`<path d="M${x-118+i*20} ${y-2} V${y+10}" stroke="#8a6040" stroke-width="1.2"/>`).join("")+`<path d="M${x-112} ${y+10} V${y+18} M${x+112} ${y+10} V${y+18} M${x-40} ${y+10} V${y+18} M${x+40} ${y+10} V${y+18}" stroke="${INK}" stroke-width="3"/>`;
-  const tray=(t,yy)=>`<rect x="${t-10}" y="${yy-3}" width="20" height="3" rx="1" fill="#6e4630" stroke="${INK}" stroke-width="1"/><path d="M${t-7} ${yy-3} q0 -6 4 -6 q4 0 4 6Z" fill="#7a9a6a" stroke="${INK}" stroke-width="1"/><path d="M${t+1} ${yy-7} q2 -1 3 1" fill="none" stroke="${INK}" stroke-width="1"/><path d="M${t+3} ${yy-3} h5 v-4 h-5Z" fill="#f4e8cf" stroke="${INK}" stroke-width="1"/><path d="M${t+9} ${yy-4} l6 -6" stroke="#c99a5a" stroke-width="1.4"/><circle cx="${t+10.5}" cy="${yy-5.6}" r="1.6" fill="#f6a8be"/><circle cx="${t+12.5}" cy="${yy-7.6}" r="1.6" fill="#fffaf2" stroke="${INK}" stroke-width=".6"/><circle cx="${t+14.5}" cy="${yy-9.6}" r="1.6" fill="#a9cf7a"/>`;
-  s+=[x-152,x+152].map(t=>kyNodate(t,y+36)+tray(t-8,y+22)).join("");
+  // la terrasse (refaite le 20/11/2026, Joffray : « une belle terrasse, applique-toi ») : stores de bambou aux fenêtres,
+  // véranda de planches en perspective et sa marche de pierre, deux renards de pierre à l'entrée, lanternes de pierre,
+  // bancs à ombrelle et leur plateau de thé, vasque et son bambou qui goutte, bonsaï, pétales
+  s+=[x-98,x+40].map(a=>`<rect x="${a}" y="${y-70}" width="58" height="22" fill="#d9b878" ${K2}/>`+Array.from({length:6},(_,i)=>`<path d="M${a+1} ${(y-66+i*3.3).toFixed(1)} H${a+57}" stroke="#b8945a" stroke-width=".9"/>`).join("")+`<rect x="${a-2}" y="${y-72}" width="62" height="4" rx="2" fill="#8a5a34" ${K2}/>`).join("")+kyLantern(x-74,y-64,1.1)+kyLantern(x+74,y-64,1.1);
+  s+=`<path d="M${x-126} ${y-2} H${x+126} L${x+142} ${y+22} H${x-142}Z" fill="#cf9c62" ${BO}/>`+Array.from({length:15},(_,i)=>`<path d="M${(x-126+(i+1)*252/16).toFixed(1)} ${y-2} L${(x-142+(i+1)*284/16).toFixed(1)} ${y+22}" stroke="#a87442" stroke-width="1"/>`).join("")
+    +`<path d="M${x-134} ${y+10} H${x+134}" stroke="#e8b880" stroke-width="1" opacity=".7"/><rect x="${x-144}" y="${y+22}" width="288" height="7" rx="2" fill="#8a5a34" ${BO2}/>`+[-130,-60,60,130].map(a=>`<rect x="${x+a-3}" y="${y+29}" width="6" height="7" fill="#6e4630" stroke="${INK}" stroke-width="1.2"/>`).join("")
+    +`<rect x="${x-26}" y="${y+27}" width="52" height="9" rx="3" fill="url(#ky-stone)" ${BO2}/>`;
+  s+=kyFoxStatue(x-38,y+18,1)+kyFoxStatue(x+38,y+18,-1)+kyToro(x-116,y+42)+kyToro(x+116,y+42)+kyNodate(x-164,y+48)+kyNodate(x+150,y+48);
   // la vasque de pierre et son bambou (tsukubai), deux bonsaïs
-  s+=shadow(x-66,y+44,16)+`<ellipse cx="${x-66}" cy="${y+36}" rx="14" ry="9" fill="#a8a29a" ${BO2}/><ellipse cx="${x-66}" cy="${y+33}" rx="9" ry="4.4" fill="url(#ky-water)" stroke="${INK}" stroke-width="1.2"/><path d="M${x-50} ${y+38} V${y+18} M${x-50} ${y+20} L${x-62} ${y+26}" stroke="#7aae5a" stroke-width="3.4" stroke-linecap="round"/><path d="M${x-50} ${y+38} V${y+18} M${x-50} ${y+20} L${x-62} ${y+26}" stroke="${INK}" stroke-width="1" fill="none" opacity=".4"/>`
+  s+=shadow(x-66,y+46,16)+`<ellipse cx="${x-66}" cy="${y+36}" rx="14" ry="9" fill="#a8a29a" ${BO2}/><ellipse cx="${x-66}" cy="${y+33}" rx="9" ry="4.4" fill="url(#ky-water)" stroke="${INK}" stroke-width="1.2"/><path d="M${x-50} ${y+38} V${y+18} M${x-50} ${y+20} L${x-62} ${y+26}" stroke="#7aae5a" stroke-width="3.4" stroke-linecap="round"/><path d="M${x-50} ${y+38} V${y+18} M${x-50} ${y+20} L${x-62} ${y+26}" stroke="${INK}" stroke-width="1" fill="none" opacity=".4"/>`
     +`<circle cx="${x-63}" cy="${y+30}" r="1.2" fill="#b6e0ee"><animate attributeName="cy" values="${y+28};${y+33};${y+28}" dur="1.4s" repeatCount="indefinite"/></circle>`;
   const bonsai=(t,yy)=>shadow(t,yy,13)+`<path d="M${t-11} ${yy-7} h22 l-3 7 h-16Z" fill="#3d4e7a" ${BO2}/><path d="M${t-2} ${yy-7} Q${t-6} ${yy-16} ${t+2} ${yy-22} Q${t+6} ${yy-26} ${t+4} ${yy-30}" fill="none" stroke="#6e4630" stroke-width="3" stroke-linecap="round"/>`+[[-8,-24,7],[6,-30,8],[8,-20,6]].map(([a,b,r])=>`<ellipse cx="${t+a}" cy="${yy+b}" rx="${r}" ry="${r*.6}" fill="url(#ky-leaf)" stroke="${INK}" stroke-width="1.3"/>`).join("");
-  s+=bonsai(x+66,y+44)+bonsai(x-112,y+4);
+  s+=bonsai(x+66,y+46)+kyPetals(x,y-30,1.6);
   return s;
 }
 // la grande porte d'entrée : un torii, comme ceux du chemin
@@ -267,14 +261,17 @@ function kyMapSVG(L){
   let s=`<rect width="400" height="${H}" fill="url(#ky-gnd)"/><rect width="400" height="${H}" fill="url(#ky-grav)"/>`;
   // le ciel du soir, les collines et la pagode derrière le salon de thé
   s+=`<rect x="0" y="0" width="400" height="${hz}" fill="url(#ky-sky)"/><circle cx="62" cy="${hz-250}" r="70" fill="url(#ky-sun)"/><circle cx="62" cy="${hz-250}" r="17" fill="#fff4c8" ${BO}/>`;
-  // le mont Fuji, tout en haut derrière le Kitsune Shokudō (20/11/2026, Joffray) : pentes creusées, neige au sommet, un voile de nuage
-  const fp=hz-318;
-  s+=`<path d="M-40 ${hz-40} Q120 ${hz-110} 170 ${fp+14} Q186 ${fp-2} 200 ${fp} Q214 ${fp-2} 230 ${fp+14} Q280 ${hz-110} 440 ${hz-40}Z" fill="url(#ky-fuji)" ${BO}/>`
-    +`<path d="M190 ${fp+40} L176 ${hz-150} M212 ${fp+50} L226 ${hz-140} M150 ${hz-150} L120 ${hz-90} M254 ${hz-160} L282 ${hz-100}" stroke="#8f9bd0" stroke-width="2" stroke-linecap="round" opacity=".7"/>`
-    +`<path d="M170 ${fp+14} Q186 ${fp-2} 200 ${fp} Q214 ${fp-2} 230 ${fp+14} Q238 ${fp+40} 246 ${fp+66} l-9 -8 l-7 14 l-9 -12 l-7 16 l-9 -14 l-8 12 l-8 -16 l-8 14 l-9 -12 l-7 10 Q162 ${fp+40} 170 ${fp+14}Z" fill="#fffaf6" ${BO2}/><path d="M184 ${fp+10} Q192 ${fp+30} 186 ${fp+56}" stroke="#dfe2f2" stroke-width="3" fill="none" stroke-linecap="round"/>`
-    +`<path d="M-10 ${hz-130} Q40 ${hz-150} 90 ${hz-136} Q130 ${hz-156} 170 ${hz-138} Q150 ${hz-122} 100 ${hz-124} Q50 ${hz-116} -10 ${hz-130}Z M260 ${hz-170} Q300 ${hz-188} 340 ${hz-172} Q380 ${hz-184} 410 ${hz-168} Q380 ${hz-156} 330 ${hz-160} Q290 ${hz-154} 260 ${hz-170}Z" fill="#fff" opacity=".75"/>`;
-  s+=`<path d="M0 ${hz-60} Q80 ${hz-120} 170 ${hz-80} Q260 ${hz-130} 330 ${hz-84} Q370 ${hz-100} 400 ${hz-90} V${hz} H0Z" fill="#a9c79a" ${BO}/><path d="M0 ${hz-30} Q120 ${hz-70} 230 ${hz-40} Q320 ${hz-60} 400 ${hz-36} V${hz} H0Z" fill="#93b585" ${BO}/>`;
-  s+=kyPagoda(330,hz-22,.9);
+  // le mont Fuji, tout en haut derrière le Kitsune Shokudō (20/11/2026, Joffray : le premier était « trop pointu ») : large,
+  // sommet plat et son cratère, pentes creusées qui s'étalent, neige en coulées dans les ravines, un voile de nuage
+  {const B=hz-40,S=hz-286,bz=(t,a,b,c,d)=>(1-t)**3*a+3*(1-t)**2*t*b+3*(1-t)*t*t*c+t**3*d,lx=t=>bz(t,-70,60,150,166),ly=t=>bz(t,B,B-26,S+64,S);
+  const crat=`L174 ${S-3} L184 ${S+1} L193 ${S-2} L200 ${S+1} L207 ${S-2} L216 ${S+1} L226 ${S-3} L234 ${S}`;
+  s+=`<path d="M-70 ${B} C60 ${B-26} 150 ${S+64} 166 ${S} ${crat} C250 ${S+64} 340 ${B-26} 470 ${B}Z" fill="url(#ky-fuji)" ${BO}/>`;
+  const t0=.8,pts=[];for(let t=t0;t<.999;t+=.04)pts.push([lx(t),ly(t)]);
+  const xa=lx(t0),xb=400-xa,yb=ly(t0);
+  let sn=`M${xa.toFixed(1)} ${yb.toFixed(1)} `+pts.map(([a,b])=>`L${a.toFixed(1)} ${b.toFixed(1)}`).join(" ")+` L166 ${S} ${crat} `+pts.slice().reverse().map(([a,b])=>`L${(400-a).toFixed(1)} ${b.toFixed(1)}`).join(" ")+` L${xb.toFixed(1)} ${yb.toFixed(1)}`;
+  [22,8,30,12,18,6,26,10,20,8,16].forEach((dp,i)=>{sn+=` L${(xb-(xb-xa)*(i+1)/12).toFixed(1)} ${(yb+(i%2?-4:dp)).toFixed(1)}`});
+  s+=`<path d="${sn}Z" fill="#fffaf6" ${BO2}/><path d="M186 ${S+8} Q182 ${S+30} 176 ${S+54} M214 ${S+8} Q220 ${S+34} 228 ${S+50}" stroke="#dfe2f2" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  s+=``+`<path d="M-10 ${hz-130} Q40 ${hz-150} 90 ${hz-136} Q130 ${hz-156} 170 ${hz-138} Q150 ${hz-122} 100 ${hz-124} Q50 ${hz-116} -10 ${hz-130}Z M260 ${hz-170} Q300 ${hz-188} 340 ${hz-172} Q380 ${hz-184} 410 ${hz-168} Q380 ${hz-156} 330 ${hz-160} Q290 ${hz-154} 260 ${hz-170}Z" fill="#fff" opacity=".75"/>`;}
   s+=`<g><animateTransform attributeName="transform" type="translate" values="-60 0;460 -10" dur="28s" repeatCount="indefinite"/>${[[0,hz-200],[14,hz-208],[26,hz-198]].map(([x,y])=>`<path d="M${x-6} ${y} q3 -4 6 0 q3 -4 6 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join("")}</g>`;
   s+=`<path d="M0 ${hz} H400" stroke="${INK}" stroke-width="2"/>`;
   // la forêt de bambous et le jardin du pavillon d'or : de la mousse
@@ -299,7 +296,7 @@ function kyMapSVG(L){
   s+=`<path d="${d}" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#fdf1df" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   s+=`<g clip-path="url(#ky-lk)"><path d="${d}" fill="none" stroke="${INK}" stroke-width="40"/><path d="${d}" fill="none" stroke="#e0503c" stroke-width="36"/><path d="${d}" fill="none" stroke="${INK}" stroke-width="36" stroke-dasharray="1.6 10"/><path d="${d}" fill="none" stroke="${INK}" stroke-width="31"/><path d="${d}" fill="none" stroke="#d6aa78" stroke-width="27"/><path d="${d}" fill="none" stroke="#b08458" stroke-width="27" stroke-dasharray="1.4 5.6"/></g>`;
   const k=way.findIndex(p=>p.d===itCur());if(k>0)s+=`<path d="${smooth(pts.slice(0,k+1))}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
-  s+=`<path d="M${bx-34} ${ry-36} V${ry+36} H${bx+34} V${ry-36}Z" fill="url(#ky-water)"/>`+kyStones(bx,ry)+kyBridge(bx<200?300:90,ry);
+  s+=`<path d="M${bx-34} ${ry-36} V${ry+36} H${bx+34} V${ry-36}Z" fill="url(#ky-water)"/>`+kyStones(bx,ry);
   // ce qui est posé, chaque chose une fois
   const it=[];const at=(x,u,f)=>it.push({x,u,f});
   // la rue de Gion : maisons en bois des deux côtés, lanternes de pierre, un cerisier
@@ -313,7 +310,7 @@ function kyMapSVG(L){
   at(340,2500,kyKingyo);at(345,2420,kyTaiko);at(355,2300,(x,y)=>kyMomiji(x,y,.8));
   // les bambous et le pavillon d'or
   at(380,u7+60,(x,y)=>kyPine(x,y,.8));
-  at(110,u12-180,(x,y)=>kyKinkaku(x,y));at(370,u12-40,(x,y)=>kyPine(x,y,.9));at(380,u12+30,kyToro);
+  at(54,1372,(x,y)=>kyKinkaku(x,y));at(370,u12-40,(x,y)=>kyPine(x,y,.9));at(380,u12+30,kyToro);
   // la montagne d'Inari : renards de pierre, le sanctuaire en haut ; les torii sont posés sur le chemin plus bas
   at(236,1530,(x,y)=>kyFoxStatue(x,y,1));at(318,1520,(x,y)=>kyFoxStatue(x,y,-1));at(70,2250,(x,y)=>kyPagoda(x,y,1.05));at(30,u13+180,(x,y)=>kySakura(x,y,.75));at(30,u18-60,(x,y)=>kyPine(x,y,.8));at(160,u13+230,kyToro);
   // devant le salon de thé : les stands du Matsuri, une guirlande de lanternes
@@ -326,7 +323,7 @@ function kyMapSVG(L){
   // jamais sur le chemin ni sur le pavillon d'or
   const dPath=(x,u)=>{let m=1e9;for(let i=0;i<way.length-1;i++){const a=way[i],b=way[i+1],vx=b.x-a.x,vu=b.u-a.u,t=Math.max(0,Math.min(1,((x-a.x)*vx+(u-a.u)*vu)/(vx*vx+vu*vu)));m=Math.min(m,Math.hypot(x-a.x-vx*t,u-a.u-vu*t))}return m};
   for(let r=0,n=0;r<17;r++)for(let c=0;c<11;c++){n++;const x=4+c*19+((n*37)%11)-5+(r%2)*9,u=930+r*31+((n*53)%13),h=78+((n*29)%46),sd=n;
-    if(x>200||(x>8&&x<214&&u+h>1236&&u<1432)||u>1452)continue;let ok=true;for(let t=0;t<=h;t+=12)if(dPath(x,u+t)<26){ok=false;break}
+    if(x>200||(x>8&&x<214&&u+h>1236&&u<1432)||(x<130&&u+h>1330)||u>1452)continue;let ok=true;for(let t=0;t<=h;t+=12)if(dPath(x,u+t)<26){ok=false;break}
     if(ok)at(x,u,(X,Y0)=>kyStalk(X,Y0,h,sd))}
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   // le chemin des torii : une porte rouge tous les 34 pas, sauf sur les journées

@@ -150,17 +150,31 @@ const kyDohyo=(x,y)=>{let g=shadow(x,y,72);const T=y-18,R=T-86;
   g+=`<path d="M${x-56} ${R+7} Q${x} ${R+1} ${x+56} ${R+7} L${x+56} ${R+14} Q${x} ${R+8} ${x-56} ${R+14}Z" fill="#7a4aa0" ${BO2}/><path d="M${x-56} ${R+14} q14 7 28 0 q14 7 28 0 q14 7 28 0 q14 7 28 0" fill="#9a6ac0" stroke="${INK}" stroke-width="1.2"/><circle cx="${x}" cy="${R+8.6}" r="3" fill="#fff" stroke="${INK}" stroke-width=".8"/>`;
   return g};
 
-// le château (comme celui de Himeji) : remparts de pierre en pente, donjon blanc à trois étages, toits sombres
-// retroussés avec leurs pignons, et les deux poissons d'or (shachihoko) sur le faîte
-const kyCastle=(x,y,k=1)=>{let g=shadow(x,y,62*k);const f=kyF,X=a=>f(x+a*k),Y=b=>f(y-b*k);
+// le château (comme celui de Himeji) : remparts de pierre en pente et leur porte, murs blancs à meurtrières et tourelle
+// d'angle, donjon blanc à trois étages et rangées de fenêtres, pignons triangulaires et pignon courbe, toits sombres
+// aux pointes dorées, les deux poissons d'or (shachihoko) sur le faîte, deux pins (20/11/2026, Joffray : « il manque quelque chose »)
+const kyCastle=(x,y,k=1)=>{const f=kyF,X=a=>f(x+a*k),Y=b=>f(y-b*k);let g=shadow(x,y,96*k);
+  g+=kyPine(X(80),Y(10),.72*k)+kyPine(X(-72),Y(12),.62*k);
+  g+=[-1,1].map(s=>{const a=s*46,b=s*94,lo=Math.min(a,b),hi=Math.max(a,b);
+    return `<path d="M${X(lo)} ${Y(0)} V${Y(15)} H${X(hi)} V${Y(0)}Z" fill="url(#ky-plaster)" ${BO2}/><path d="M${X(lo)} ${Y(0)} H${X(hi)} V${Y(3.4)} H${X(lo)}Z" fill="#b8b2a8" stroke="${INK}" stroke-width="1"/>`
+      +`<path d="M${X(lo-3)} ${Y(15)} L${X(lo)} ${Y(21)} H${X(hi)} L${X(hi+3)} ${Y(15)}Z" fill="url(#ky-roof)" ${K2}/>`
+      +[0,1,2,3].map(j=>{const c=a+s*(9+j*11);return j%2?`<path d="M${X(c-2.4)} ${Y(6)} h${f(4.8*k)} l${f(-2.4*k)} ${f(-4.4*k)}Z" fill="#3a3a44"/>`:`<rect x="${X(c-2)}" y="${Y(10)}" width="${f(4*k)}" height="${f(4*k)}" fill="#3a3a44"/>`}).join("")}).join("");
+  const T=(cx,b,w,h,rw)=>`<rect x="${X(cx-w/2)}" y="${Y(b+h)}" width="${f(w*k)}" height="${f(h*k)}" fill="#fbf8f0" ${BO2}/><rect x="${X(cx-2.6)}" y="${Y(b+h*.72)}" width="${f(5.2*k)}" height="${f(h*.36*k)}" fill="#3a3a44"/>`
+    +`<path d="M${X(cx-rw/2)} ${Y(b+h-1)} L${X(cx-rw/2+5)} ${Y(b+h+7)} H${X(cx+rw/2-5)} L${X(cx+rw/2)} ${Y(b+h-1)} Q${X(cx)} ${Y(b+h+2)} ${X(cx-rw/2)} ${Y(b+h-1)}Z" fill="url(#ky-roof)" ${BO2}/>`;
+  g+=T(-96,15,18,16,28)+T(-96,38,11,9,19);
   g+=`<path d="M${X(-60)} ${Y(0)} Q${X(-52)} ${Y(14)} ${X(-44)} ${Y(30)} H${X(44)} Q${X(52)} ${Y(14)} ${X(60)} ${Y(0)}Z" fill="#b8b2a8" ${BO}/>`
-    +[[-40,8],[-18,6],[6,10],[30,5],[-30,20],[-4,22],[20,18],[44,12]].map(([a,b])=>`<path d="M${X(a)} ${Y(b)} h${f(10*k)}" stroke="#8f887e" stroke-width="1.2"/>`).join("");
-  const tier=(w,b,h,roofW)=>`<rect x="${X(-w/2)}" y="${Y(b+h)}" width="${f(w*k)}" height="${f(h*k)}" fill="#fbf8f0" ${BO2}/>`
-    +[-w/4,w/4].map(a=>`<rect x="${X(a-3)}" y="${Y(b+h*.75)}" width="${f(6*k)}" height="${f(h*.4*k)}" fill="#3a3a44"/>`).join("")
+    +[[-40,8],[-26,5],[18,6],[34,10],[-34,20],[-14,24],[20,20],[44,14],[-48,13],[2,16]].map(([a,b])=>`<path d="M${X(a)} ${Y(b)} h${f(10*k)}" stroke="#8f887e" stroke-width="1.2"/>`).join("")
+    +`<path d="M${X(-9)} ${Y(0)} V${Y(13)} Q${X(0)} ${Y(19)} ${X(9)} ${Y(13)} V${Y(0)}Z" fill="#3a2a24" ${K2}/><path d="M${X(0)} ${Y(0)} V${Y(16)}" stroke="#5a3a28" stroke-width="1"/><path d="M${X(-14)} ${Y(17)} L${X(-11)} ${Y(23)} H${X(11)} L${X(14)} ${Y(17)}Z" fill="url(#ky-roof)" ${K2}/>`;
+  const tier=(w,b,h,roofW,n)=>`<rect x="${X(-w/2)}" y="${Y(b+h)}" width="${f(w*k)}" height="${f(h*k)}" fill="#fbf8f0" ${BO2}/>`
+    +Array.from({length:n},(_,i)=>{const a=-w/2+(i+.5)*w/n;return `<rect x="${X(a-3)}" y="${Y(b+h*.78)}" width="${f(6*k)}" height="${f(h*.44*k)}" fill="#3a3a44" stroke="#d8d2c4" stroke-width=".8"/><path d="M${X(a)} ${Y(b+h*.78)} v${f(h*.44*k)}" stroke="#8a8a92" stroke-width=".7"/>`}).join("")
+    +`<path d="M${X(-w/2)} ${Y(b+3)} H${X(w/2)}" stroke="#d8d2c4" stroke-width="1.2"/>`
     +`<path d="M${X(-roofW/2)} ${Y(b+h-2)} Q${X(-roofW/2+6)} ${Y(b+h+2)} ${X(-roofW/2+10)} ${Y(b+h+6)} H${X(roofW/2-10)} Q${X(roofW/2-6)} ${Y(b+h+2)} ${X(roofW/2)} ${Y(b+h-2)} L${X(roofW/2-14)} ${Y(b+h+12)} H${X(-roofW/2+14)}Z" fill="url(#ky-roof)" ${BO2}/>`
-    +`<path d="M${X(-8)} ${Y(b+h+6)} L${X(0)} ${Y(b+h+14)} L${X(8)} ${Y(b+h+6)}Z" fill="#fbf8f0" stroke="${INK}" stroke-width="1.4"/>`;
-  g+=tier(78,30,22,98)+tier(58,62,20,76)+tier(40,94,18,56);
-  g+=`<path d="M${X(-14)} ${Y(124)} Q${X(0)} ${Y(136)} ${X(14)} ${Y(124)}" fill="url(#ky-roof)" ${BO2}/>`+[-12,12].map(a=>`<path d="M${X(a)} ${Y(126)} q${f(-a/6*k)} ${f(-8*k)} ${f(a/4*k)} ${f(-10*k)}" stroke="#f2c45a" stroke-width="${f(3*k)}" fill="none" stroke-linecap="round"/>`).join("");
+    +[-1,1].map(s=>`<path d="M${X(s*roofW/2)} ${Y(b+h-2)} q${f(s*3*k)} ${f(-2*k)} ${f(s*2*k)} ${f(-6*k)}" stroke="#f2c45a" stroke-width="${f(2.2*k)}" fill="none" stroke-linecap="round"/>`).join("");
+  const chidori=(a,b,w)=>`<path d="M${X(a-w)} ${Y(b)} L${X(a)} ${Y(b+w*.9)} L${X(a+w)} ${Y(b)}Z" fill="#fbf8f0" stroke="${INK}" stroke-width="1.4"/><path d="M${X(a-w-2)} ${Y(b-1)} L${X(a)} ${Y(b+w*.9+2)} L${X(a+w+2)} ${Y(b-1)}" fill="none" stroke="#4c5a72" stroke-width="${f(2.6*k)}" stroke-linecap="round"/><circle cx="${X(a)}" cy="${Y(b+w*.4)}" r="${f(1.6*k)}" fill="#f2c45a"/>`;
+  g+=tier(78,30,22,98,5)+chidori(-36,60,8)+chidori(36,60,8);
+  g+=tier(58,62,20,76,4)+`<path d="M${X(-13)} ${Y(86)} Q${X(-6)} ${Y(87)} ${X(0)} ${Y(94)} Q${X(6)} ${Y(87)} ${X(13)} ${Y(86)} L${X(13)} ${Y(84)} Q${X(0)} ${Y(86)} ${X(-13)} ${Y(84)}Z" fill="url(#ky-roof)" stroke="${INK}" stroke-width="1.4"/><path d="M${X(-9)} ${Y(86)} Q${X(0)} ${Y(87)} ${X(0)} ${Y(91)} Q${X(0)} ${Y(87)} ${X(9)} ${Y(86)}" fill="none" stroke="#f2c45a" stroke-width="1.2"/>`;
+  g+=tier(40,94,18,56,3);
+  g+=`<path d="M${X(-14)} ${Y(124)} Q${X(0)} ${Y(136)} ${X(14)} ${Y(124)}" fill="url(#ky-roof)" ${BO2}/>`+[-12,12].map(a=>`<path d="M${X(a)} ${Y(126)} q${f(-a/6*k)} ${f(-9*k)} ${f(a/3.6*k)} ${f(-12*k)}" stroke="${INK}" stroke-width="${f(4.6*k)}" fill="none" stroke-linecap="round"/><path d="M${X(a)} ${Y(126)} q${f(-a/6*k)} ${f(-9*k)} ${f(a/3.6*k)} ${f(-12*k)}" stroke="#f2c45a" stroke-width="${f(3*k)}" fill="none" stroke-linecap="round"/>`).join("");
   return g};
 
 // le grand Bouddha, tout en or : la mandorle flamboyante, l'auréole, le lotus rose, des éclats qui scintillent,
@@ -192,7 +206,7 @@ const kyJizo=(x,y,n=5)=>{let g=shadow(x,y,n*8);
     g+=`<path d="M${a-6*s} ${y} Q${a-7*s} ${y-14*s} ${a} ${y-15*s} Q${a+7*s} ${y-14*s} ${a+6*s} ${y}Z" fill="#c9c3b8" ${K2}/><circle cx="${a}" cy="${y-19*s}" r="${6*s}" fill="#d6d0c4" ${K2}/>`
       +`<path d="M${a-5.4*s} ${y-12*s} Q${a} ${y-6*s} ${a+5.4*s} ${y-12*s} L${a} ${y-14*s}Z" fill="#e0503c" stroke="${INK}" stroke-width="1"/><path d="M${a-5*s} ${y-21*s} Q${a} ${y-30*s} ${a+5*s} ${y-21*s}Z" fill="#e0503c" stroke="${INK}" stroke-width="1"/>`
       +`<path d="M${a-2.4*s} ${y-19*s} q1.2 1 2.4 0 M${a+.4*s} ${y-19*s} q1.2 1 2.4 0" stroke="${INK}" stroke-width=".9" fill="none"/>`}
-  g+=[-1,1].map(s=>{const px=x+s*((n-1)/2*14+12);return `<path d="M${px} ${y} V${y-24}" stroke="#7a5638" stroke-width="1.6"/><g transform="translate(${px} ${y-26})"><animateTransform attributeName="transform" type="rotate" from="0 ${px} ${y-26}" to="360 ${px} ${y-26}" dur="2.4s" repeatCount="indefinite" additive="sum"/>${[0,90,180,270].map((r,i)=>`<path d="M0 0 L7 -3 L4 0Z" transform="rotate(${r})" fill="${["#f6a8be","#ffe08a","#9fd8f0","#a9cf7a"][i]}" stroke="${INK}" stroke-width=".6"/>`).join("")}</g>`}).join("");
+  g+=[-1,1].map(s=>{const px=x+s*((n-1)/2*14+12);return `<path d="M${px} ${y} V${y-24}" stroke="#7a5638" stroke-width="1.6"/><g transform="translate(${px} ${y-26})"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite" additive="sum"/>${[0,90,180,270].map((r,i)=>`<path d="M0 0 L7 -3 L4 0Z" transform="rotate(${r})" fill="${["#f6a8be","#ffe08a","#9fd8f0","#a9cf7a"][i]}" stroke="${INK}" stroke-width=".6"/>`).join("")}</g>`}).join("");
   return g};
 
 // le grand torii posé dans l'eau (comme celui d'Itsukushima) : deux piliers vermillon et leurs quatre jambes d'appui,
@@ -232,3 +246,68 @@ const kyBoat=(x,y)=>`<path d="M${x-22} ${y+6} Q${x} ${y+16} ${x+22} ${y+6}" stro
 // un bouquet de feuilles de lotus, une fleur rose une fois sur deux
 const kyLotus=(x,y,s=0)=>[[-8,0,9],[7,3,7],[0,-5,6]].map(([a,b,r])=>`<path d="M${x+a-r} ${y+b} a${r} ${kyF(r*.42)} 0 1 0 ${2*r} 0 a${r} ${kyF(r*.42)} 0 1 0 ${-2*r} 0Z M${x+a} ${y+b} l${kyF(r*.8)} ${kyF(-r*.2)}" fill="#8cc070" stroke="${INK}" stroke-width="1"/>`).join("")
   +(s%2?"":`<path d="M${x+2} ${y-2} q-4 -4 -2 -9 q2 3 2 3 q0 -4 3 -6 q3 2 3 6 q0 0 2 -3 q2 5 -2 9Z" fill="#f7b3c6" stroke="${INK}" stroke-width=".9"/>`);
+
+// le banc à ombrelle (nodate) : banc de bois à feutre rouge et franges, grande ombrelle de papier (wagasa) à baleines,
+// anneau blanc et bord festonné, plateau de thé et de dango
+const kyNodate=(x,y)=>{let g=shadow(x,y,34);const legs=`M${x-24} ${y} V${y-12} M${x+24} ${y} V${y-12} M${x-14} ${y} V${y-10} M${x+14} ${y} V${y-10}`;
+  g+=`<path d="${legs}" stroke="${INK}" stroke-width="3.6" stroke-linecap="round"/><path d="${legs}" stroke="#7a4a2e" stroke-width="1.8"/>`;
+  g+=`<rect x="${x-29}" y="${y-17}" width="58" height="5" rx="1.6" fill="#8a5a34" ${BO2}/><path d="M${x-30} ${y-16} H${x+30} V${y-8} H${x-30}Z" fill="#d9443a" ${BO2}/><path d="M${x-28} ${y-14.4} H${x+28}" stroke="#f27a6a" stroke-width="1"/>`
+    +Array.from({length:12},(_,i)=>`<path d="M${kyF(x-27.5+i*5)} ${y-8} v2.6" stroke="#b8342c" stroke-width="1.2" stroke-linecap="round"/>`).join("");
+  const cx=x+6,L=x-32,R=x+44,by=y-60,ap=by-26;
+  g+=`<path d="M${x+5} ${y-14} Q${x+8} ${y-40} ${cx} ${ap+2}" stroke="${INK}" stroke-width="3.8" fill="none"/><path d="M${x+5} ${y-14} Q${x+8} ${y-40} ${cx} ${ap+2}" stroke="#d9b07a" stroke-width="2" fill="none"/>`;
+  const E=Array.from({length:9},(_,i)=>[L+i*(R-L)/8,by+Math.sin(i/8*Math.PI)*3.4]);
+  g+=`<path d="M${L} ${by} Q${L+6} ${ap+4} ${cx} ${ap} Q${R-6} ${ap+4} ${R} ${by}`+E.slice(0,8).reverse().map((p,i)=>{const q=E[7-i];return ` Q${kyF((E[8-i][0]+q[0])/2)} ${kyF(q[1]+6)} ${kyF(q[0])} ${kyF(q[1])}`}).join("")+`Z" fill="#e0503c" ${BO}/>`;
+  g+=E.slice(1,8).map(([ex,ey],i)=>`<path d="M${cx} ${ap+2} Q${kyF((cx+ex)/2+(ex-cx)*.12)} ${kyF(ap+8)} ${kyF(ex)} ${kyF(ey+2)}" stroke="${i%2?"#f6a08a":"#b8342c"}" stroke-width="1.1" fill="none"/>`).join("")
+    +`<path d="M${cx-12} ${ap+9} Q${cx} ${ap+3} ${cx+12} ${ap+9}" stroke="#fff6ea" stroke-width="3.2" fill="none" stroke-linecap="round"/><circle cx="${cx}" cy="${ap-1}" r="2.6" fill="#2f2a32" stroke="${INK}" stroke-width="1"/>`;
+  g+=`<rect x="${x-20}" y="${y-20}" width="22" height="3" rx="1" fill="#6e4630" stroke="${INK}" stroke-width="1"/><path d="M${x-17} ${y-20} q0 -7 4.6 -7 q4.6 0 4.6 7Z" fill="#5f7f5a" stroke="${INK}" stroke-width="1"/><path d="M${x-8} ${y-24} q3 -1 3 2" fill="none" stroke="${INK}" stroke-width="1"/><path d="M${x-4} ${y-20} h5 v-4 h-5Z" fill="#f4e8cf" stroke="${INK}" stroke-width="1"/>`
+    +`<path d="M${x+12} ${y-18} l8 -8" stroke="#c99a5a" stroke-width="1.4"/><circle cx="${x+14}" cy="${y-20}" r="2" fill="#f6a8be" stroke="${INK}" stroke-width=".7"/><circle cx="${x+16.6}" cy="${y-22.6}" r="2" fill="#fffaf2" stroke="${INK}" stroke-width=".7"/><circle cx="${x+19.2}" cy="${y-25.2}" r="2" fill="#a9cf7a" stroke="${INK}" stroke-width=".7"/>`;
+  return g};
+
+// le pavillon d'or (Kinkaku-ji) au bord de son étang : rez-de-chaussée de bois et de papier, deux étages d'or, toits
+// d'écorce aux bords dorés, fenêtres en cloche, le phénix d'or au sommet ; reflet doré, île au pin, rochers
+const kyKinkaku=(x,y)=>{let g=`<ellipse cx="${x-6}" cy="${y+12}" rx="68" ry="23" fill="${INK}"/><ellipse cx="${x-6}" cy="${y+12}" rx="65" ry="20" fill="#cfc6b0"/><ellipse cx="${x-6}" cy="${y+13}" rx="60" ry="16.6" fill="url(#ky-water)"/>`;
+  g+=`<g opacity=".4"><rect x="${x-34}" y="${y+1}" width="68" height="4" fill="#5a4a42"/><rect x="${x-27}" y="${y+5}" width="54" height="9" fill="#f2c45a"/><rect x="${x-18}" y="${y+14}" width="36" height="6" fill="#f2c45a"/></g>`+kyRipple(x-44,y+18,8)+kyRipple(x+38,y+18,7,1.6);
+  g+=`<ellipse cx="${x+44}" cy="${y+20}" rx="6" ry="3.6" fill="#a8a29a" ${K2}/><ellipse cx="${x+36}" cy="${y+25}" rx="4" ry="2.6" fill="#b8b2a8" ${K2}/><ellipse cx="${x-50}" cy="${y+20}" rx="13" ry="4.6" fill="#9fbf7a" ${K2}/>`+kyPine(x-48,y+19,.5);
+  g+=`<rect x="${x-40}" y="${y-3}" width="80" height="4" fill="#5a3a28" ${K2}/>`+[-36,-24,-12,0,12,24,36].map(a=>`<path d="M${x+a} ${y+1} v4" stroke="${INK}" stroke-width="2"/>`).join("");
+  g+=`<rect x="${x-34}" y="${y-26}" width="68" height="23" fill="#f3e6cc" ${BO2}/>`+[-34,-22.7,-11.3,0,11.3,22.7,34].map(a=>`<rect x="${kyF(x+a-1.4)}" y="${y-26}" width="2.8" height="23" fill="#5a3a28"/>`).join("")
+    +`<path d="M${x-34} ${y-17} H${x+34}" stroke="#d8c8a8" stroke-width="1"/><path d="M${x-38} ${y-8} H${x+38}" stroke="${INK}" stroke-width="3"/><path d="M${x-38} ${y-8} H${x+38}" stroke="#8a5a3a" stroke-width="1.6"/>`;
+  const roof=(w,yy,t)=>`<path d="M${x-w} ${yy+2} Q${x-w*.5} ${yy-1} ${x} ${yy-1} Q${x+w*.5} ${yy-1} ${x+w} ${yy+2} L${x+w-7} ${yy-t} H${x-w+7}Z" fill="url(#ky-bark)" ${BO2}/><path d="M${x-w+2} ${yy+1} Q${x} ${yy-2.6} ${x+w-2} ${yy+1}" stroke="#f2c45a" stroke-width="1.1" fill="none"/>`
+    +[-1,1].map(s=>`<path d="M${x+s*w} ${yy+2} q${s*2} -3 ${s*1} -6" stroke="#f2c45a" stroke-width="1.8" fill="none" stroke-linecap="round"/>`).join("");
+  g+=roof(48,y-26,7);
+  g+=`<rect x="${x-28}" y="${y-52}" width="56" height="19" fill="url(#ky-gold2)" ${BO2}/>`+[-20,-7,7,20].map(a=>`<rect x="${x+a-4.4}" y="${y-49}" width="8.8" height="11" fill="#fff4cc" stroke="#c98e2a" stroke-width="1"/><path d="M${x+a} ${y-49} v11" stroke="#e2b04a" stroke-width=".8"/>`).join("")
+    +`<path d="M${x-31} ${y-36} H${x+31}" stroke="${INK}" stroke-width="2.6"/><path d="M${x-31} ${y-36} H${x+31}" stroke="#f2c45a" stroke-width="1.2"/>`;
+  g+=roof(40,y-52,6);
+  g+=`<rect x="${x-19}" y="${y-74}" width="38" height="17" fill="url(#ky-gold2)" ${BO2}/>`+[-9,9].map(a=>`<path d="M${x+a-4} ${y-59} V${y-66} Q${x+a} ${y-72} ${x+a+4} ${y-66} V${y-59}Z" fill="#7a5a2a" stroke="${INK}" stroke-width="1"/>`).join("");
+  g+=`<path d="M${x-32} ${y-72} Q${x-16} ${y-76} ${x-10} ${y-84} L${x} ${y-96} L${x+10} ${y-84} Q${x+16} ${y-76} ${x+32} ${y-72} Q${x} ${y-77} ${x-32} ${y-72}Z" fill="url(#ky-bark)" ${BO2}/><path d="M${x-30} ${y-72.6} Q${x} ${y-76.4} ${x+30} ${y-72.6}" stroke="#f2c45a" stroke-width="1.1" fill="none"/>`
+    +`<path d="M${x} ${y-96} v-3" stroke="${INK}" stroke-width="1.6"/><path d="M${x-3} ${y-100} q2 -6 6 -7 q-1 2 1 3 q3 -2 7 0 q-4 1 -5 4 q-3 3 -9 0Z" fill="url(#ky-gold)" stroke="${INK}" stroke-width="1"/>`;
+  g+=[[24,-62,0],[-25,-44,1.2],[6,-84,2.2]].map(([a,b,d])=>`<path d="M${x+a} ${y+b-4} q.8 3.2 4 4 q-3.2 .8 -4 4 q-.8 -3.2 -4 -4 q3.2 -.8 4 -4Z" fill="#fffbe0" stroke="#d6a03a" stroke-width=".6" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="2.6s" begin="${d}s" repeatCount="indefinite"/></path>`).join("");
+  return g};
+
+// trois cerisiers à essayer (20/11/2026, Joffray : « ceux-là sont ronds, j'aimerais une forme différente ») : voir
+// tools/cerisiers.html. A : pleureur (shidare-zakura), B : en parasol (Yoshino), C : noueux, à la façon des estampes
+const kyPetals=(x,y,k)=>[[-18,-30,0],[15,-28,1.4],[2,-24,2.7]].map(([a,b,d])=>`<path d="M${kyF(x+a*k)} ${kyF(y+b*k)} q2 -2.2 4.4 0 q-2.2 2.2 -4.4 0Z" fill="#f7b3c6" stroke="${INK}" stroke-width=".5" opacity="0"><animateTransform attributeName="transform" type="translate" values="0 0;${kyF(-7*k)} ${kyF(14*k)};${kyF(4*k)} ${kyF(30*k)}" dur="4.2s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" dur="4.2s" begin="${d}s" repeatCount="indefinite"/></path>`).join("");
+const kyBlob=(C,X,Yy,k,c0,c1,c2)=>C.map(([a,b,rx,ry])=>`<ellipse cx="${X(a)}" cy="${Yy(b)}" rx="${kyF((rx+1.5)*k)}" ry="${kyF(((ry||rx)+1.5)*k)}" fill="${INK}"/>`).join("")
+  +C.map(([a,b,rx,ry])=>`<ellipse cx="${X(a)}" cy="${Yy(b)}" rx="${kyF(rx*k)}" ry="${kyF((ry||rx)*k)}" fill="${c0}"/>`).join("")
+  +C.map(([a,b,rx,ry])=>`<ellipse cx="${X(a-rx*.14)}" cy="${Yy(b-(ry||rx)*.22)}" rx="${kyF(rx*.74*k)}" ry="${kyF((ry||rx)*.66*k)}" fill="${c1}"/>`).join("")
+  +C.map(([a,b,rx,ry])=>`<ellipse cx="${X(a-rx*.28)}" cy="${Yy(b-(ry||rx)*.4)}" rx="${kyF(rx*.36*k)}" ry="${kyF((ry||rx)*.3*k)}" fill="${c2}"/>`).join("");
+const kySakuraA=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(x,y,34*k);
+  g+=`<path d="M${X(-7)} ${Yy(0)} Q${X(-4)} ${Yy(-22)} ${X(-3)} ${Yy(-52)} L${X(4)} ${Yy(-52)} Q${X(3)} ${Yy(-22)} ${X(8)} ${Yy(0)}Z" fill="url(#ky-trunk)" ${K2}/>`;
+  const S=[-36,-29,-22,-15,-8,8,15,22,29,36],st=S.map(d=>`M${X(d*.2)} ${Yy(-56)} Q${X(d*.95)} ${Yy(-66+Math.abs(d)*.1)} ${X(d)} ${Yy(-10-(36-Math.abs(d))*.4-((Math.abs(d)*7)%9))}`).join(" ");
+  g+=`<path d="${st}" fill="none" stroke="${INK}" stroke-width="${kyF(7.6*k)}" stroke-linecap="round"/><path d="${st}" fill="none" stroke="#ef9fb6" stroke-width="${kyF(5*k)}" stroke-linecap="round"/><path d="${st}" fill="none" stroke="#ffd9e4" stroke-width="${kyF(2.6*k)}" stroke-linecap="round" stroke-dasharray="${kyF(.1*k)} ${kyF(4.2*k)}"/>`;
+  g+=kyBlob([[-12,-60,12,9],[0,-66,14,10],[12,-60,12,9],[-24,-56,8,6],[24,-56,8,6]],X,Yy,k,"#ee9db4","#f8c2d1","#ffe4ec");
+  return g+kyPetals(x,y,k)};
+const kySakuraB=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(x,y,46*k);
+  g+=`<path d="M${X(-8)} ${Yy(0)} Q${X(-5)} ${Yy(-14)} ${X(-4)} ${Yy(-24)} L${X(4)} ${Yy(-24)} Q${X(4)} ${Yy(-12)} ${X(9)} ${Yy(0)}Z" fill="url(#ky-trunk)" ${K2}/>`;
+  const br=`M${X(-2)} ${Yy(-22)} Q${X(-18)} ${Yy(-30)} ${X(-38)} ${Yy(-38)} M${X(0)} ${Yy(-22)} Q${X(2)} ${Yy(-36)} ${X(-2)} ${Yy(-50)} M${X(2)} ${Yy(-22)} Q${X(20)} ${Yy(-28)} ${X(40)} ${Yy(-36)} M${X(-12)} ${Yy(-28)} Q${X(-20)} ${Yy(-40)} ${X(-22)} ${Yy(-52)} M${X(12)} ${Yy(-27)} Q${X(18)} ${Yy(-40)} ${X(22)} ${Yy(-52)}`;
+  g+=`<path d="${br}" fill="none" stroke="${INK}" stroke-width="${kyF(6*k)}" stroke-linecap="round"/><path d="${br}" fill="none" stroke="url(#ky-trunk)" stroke-width="${kyF(3.6*k)}" stroke-linecap="round"/>`;
+  g+=kyBlob([[-44,-38,13,6],[44,-38,13,6],[-28,-44,20,9],[28,-44,20,9],[0,-50,26,11],[-16,-58,18,8],[16,-60,18,8],[0,-66,14,6]],X,Yy,k,"#f4b9cb","#fcdbe5","#fff4f7");
+  g+=[[-40,-34],[-20,-38],[2,-42],[24,-38],[42,-33]].map(([a,b])=>`<circle cx="${X(a)}" cy="${Yy(b+6)}" r="${kyF(1.5*k)}" fill="#f4b9cb" stroke="${INK}" stroke-width=".6"/>`).join("");
+  return g+kyPetals(x,y,k)};
+const kySakuraC=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(x,y,30*k);
+  const tr=`M${X(-4)} ${Yy(0)} C${X(-10)} ${Yy(-14)} ${X(6)} ${Yy(-22)} ${X(-2)} ${Yy(-36)} M${X(-2)} ${Yy(-33)} Q${X(14)} ${Yy(-44)} ${X(40)} ${Yy(-42)} M${X(-2)} ${Yy(-36)} Q${X(-14)} ${Yy(-50)} ${X(-24)} ${Yy(-60)} M${X(4)} ${Yy(-38)} Q${X(10)} ${Yy(-50)} ${X(8)} ${Yy(-62)}`;
+  g+=`<path d="${tr}" fill="none" stroke="${INK}" stroke-width="${kyF(8.6*k)}" stroke-linecap="round"/><path d="${tr}" fill="none" stroke="url(#ky-trunk)" stroke-width="${kyF(6*k)}" stroke-linecap="round"/><path d="M${X(-6)} ${Yy(-6)} q${kyF(2*k)} ${kyF(-6*k)} ${kyF(-1*k)} ${kyF(-10*k)}" stroke="#a87060" stroke-width="${kyF(1.2*k)}" fill="none"/>`;
+  const pad=(a,b,w)=>[-.5,-.25,0,.25,.5].map((t,i)=>[a+t*w,b+(i%2?-2.4:1)-(1-Math.abs(t)*2)*3.6,w*.26,w*.21]);
+  const P=[...pad(38,-45,24),...pad(22,-49,18),...pad(-24,-63,22),...pad(-12,-55,14),...pad(8,-64,18),...pad(-2,-46,12),...pad(-30,-56,12),...pad(30,-40,12)];
+  g+=kyBlob(P,X,Yy,k,"#e98aa6","#f6b4c6","#ffdce6");
+  g+=[[30,-50],[-30,-66],[14,-68],[44,-48]].map(([a,b])=>`<ellipse cx="${X(a)}" cy="${Yy(b)}" rx="${kyF(2.4*k)}" ry="${kyF(1.2*k)}" fill="#c75a4a" stroke="${INK}" stroke-width=".6"/>`).join("");
+  return g+kyPetals(x,y,k)};

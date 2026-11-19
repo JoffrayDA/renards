@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trois cerisiers</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#efe8d8;font-family:"Zen Maru Gothic",sans-serif;color:#5b4250;padding:16px}
+h1{font-family:"Mochiy Pop One",sans-serif;font-size:22px;margin:4px 0 14px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.c{background:#fdf6e8;border:3px solid #5b4250;border-radius:16px;padding:10px;text-align:center}
+.c b{font-family:"Mochiy Pop One",sans-serif;font-size:20px}.c p{margin:4px 0 0;font-size:14px}
+svg{width:100%;height:auto;display:block}
+</style></head><body>
+<h1>Trois cerisiers pour Kyoto</h1>
+<div class="g" id="g"></div>
+<p>En petit : à la taille de la carte.</p>
+<iframe id="game" src="../cafe.html?kyoto=1" style="position:absolute;left:-9999px;top:0;width:400px;height:800px;border:0" tabindex="-1" aria-hidden="true"></iframe>
+<script>
+const M=[["A","Le pleureur","Shidare-zakura : les branches retombent en cascade de fleurs.","kySakuraA"],
+  ["B","Le parasol","Yoshino : large, plat, en étages de nuages pâles.","kySakuraB"],
+  ["C","L'estampe","Tronc noueux qui penche, longue branche, bouquets plats et jeunes feuilles rouges.","kySakuraC"]];
+document.getElementById("game").onload=()=>{const w=document.getElementById("game").contentWindow;
+  const go=()=>{if(!w.eval("typeof kySakuraA")||w.eval("typeof kySakuraA")==="undefined")return setTimeout(go,200);
+    document.getElementById("g").innerHTML=M.map(([l,n,d,f])=>`<div class="c"><b>${l} · ${n}</b>
+      <svg viewBox="0 0 240 150"><defs>${w.eval("KY_DEFS")}</defs><rect width="240" height="150" fill="#ece4d0"/><rect y="120" width="240" height="30" fill="#e3d8bf"/>${w.eval(f)(90,128,1.45)}${w.eval(f)(196,128,.8)}</svg><p>${d}</p></div>`).join("")};go()};
+</script>
+</body></html>
