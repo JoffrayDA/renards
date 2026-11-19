@@ -54,10 +54,9 @@ const kyMachiya=(x,y,w,h)=>{const m=kyF(y-h*.48);let g=shadow(x+w/2,y,w*.58);
   g+=`<path d="M${x+2} ${y} Q${x+2} ${y-11} ${x+10} ${y-11} H${kyF(x+w*.56)} V${y}Z" fill="#c9a874" stroke="${INK}" stroke-width="1.1"/>`+Array.from({length:Math.floor(w*.5/3)},(_,i)=>`<path d="M${kyF(x+6+i*3)} ${y} V${y-(i?10:7)}" stroke="#9a7a4a" stroke-width=".9"/>`).join("");
   return g+kyLantern(kyF(dx-2.6),kyF(m+15),.6)};
 
-// le cerisier de la carte (20/11/2026, choix de Joffray sur tools/cerisiers.html : « du B et du D, un peu plus de D ») :
-// le tronc noueux qui penche, des étages plats et pâles dessous (B), de gros nuages de fleurs touffus dessus (D) ;
-// un sur deux est retourné pour que la carte ne répète pas le même arbre
-const kySakura=(x,y,k=1)=>{const g=kySakuraG(x,y,k);return Math.round(x)%2?`<g transform="translate(${2*x} 0) scale(-1 1)">${g}</g>`:g};
+// le cerisier de la carte (20/11/2026, choix de Joffray sur tools/cerisiers.html : « le B à 30 %, le D à 70 % ») :
+// l'arbre est tiré selon sa place (toujours le même au même endroit) ; un D sur deux est retourné
+const kySakura=(x,y,k=1)=>{const h=Math.abs(Math.round(x*7+y*3))%10;if(h<3)return kySakuraB(x,y,k);const g=kySakuraD(x,y,k);return h%2?`<g transform="translate(${2*x} 0) scale(-1 1)">${g}</g>`:g};
 // le stand de pêche aux poissons rouges (kingyo-sukui) : comptoir, grand bac où nagent les poissons, épuisettes de papier,
 // sachets d'eau suspendus avec leur poisson, auvent rayé rouge et blanc, enseigne et deux lanternes
 const kyKingyo=(x,y)=>{let g=shadow(x,y,42);
