@@ -17,6 +17,7 @@ function newRush(){
   newDay(N);
   G.rush=1;G.duel=0;G.replay=true;G.rng=rng(424242+N*31+WORLD.length*977);
   // départ : le rythme du jour 40 du premier café, sans le « hard » des derniers jours, un peu plus doux (échauffement)
+  if(Q.rushMusic)(MUSIC.again||MUSIC.want)(Q.rushMusic);
   const c0=cfgOf(Q.days[N-1].base);G.r0={gap:c0.gap*RUSH_W[0],pat:c0.pat*RUSH_W[1]};G.cfg={...G.cfg,c:1e9,goal:1,max:3,gap:G.r0.gap,pat:G.r0.pat};
   dirty=true;
 }

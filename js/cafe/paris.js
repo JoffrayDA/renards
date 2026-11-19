@@ -483,6 +483,7 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Frimousse",short:"Café",sv:()
   optNew:"Touche « Chantilly », au bout du plateau, pour en mettre sur un café liégeois ou un éclair.",
   guest:"celeste",guestBio:"Elle vient dans tous les cafés : elle paie le triple, mais elle est pressée.",
   reg:()=>[...PAF_REG,...PAF_REG,...PAF_REG,...(S.pa.peace?[FOX.firmin]:[])],
+  rushMusic:"galop", // le Grand rush de Paris (infini.js) : le galop, pas le swing du jour 30 (20/11/2026, Joffray)
   music:d=>d%2?"galop":"swing", // le galop et le swing manouche, une journée sur deux (18/11/2026, Joffray : « une, ce n'est pas assez »)
   mapMusic:"quais", // la promenade sur les quais (choix de Joffray parmi six ; la musette en mineur « faisait Halloween »)
   isOpen:()=>paOpen(),lockMsg:`Réussis les ${IT_LAST} journées de la Petite Italie pour ouvrir Paris.`,
