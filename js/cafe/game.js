@@ -68,6 +68,8 @@ function genOrder(){
 }
 const quake=()=>{const e=$("scene");if(!e)return;e.classList.remove("quake");void e.offsetWidth;e.classList.add("quake")};
 // une commande de sumo : toujours quatre plats (Joffray, 09/11/2026 : « 4 choses minimum s'ils sont là »)
+// leurs rires (20/11/2026, Joffray : « donne-leur des rires marrants ») : Chanko le bruyant, Ōyama le grand champion
+const SUMO_LAUGH={chanko:"Gwahahaha !",oyama:"Dohohoho !"};
 function sumoOrder(){let o=[];while(o.length<4)o=o.concat(genOrder());return o.slice(0,4)}
 function spawn(){
   if(G.cust.filter(c=>c.state==="queue").length>=QMAX)return false;
@@ -106,7 +108,7 @@ function update(dt){
     else if(c.state==="queue"){c.qp-=dt;if(c.qp<=0){c.state="angry";c.leave=.9;c.gave=1;c.lostIt=1;G.lost++;G.combo=0;dirty=true;bip("angry")}}
     else if(c.state==="walkin"){c.walk-=dt;if(c.walk<=0){c.state="wait";c.born=G.t;dirty=true}}
     else if(c.state==="walkout"){c.walk-=dt;if(c.walk<=0){c.gone=1;dirty=true}}
-    else if(c.stay&&c.state==="happy"){c.leave-=dt;if(c.leave<=0){c.state="wait";c.order=sumoOrder();c.pat=c.patMax;c.low=0;c.born=G.t;dirty=true}}
+    else if(c.stay&&c.state==="happy"){c.leave-=dt;if(c.leave<=0){const lf=SUMO_LAUGH[c.fox];if(lf)floatAt(custEl(c),lf);c.state="wait";c.order=sumoOrder();c.pat=c.patMax;c.low=0;c.born=G.t;dirty=true}}
     else{c.leave-=dt;if(c.leave<=0){if(c.gave)c.gone=1;else{c.state="walkout";c.walk=c.lostIt?1:WALK};dirty=true}}
   }
   G.cust=G.cust.filter(c=>!c.gone);

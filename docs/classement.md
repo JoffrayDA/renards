@@ -9,21 +9,44 @@ Le jeu lit les 50 meilleurs (`runQuery`, tri sur `score`) et calcule la place du
 
 ## Règles à coller dans la console Firebase
 
-Firestore Database › Règles : ajouter ce bloc **à l'intérieur** de `match /databases/{database}/documents { … }`, à côté des règles existantes (`push`, `saves`) :
+Firestore Database › Règles : remplacer tout le texte par celui-ci (les règles `push` et `saves` y sont déjà), puis Publier.
+Une première version (`match /{coll}/{uid}` avec `is string`) était refusée par la console (« Line 15: Unexpected 'i' »), 20/11/2026.
 
 ```
-match /{coll}/{uid} {
-  allow read: if coll in ['rush_italie', 'rush_paris', 'rush_kyoto'];
-  allow create, update: if coll in ['rush_italie', 'rush_paris', 'rush_kyoto']
-    && request.auth != null && request.auth.uid == uid
-    && request.resource.data.keys().hasOnly(['name', 'score', 'sec', 't'])
-    && request.resource.data.name is string
-    && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 16
-    && request.resource.data.score is int && request.resource.data.sec is int
-    && request.resource.data.sec >= 0 && request.resource.data.sec <= 3600
-    && request.resource.data.score >= 0
-    && request.resource.data.score <= request.resource.data.sec * 30 + 300
-    && (resource == null || request.resource.data.score > resource.data.score);
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /push/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    match /saves/{code} {
+      allow get, create, update: if request.auth != null && code.size() == 14;
+    }
+
+    function rushOk(uid) {
+      return request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'score', 'sec', 't'])
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 16
+        && request.resource.data.sec >= 0
+        && request.resource.data.sec <= 3600
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= request.resource.data.sec * 30 + 300
+        && (resource == null || request.resource.data.score > resource.data.score);
+    }
+    match /rush_italie/{uid} {
+      allow read: if true;
+      allow create, update: if rushOk(uid);
+    }
+    match /rush_paris/{uid} {
+      allow read: if true;
+      allow create, update: if rushOk(uid);
+    }
+    match /rush_kyoto/{uid} {
+      allow read: if true;
+      allow create, update: if rushOk(uid);
+    }
+  }
 }
 ```
 
