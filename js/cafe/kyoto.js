@@ -171,7 +171,7 @@ function kyLayout(){
   const N=KY_DAYS.length,sp=24*96/(N-1),V=j=>230+(j-1)*96;
   const ox=f=>{const i=Math.max(0,Math.min(23,Math.floor(f))),t=Math.max(0,Math.min(1,f-i));return Math.round(KY_X[i]+(KY_X[i+1]-KY_X[i])*t)};
   const P=[];for(let d=1;d<=N;d++)P[d]={d,x:ox((d-1)*sp/96),u:Math.round(230+(d-1)*sp)};
-  const top=P[N].u,H=top+380,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
+  const top=P[N].u,H=top+510,way=[{x:200,u:60},...P.slice(1),{x:200,u:top+160}];
   return {P,way,H,V,guest:{x:340,u:V(22)+60},yuz:{x:pathX(way,150)<200?300:100,u:120},cafe:{x:200,u:top+190},river:V(6.5)};
 }
 const KY_DEFS=`<linearGradient id="ky-wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9a6a46"/><stop offset="1" stop-color="#6e4630"/></linearGradient>
@@ -183,30 +183,29 @@ const KY_DEFS=`<linearGradient id="ky-wood" x1="0" y1="0" x2="1" y2="0"><stop of
   <radialGradient id="ky-leaf" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#b6dc8e"/><stop offset=".7" stop-color="#86c070"/><stop offset="1" stop-color="#6aa65c"/></radialGradient>
   <linearGradient id="ky-water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b6e0ee"/><stop offset=".5" stop-color="#8cc8de"/><stop offset="1" stop-color="#6fb2cc"/></linearGradient>
   <linearGradient id="ky-moss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe2a8"/><stop offset="1" stop-color="#aacd88"/></linearGradient>
-  <radialGradient id="ky-glow"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".45" stop-color="#ffb27a" stop-opacity=".45"/><stop offset="1" stop-color="#ffb27a" stop-opacity="0"/></radialGradient>`;
-const kyLantern=(x,y,k=1)=>`<circle cx="${x}" cy="${y}" r="${16*k}" fill="url(#ky-glow)"/><ellipse cx="${x}" cy="${y}" rx="${7*k}" ry="${9*k}" fill="#e0503c" ${BO2}/><path d="M${x-5*k} ${y-8*k} H${x+5*k} M${x-5*k} ${y+8*k} H${x+5*k}" stroke="${INK}" stroke-width="2.4"/><path d="M${x-4*k} ${y-3*k} Q${x} ${y-5*k} ${x+4*k} ${y-3*k}" stroke="#ffb09a" stroke-width="1.4" fill="none"/>`;
+  <radialGradient id="ky-glow"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".45" stop-color="#ffb27a" stop-opacity=".45"/><stop offset="1" stop-color="#ffb27a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="ky-chochin" cx=".38" cy=".38" r=".75"><stop offset="0" stop-color="#ffc49a"/><stop offset=".45" stop-color="#f2603e"/><stop offset="1" stop-color="#c23a2c"/></radialGradient>
+  <linearGradient id="ky-gold2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0a8"/><stop offset=".45" stop-color="#f4c94e"/><stop offset="1" stop-color="#c98e2a"/></linearGradient>
+  <linearGradient id="ky-verm" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f4704e"/><stop offset=".7" stop-color="#e2502f"/><stop offset="1" stop-color="#c8402a"/></linearGradient>
+  <linearGradient id="ky-dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a4a48"/><stop offset="1" stop-color="#2c2426"/></linearGradient>
+  <linearGradient id="ky-bark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a7a68"/><stop offset="1" stop-color="#644a3c"/></linearGradient>
+  <linearGradient id="ky-plaster" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdf8ec"/><stop offset="1" stop-color="#eee0c2"/></linearGradient>
+  <linearGradient id="ky-stone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ebe5d8"/><stop offset="1" stop-color="#b8afa0"/></linearGradient>
+  <linearGradient id="ky-trunk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a5a48"/><stop offset="1" stop-color="#5a382e"/></linearGradient>
+  <linearGradient id="ky-lake" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ad4e8"/><stop offset=".5" stop-color="#7cc0dc"/><stop offset="1" stop-color="#62aed0"/></linearGradient>
+  <linearGradient id="ky-fuji" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d8cc4"/><stop offset=".6" stop-color="#a6aedb"/><stop offset="1" stop-color="#c8c4e2"/></linearGradient>`;
 const kyTorii=(x,y,k=1)=>{const w=30*k,h=44*k;return `<path d="M${x-w*.7} ${y} V${y-h}" stroke="${INK}" stroke-width="${8*k+2}" stroke-linecap="round"/><path d="M${x+w*.7} ${y} V${y-h}" stroke="${INK}" stroke-width="${8*k+2}" stroke-linecap="round"/><path d="M${x-w*.7} ${y} V${y-h}" stroke="#e0503c" stroke-width="${8*k-1}"/><path d="M${x+w*.7} ${y} V${y-h}" stroke="#e0503c" stroke-width="${8*k-1}"/>`
   +`<rect x="${x-w}" y="${y-h*.78}" width="${w*2}" height="${5*k}" fill="#e0503c" ${BO2}/><path d="M${x-w-8*k} ${y-h-2*k} Q${x} ${y-h+4*k} ${x+w+8*k} ${y-h-2*k} L${x+w+6*k} ${y-h-9*k} Q${x} ${y-h-3*k} ${x-w-6*k} ${y-h-9*k}Z" fill="#3d2a35" ${BO2}/><path d="M${x-w-2*k} ${y-h+1} H${x+w+2*k}" stroke="#e0503c" stroke-width="${4*k}"/>`};
-const kyMachiya=(x,y,w,h)=>{let g=shadow(x+w/2,y,w*.55)+`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" fill="url(#ky-wood)" ${BO}/>`;
-  for(let i=0;i<Math.floor((w-10)/6);i++)g+=`<path d="M${x+6+i*6} ${y-h*.62} V${y-4}" stroke="#5a3624" stroke-width="1.8"/>`;
-  g+=`<path d="M${x-8} ${y-h+2} Q${x+w/2} ${y-h-6} ${x+w+8} ${y-h+2} L${x+w} ${y-h-16} H${x}Z" fill="url(#ky-roof)" ${BO}/>`+Array.from({length:Math.floor(w/9)},(_,i)=>`<path d="M${x+4+i*9} ${y-h-13} V${y-h-1}" stroke="#3e4a5e" stroke-width="1.2"/>`).join("");
-  return g+`<rect x="${x+w*.18}" y="${y-h*.86}" width="${w*.64}" height="${h*.2}" rx="2" fill="#f4e8cf" ${K2}/>`+[1,2,3].map(i=>`<path d="M${x+w*.18+i*w*.16} ${y-h*.86} V${y-h*.66}" stroke="#a8825a" stroke-width="1.2"/>`).join("")+kyLantern(x+w-6,y-h*.5,.8)};
 const kyBamboo=(x,y,k=1)=>shadow(x,y,22*k)+[[-12,96,0],[-4,118,1],[5,104,2],[13,88,3]].map(([a,h,i])=>{const X=x+a*k,H=h*k;let g=`<rect x="${X-3*k}" y="${y-H}" width="${6*k}" height="${H}" rx="${2*k}" fill="url(#ky-bamboo)" ${K2}/>`;
   for(let j=1;j<5;j++)g+=`<path d="M${X-3*k} ${y-H*j/5} h${6*k}" stroke="#5f8a46" stroke-width="1.4"/>`;
   return g+`<path d="M${X} ${y-H*.7} q${(i%2?10:-10)*k} ${-6*k} ${(i%2?18:-18)*k} ${-2*k} q${(i%2?-8:8)*k} ${4*k} ${(i%2?-18:18)*k} ${2*k}Z M${X} ${y-H*.9} q${(i%2?-9:9)*k} ${-8*k} ${(i%2?-16:16)*k} ${-5*k} q${(i%2?7:-7)*k} ${5*k} ${(i%2?16:-16)*k} ${5*k}Z" fill="#9ccf72" ${K2}/>`}).join("");
-const kySakura=(x,y,k=1)=>shadow(x,y,26*k)+`<path d="M${x-4*k} ${y} Q${x-2*k} ${y-18*k} ${x} ${y-26*k} M${x} ${y-20*k} Q${x+8*k} ${y-26*k} ${x+14*k} ${y-30*k}" fill="none" stroke="#8a5a4a" stroke-width="${5*k}" stroke-linecap="round"/>`
-  +[[-14,-34,15],[8,-40,18],[22,-30,12],[-4,-50,14]].map(([a,b,r])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${r*k}" fill="url(#ky-sakura)" ${K2}/>`).join("")+[[-16,-38],[6,-46],[20,-34],[-6,-54]].map(([a,b])=>`<circle cx="${x+a*k}" cy="${y+b*k}" r="${2.6*k}" fill="#fff"/>`).join("");
 const kyPine=(x,y,k=1)=>shadow(x,y,24*k)+`<path d="M${x} ${y} Q${x-4*k} ${y-20*k} ${x+6*k} ${y-34*k}" fill="none" stroke="#8a6a4a" stroke-width="${5*k}" stroke-linecap="round"/>`+[[-14,-30,20],[10,-40,22],[-2,-52,16]].map(([a,b,r])=>`<ellipse cx="${x+a*k}" cy="${y+b*k}" rx="${r*k}" ry="${r*.45*k}" fill="url(#ky-leaf)" ${K2}/>`).join("");
-const kyToro=(x,y)=>shadow(x,y,12)+`<rect x="${x-3}" y="${y-22}" width="6" height="22" fill="#cfc6b6" ${K2}/><rect x="${x-9}" y="${y-34}" width="18" height="12" rx="2" fill="#e6dfd0" ${K2}/><rect x="${x-4}" y="${y-31}" width="8" height="6" fill="#ffd27a"/><path d="M${x-13} ${y-34} L${x} ${y-44} L${x+13} ${y-34}Z" fill="#b9b0a0" ${K2}/>`;
 const kyFoxStatue=(x,y,f=1)=>shadow(x,y,13)+`<g transform="translate(${x} ${y}) scale(${f} 1)"><rect x="-11" y="-8" width="22" height="8" rx="2" fill="#bdb4a4" ${K2}/><path d="M-7 -8 Q-9 -26 -2 -30 L-5 -40 L1 -33 L5 -40 L5 -29 Q9 -24 7 -8Z" fill="#e6dfd0" ${K2}/><path d="M7 -12 Q16 -18 12 -30 Q8 -22 5 -18Z" fill="#e6dfd0" ${K2}/><path d="M-6 -22 Q0 -16 6 -22 L4 -16 Q0 -13 -4 -16Z" fill="#e0503c" ${K2}/></g>`;
 const kyKinkaku=(x,y)=>{let g=`<ellipse cx="${x}" cy="${y+10}" rx="86" ry="22" fill="url(#ky-water)" ${BO}/><path d="M${x-40} ${y+14} q8 -4 16 0 M${x+20} ${y+20} q8 -4 16 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`;
   g+=`<rect x="${x-34}" y="${y-30}" width="68" height="30" fill="#f6efe2" ${BO}/><path d="M${x-44} ${y-30} Q${x} ${y-38} ${x+44} ${y-30} L${x+36} ${y-40} H${x-36}Z" fill="#5a4a3a" ${BO}/>`;
   g+=`<rect x="${x-28}" y="${y-62}" width="56" height="22" fill="url(#ky-gold)" ${BO}/><path d="M${x-38} ${y-62} Q${x} ${y-70} ${x+38} ${y-62} L${x+30} ${y-72} H${x-30}Z" fill="#5a4a3a" ${BO}/>`;
   g+=`<rect x="${x-18}" y="${y-88}" width="36" height="16" fill="url(#ky-gold)" ${BO}/><path d="M${x-28} ${y-88} Q${x} ${y-96} ${x+28} ${y-88} L${x} ${y-104}Z" fill="#5a4a3a" ${BO}/><path d="M${x} ${y-104} V${y-112}" stroke="#e0b860" stroke-width="3"/><circle cx="${x}" cy="${y-114}" r="3" fill="#ffe08a" ${K2}/>`;
   return g+[-20,-6,8,22].map(a=>`<path d="M${x+a} ${y-26} V${y-4}" stroke="#d8ccb6" stroke-width="1.6"/>`).join("")+`<path d="M${x-22} ${y-58} V${y-44} M${x} ${y-58} V${y-44} M${x+22} ${y-58} V${y-44}" stroke="#c99a3a" stroke-width="1.6"/>`};
-const kyPagoda=(x,y,k=1)=>{let g=shadow(x,y,34*k);for(let i=0;i<5;i++){const yy=y-i*24*k,w=(30-i*4)*k;
-  g+=`<rect x="${x-w*.62}" y="${yy-16*k}" width="${w*1.24}" height="${16*k}" fill="#d9774e" ${K2}/><path d="M${x-w-10*k} ${yy-16*k} Q${x} ${yy-24*k} ${x+w+10*k} ${yy-16*k} L${x+w} ${yy-24*k} H${x-w}Z" fill="url(#ky-roof)" ${K2}/>`}
-  return g+`<path d="M${x} ${y-120*k} V${y-146*k}" stroke="#e0b860" stroke-width="${3*k}"/>`+[0,1,2,3].map(i=>`<circle cx="${x}" cy="${y-(126+i*5)*k}" r="${2.2*k}" fill="#ffe08a" stroke="${INK}" stroke-width="1"/>`).join("")};
 const kyShrine=(x,y)=>shadow(x,y,46)+`<rect x="${x-40}" y="${y-8}" width="80" height="8" fill="#cfc6b6" ${BO}/><rect x="${x-32}" y="${y-40}" width="64" height="32" fill="#f6efe2" ${BO}/><rect x="${x-26}" y="${y-36}" width="10" height="28" fill="#e0503c" ${K2}/><rect x="${x+16}" y="${y-36}" width="10" height="28" fill="#e0503c" ${K2}/><path d="M${x-48} ${y-40} Q${x} ${y-50} ${x+48} ${y-40} L${x+30} ${y-64} H${x-30}Z" fill="#7a5a44" ${BO}/><path d="M${x-12} ${y-36} H${x+12}" stroke="#e0503c" stroke-width="3"/><circle cx="${x}" cy="${y-28}" r="5" fill="#f7d77a" ${K2}/>`;
 const kyYatai=(x,y,c)=>shadow(x,y,30)+`<rect x="${x-26}" y="${y-22}" width="52" height="22" fill="#c99a6a" ${BO}/><path d="M${x-26} ${y-22} V${y-48} M${x+26} ${y-22} V${y-48}" stroke="${INK}" stroke-width="3"/><path d="M${x-32} ${y-46} H${x+32} L${x+28} ${y-36} H${x-28}Z" fill="${c}" ${BO}/>`+[0,1,2,3,4].map(i=>`<path d="M${x-28+i*14} ${y-36} q7 6 14 0" fill="${c}" ${K2}/>`).join("")+`<rect x="${x-18}" y="${y-18}" width="36" height="8" rx="2" fill="#fff6e4" ${K2}/>`;
 const kyStones=(x,y)=>[[-46,-4],[-22,6],[0,-4],[22,6],[46,-4]].map(([a,b],i)=>`<ellipse cx="${x+a}" cy="${y+b}" rx="${i%2?12:10}" ry="7" fill="#d8d0c0" ${BO2}/><ellipse cx="${x+a-3}" cy="${y+b-2}" rx="4" ry="1.6" fill="#fff" opacity=".7"/>`).join("");
@@ -223,14 +222,10 @@ const kyRickshaw=(x,y)=>shadow(x,y,30)+`<circle cx="${x-6}" cy="${y-14}" r="14" 
   +`<path d="M${x-22} ${y-26} H${x+8} V${y-40} Q${x-6} ${y-60} ${x-24} ${y-46}Z" fill="#2f2a3a" ${BO2}/><path d="M${x-20} ${y-26} h26 v6 h-26Z" fill="#d9443a" ${BO2}/><path d="M${x+6} ${y-24} L${x+38} ${y-16}" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/><path d="M${x+6} ${y-24} L${x+38} ${y-16}" stroke="#c99a5a" stroke-width="1.8" stroke-linecap="round"/>`;
 const kyZen=(x,y)=>shadow(x,y,52)+`<rect x="${x-50}" y="${y-34}" width="100" height="34" rx="4" fill="#efe8d6" ${BO}/>`+[0,1,2,3,4].map(i=>`<path d="M${x-46} ${y-29+i*6} Q${x-20} ${y-31+i*6} ${x} ${y-29+i*6} T${x+46} ${y-29+i*6}" fill="none" stroke="#d6cab0" stroke-width="1.4"/>`).join("")
   +[[-24,-14,9,6],[14,-20,7,5],[30,-10,5,4]].map(([a,b,rx,ry])=>`<ellipse cx="${x+a}" cy="${y+b+3}" rx="${rx+5}" ry="${ry+3}" fill="none" stroke="#d6cab0" stroke-width="1.2"/><ellipse cx="${x+a}" cy="${y+b}" rx="${rx}" ry="${ry}" fill="#9a9a9e" ${BO2}/><ellipse cx="${x+a-2}" cy="${y+b-2}" rx="${rx*.4}" ry="${ry*.3}" fill="#c4c4c8"/><path d="M${x+a-rx} ${y+b+1} q${rx} ${ry*.8} ${2*rx} 0" fill="#9fc38a" opacity=".8"/>`).join("");
-const kyBridge=(x,y)=>`<path d="M${x-44} ${y+10} Q${x} ${y-34} ${x+44} ${y+10}" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="M${x-44} ${y+10} Q${x} ${y-34} ${x+44} ${y+10}" fill="none" stroke="#e0503c" stroke-width="8" stroke-linecap="round"/>`
-  +`<path d="M${x-40} ${y-2} Q${x} ${y-44} ${x+40} ${y-2}" fill="none" stroke="${INK}" stroke-width="2.2"/>`+[-30,-15,0,15,30].map(o=>{const t=(o+44)/88,yy=y+10-44*4*t*(1-t)*.5*2;return `<path d="M${x+o} ${(yy-1).toFixed(1)} V${(yy-12+Math.abs(o)*.1).toFixed(1)}" stroke="${INK}" stroke-width="2.2"/><circle cx="${x+o}" cy="${(yy-13+Math.abs(o)*.1).toFixed(1)}" r="2" fill="#f2c45a" stroke="${INK}" stroke-width="1"/>`}).join("");
 const kyHokora=(x,y)=>shadow(x,y,34)+`<rect x="${x-20}" y="${y-6}" width="40" height="6" fill="#cfc6b6" ${K2}/><rect x="${x-13}" y="${y-28}" width="26" height="22" fill="url(#ky-wood)" ${BO2}/><path d="M${x-20} ${y-28} Q${x} ${y-44} ${x+20} ${y-28}Z" fill="url(#ky-roof)" ${BO2}/><rect x="${x-6}" y="${y-22}" width="12" height="16" fill="#f2e6cc" stroke="${INK}" stroke-width="1.2"/><path d="M${x-3} ${y-22} v-4 M${x+3} ${y-22} v-4" stroke="#fff" stroke-width="2"/>`
   +[-1,1].map(sd=>`<g transform="translate(${x+sd*30} ${y}) scale(${sd} 1)"><rect x="-7" y="-6" width="14" height="6" fill="#cfc6b6" ${K2}/><path d="M-5 -6 Q-6 -20 0 -22 L-2 -30 L3 -24 Q7 -18 5 -6Z" fill="#e8e2d6" ${K2}/><path d="M-4 -14 h9 l-4.5 6Z" fill="#d9443a" stroke="${INK}" stroke-width="1"/></g>`).join("");
 const kyEma=(x,y)=>shadow(x,y,26)+`<path d="M${x-24} ${y} V${y-34} M${x+24} ${y} V${y-34}" stroke="#6e4630" stroke-width="3"/><path d="M${x-28} ${y-34} H${x+28}" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M${x-28} ${y-34} H${x+28}" stroke="#9a6a46" stroke-width="2" stroke-linecap="round"/>`
   +[-18,-9,0,9,18,-13,-4,5,14].map((o,i)=>{const yy=y-(i<5?28:16);return `<path d="M${x+o-4} ${yy} h8 v7 h-8Z" fill="#e8c88a" stroke="${INK}" stroke-width="1"/><path d="M${x+o-3} ${yy-.4} l3 -2.4 l3 2.4" fill="#e8c88a" stroke="${INK}" stroke-width="1"/>`}).join("");
-const kyKingyo=(x,y)=>shadow(x,y,32)+`<rect x="${x-28}" y="${y-18}" width="56" height="18" rx="3" fill="#c99a6a" ${BO}/><path d="M${x-32} ${y-50} H${x+32} L${x+28} ${y-40} H${x-28}Z" fill="#7a9ad8" ${BO2}/><path d="M${x-26} ${y-40} V${y-18} M${x+26} ${y-40} V${y-18}" stroke="#6e4630" stroke-width="2.4"/><text x="${x}" y="${y-42.6}" text-anchor="middle" font-family="Zen Maru Gothic,sans-serif" font-weight="900" font-size="7" fill="#fff">金魚</text>`
-  +`<ellipse cx="${x}" cy="${y-20}" rx="22" ry="6" fill="#a8d8ee" ${BO2}/>`+[[-10,-20],[2,-22],[12,-19]].map(([a,b])=>`<path d="M${x+a} ${y+b} q3 -2 6 0 q-3 2 -6 0Z M${x+a} ${y+b} l-3 -2 v4Z" fill="#f06a4c" stroke="${INK}" stroke-width=".8"/>`).join("");
 const kyTaiko=(x,y)=>shadow(x,y,24)+`<path d="M${x-18} ${y} L${x-10} ${y-20} M${x+18} ${y} L${x+10} ${y-20}" stroke="#6e4630" stroke-width="3" stroke-linecap="round"/><ellipse cx="${x}" cy="${y-30}" rx="20" ry="17" fill="#b8342c" ${BO}/><ellipse cx="${x-2}" cy="${y-30}" rx="13" ry="15" fill="#f6ead2" ${BO2}/>`
   +Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<circle cx="${(x-2+14.6*Math.cos(a)).toFixed(1)}" cy="${(y-30+16.4*Math.sin(a)).toFixed(1)}" r="1.2" fill="#f2c45a"/>`}).join("")+`<path d="M${x-8} ${y-36} q6 6 0 12 q-6 -6 0 -12Z M${x+2} ${y-34} q-6 4 -2 10" fill="#d9443a" opacity=".85"/>`;
 function kyCafeSVG(x,y){
@@ -260,7 +255,7 @@ function kyCafeSVG(x,y){
   return s;
 }
 // la grande porte d'entrée : un torii, comme ceux du chemin
-function kyArchSVG(x,y){return kyTorii(x,y+24,2.4)}
+function kyArchSVG(x,y){return kyRipple(x-50,y+25,14)+kyRipple(x+50,y+25,14,1.5)+kyTorii(x,y+24,2.4)}
 function kyMapSVG(L){
   const {P,way,H,cafe,V}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
   const u7=V(8),u12=V(14),u13=V(15),u18=V(22);
@@ -271,15 +266,30 @@ function kyMapSVG(L){
     <radialGradient id="ky-vig" cx=".5" cy=".5" r=".75"><stop offset=".7" stop-color="#5b4250" stop-opacity="0"/><stop offset="1" stop-color="#5b4250" stop-opacity=".12"/></radialGradient>`;
   let s=`<rect width="400" height="${H}" fill="url(#ky-gnd)"/><rect width="400" height="${H}" fill="url(#ky-grav)"/>`;
   // le ciel du soir, les collines et la pagode derrière le salon de thé
-  s+=`<rect x="0" y="0" width="400" height="${hz}" fill="url(#ky-sky)"/><circle cx="90" cy="${hz-160}" r="70" fill="url(#ky-sun)"/><circle cx="90" cy="${hz-160}" r="17" fill="#fff4c8" ${BO}/>`;
+  s+=`<rect x="0" y="0" width="400" height="${hz}" fill="url(#ky-sky)"/><circle cx="62" cy="${hz-250}" r="70" fill="url(#ky-sun)"/><circle cx="62" cy="${hz-250}" r="17" fill="#fff4c8" ${BO}/>`;
+  // le mont Fuji, tout en haut derrière le Kitsune Shokudō (20/11/2026, Joffray) : pentes creusées, neige au sommet, un voile de nuage
+  const fp=hz-318;
+  s+=`<path d="M-40 ${hz-40} Q120 ${hz-110} 170 ${fp+14} Q186 ${fp-2} 200 ${fp} Q214 ${fp-2} 230 ${fp+14} Q280 ${hz-110} 440 ${hz-40}Z" fill="url(#ky-fuji)" ${BO}/>`
+    +`<path d="M190 ${fp+40} L176 ${hz-150} M212 ${fp+50} L226 ${hz-140} M150 ${hz-150} L120 ${hz-90} M254 ${hz-160} L282 ${hz-100}" stroke="#8f9bd0" stroke-width="2" stroke-linecap="round" opacity=".7"/>`
+    +`<path d="M170 ${fp+14} Q186 ${fp-2} 200 ${fp} Q214 ${fp-2} 230 ${fp+14} Q238 ${fp+40} 246 ${fp+66} l-9 -8 l-7 14 l-9 -12 l-7 16 l-9 -14 l-8 12 l-8 -16 l-8 14 l-9 -12 l-7 10 Q162 ${fp+40} 170 ${fp+14}Z" fill="#fffaf6" ${BO2}/><path d="M184 ${fp+10} Q192 ${fp+30} 186 ${fp+56}" stroke="#dfe2f2" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    +`<path d="M-10 ${hz-130} Q40 ${hz-150} 90 ${hz-136} Q130 ${hz-156} 170 ${hz-138} Q150 ${hz-122} 100 ${hz-124} Q50 ${hz-116} -10 ${hz-130}Z M260 ${hz-170} Q300 ${hz-188} 340 ${hz-172} Q380 ${hz-184} 410 ${hz-168} Q380 ${hz-156} 330 ${hz-160} Q290 ${hz-154} 260 ${hz-170}Z" fill="#fff" opacity=".75"/>`;
   s+=`<path d="M0 ${hz-60} Q80 ${hz-120} 170 ${hz-80} Q260 ${hz-130} 330 ${hz-84} Q370 ${hz-100} 400 ${hz-90} V${hz} H0Z" fill="#a9c79a" ${BO}/><path d="M0 ${hz-30} Q120 ${hz-70} 230 ${hz-40} Q320 ${hz-60} 400 ${hz-36} V${hz} H0Z" fill="#93b585" ${BO}/>`;
   s+=kyPagoda(330,hz-22,.9);
   s+=`<g><animateTransform attributeName="transform" type="translate" values="-60 0;460 -10" dur="28s" repeatCount="indefinite"/>${[[0,hz-200],[14,hz-208],[26,hz-198]].map(([x,y])=>`<path d="M${x-6} ${y} q3 -4 6 0 q3 -4 6 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join("")}</g>`;
   s+=`<path d="M0 ${hz} H400" stroke="${INK}" stroke-width="2"/>`;
   // la forêt de bambous et le jardin du pavillon d'or : de la mousse
   s+=`<path d="M-10 ${Y(u7+30)} Q120 ${Y(u7+10)} 230 ${Y(u7+40)} Q260 ${Y(u12-60)} 190 ${Y(u12-20)} Q90 ${Y(u12+20)} -10 ${Y(u12-10)}Z" fill="url(#ky-moss)" ${BO}/>`;
-  // la montagne d'Inari : une colline boisée, plus claire au sommet
-  s+=`<path d="M410 ${Y(u13+6)} Q404 ${Y(u18-20)} 304 ${Y(u18-24)} Q210 ${Y(u18-40)} 194 ${Y(u18-200)} Q186 ${Y(u13+90)} 224 ${Y(u13+24)} Q304 ${Y(u13-24)} 410 ${Y(u13+6)}Z" fill="url(#ky-moss)" ${BO}/>`;
+  // le lac sacré (20/11/2026, Joffray : « les portes rouges sont censées être sur l'eau ») à la place de la colline d'Inari :
+  // le chemin y passe sur une galerie de bois à garde-corps rouge, les torii et le sanctuaire sont posés sur l'eau
+  const LK=[[420,1540],[330,1548],[270,1566],[232,1606],[212,1660],[200,1730],[192,1800],[190,1880],[196,1960],[204,2040],[216,2110],[236,2190],[262,2258],[320,2270],[420,2262]];
+  const inLk=(x,u)=>{let c=false;for(let i=0,j=LK.length-1;i<LK.length;j=i++){const [xi,yi]=LK[i],[xj,yj]=LK[j];if((yi>u)!==(yj>u)&&x<(xj-xi)*(u-yi)/(yj-yi)+xi)c=!c}return c};
+  const lkD=smooth([...LK,LK[0]].map(([x,u])=>[x,Y(u)]))+"Z";
+  s+=`<clipPath id="ky-lk"><path d="${lkD}"/><ellipse cx="200" cy="${Y(30)}" rx="150" ry="30"/></clipPath>`;
+  s+=`<path d="${lkD}" fill="none" stroke="${INK}" stroke-width="22" stroke-linejoin="round"/><path d="${lkD}" fill="none" stroke="#e6d6b0" stroke-width="18" stroke-linejoin="round"/><path d="${lkD}" fill="url(#ky-lake)" stroke="${INK}" stroke-width="2"/>`
+    +`<g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><animate attributeName="opacity" values=".9;.35;.9" dur="4.4s" repeatCount="indefinite"/>${[[372,1590],[240,1700],[350,1980],[230,1880],[372,2100],[300,2240],[220,2040]].map(([x,u])=>`<path d="M${x-12} ${Y(u)} q6 -3 12 0 q6 3 12 0"/>`).join("")}</g>`
+    +[[384,1640,0],[224,1790,1],[380,2030,2],[214,1990,3],[300,2120,4]].map(([x,u,i])=>kyLotus(x,Y(u),i)).join("");
+  // l'étang au pied du grand torii de l'entrée
+  s+=`<ellipse cx="200" cy="${Y(30)}" rx="158" ry="36" fill="${INK}"/><ellipse cx="200" cy="${Y(30)}" rx="156" ry="34" fill="#e6d6b0"/><ellipse cx="200" cy="${Y(30)}" rx="148" ry="28" fill="url(#ky-lake)" stroke="${INK}" stroke-width="2"/>`;
   // la rivière Kamo, ses berges, des reflets
   const ry=Y(L.river),bx=pathX(way,L.river);
   s+=`<path d="M-10 ${ry-34} Q100 ${ry-42} 200 ${ry-32} T410 ${ry-38} V${ry+32} Q300 ${ry+42} 200 ${ry+34} T-10 ${ry+38}Z" fill="url(#ky-water)" ${BO}/>`;
@@ -287,6 +297,7 @@ function kyMapSVG(L){
   // le chemin et la part déjà faite ; les pierres de gué à la place d'un pont
   const pts=way.map(p=>[p.x,Y(p.u)]),d=smooth(pts);
   s+=`<path d="${d}" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#fdf1df" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#ead2bb" stroke-width="4" stroke-dasharray="1 15" stroke-linecap="round"/>`;
+  s+=`<g clip-path="url(#ky-lk)"><path d="${d}" fill="none" stroke="${INK}" stroke-width="40"/><path d="${d}" fill="none" stroke="#e0503c" stroke-width="36"/><path d="${d}" fill="none" stroke="${INK}" stroke-width="36" stroke-dasharray="1.6 10"/><path d="${d}" fill="none" stroke="${INK}" stroke-width="31"/><path d="${d}" fill="none" stroke="#d6aa78" stroke-width="27"/><path d="${d}" fill="none" stroke="#b08458" stroke-width="27" stroke-dasharray="1.4 5.6"/></g>`;
   const k=way.findIndex(p=>p.d===itCur());if(k>0)s+=`<path d="${smooth(pts.slice(0,k+1))}" fill="none" stroke="#f59a8b" stroke-width="7" stroke-dasharray="1 15" stroke-linecap="round"/>`;
   s+=`<path d="M${bx-34} ${ry-36} V${ry+36} H${bx+34} V${ry-36}Z" fill="url(#ky-water)"/>`+kyStones(bx,ry)+kyBridge(bx<200?300:90,ry);
   // ce qui est posé, chaque chose une fois
@@ -296,22 +307,30 @@ function kyMapSVG(L){
   at(300,282,kyToro);at(110,250,kyToro);at(250,610,kyToro);at(300,520,(x,y)=>kySakura(x,y,.9));at(40,250,(x,y)=>kySakura(x,y,.8));
   // ajouts du 11/11/2026 (Joffray : « le Japon c'est trop trop vide »), placés entre les détours du chemin
   at(118,330,kyNodate);at(150,462,(x,y)=>kySakura(x,y,.85));at(272,598,kyRickshaw);at(352,560,(x,y)=>kyMomiji(x,y,.9));at(56,470,kyToro);
-  at(150,960,(x,y)=>kyMomiji(x,y,.85));at(330,1150,kyZen);at(386,1262,(x,y)=>kyMomiji(x,y,.8));at(300,1020,(x,y)=>kyBamboo(x,y,.7));
-  at(320,1830,kyHokora);at(372,1900,kyToro);at(372,2104,kyEma);at(40,1840,(x,y)=>kyBamboo(x,y,.7));
+  at(330,1150,kyZen);at(386,1262,(x,y)=>kyMomiji(x,y,.8));at(306,1006,(x,y)=>kyMomiji(x,y,.75));
+  
   at(60,856,(x,y)=>kySakura(x,y,.8));at(132,884,kyToro);at(360,1062,(x,y)=>kySakura(x,y,.75));at(350,1400,kyToro);at(176,1690,kyToro);at(170,2196,(x,y)=>kySakura(x,y,.7));
-  at(340,2500,kyKingyo);at(44,2384,kyTaiko);at(355,2300,(x,y)=>kyMomiji(x,y,.8));
+  at(340,2500,kyKingyo);at(345,2420,kyTaiko);at(355,2300,(x,y)=>kyMomiji(x,y,.8));
   // les bambous et le pavillon d'or
-  at(60,u7+90,(x,y)=>kyBamboo(x,y,1));at(26,u7+40,(x,y)=>kyBamboo(x,y,.8));at(160,u7+160,(x,y)=>kyBamboo(x,y,.9));at(36,u12-60,(x,y)=>kyBamboo(x,y,1.1));at(380,u7+60,(x,y)=>kyPine(x,y,.8));
+  at(380,u7+60,(x,y)=>kyPine(x,y,.8));
   at(110,u12-180,(x,y)=>kyKinkaku(x,y));at(370,u12-40,(x,y)=>kyPine(x,y,.9));at(380,u12+30,kyToro);
   // la montagne d'Inari : renards de pierre, le sanctuaire en haut ; les torii sont posés sur le chemin plus bas
-  at(250,u13+60,(x,y)=>kyFoxStatue(x,y,1));at(340,u13+40,(x,y)=>kyFoxStatue(x,y,-1));at(100,u18+20,kyShrine);at(372,u13+200,(x,y)=>kyPine(x,y,.8));at(30,u13+180,(x,y)=>kySakura(x,y,.75));at(30,u18-60,(x,y)=>kyPine(x,y,.8));at(160,u13+230,kyToro);
+  at(236,1530,(x,y)=>kyFoxStatue(x,y,1));at(318,1520,(x,y)=>kyFoxStatue(x,y,-1));at(70,2250,(x,y)=>kyPagoda(x,y,1.05));at(30,u13+180,(x,y)=>kySakura(x,y,.75));at(30,u18-60,(x,y)=>kyPine(x,y,.8));at(160,u13+230,kyToro);
   // devant le salon de thé : les stands du Matsuri, une guirlande de lanternes
   at(70,cafe.u-90,(x,y)=>kyYatai(x,y,"#e0503c"));at(330,cafe.u-96,(x,y)=>kyYatai(x,y,"#7a9ad8"));at(60,cafe.u-200,(x,y)=>kySakura(x,y,1));at(350,u18+150,(x,y)=>kySakura(x,y,.8));
   // le Japon d'autrefois (20/11/2026, kyoto-deco.js) : terrain de sumo, château, grand Bouddha, temple sur pilotis, Jizō
-  at(290,1210,kyDohyo);at(84,1612,(x,y)=>kyCastle(x,y,.95));at(58,2036,kyDaibutsu);at(326,1960,kyKiyomizu);at(352,1720,kyJizo);
+  at(290,1210,kyDohyo);at(84,1612,(x,y)=>kyCastle(x,y,.95));at(58,2036,kyDaibutsu);at(40,1956,(x,y)=>kyJizo(x,y,4));
+  // sur le lac : le grand torii, le sanctuaire sur pilotis, une barque
+  at(346,1690,(x,y)=>kyOTorii(x,y,1.1));at(304,1880,kyMiyajima);at(358,2180,kyBoat);
+  // la forêt de bambous (20/11/2026, Joffray : « une forêt plutôt qu'un de temps en temps ») : des tiges serrées sur la mousse,
+  // jamais sur le chemin ni sur le pavillon d'or
+  const dPath=(x,u)=>{let m=1e9;for(let i=0;i<way.length-1;i++){const a=way[i],b=way[i+1],vx=b.x-a.x,vu=b.u-a.u,t=Math.max(0,Math.min(1,((x-a.x)*vx+(u-a.u)*vu)/(vx*vx+vu*vu)));m=Math.min(m,Math.hypot(x-a.x-vx*t,u-a.u-vu*t))}return m};
+  for(let r=0,n=0;r<17;r++)for(let c=0;c<11;c++){n++;const x=4+c*19+((n*37)%11)-5+(r%2)*9,u=930+r*31+((n*53)%13),h=78+((n*29)%46),sd=n;
+    if(x>200||(x>8&&x<214&&u+h>1236&&u<1432)||u>1452)continue;let ok=true;for(let t=0;t<=h;t+=12)if(dPath(x,u+t)<26){ok=false;break}
+    if(ok)at(x,u,(X,Y0)=>kyStalk(X,Y0,h,sd))}
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   // le chemin des torii : une porte rouge tous les 34 pas, sauf sur les journées
-  for(let u=u13-60;u<u18+40;u+=34){if(P.some(p=>Math.abs(p.u-u)<24))continue;s+=kyTorii(pathX(way,u),Y(u)+14,.82)}
+  for(let u=u13-60;u<u18+60;u+=34){const x=pathX(way,u);if(P.some(p=>Math.abs(p.u-u)<24)||!inLk(x,u+6))continue;s+=kyRipple(+(x-17).toFixed(1),Y(u)+15,6)+kyRipple(+(x+17).toFixed(1),Y(u)+15,6,1.4)+kyTorii(x,Y(u)+14,.82)}
   s+=`<path d="M40 ${Y(cafe.u-40)} Q200 ${Y(cafe.u-70)} 360 ${Y(cafe.u-40)}" fill="none" stroke="${INK}" stroke-width="1.8"/>`+[70,110,150,190,230,270,310].map(x=>{const t=(x-40)/320,y=Y(cafe.u-40)-(-60*t*(1-t))*1;return kyLantern(x,y+10,.7)}).join("");
   s+=kyArchSVG(200,Y(60))+kyCafeSVG(cafe.x,Y(cafe.u));
   s+=`<rect width="400" height="${H}" fill="url(#ky-vig)" pointer-events="none"/>`;
