@@ -53,8 +53,8 @@ function endDay(){
   if(st){const m=noelEvent("star");if(m)setTimeout(()=>toast(m),1200)}
   S.stars[d]=Math.max(prev,st);S.best[d]=Math.max(S.best[d]||0,e);
   const news=[];
-  // le coffre ne paie que les étoiles nouvellement gagnées : rejouer reste utile sans devenir une ferme à pièces
-  let chest=0;if(st>prev){chest=rnd(5,12)*(st-prev)+(st===3?15+2*d:0);S.coins+=chest}
+  // plus de coffre (20/11/2026, Joffray : « c'est quoi un coffre… c'est même pas expliqué », « on supprime ») : les pièces viennent
+  // seulement des clients ; une journée déjà réussie, rejouée, rapporte 40 % du bénéfice (G.replay)
   // les nouvelles étoiles donnent aussi des clochettes, la monnaie rare des deux jeux (bourse.js) : une par étoile, deux de plus à ★★★
   const bl=st>prev?st-prev+(st===3?2:0):0;if(bl)addBells(bl);
   if(st&&d===S.day)S.day++;
@@ -73,7 +73,7 @@ function endDay(){
   const nxt=st<3?(e<g?`Il manquait ${g-e} points pour réussir.`:`Plus que ${Math.ceil(g*(st===1?c2:c3))-e} points pour ${st===1?"★★":"★★★"} !`):"Journée parfaite !";
   const canNext=st&&d<LASTDAY&&dayOpen(d+1),tip=upTip(d,st);
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center">${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
-  ${endStats({e,g,c2,c3,coins:G.gain+chest,bells:bl,candy:HW?G.candy:0,replay:G.replay})}
+  ${endStats({e,g,c2,c3,coins:G.gain,bells:bl,candy:HW?G.candy:0,replay:G.replay})}
   ${pushAsk(st)}${tip&&tip.note?`<button class="unote" data-upgo="${tip.id}" type="button"><i class="udot"></i>Des améliorations sont disponibles : fais un tour dans la boutique.</button>`:""}${news.join("")}${albumRow()}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}

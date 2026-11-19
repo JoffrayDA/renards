@@ -121,7 +121,7 @@ const IT_PRICE=.7; // prix de l'équipement en Petite Italie (×1,3 au départ :
 // puis de plus en plus cher ; le kit d'un monde demande de rejouer des journées (python tools/balance-bot.py --economie)
 // baisse du 18/11/2026 (Joffray : « baisse un petit peu, surtout les deuxièmes évolutions ») : -7 % environ partout,
 // et les niveaux 2 et 3 coûtent un quart de moins (LV2) ; le n° de niveau est posé sur chaque palier (l.i) après ALLUP
-const WPRICE={"":1.4,italie:.95,paris:1.05,kyoto:1.1},LV2=.75;
+const WPRICE={"":1.31,italie:.95,paris:1.05,kyoto:1.1},LV2=.75;
 const upPrice=nx=>Math.round(nx.c*(WPRICE[WORLD]||1.4)*(nx.i?LV2:1)/10)*10;
 // achats des dernières saisons : au premier café, avec leur saison ; dans un quartier, aux jours 8 et 12 (IT_FROM). Joffray tient
 // à ce blocage (11/11/2026), mais il n'était écrit nulle part : la boutique montre maintenant un cadenas et le jour (upWhen)

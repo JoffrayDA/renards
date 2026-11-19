@@ -295,7 +295,7 @@ function renderMapIt(){
   for(let d=1;d<=N;d++){
     const p=P[d],st=V.stars[d]||0,op=d<=V.day,rk=wRecAt(d);
     const cls=!op?"lock":d===cur&&!st?"cur":st===3?"gold":"done";
-    const badge=rk&&!V.own[rk]?`<span class="nb">${icon(rk,WORLD)}</span>`:Q.duel&&Q.duel[d]&&op&&!(V.duel||{})[d]?`<span class="nb">${icon("croissant",WORLD)}</span>`:Q.mark&&op&&Q.mark(d)?`<span class="nb">${Q.mark(d)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
+    const badge=rk&&!V.own[rk]?`<span class="nb">${icon(rk,WORLD)}</span>`:Q.duel&&Q.duel[d]&&op&&!(V.duel||{})[d]?`<span class="nb">${icon("croissant",WORLD)}</span>`:Q.mark&&op&&Q.mark(d)?`<span class="nb">${Q.mark(d)}</span>`:"";
     h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-itday="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
   }
   // le Grand rush (infini.js) : le rond doré « ∞ » sur le chemin, entre le dernier jour et le café
@@ -421,8 +421,7 @@ function itDaySheet(d){
   if(rk&&!V.own[rk])rw.push(itRow(icon(rk,WORLD),`${OPTS[rk]?"Option":"Recette"} à gagner : ${OPTS[rk]?(Q.optWords&&Q.optWords[rk]||Q.optWord):VAR[WORLD][rk][0]}`,`Réussis cette journée pour l'ajouter à la carte du ${Q.short}.`,"background:#e3f2d6"));
   if(Q.duel&&Q.duel[d])rw.push(Q.duelRow(d,g));
   if(Q.dayRow){const r=Q.dayRow(d);if(r)rw.push(r)}
-  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer ne rapporte qu'un quart des pièces. Les nouvelles étoiles restent payées par le coffre."));
-  rw.push(st<3?itRow(icon("chest"),"Coffre ★★★","Chaque nouvelle étoile rapporte des pièces, et 3 étoiles ouvrent le gros coffre."):itRow(icon("chest"),"Coffre ouvert","Tu peux rejouer pour battre ton record, mais sans coffre."));
+  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer rapporte 40 % des pièces."));
   if(d===N){const f=FOX[Q.guest],ok=V.guest;rw.push(itRow(foxSVG(f,{sil:!ok}),ok?`Invitée d'honneur : ${f.name}`:"Invitée d'honneur mystère",ok?Q.guestBio:`Obtiens ★★★ sur les ${N} journées du quartier pour l'inviter (${itStarSum()} / ${N*3} ★).`,"background:#fbf0cc"))}
   const menu=Object.keys(REC).filter(k=>onMenu(k,d)).map(k=>VAR[WORLD][k][0]);
   openSheet(`<h2>Jour ${d} · ${Q.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>
@@ -445,7 +444,7 @@ function endIt(){
   if(st){const m=noelEvent("star");if(m)setTimeout(()=>toast(m),1200)}
   V.stars[d]=Math.max(prev,st);V.best[d]=Math.max(V.best[d]||0,e);
   const news=[];
-  let chest=0;if(st>prev){chest=rnd(5,12)*(st-prev)+(st===3?15+2*base:0);S.coins+=chest}
+  // plus de coffre (20/11/2026, voir end.js)
   const bl=st>prev?st-prev+(st===3?2:0):0;if(bl)addBells(bl);
   if(st&&d===V.day)V.day++; // V.day passe à 21 quand le quartier est fini (itCur le borne à 20)
   const rk=wRecAt(d);
@@ -459,7 +458,7 @@ function endIt(){
   // la scène gagnée se joue tout de suite, avant l'écran de résultats (Joffray, 04/11/2026 : plusieurs journées d'affilée
   // laissaient une pile de scènes sur la carte, sans qu'on comprenne d'où elles venaient)
   const sheet=`<h2>${st?"Journée réussie !":"Objectif manqué"}</h2><div class="stars">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div><p class="sub" style="text-align:center"><b>${Q.name} · jour ${d}</b><br>${nxt}${st<=prev&&prev?` Ton record sur ce jour : ${"★".repeat(prev)}.`:""}</p>
-  ${endStats({e,g,c2,c3,coins:G.gain+chest,bells:bl,replay:G.replay})}
+  ${endStats({e,g,c2,c3,coins:G.gain,bells:bl,replay:G.replay})}
   ${tip&&tip.note?`<button class="unote" data-upgo="${tip.id}" type="button"><i class="udot"></i>Des améliorations sont disponibles : fais un tour dans la boutique.</button>`:""}${news.join("")}${bRow}
   ${G.newFox.length?`<p class="sub">Nouveaux clients : <b>${G.newFox.join(", ")}</b></p>`:""}
   ${questHTML(qShow)}

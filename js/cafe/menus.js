@@ -34,7 +34,7 @@ function daySheet(d){
   if(rk&&!S.own[rk])rw.push(itRow(icon(rk,ch.id),`Recette à gagner : ${vName(rk,ch.id)[0]}`,"Réussis la journée pour l'avoir.","background:#e3f2d6"));
   const ok=Object.keys(OPTS).find(o=>OPTS[o].day===d);
   if(ok&&!S.own[ok])rw.push(itRow(icon(ok),`Option à gagner : ${OPTS[ok].name}`,"Réussis la journée pour l'avoir.","background:#e3f2d6"));
-  rw.push(itRow(icon("chest"),st<3?"Coffre ★★★":"Coffre ouvert",(st<3?"Chaque nouvelle étoile rapporte des pièces.":"Plus rien dans le coffre.")+(st?" Rejouer : un quart des pièces.":"")));
+  if(st)rw.push(itRow(icon("coeur"),"Journée déjà réussie","La rejouer rapporte 40 % des pièces."));
   if(SEA_DUEL[d]){const j=FOX[SEA_DUEL[d]];rw.push(itRow(foxSVG(j,{pose:"sit"}),d===40?"La finale du Concours !":`Jour de défi : ${j.name} est juré${SEA_DUEL[d]==="noisette"?"":"e"}`,`Sa note : <b>${seaDuelScore(d)} pièces</b>. Fais mieux${S.sduel[d]?" (déjà battue)":""}.`,"background:#e8f4dc"))}
   if(d===ch.to){const f=FOX[ch.guest];rw.push(itRow(foxSVG(f,{sil:!S.guest[ch.guest]}),S.guest[ch.guest]?`Invité d'honneur : ${f.name}`:"Invité d'honneur mystère",S.guest[ch.guest]?"Il vient partout en VIP.":`★★★ sur tout ${ch.name.replace(/^(Automne|Été|Hiver)$/,"l'$1").replace(/^Printemps$/,"le Printemps")} (${chapStars(ch)} / 30 ★).`,"background:#fbf0cc"))}
   openSheet(`<h2>Jour ${d} · ${ch.name}</h2><div class="stars" style="font-size:30px">${"★".repeat(st)}<em>${"★".repeat(3-st)}</em></div>

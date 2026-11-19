@@ -138,7 +138,7 @@ function renderMap(){
   for(let d=1;d<=LASTDAY;d++){
     const p=P[d],st=S.stars[d]||0,op=dayOpen(d),rk=Object.keys(REC).find(k=>REC[k].day===d);
     const cls=!op?"lock":d===cur&&!st?"cur":st===3?"gold":"done";
-    const badge=rk&&!S.own[rk]?`<span class="nb">${icon(rk,chapOf(d).sea)}</span>`:op&&st<3&&st?`<span class="nb">${icon("chest")}</span>`:"";
+    const badge=rk&&!S.own[rk]?`<span class="nb">${icon(rk,chapOf(d).sea)}</span>`:"";
     h+=`<button class="node ${cls}" style="${pc(p.x,p.u)}" data-day="${d}" type="button" aria-label="Jour ${d}, ${st} étoile${st>1?"s":""}${op?"":", verrouillé"}"><b>${d}</b>${badge}<span class="nst">${[0,1,2].map(i=>`<i${i<st?' class="on"':""}>★</i>`).join("")}</span></button>`;
   }
   gates.forEach(g=>{const c=CHAP[g.i],op=gateOpen(c);h+=`<button class="gbtn${!op&&S.day>=c.from?" want":""}" style="${pc(g.x,g.u+44)}" data-gate="${g.i}" type="button" aria-label="Porte ${c.name} : ${c.gate} étoiles"></button>`});

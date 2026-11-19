@@ -175,7 +175,7 @@ with sync_playwright() as p:
         for d in range(1, len(bases) + 1):
             e, g, *_, gain = page.evaluate(BOT, [d, own_it(d), GOOD, None, WN])
             c3 = s3[d - 1]; st = 3 if e >= g * c3 else 2 if e >= g * (1 + (c3 - 1) / 2) else 1 if e >= g else 0
-            chest = round(8.5 * st + (15 + 2 * bases[d - 1] if st == 3 else 0))
+            chest = 0   # plus de coffre depuis le 20/11/2026
             buy = [(k, n) for k, n, kd in IT_KIT if kd == d]
             spent = sum(cost[k][n - 1] for k, n in buy)
             total += spent
@@ -276,7 +276,7 @@ with sync_playwright() as p:
         for d in days:
             e, g, *_, gain = page.evaluate(BOT, [d, own_for(d), GOOD, None])
             st = 3 if e >= g * 1.7 else 2 if e >= g * 1.35 else 1 if e >= g else 0
-            chest = round(8.5 * st + (15 + 2 * d if st == 3 else 0))
+            chest = 0   # plus de coffre depuis le 20/11/2026
             buy = [(k, n) for k, n, kd in KIT if kd == d]
             spent = sum(cost[k][n - 1] for k, n in buy)
             coins += gain + chest + 22 + 30 - spent
