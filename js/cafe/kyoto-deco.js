@@ -54,23 +54,10 @@ const kyMachiya=(x,y,w,h)=>{const m=kyF(y-h*.48);let g=shadow(x+w/2,y,w*.58);
   g+=`<path d="M${x+2} ${y} Q${x+2} ${y-11} ${x+10} ${y-11} H${kyF(x+w*.56)} V${y}Z" fill="#c9a874" stroke="${INK}" stroke-width="1.1"/>`+Array.from({length:Math.floor(w*.5/3)},(_,i)=>`<path d="M${kyF(x+6+i*3)} ${y} V${y-(i?10:7)}" stroke="#9a7a4a" stroke-width=".9"/>`).join("");
   return g+kyLantern(kyF(dx-2.6),kyF(m+15),.6)};
 
-// le cerisier en fleurs : tronc noueux, une couronne de fleurs en nuage, des petites fleurs à cinq pétales, des pétales qui tombent
-const kySakura=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);
-  const C=[[-20,-40,13],[-2,-48,16],[18,-40,13],[-11,-60,13],[11,-62,12],[-29,-51,9],[29,-51,9],[2,-34,11],[0,-71,9]];
-  let g=shadow(x,y,30*k);
-  g+=`<path d="M${X(-9)} ${Yy(0)} Q${X(-6)} ${Yy(-12)} ${X(-5)} ${Yy(-22)} L${X(2)} ${Yy(-22)} Q${X(1)} ${Yy(-10)} ${X(6)} ${Yy(0)}Z" fill="url(#ky-trunk)" ${K2}/>`;
-  const br=`M${X(-4)} ${Yy(-18)} Q${X(-10)} ${Yy(-30)} ${X(-21)} ${Yy(-36)} M${X(-2)} ${Yy(-20)} Q${X(6)} ${Yy(-30)} ${X(16)} ${Yy(-37)} M${X(-1)} ${Yy(-22)} Q${X(1)} ${Yy(-36)} ${X(-2)} ${Yy(-50)}`;
-  g+=`<path d="${br}" fill="none" stroke="${INK}" stroke-width="${kyF(6.4*k)}" stroke-linecap="round"/><path d="${br}" fill="none" stroke="url(#ky-trunk)" stroke-width="${kyF(4*k)}" stroke-linecap="round"/>`;
-  g+=C.map(([a,b,r])=>`<circle cx="${X(a)}" cy="${Yy(b)}" r="${kyF((r+1.5)*k)}" fill="${INK}"/>`).join("")
-    +C.map(([a,b,r])=>`<circle cx="${X(a)}" cy="${Yy(b)}" r="${kyF(r*k)}" fill="#ee9db4"/>`).join("")
-    +C.map(([a,b,r])=>`<circle cx="${X(a-r*.16)}" cy="${Yy(b-r*.2)}" r="${kyF(r*.78*k)}" fill="#f8c2d1"/>`).join("")
-    +C.map(([a,b,r])=>`<circle cx="${X(a-r*.3)}" cy="${Yy(b-r*.36)}" r="${kyF(r*.4*k)}" fill="#ffe4ec"/>`).join("");
-  g+=`<path d="M${X(-22)} ${Yy(-31)} q${kyF(-4*k)} ${kyF(-2*k)} ${kyF(-7*k)} ${kyF(-6*k)} M${X(16)} ${Yy(-31)} q${kyF(5*k)} ${kyF(-1*k)} ${kyF(8*k)} ${kyF(-5*k)}" stroke="#5a382e" stroke-width="${kyF(1.8*k)}" fill="none" stroke-linecap="round"/>`;
-  const F=[[-22,-44],[-4,-55],[16,-45],[-13,-64],[10,-67],[4,-38],[25,-51],[-28,-53],[-7,-42],[1,-73],[-17,-34],[14,-33]];
-  if(k>.55)g+=F.map(([a,b],i)=>{const cx=x+a*k,cy=y+b*k,r=1.45*k;return [0,72,144,216,288].map(t=>`<circle cx="${kyF(cx+Math.cos((t+i*20)*Math.PI/180)*1.7*k)}" cy="${kyF(cy+Math.sin((t+i*20)*Math.PI/180)*1.7*k)}" r="${kyF(r)}" fill="${i%3?"#fff":"#ffd2de"}"/>`).join("")+`<circle cx="${kyF(cx)}" cy="${kyF(cy)}" r="${kyF(.85*k)}" fill="#e2587a"/>`}).join("");
-  g+=[[-18,-30,0],[15,-28,1.4],[2,-24,2.7]].map(([a,b,d])=>`<path d="M${X(a)} ${Yy(b)} q2 -2.2 4.4 0 q-2.2 2.2 -4.4 0Z" fill="#f7b3c6" stroke="${INK}" stroke-width=".5" opacity="0"><animateTransform attributeName="transform" type="translate" values="0 0;${kyF(-7*k)} ${kyF(14*k)};${kyF(4*k)} ${kyF(30*k)}" dur="4.2s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" dur="4.2s" begin="${d}s" repeatCount="indefinite"/></path>`).join("");
-  return g};
-
+// le cerisier de la carte (20/11/2026, choix de Joffray sur tools/cerisiers.html : « du B et du D, un peu plus de D ») :
+// le tronc noueux qui penche, des étages plats et pâles dessous (B), de gros nuages de fleurs touffus dessus (D) ;
+// un sur deux est retourné pour que la carte ne répète pas le même arbre
+const kySakura=(x,y,k=1)=>{const g=kySakuraG(x,y,k);return Math.round(x)%2?`<g transform="translate(${2*x} 0) scale(-1 1)">${g}</g>`:g};
 // le stand de pêche aux poissons rouges (kingyo-sukui) : comptoir, grand bac où nagent les poissons, épuisettes de papier,
 // sachets d'eau suspendus avec leur poisson, auvent rayé rouge et blanc, enseigne et deux lanternes
 const kyKingyo=(x,y)=>{let g=shadow(x,y,42);
@@ -332,4 +319,11 @@ const kySakuraF=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(
   g+=`<path d="${dr}" fill="none" stroke="${INK}" stroke-width="${kyF(5.4*k)}" stroke-linecap="round"/><path d="${dr}" fill="none" stroke="#ef9fb6" stroke-width="${kyF(3.2*k)}" stroke-linecap="round"/><path d="${dr}" fill="none" stroke="#ffe0e8" stroke-width="${kyF(1.4*k)}" stroke-linecap="round" stroke-dasharray="${kyF(.1*k)} ${kyF(3.4*k)}"/>`;
   const P=[...kyCloud(32,-46,30,14,8,5.6),...kyCloud(12,-54,24,14,6,5.6),...kyCloud(-24,-60,28,16,8,6),...kyCloud(-4,-70,22,12,6,5.4),...kyCloud(-36,-52,16,10,5,4.6)];
   g+=kyBlob(P,X,Yy,k,"#e98aa6","#f6b4c6","#ffdce6");
+  return g+kyPetals(x,y,k)};
+const kySakuraG=(x,y,k=1)=>{const X=a=>kyF(x+a*k),Yy=b=>kyF(y+b*k);let g=shadow(x,y,38*k)+kyTrunkC(X,Yy,k);
+  g+=kyBlob([[42,-41,17,7],[-34,-54,18,7.4],[8,-58,22,8],[24,-47,16,7]],X,Yy,k,"#f2adc2","#fbd4df","#fff2f6");
+  const P=[...kyCloud(32,-48,26,14,7,5.6),...kyCloud(12,-56,24,14,6,5.6),...kyCloud(-24,-63,28,16,7,6),...kyCloud(-6,-72,22,13,6,5.4),...kyCloud(-34,-56,14,10,4,4.6)];
+  g+=kyBlob(P,X,Yy,k,"#ec95ae","#f8bfcf","#ffe2ea");
+  g+=[[28,-54],[-30,-69],[12,-72],[-8,-60]].map(([a,b])=>`<ellipse cx="${X(a)}" cy="${Yy(b)}" rx="${kyF(2.2*k)}" ry="${kyF(1.1*k)}" fill="#c75a4a" stroke="${INK}" stroke-width=".6"/>`).join("")
+    +[[-30,-48],[2,-50],[40,-36]].map(([a,b])=>`<circle cx="${X(a)}" cy="${Yy(b)}" r="${kyF(1.5*k)}" fill="#f2adc2" stroke="${INK}" stroke-width=".6"/>`).join("");
   return g+kyPetals(x,y,k)};
