@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /push/{uid} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == uid;
+    }
+    match /saves/{code} {
+      allow get, create, update: if request.auth != null
+        && code.size() == 14;
+    }
+
+    function rushOk(uid) {
+      let d = request.resource.data;
+      return request.auth != null
+        && request.auth.uid == uid
+        && d.keys().hasOnly(['name', 'score', 'sec', 't'])
+        && d.name.size() > 0
+        && d.name.size() <= 16
+        && d.sec >= 0
+        && d.sec <= 3600
+        && d.score >= 0
+        && d.score <= d.sec * 30 + 300
+        && (resource == null
+          || d.score > resource.data.score);
+    }
+    match /rush_italie/{uid} {
+      allow read: if true;
+      allow create, update: if rushOk(uid);
+    }
+    match /rush_paris/{uid} {
+      allow read: if true;
+      allow create, update: if rushOk(uid);
+    }
+    match /rush_kyoto/{uid} {
+      allow read: if true;
+      allow create, update: if rushOk(uid);
+    }
+  }
+}
