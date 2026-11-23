@@ -154,11 +154,11 @@ function renderMap(){
 function mapLabel(){
   if(!MAPL||WORLD)return;const sc=$("mscroll"),w=$("mwrap"),H=MAPL.H;
   const u=H-(sc.scrollTop+sc.clientHeight/2)/w.offsetHeight*H,b=MAPL.bands.find(b=>u>=b.lo&&u<b.hi)||MAPL.bands[0];
-  $("mchap").textContent=`${b.c.name} · ${chapStars(b.c)} / 30 ★`;$("mstars").textContent=`★ ${starSum()}`;
+  document.querySelector(".mtt b").textContent=b.c.name;$("mchap").textContent=`${chapStars(b.c)} / 30 ★ cette saison`;$("mstars").textContent=`★ ${starSum()}`;
 }
 function openMap(){
   if(WORLD)return openMapIt(); // la Petite Italie (italie.js)
-  document.querySelector(".mtt b").textContent="Café Frimousse";
+  document.querySelector(".mtt b").textContent="Les saisons";
   MUSIC.want(HW?"fantomes":xmasDay()?"noel":"ukulele");
   closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";
   if(!G||!G.run){const se=chapOf(curDay()).sea;if(se!==SEA){SEA=se;renderDecor();dirty=true}}

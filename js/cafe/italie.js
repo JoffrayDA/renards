@@ -59,7 +59,7 @@ function itCfg(d){const N=WD().days[d-1],c={...cfgOf(N.base),goal:Math.round(N.g
 const wRecAt=d=>Object.keys(WD().recDays||IT_DAY).find(k=>(WD().recDays||IT_DAY)[k]===d);
 const seaNow=()=>WORLD||chapOf(curDay()).sea;
 
-WORLDS.italie={id:"italie",name:"Petite Italie",cafe:"Caffè Frimousse",short:"Caffè",sv:()=>S.it,days:IT_DAYS,s3:IT_S3,kit:IT_KIT,
+WORLDS.italie={id:"italie",name:"Petite Italie",title:"Italie",cafe:"Caffè Frimousse",short:"Caffè",sv:()=>S.it,days:IT_DAYS,s3:IT_S3,kit:IT_KIT,
   opt:{lait:"Mousse",chantilly:"Panna"},optItem:(r,o)=>o==="lait"&&r==="cafe"?"Cappuccino":`${REC[r].name} panna`,optWord:"la panna",
   gel:GEL,cone:"le cornet",coneHint:"Touche les bacs de gelato <b>dans l'ordre de la commande</b>, de bas en haut.",gelHint:g=>`Gelato : touche les bacs <b>dans l'ordre, de bas en haut</b> (${gelName(g)}). Raté ? Touche le cornet.`,
   gelNew:"Dès la prochaine journée, un comptoir à glaces : chaque client veut ses trois parfums dans son ordre à lui. Touche les bacs de bas en haut.",
@@ -306,11 +306,11 @@ function renderMapIt(){
   h+=Q.mapExtra(L,pc);
   h+=`<div class="mfox" style="${pc(P[cur].x,P[cur].u)}">${foxSVG({...FOX.roussette,acc:styleOf("acc").id||undefined},{pose:"happy"})}</div>`;
   const w=$("mwrap");w.style.aspectRatio=`${ITW}/${H}`;w.innerHTML=h;
-  $("mchap").textContent=`${Q.name} · ${itStarSum()} / ${N*3} ★`;$("mstars").textContent=`★ ${itStarSum()}`;
+  $("mchap").textContent=Q.cafe;$("mstars").textContent=`★ ${itStarSum()}`;
 }
 function openMapIt(){
   const Q=WD();MUSIC.want(Q.mapMusic);
-  closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";document.querySelector(".mtt b").textContent=Q.cafe;
+  closeSheet();$("map").hidden=false;document.body.style.overflow="hidden";document.querySelector(".mtt b").textContent=Q.title||Q.name;
   if(!G||!G.run){if(SEA!==WORLD){SEA=WORLD;renderDecor();dirty=true}}
   renderMapIt();renderHud();
   const n=document.querySelector(".node.cur")||document.querySelector(`.node[data-itday="${itCur()}"]`),sc=$("mscroll");

@@ -115,6 +115,17 @@ function shop(){
   const sc=$("sheet-in");if(shop.y!=null){sc.scrollTop=shop.y;shop.y=null}
   if(upFocus){const e=sc.querySelector(".ufocus");if(e)e.scrollIntoView({block:"center"});upFocus=""}
 }
+// changer de nom (testeurs, 23/11/2026 : « une fois choisi, on ne peut pas le changer ») : la première fois gratuit, ensuite en clochettes
+const RENAME_B=10;
+function renameSheet(){
+  const free=!S.renamed,ok=free||bellsN()>=RENAME_B;
+  openSheet(`<h2>Changer de nom</h2><p class="sub" style="text-align:center">${free?"La première fois, c'est gratuit.":`Coûte <b>${RENAME_B} clochettes</b> (tu en as ${bellsN()}).`}</p>
+  <form class="name" id="rname"><input id="rname-in" maxlength="14" value="${ME()}" autocomplete="off" aria-label="Ton nom"><button class="btn" type="submit" ${ok?"":"disabled"}>Changer</button></form>`);
+  const f=$("rname");f.onsubmit=e=>{e.preventDefault();
+    const n=$("rname-in").value.replace(/[<>"&]/g,"").trim().replace(/\s+/g," ");
+    if(!n||n===ME()){carnet();return}
+    if(!free){if(bellsN()<RENAME_B)return;addBells(-RENAME_B)}
+    S.name=n;S.renamed=(S.renamed||0)+1;save();renderHud();toast(`Enchanté, ${n} !`);carnet()}}
 function carnet(){
   // Copeau et Sésame ne vivent qu'à la Clairière ; les gens d'un quartier une fois le quartier ouvert, rangés par monde (Kyoto ajouté le 09/11/2026)
   const groups=[["Le café",FOXES.filter(f=>f.id!=="roussette"&&!f.refuge)],["Petite Italie",itOpen()?ITF:[]],["Paris",paOpen()?PAF:[]],["Kyoto",kyOpen()?KYF:[]]].filter(g=>g[1].length);
@@ -123,6 +134,6 @@ function carnet(){
     const show=n||(f.event==="halloween"&&HW)||(c&&S.guest[f.id]); // invités d'Halloween pendant l'événement, invités d'honneur débloqués : montrés même pas encore venus
     return `<div class="fc${c?" vipc":f.event?" hwc":""}">${foxSVG(f,{sil:!show})}${show||(c&&S.guest[f.id])?f.name:"???"}<em>${n?`${n} visite${n>1?"s":""}`:c?(ok?"Invité d'honneur : viendra bientôt en VIP":`★★★ au ${c.name}`):f.world?`Vit ${WHERE[f.world]||"en ville"}`:f.event==="noel"?"Vient à Noël":f.event&&!HW?"Vient à Halloween":WILD[f.id]?`Sauvage : une gamelle ${WILD_FOOD[WILD[f.id]]} au refuge l'attirera`:"Pas encore venu"}</em></div>`};
   const rows=groups.map(([t,fs])=>`${groups.length>1?`<h3 class="fgh">${t} <small>${fs.filter(f=>S.seen[f.id]).length} / ${fs.length}</small></h3>`:""}<div class="fgrid">${fs.map(card).join("")}</div>`).join("");
-  openSheet(`<h2>Carnet des clients</h2><p class="sub">${list.filter(f=>S.seen[f.id]).length} / ${list.length} clients rencontrés.</p>${rows}${Object.keys(S.costSeen).length||HW?`<div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`:""}`);
+  openSheet(`<h2>Carnet des clients</h2><button class="btn ghost wide" data-act="rename" type="button" style="margin-bottom:10px">Ton nom : <b>${ME()}</b> · changer</button><p class="sub">${list.filter(f=>S.seen[f.id]).length} / ${list.length} clients rencontrés.</p>${rows}${Object.keys(S.costSeen).length||HW?`<div class="col" style="margin-top:10px"><button class="btn ghost wide" data-act="costumes" type="button">Clients déguisés (${Object.keys(S.costSeen).length} / ${REG.length*COSTUMES.length})</button></div>`:""}`);
 }
 function pauseMenu(){if(!G||!G.run)return;G.paused=1;openSheet(`<h2>Pause</h2><p class="sub">Les clients t'attendent sagement.</p><div class="col"><button class="btn big wide" data-act="resume" type="button">Reprendre</button><button class="btn ghost wide" data-act="restart" type="button">Recommencer la journée</button><button class="btn ghost wide" data-act="quit" type="button">Abandonner la journée</button></div>`,true)}
