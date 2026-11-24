@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sushis plus lisibles</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f3ebe3;font-family:"Zen Maru Gothic",sans-serif;color:#5b4250;padding:16px}
+h1{font-family:"Mochiy Pop One",sans-serif;font-size:22px;margin:4px 0 6px}
+.intro{margin:0 0 14px;font-size:14px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.c{background:#fffaf3;border:3px solid #5b4250;border-radius:16px;padding:12px}
+.c b{font-family:"Mochiy Pop One",sans-serif;font-size:19px}.c p{margin:4px 0 10px;font-size:14px}
+.row{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+/* une vraie bulle du jeu, à la taille du téléphone (articles de 30 px) */
+.bub{background:#fff;border:2.5px solid #5b4250;border-radius:14px;padding:4px 4px 5px;display:inline-flex;flex-wrap:wrap;gap:2px;max-width:66px;box-shadow:0 3px 0 rgba(91,66,80,.18)}
+.oi{width:30px}.oi svg,.big svg{display:block;width:100%}
+.big{display:flex;gap:6px}.big span{width:96px;background:#fff;border-radius:12px;border:2px dashed #e6d3c4}
+small{display:block;font-size:12px;margin-top:4px}
+</style></head><body>
+<h1>Sushis : mêmes tailles, couleurs plus franches</h1>
+<p class="intro">Chaque bulle est à la vraie taille du téléphone (30 px par article, comme avant). En dessous, le même plateau en grand pour voir le détail.</p>
+<div class="g" id="g"></div>
+<script>
+const INK="#5b4250";
+const K=`stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+const K2=`stroke="${INK}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
+const KN=`stroke="#1c1418" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
+
+// A : le dessin actuel du jeu (kyoto.js)
+const SA={s:"#f8935e",t:"#7cc45a",o:"#ffd84a"};
+const nigA=(x,y,k,top)=>top==="t"?`<ellipse cx="${x}" cy="${y+1.4*k}" rx="${6.8*k}" ry="${6.4*k}" fill="#2f3a32" ${K2}/><ellipse cx="${x}" cy="${y+.6*k}" rx="${5*k}" ry="${4.4*k}" fill="#fffaf6"/><circle cx="${x}" cy="${y+.6*k}" r="${2.4*k}" fill="#7cc45a" ${K2}/>`
+  :`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fffaf6" ${K2}/>`+(top==="o"
+  ?`<rect x="${x-7.4*k}" y="${y-4*k}" width="${14.8*k}" height="${5.4*k}" rx="${2*k}" fill="#f7d77a" ${K2}/><rect x="${x-2*k}" y="${y-4.4*k}" width="${4*k}" height="${9.4*k}" fill="#2f3a32" ${K2}/>`
+  :`<path d="M${x-7.6*k} ${y+1*k} Q${x-8*k} ${y-4.6*k} ${x} ${y-4.4*k} Q${x+8.4*k} ${y-4.4*k} ${x+7.6*k} ${y+1.4*k} Q${x} ${y+3*k} ${x-7.6*k} ${y+1*k}Z" fill="${SA[top]}" ${K2}/>`
+    +[-3.6,0,3.6].map(a=>`<path d="M${x+a*k-1*k} ${y-3.6*k} q${1.6*k} ${2.4*k} ${1*k} ${4.6*k}" fill="none" stroke="#fff" stroke-width="${1.1*k}" opacity=".85"/>`).join(""));
+const trayA=`<path d="M2 25 H38 V30 Q38 32 36 32 H4 Q2 32 2 30Z" fill="#d9a46a" ${K}/><path d="M6 32 V36 M34 32 V36" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`;
+const A=g=>trayA+[0,1,2].map(i=>nigA(9+i*11,19,.72,g[i])).join("");
+
+// le même dessin, plus grand (k .82) et en couleurs franches : saumon orange vif, maki vert pomme dans un nori noir, tamago jaune citron
+const nigV=(x,y,k,top,C,kk=K2)=>top==="t"?`<ellipse cx="${x}" cy="${y+1.4*k}" rx="${6.8*k}" ry="${6.4*k}" fill="#15201a" ${kk}/><ellipse cx="${x}" cy="${y+.8*k}" rx="${4.6*k}" ry="${4.2*k}" fill="#fff"/><circle cx="${x}" cy="${y+.8*k}" r="${3*k}" fill="${C.t}" ${kk}/>`
+  :`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fff" ${kk}/>`+(top==="o"
+  ?`<rect x="${x-7.6*k}" y="${y-4.6*k}" width="${15.2*k}" height="${6.4*k}" rx="${2*k}" fill="${C.o}" ${kk}/><rect x="${x-2*k}" y="${y-5*k}" width="${4*k}" height="${10.4*k}" fill="#15201a" ${kk}/>`
+  :`<path d="M${x-7.8*k} ${y+1*k} Q${x-8.2*k} ${y-5.2*k} ${x} ${y-5*k} Q${x+8.6*k} ${y-5*k} ${x+7.8*k} ${y+1.4*k} Q${x} ${y+3*k} ${x-7.8*k} ${y+1*k}Z" fill="${C.s}" ${kk}/>`
+    +[-3.4,0,3.4].map(a=>`<path d="M${x+a*k-1*k} ${y-4*k} q${1.6*k} ${2.4*k} ${1*k} ${4.8*k}" fill="none" stroke="#fff" stroke-width="${1.5*k}"/>`).join(""));
+const VIF={s:"#ff5b1f",t:"#36d04a",o:"#ffd000"};
+const trayB=`<path d="M1 27 H39 V31 Q39 33 37 33 H3 Q1 33 1 31Z" fill="#d9a46a" ${K2}/><path d="M6 33 V36 M34 33 V36" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`;
+const B=g=>trayB+[0,1,2].map(i=>nigV(7.5+i*12.5,20,.82,g[i],VIF)).join("");
+
+// C : chaque sushi posé sur une pastille de sa couleur (la couleur se voit même de loin)
+const PAS={s:"#ffb08a",t:"#9be88f",o:"#ffe766"};
+const C=g=>[0,1,2].map(i=>`<rect x="${1.6+i*12.5}" y="6" width="11.8" height="22" rx="3.5" fill="${PAS[g[i]]}" ${K2}/>`).join("")+trayB+[0,1,2].map(i=>nigV(7.5+i*12.5,20,.82,g[i],VIF)).join("");
+
+// D : plateau de laque noire, les couleurs vives ressortent dessus
+const trayD=`<rect x="1" y="9" width="38" height="25" rx="4" fill="#3a2630" ${K2}/><path d="M4 12 H36" stroke="#6a4a58" stroke-width="1.2" stroke-linecap="round"/><path d="M6 34 V37 M34 34 V37" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`;
+const D=g=>trayD+[0,1,2].map(i=>nigV(7.5+i*12.5,22,.82,g[i],VIF,`stroke="#fff" stroke-width="1.2" stroke-linejoin="round"`)).join("");
+
+// E : sans le plateau, trois sushis encore plus gros (k .92), seulement une baguette de bambou dessous
+const E=g=>`<path d="M1 33 H39" stroke="#c98a45" stroke-width="3" stroke-linecap="round"/><path d="M1 33 H39" stroke="${INK}" stroke-width="1.2" stroke-linecap="round" opacity=".4"/>`+[0,1,2].map(i=>nigV(7+i*13,24,.92,g[i],VIF)).join("");
+
+// pour comparer la taille : un onigiri, dessiné simplement
+const onigiri=`<path d="M20 5 Q24.4 5 31 18 Q36 28 33 32 Q31 34 27 34 H13 Q9 34 7 32 Q4 28 9 18 Q15.6 5 20 5Z" fill="#fffaf6" ${K}/><path d="M13 22.4 H27 V34 H13Z" fill="#2f3a32" ${K}/>`;
+const tempura=`<path d="M5 29 C3 22 8 17 17 17 L28 16 Q31 16 31 18.8 Q31 21.6 28 21.6 L18 22.4 C13 22.6 10 25 11 29.6 Q8 31.6 5 29Z" fill="#eab45a" ${K}/><path d="M28 16 L35 12 L34 18.8 L35.4 25 L28 21.6Z" fill="#e2546e" ${K}/>`;
+
+const sv=s=>`<svg viewBox="0 0 40 40">${s}</svg>`;
+const M=[["A","Actuel","Le dessin du jeu aujourd'hui, pour comparer.",A],
+  ["B","Couleurs vives","Même plateau, sushis un peu plus gros (ils remplissent la largeur), saumon orange vif à rayures blanches épaisses, maki vert pomme dans un nori noir, tamago jaune citron.",B],
+  ["C","Vives + pastilles","Comme B, chaque sushi posé sur un rond clair de sa couleur : on reconnaît l'ordre à la couleur, même en coup d'œil.",C],
+  ["D","Plateau laqué noir","Couleurs de B sur un plateau noir : le contraste fait ressortir l'orange, le vert et le jaune.",D],
+  ["E","Sans plateau","Plus de plateau, juste une baguette de bambou : les sushis prennent toute la place et grossissent encore.",E]];
+const combos=["sto","ots","tos"];
+document.getElementById("g").innerHTML=M.map(([l,n,d,f])=>`<div class="c"><b>${l} · ${n}</b><p>${d}</p>
+  <div class="row">${combos.map((g,i)=>`<div><div class="bub"><span class="oi">${sv(f(g))}</span><span class="oi">${sv(i?tempura:onigiri)}</span></div><small>${g.split("").map(x=>({s:"saumon",t:"maki",o:"tamago"})[x]).join(" › ")}</small></div>`).join("")}</div>
+  <div class="big" style="margin-top:10px"><span>${sv(f("sto"))}</span></div></div>`).join("");
+</script>
+</body></html>
