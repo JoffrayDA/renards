@@ -18,6 +18,7 @@ small{display:block;font-size:12px;margin-top:4px}
 </style></head><body>
 <h1>Sushis : mêmes tailles, couleurs plus franches</h1>
 <p class="intro">Chaque bulle est à la vraie taille du téléphone (30 px par article, comme avant). En dessous, le même plateau en grand pour voir le détail.</p>
+<div id="top" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;background:#fffaf3;border:3px solid #5b4250;border-radius:16px;padding:12px;margin-bottom:14px"></div>
 <div class="g" id="g"></div>
 <script>
 const INK="#5b4250";
@@ -67,6 +68,8 @@ const M=[["A","Actuel","Le dessin du jeu aujourd'hui, pour comparer.",A],
   ["D","Plateau laqué noir","Couleurs de B sur un plateau noir : le contraste fait ressortir l'orange, le vert et le jaune.",D],
   ["E","Sans plateau","Plus de plateau, juste une baguette de bambou : les sushis prennent toute la place et grossissent encore.",E]];
 const combos=["sto","ots","tos"];
+// en haut : les cinq côte à côte, pour tout voir sans faire défiler
+document.getElementById("top").innerHTML=M.map(([l,,,f])=>`<div style="text-align:center"><div class="bub"><span class="oi">${sv(f("sto"))}</span><span class="oi">${sv(onigiri)}</span><span class="oi">${sv(f("tos"))}</span><span class="oi">${sv(tempura)}</span></div><small><b style="font-size:16px">${l}</b></small></div>`).join("");
 document.getElementById("g").innerHTML=M.map(([l,n,d,f])=>`<div class="c"><b>${l} · ${n}</b><p>${d}</p>
   <div class="row">${combos.map((g,i)=>`<div><div class="bub"><span class="oi">${sv(f(g))}</span><span class="oi">${sv(i?tempura:onigiri)}</span></div><small>${g.split("").map(x=>({s:"saumon",t:"maki",o:"tamago"})[x]).join(" › ")}</small></div>`).join("")}</div>
   <div class="big" style="margin-top:10px"><span>${sv(f("sto"))}</span></div></div>`).join("");
