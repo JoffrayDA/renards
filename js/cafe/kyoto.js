@@ -109,16 +109,19 @@ Object.assign(ICON,{
 /* ---------- les idées de Joffray (08/11/2026), au menu depuis le 09/11/2026 : onigiri, tempura de crevettes, plateau de sushis, dorayaki ---------- */
 // saumon (orange, rayé de blanc), maki au concombre (rond, algue noire, cœur vert), tamago (jaune, bande d'algue) :
 // le thon rouge ressemblait trop au saumon en petit (Joffray, 09/11/2026), le maki change de couleur ET de forme
-const KY_SUSHI={s:{n:"Saumon",c:"#f8935e"},t:{n:"Maki",c:"#7cc45a"},o:{n:"Tamago",c:"#ffd84a"}};
-// un sushi (nigiri) : le riz, et le poisson ou l'omelette dessus ; le tamago a sa bande d'algue
-const nigiriSVG=(x,y,k,top)=>top==="t"?`<ellipse cx="${x}" cy="${y+1.4*k}" rx="${6.8*k}" ry="${6.4*k}" fill="#2f3a32" ${K2}/><ellipse cx="${x}" cy="${y+.6*k}" rx="${5*k}" ry="${4.4*k}" fill="#fffaf6"/><circle cx="${x}" cy="${y+.6*k}" r="${2.4*k}" fill="#7cc45a" ${K2}/>`
-  :`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fffaf6" ${K2}/>`+(top==="o"
-  ?`<rect x="${x-7.4*k}" y="${y-4*k}" width="${14.8*k}" height="${5.4*k}" rx="${2*k}" fill="#f7d77a" ${K2}/><rect x="${x-2*k}" y="${y-4.4*k}" width="${4*k}" height="${9.4*k}" fill="#2f3a32" ${K2}/>`
-  :`<path d="M${x-7.6*k} ${y+1*k} Q${x-8*k} ${y-4.6*k} ${x} ${y-4.4*k} Q${x+8.4*k} ${y-4.4*k} ${x+7.6*k} ${y+1.4*k} Q${x} ${y+3*k} ${x-7.6*k} ${y+1*k}Z" fill="${KY_SUSHI[top].c}" ${K2}/>`
-    +(top==="s"?[-3.6,0,3.6].map(a=>`<path d="M${x+a*k-1*k} ${y-3.6*k} q${1.6*k} ${2.4*k} ${1*k} ${4.6*k}" fill="none" stroke="#fff" stroke-width="${1.1*k}" opacity=".85"/>`).join(""):`<ellipse cx="${x-2.4*k}" cy="${y-2.6*k}" rx="${2.2*k}" ry="${.8*k}" fill="#fff" opacity=".55"/>`));
+// couleurs franches et une case de couleur derrière chaque sushi (testeurs, 23/11/2026 : illisibles dans les bulles ;
+// choix de Joffray, proposition C de tools/sushis.html, 24/11/2026) : on lit l'ordre à la couleur, à la taille d'avant
+const KY_SUSHI={s:{n:"Saumon",c:"#ff5b1f",bg:"#ffb08a"},t:{n:"Maki",c:"#36d04a",bg:"#9be88f"},o:{n:"Tamago",c:"#ffd000",bg:"#ffe766"}};
+// un sushi (nigiri) : le riz, et le poisson ou l'omelette dessus ; le tamago a sa bande d'algue ; le maki, un rond dans son nori
+const nigiriSVG=(x,y,k,top)=>top==="t"?`<ellipse cx="${x}" cy="${y+1.4*k}" rx="${6.8*k}" ry="${6.4*k}" fill="#15201a" ${K2}/><ellipse cx="${x}" cy="${y+.8*k}" rx="${4.6*k}" ry="${4.2*k}" fill="#fff"/><circle cx="${x}" cy="${y+.8*k}" r="${3*k}" fill="${KY_SUSHI.t.c}" ${K2}/>`
+  :`<ellipse cx="${x}" cy="${y+3.4*k}" rx="${7*k}" ry="${3.6*k}" fill="#fff" ${K2}/>`+(top==="o"
+  ?`<rect x="${x-7.6*k}" y="${y-4.6*k}" width="${15.2*k}" height="${6.4*k}" rx="${2*k}" fill="${KY_SUSHI.o.c}" ${K2}/><rect x="${x-2*k}" y="${y-5*k}" width="${4*k}" height="${10.4*k}" fill="#15201a" ${K2}/>`
+  :`<path d="M${x-7.8*k} ${y+1*k} Q${x-8.2*k} ${y-5.2*k} ${x} ${y-5*k} Q${x+8.6*k} ${y-5*k} ${x+7.8*k} ${y+1.4*k} Q${x} ${y+3*k} ${x-7.8*k} ${y+1*k}Z" fill="${KY_SUSHI.s.c}" ${K2}/>`
+    +[-3.4,0,3.4].map(a=>`<path d="M${x+a*k-1*k} ${y-4*k} q${1.6*k} ${2.4*k} ${1*k} ${4.8*k}" fill="none" stroke="#fff" stroke-width="${1.5*k}"/>`).join(""));
 // le plateau de sushis, rempli de gauche à droite (g peut être incomplet : le plateau en cours au comptoir)
-const kySushiSVG=g=>`<path d="M2 25 H38 V30 Q38 32 36 32 H4 Q2 32 2 30Z" fill="#d9a46a" ${K}/><path d="M6 32 V36 M34 32 V36" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M4 27.4 H36" stroke="#eec08a" stroke-width="1.2"/>`
-  +[0,1,2].map(i=>g[i]?nigiriSVG(9+i*11,19,.72,g[i]):`<ellipse cx="${9+i*11}" cy="21" rx="4.4" ry="2.6" fill="none" stroke="#e6c3cf" stroke-width="1.4" stroke-dasharray="2 2"/>`).join("");
+const kySushiSVG=g=>[0,1,2].map(i=>g[i]?`<rect x="${1.6+i*12.5}" y="6" width="11.8" height="22" rx="3.5" fill="${KY_SUSHI[g[i]].bg}" ${K2}/>`:"").join("")
+  +`<path d="M1 27 H39 V31 Q39 33 37 33 H3 Q1 33 1 31Z" fill="#d9a46a" ${K2}/><path d="M6 33 V36 M34 33 V36" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`
+  +[0,1,2].map(i=>g[i]?nigiriSVG(7.5+i*12.5,20,.82,g[i]):`<ellipse cx="${7.5+i*12.5}" cy="22" rx="4.4" ry="2.6" fill="none" stroke="#e6c3cf" stroke-width="1.4" stroke-dasharray="2 2"/>`).join("");
 const KY_ALT={ // gardé pour tools/kyoto-propositions.html
   onigiri:`<ellipse cx="20" cy="34" rx="14" ry="2.8" fill="#3d2a35" opacity=".12"/><path d="M20 5 Q24.4 5 31 18 Q36 28 33 32 Q31 34 27 34 H13 Q9 34 7 32 Q4 28 9 18 Q15.6 5 20 5Z" fill="#fffaf6" ${K}/>
     <path d="M13 22.4 H27 V34 H13Z" fill="#2f3a32" ${K}/><path d="M15 24.6 V31.6" stroke="#5a6a5c" stroke-width="1.4" stroke-linecap="round"/><ellipse cx="15.6" cy="12.6" rx="2.6" ry="1.4" fill="#fff" transform="rotate(-40 15.6 12.6)"/>${[[19,15],[23,17.4],[17.4,19]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx=".9" ry=".5" fill="#e6d3b4"/>`).join("")}`,
@@ -434,8 +437,7 @@ ovens:d=>d>=14?2:1,ovenOf:{croissant:0,cookie:0,taiyaki:0,mochi:1,gateau:1},
   optNews:{lait:"Touche « Lait », au bout du plateau, pour transformer un matcha en matcha latte."},
   // le plateau de sushis (clé « smoothie », comme le gelato)…
   gel:KY_SUSHI,gelSVG:kySushiSVG,
-  gelWide:g=>`<rect x="2" y="31" width="76" height="6" rx="2" fill="#d9a46a" ${K2}/>`+[0,1,2].map(i=>nigiriSVG(14+i*26,20,1.45,g[i])).join(""),
-  tubSVG:x=>nigiriSVG(20,22,1.9,x),tubLabel:"Un sushi",cone:"le plateau",
+  tubSVG:x=>`<rect x="5" y="4" width="30" height="32" rx="8" fill="${KY_SUSHI[x].bg}" ${K2}/>`+nigiriSVG(20,22,1.7,x),tubLabel:"Un sushi",cone:"le plateau",
   coneHint:"Touche les sushis <b>dans l'ordre de la commande</b>, de gauche à droite.",
   gelHint:g=>`Sushis : touche-les <b>dans l'ordre, de gauche à droite</b> (${gelName(g)}). Raté ? Touche le plateau.`,
   gelNew:"Dès la prochaine journée, les sushis : chaque client veut son plateau de trois dans son ordre à lui. Touche les sushis de gauche à droite.",

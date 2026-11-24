@@ -97,7 +97,6 @@ button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
 .oi{width:clamp(18px,4.3vw,30px);position:relative;display:block}
 .oi svg{display:block;width:100%}
 .oi.done{opacity:.28}
-.oi.wide{width:clamp(38px,8.8vw,62px)}
 .pb{height:5px;border-radius:9px;background:#f1e5d8;overflow:hidden;position:relative;z-index:1}
 .pb i{display:block;height:100%;background:var(--good);border-radius:9px}
 .heart{position:absolute;font-size:20px;color:#f47f9a;pointer-events:none;animation:heart 1.2s ease-out forwards;z-index:8}
@@ -191,7 +190,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 .fgh{margin:14px 0 6px;font-size:16px}.fgh small{font-weight:400;color:var(--ink-soft);font-size:13px}
 /* au téléphone, pas de trait qui tremble sur les clients : ils bougent sans cesse et le filtre #wobble était recalculé à chaque image
    (le jeu ramait et la musique grésillait à Kyoto, 09/11/2026) ; le décor, immobile, le garde */
-.scene.short .cust{bottom:28%}.scene.short .bub{bottom:76%}.scene.short .oi{width:26px}.scene.short .oi.wide{width:54px}.scene.short .oi-row{max-width:58px}
+.scene.short .cust{bottom:28%}.scene.short .bub{bottom:76%}.scene.short .oi{width:26px}.scene.short .oi-row{max-width:58px}
 @media (pointer:coarse){#custs [filter="url(#wobble)"],#helper [filter="url(#wobble)"]{filter:none}}
 #htoast{position:absolute;inset:auto auto 8px 50%;height:auto;transform:translate(-50%,6px);z-index:30;width:max-content;max-width:92%;box-sizing:border-box;padding:6px 12px;border-radius:14px;background:rgba(91,66,80,.93);color:#fff;font-size:13px;line-height:1.3;text-align:center;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s}
 #htoast.on{opacity:1;transform:translate(-50%,0)}
@@ -322,7 +321,7 @@ button.ts.arm{border-color:var(--bad);background:#ffe9e6;animation:fidget .4s in
 /* téléphone avec les options (lait, chantilly) : le plateau tient en largeur, sans le mot « Plateau » */
 @media (max-width:520px){.tray:has(.tps){gap:5px;padding:6px 8px}.tray:has(.tps) .tl{display:none}.tray:has(.tps) .ts{min-width:30px}.tps{gap:4px;flex:none}.tp{padding:3px 4px 2px}.tp svg{width:24px;height:24px}.tp em{font-size:9.5px}}
 /* téléphone : commandes des clients en gros, deux articles par ligne pour ne pas déborder sur le voisin (Joffray, 04/11/2026) */
-@media (max-width:520px){.oi{width:30px}.oi.wide{width:62px}.oi-row{flex-wrap:wrap;max-width:66px;margin:0 auto;gap:2px}.bub{padding:4px 4px 5px;width:max-content}}
+@media (max-width:520px){.oi{width:30px}.oi-row{flex-wrap:wrap;max-width:66px;margin:0 auto;gap:2px}.bub{padding:4px 4px 5px;width:max-content}}
 @media (max-width:520px){.scene{aspect-ratio:7/5}.ki{width:46px;height:46px}.kb{padding:8px 3px 8px}.cust{width:23%}.ts{width:40px}.tray small{display:none}.pill.day{padding:3px 9px}}
 /* la queue de Luciole est une vraie petite lumière (js/foxart.js) */
 .lumi{animation:lumi 1.8s ease-in-out infinite}

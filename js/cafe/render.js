@@ -30,7 +30,7 @@ function render(){
     // fâché (19/11/2026, Joffray : « c'est limite si on le voit pas partir ») : sourcils froncés, nuage d'orage au-dessus de la tête,
     // il trépigne, puis sort à droite d'un pas rapide et lourd (classe mad, css)
     const mad=!!c.lostIt&&(c.state==="angry"||c.state==="walkout");
-    const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>{const k=itemKey(o),w=bubWide(k);return `<span class="oi${o.done?" done":""}${w?" wide":""}">${w||icon(k)}</span>`}).join("");
+    const ic=c.state==="angry"?icon("ennui"):c.state==="happy"?icon("coeur"):c.order.map(o=>`<span class="oi${o.done?" done":""}">${icon(itemKey(o))}</span>`).join("");
     const cls=`cust ${c.state}${c.low&&c.state==="wait"?" low":""}${walking?" walk":""}${inQ?" q":""}${mad?" mad":""}${pr?(c.twin?" twin":" sumo2"):""}`,bub=!walking&&!inQ&&!mad&&c.state!=="fin"?`<span class="bub${c.vip?" vipb":""}${pr?(c.twin?" br":" bl"):""}">${c.vip?`<em class="vip">${CROWN}${f.event==="noel"?"Noël ×3":f.event?"Halloween ×3":"VIP ×3"}</em>`:""}<span class="oi-row">${c.state==="wait"?ic:`<span class="oi">${ic}</span>`}</span>${c.state==="wait"?`<span class="pb"><i id="pb-${c.id}"></i></span>`:""}</span>`:"";
     // « Nouveau » sous le renard, posé sur le comptoir (18/11/2026, Joffray : le message gris en haut ne se voyait pas) :
     // calque à part, au-dessus du comptoir ; le VIP garde son badge doré sur la bulle (Joffray l'aimait), juste plus visible
