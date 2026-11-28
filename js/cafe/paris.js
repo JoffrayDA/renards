@@ -308,10 +308,21 @@ function paMapSVG(L){
     <radialGradient id="pa-vig" cx=".5" cy=".5" r=".75"><stop offset=".7" stop-color="#5b4250" stop-opacity="0"/><stop offset="1" stop-color="#5b4250" stop-opacity=".12"/></radialGradient>`;
   let s=`<rect width="400" height="${H}" fill="url(#pa-gnd)"/><rect width="400" height="${H}" fill="url(#pa-pave)" opacity=".8"/>`;
   // le ciel du soir et les toits de Paris derrière le café, la tour Eiffel au loin n'y est pas : elle est sur la carte
-  s+=`<rect x="0" y="0" width="400" height="${hz}" fill="url(#pa-sky)"/><circle cx="320" cy="${hz-150}" r="70" fill="url(#pa-sun)"/><circle cx="320" cy="${hz-150}" r="18" fill="#fff4c8" ${BO}/>`;
-  s+=[[0,64],[48,80],[92,58],[146,84],[204,66],[258,82],[314,60],[356,76]].map(([x,h],i)=>`<path d="M${x} ${hz} V${hz-h} L${x+8} ${hz-h-15} H${x+42} L${x+50} ${hz-h} V${hz}Z" fill="${i%2?"#d6dbe6":"#cbd2df"}" stroke="${INK}" stroke-width="1.8"/>`+[0,1].map(j=>`<rect x="${x+12+j*16}" y="${hz-h-11}" width="7" height="7" rx="2.5" fill="#f2f5fa" stroke="${INK}" stroke-width="1.2"/>`).join("")+(i%2?`<rect x="${x+36}" y="${hz-h-26}" width="6" height="12" fill="#d98a6a" stroke="${INK}" stroke-width="1.4"/>`:"")).join("");
+  s+=`<rect x="0" y="0" width="400" height="${hz-34}" fill="url(#pa-sky)"/><circle cx="320" cy="${hz-150}" r="70" fill="url(#pa-sun)"/><circle cx="320" cy="${hz-150}" r="18" fill="#fff4c8" ${BO}/>`;
+  // Paris au loin, derrière le café (28/11/2026, Joffray : les immeubles gris collés à la terrasse « trop en avant », « tout gris ») :
+  // une rangée d'immeubles crème plus petits, toits de zinc, dans la brume, et des arbres devant qui cachent leur pied
+  {const hb=hz-34;let r=7;const rnd=()=>(r=(r*9301+49297)%233280)/233280;let x=-6;
+    s+=`<linearGradient id="pa-skym" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".55"/></linearGradient>`;
+    while(x<406){const w=26+rnd()*18,h=24+rnd()*18,c=["#f3e7d6","#eedfcc","#f6ecdf","#efe0d0"][Math.floor(rnd()*4)],y=hb-4-h;
+      s+=`<path d="M${x.toFixed(1)} ${hb} V${y.toFixed(1)} H${(x+w).toFixed(1)} V${hb}Z" fill="${c}" stroke="#8a7a86" stroke-width="1.2"/>`
+        +`<path d="M${(x-1).toFixed(1)} ${y.toFixed(1)} L${(x+5).toFixed(1)} ${(y-9).toFixed(1)} H${(x+w-5).toFixed(1)} L${(x+w+1).toFixed(1)} ${y.toFixed(1)}Z" fill="#b8c3d4" stroke="#8a7a86" stroke-width="1.2"/>`
+        +Array.from({length:Math.floor((w-6)/9)},(_,j)=>`<rect x="${(x+5+j*9).toFixed(1)}" y="${(y+5).toFixed(1)}" width="4" height="6" rx="1" fill="#c9d8e6"/><rect x="${(x+5+j*9).toFixed(1)}" y="${(y+15).toFixed(1)}" width="4" height="6" rx="1" fill="#c9d8e6"/>`).join("")
+        +(rnd()<.5?`<rect x="${(x+w-11).toFixed(1)}" y="${(y-15).toFixed(1)}" width="5" height="8" fill="#e2a48a" stroke="#8a7a86" stroke-width="1"/>`:"");
+      x+=w+1}
+    s+=`<rect x="0" y="${hb-50}" width="400" height="50" fill="url(#pa-skym)"/>`;
+    for(let t=-4;t<410;t+=17+rnd()*8){const rr=6+rnd()*4;s+=`<circle cx="${t.toFixed(1)}" cy="${(hb-rr*.4).toFixed(1)}" r="${rr.toFixed(1)}" fill="${rnd()<.5?"#a9cf94":"#9cc489"}" stroke="${INK}" stroke-width="1.6"/><circle cx="${(t-rr*.3).toFixed(1)}" cy="${(hb-rr*.75).toFixed(1)}" r="${(rr*.35).toFixed(1)}" fill="#fff" opacity=".3"/>`}}
   s+=`<g><animateTransform attributeName="transform" type="translate" values="-60 0;460 -10" dur="26s" repeatCount="indefinite"/>${[[0,hz-180],[14,hz-188],[26,hz-178]].map(([x,y])=>`<path d="M${x-6} ${y} q3 -4 6 0 q3 -4 6 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join("")}</g>`;
-  s+=`<path d="M0 ${hz} H400" stroke="${INK}" stroke-width="2"/>`;
+  s+=`<path d="M0 ${hz-34} H400" stroke="${INK}" stroke-width="2"/>`;
   // le Champ-de-Mars, comme le vrai (20/11/2026, Joffray : l'ancienne pelouse était « beaucoup trop grande et vide ») : une esplanade
   // de sable, deux longues pelouses en parterres de chaque côté de l'allée centrale, la tour au bout côté Seine, l'École militaire
   // à l'autre bout ; les rangées d'arbres, les bancs et les pique-niques sont posés plus bas (at)

@@ -208,12 +208,12 @@ function itCafeSVG(x,y){
   return s;
 }
 // panneau vers le quartier suivant, planté par terre au bord du chemin (28/11/2026, Joffray : il était caché par Nonno, ou dans le ciel à Paris)
-// gx = pied du poteau, gy = sol (en coordonnées de l'image) ; la flèche pointe vers la gauche, le bouton .mnext est posé sur la planche
+// gx = pied du poteau, gy = sol (en coordonnées de l'image) ; la flèche pointe vers la droite, vers le café (Joffray : à gauche, « ça fait retour en arrière »), le bouton .mnext est posé sur la planche
 const IT_SIGN={x:100,du:-100};
 function wSign(gx,gy,txt){const B=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`,py=gy-34;
   return `<ellipse cx="${gx}" cy="${gy+1}" rx="16" ry="4" fill="#000" opacity=".12"/><rect x="${gx-4}" y="${py-6}" width="8" height="40" rx="2" fill="#c8946a" ${B}/>`
-    +`<path d="M${gx+44} ${py-31} H${gx-34} L${gx-47} ${py-18} L${gx-34} ${py-5} H${gx+44}Z" fill="#fffaf2" ${B}/><path d="M${gx+38} ${py-26} V${py-10}" stroke="#e8dcc8" stroke-width="2"/>`
-    +`<text x="${gx+2}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${txt}</text>`}
+    +`<path d="M${gx-44} ${py-31} H${gx+34} L${gx+47} ${py-18} L${gx+34} ${py-5} H${gx-44}Z" fill="#fffaf2" ${B}/><path d="M${gx-38} ${py-26} V${py-10}" stroke="#e8dcc8" stroke-width="2"/>`
+    +`<text x="${gx-2}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${txt}</text>`}
 function itArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#f7c99a" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Petite Italie</text>`}
 const IT_ROSE=`<radialGradient id="it-rose"><stop offset="0" stop-color="#ffe08a"/><stop offset=".4" stop-color="#f49ab0"/><stop offset=".8" stop-color="#7fa6dc"/><stop offset="1" stop-color="#5a6fae"/></radialGradient>`;
 function itMapSVG(L){
