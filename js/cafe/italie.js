@@ -260,7 +260,7 @@ function itMapSVG(L){
   at(110,1852,itSunflowers);at(100,1952,itBales);
   // les collines : cyprès, le puits, la lavande, et le Caffè Frimousse tout en haut
   at(30,2006,itCypress);at(164,2012,(x,y)=>itCypress(x,y,.9));at(300,2062,itWell);at(100,2142,itLavRow);
-  at(52,2170,(x,y)=>itCypress(x,y,.85));at(76,2160,(x,y)=>itCypress(x,y,.75));at(356,2180,(x,y)=>itCypress(x,y,.8));
+  at(16,2170,(x,y)=>itCypress(x,y,.85));at(36,2160,(x,y)=>itCypress(x,y,.75));at(356,2180,(x,y)=>itCypress(x,y,.8));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=itArchSVG(200,Y(60))+itCafeSVG(cafe.x,Y(cafe.u));
   // le panneau vers Paris, à droite du Caffè, une fois le quartier fini (paris.js)
