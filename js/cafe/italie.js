@@ -68,7 +68,7 @@ WORLDS.italie={id:"italie",name:"Petite Italie",title:"Italie",cafe:"Caffè Frim
   music:d=>d%2?"tarantella":"polka",mapMusic:"piazza",isOpen:()=>itOpen(),lockMsg:"Réussis le jour 40 pour ouvrir la Petite Italie.",
   layout:()=>itLayout(),mapSVG:L=>itMapSVG(L),outside:()=>outsideIt(),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.lor.x,L.lor.u)}" data-act="lorenzo" type="button" aria-label="Lorenzo">${foxSVG(FOX.lorenzo,{pose:"happy"})}<em>Lorenzo</em></button>`
-    +(S.it.nonno?`<button class="mguest ok" style="${pc(L.cafe.x>200?L.cafe.x-110:L.cafe.x+110,L.cafe.u-30)}" data-act="nonno" type="button" aria-label="Nonno">${foxSVG(FOX.nonno,{pose:"sit"})}<em>Nonno</em></button>`:"")
+    +(S.it.nonno?`<button class="mguest ok" style="${pc(L.cafe.x-118,L.cafe.u-24)}" data-act="nonno" type="button" aria-label="Nonno">${foxSVG(FOX.nonno,{pose:"sit"})}<em>Nonno</em></button>`:"")
     +`<button class="mnext" style="${pc(200,52)}" data-act="monde1" type="button" aria-label="Retour au premier café"></button>`
     +(typeof paOpen==="function"&&paOpen()?`<button class="mnext" style="${pc(IT_SIGN.x,L.cafe.u+IT_SIGN.du+52)}" data-act="paris" type="button" aria-label="Paris"></button>`:""),
   arrive:()=>{if(!S.it.intro)lorenzoIntro();else itStory()},
@@ -209,7 +209,7 @@ function itCafeSVG(x,y){
 }
 // panneau vers le quartier suivant, planté par terre au bord du chemin (28/11/2026, Joffray : il était caché par Nonno, ou dans le ciel à Paris)
 // gx = pied du poteau, gy = sol (en coordonnées de l'image) ; la flèche pointe vers la droite, vers le café (Joffray : à gauche, « ça fait retour en arrière »), le bouton .mnext est posé sur la planche
-const IT_SIGN={x:100,du:-100};
+const IT_SIGN={x:300,du:-100};
 function wSign(gx,gy,txt){const B=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`,py=gy-34;
   return `<ellipse cx="${gx}" cy="${gy+1}" rx="16" ry="4" fill="#000" opacity=".12"/><rect x="${gx-4}" y="${py-6}" width="8" height="40" rx="2" fill="#c8946a" ${B}/>`
     +`<path d="M${gx-44} ${py-31} H${gx+34} L${gx+47} ${py-18} L${gx+34} ${py-5} H${gx-44}Z" fill="#fffaf2" ${B}/><path d="M${gx-38} ${py-26} V${py-10}" stroke="#e8dcc8" stroke-width="2"/>`
@@ -259,7 +259,7 @@ function itMapSVG(L){
   at(290,1522,itCasale);at(200,1585,(x,y)=>itFiat(x,y,"#9fc8e8"));at(310,1662,itOlive);at(364,1722,(x,y)=>itOlive(x,y,.85));at(70,1700,(x,y)=>itVineyard(x,y,1));at(370,1590,(x,y)=>itPoppies(x,y,8));at(250,1180,(x,y)=>itPoppies(x,y,7));at(150,600,itCrates);
   at(110,1852,itSunflowers);at(100,1952,itBales);
   // les collines : cyprès, le puits, la lavande, et le Caffè Frimousse tout en haut
-  at(30,2006,itCypress);at(164,2012,(x,y)=>itCypress(x,y,.9));at(300,2062,itWell);at(300,2142,itLavRow);
+  at(30,2006,itCypress);at(164,2012,(x,y)=>itCypress(x,y,.9));at(300,2062,itWell);at(100,2142,itLavRow);
   at(52,2170,(x,y)=>itCypress(x,y,.85));at(76,2160,(x,y)=>itCypress(x,y,.75));at(356,2180,(x,y)=>itCypress(x,y,.8));
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=itArchSVG(200,Y(60))+itCafeSVG(cafe.x,Y(cafe.u));

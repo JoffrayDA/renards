@@ -31,8 +31,8 @@ const paLouvre=(x,y)=>{let g=shadow(x,y-6,96);const f=n=>+n.toFixed(1);
   g+=Array.from({length:2},(_,r)=>Array.from({length:14},(_,i)=>`<rect x="${x-86+i*12.6}" y="${wy-38+r*18}" width="6" height="11" rx="2.6" fill="#bcd2e4" stroke="${INK}" stroke-width="1"/>`).join("")).join("");
   g+=`<rect x="${x-20}" y="${wy-58}" width="40" height="58" fill="url(#pa-stone)" ${BO}/><path d="M${x-24} ${wy-58} L${x-16} ${wy-80} H${x+16} L${x+24} ${wy-58}Z" fill="#6f7d94" ${BO}/><path d="M${x-8} ${wy-80} L${x} ${wy-88} L${x+8} ${wy-80}" fill="#6f7d94" ${BO2}/>`;
   g+=`<path d="M${x-9} ${wy} V${wy-8} Q${x-9} ${wy-15} ${x} ${wy-15} Q${x+9} ${wy-15} ${x+9} ${wy-8} V${wy}Z" fill="#8a6a54" ${BO2}/>`;
-  // la bannière de la Joconde, sur le pavillon
-  g+=`<path d="M${x-18} ${wy-60} H${x+18} V${wy-17} L${x} ${wy-21} L${x-18} ${wy-17}Z" fill="#c0485a" ${BO2}/>`+paMona(x-12,wy-56,24,28)+`<text x="${x}" y="${wy-23}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="4.4" fill="#fff">La Joconde</text>`;
+  // la bannière de la Joconde, sur le pavillon (sans son nom écrit, 28/11/2026, Joffray : « tout le monde la sait »)
+  g+=`<path d="M${x-18} ${wy-60} H${x+18} V${wy-24} L${x} ${wy-28} L${x-18} ${wy-24}Z" fill="#c0485a" ${BO2}/>`+paMona(x-12,wy-56,24,28);
   // le pavé de la cour et les bassins
   g+=`<path d="M${x-96} ${y+4} L${x-86} ${wy+2} H${x+86} L${x+96} ${y+4}Z" fill="#efe6d6" stroke="#d8c8ac" stroke-width="1.6"/>`;
   g+=[-58,58].map(a=>`<path d="M${x+a-22} ${y-6} L${x+a-18} ${y-16} H${x+a+18} L${x+a+22} ${y-6}Z" fill="#9fd3e8" ${K2}/><path d="M${x+a-12} ${y-11} q4 -2 8 0" stroke="#fff" stroke-width="1.2" fill="none"/>`).join("");

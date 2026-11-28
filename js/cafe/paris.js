@@ -296,7 +296,9 @@ const paBakeryAt=(x,y)=>{const L=x-42,R=x+42;let g=shadow(x,y,50);
   // la jardinière
   g+=paPlanter(L-14,y+6);
   return g};
-const PA_SIGN={x:100,du:-100};
+// la boulangerie de Firmin, à gauche du café, posée au sol (28/11/2026, Joffray : elle flottait à droite et cachait le soleil)
+const PA_BAK={x:44,du:-14};
+const PA_SIGN={x:300,du:-100};
 function paArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#a9b6c6" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Paris</text>`}
 function paMapSVG(L){
   const {P,way,H,cafe,Z,V}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
@@ -371,7 +373,7 @@ function paMapSVG(L){
   [[6,mu+60,24,40,"#f6e8d0","#7fb4d8"],[32,mu+70,22,52,"#f2dcc0","#f2a2b0"],[140,mu+196,24,44,"#f8ecd8","#8fbf5a"],[166,mu+206,20,34,"#efd9be","#c9a8ec"],[8,mu+170,22,46,"#f4e2c8","#e2546e"],[30,mu+176,20,36,"#f8ecd8","#7fb4d8"],[156,mu+120,22,30,"#f6e8d0","#f2a2b0"]].forEach(([hx,hu,w,h,c,sh])=>at(hx+w/2,hu,(cx,y)=>paMontHouse(hx,y,w,h,c,sh)));
   at(370,u13+150,(x,y)=>paTree(x,y,.75));at(372,u18-44,(x,y)=>paTree(x,y,.7));at(30,u18-120,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
   // devant le café : la boulangerie de Firmin, en face ; un platane
-  at(356,cafe.u+20,paBakery);at(40,cafe.u-40,(x,y)=>paTree(x,y,.85));
+  at(PA_BAK.x,cafe.u+PA_BAK.du,paBakery);at(372,cafe.u-40,(x,y)=>paTree(x,y,.85));
   // entre la butte et le café : la fontaine Wallace, le fleuriste ; entre la tour et la butte : le manège
   at(40,u18+120,paWallace);at(66,u18+238,paFlowers);at(362,u12+92,paCarousel);at(26,u18+186,(x,y)=>paTree(x,y,.7,"pa-leaf2"));
   // ce qui respire Paris (20/11/2026, paris-deco.js) : la mode, les vélos, les lampadaires, le Louvre et la Joconde, l'Arc de Triomphe
@@ -477,7 +479,7 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Frimousse",short:"Café",sv:()
   layout:()=>paLayout(),mapSVG:L=>paMapSVG(L),outside:()=>outsidePa(),
   duel:PA_DUEL,duelScore:d=>duelScore(d),duelRow:d=>itRow(icon("croissant","paris"),d===PA_FIN?"La finale du concours !":"Jour de défi !",`Firmin a fait <b>${duelScore(d)} pièces</b>. Fais mieux que lui${S.pa.duel[d]?" (déjà battu)":""}.`,"background:#fde8ec"),
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.ana.x,L.ana.u)}" data-act="anatole" type="button" aria-label="Anatole">${foxSVG(FOX.anatole,{pose:"happy"})}<em>Anatole</em></button>`
-    +`<button class="mguest${S.pa.peace?" ok":""}" style="${pc(L.cafe.x+142,L.cafe.u-36)}" data-act="finale" type="button" aria-label="Firmin">${foxSVG(FOX.firmin,{pose:S.pa.peace?"happy":"sit"})}<em>Firmin</em></button>`
+    +`<button class="mguest${S.pa.peace?" ok":""}" style="${pc(PA_BAK.x+10,L.cafe.u-50)}" data-act="finale" type="button" aria-label="Firmin">${foxSVG(FOX.firmin,{pose:S.pa.peace?"happy":"sit"})}<em>Firmin</em></button>`
     +`<button class="mnext" style="${pc(200,52)}" data-act="italie" type="button" aria-label="Retour en Petite Italie"></button>`
     +(typeof kyOpen==="function"&&kyOpen()?`<button class="mnext" style="${pc(PA_SIGN.x,L.cafe.u+PA_SIGN.du+52)}" data-act="kyoto" type="button" aria-label="Kyoto"></button>`:""),
   arrive:()=>{if(!S.pa.intro)anatoleIntro();else paStory()},
