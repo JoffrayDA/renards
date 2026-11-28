@@ -79,32 +79,7 @@ Object.assign(ICON,{
   "chantilly@paris":`<path d="M10 31 Q6 25 12 23 Q8 17 15 15 Q14 8 21 8 Q28 8 26 15 Q33 16 29 23 Q35 25 30 31Z" fill="#fffaf0" ${K}/><path d="M15 21 q5 -3 10 0 M14 27 q6 -3 12 0" stroke="#e6d3c4" stroke-width="1.6" fill="none"/>`
 });
 
-/* ---------- dehors, derrière la vitre : les immeubles d'en face, la tour Eiffel au loin ---------- */
-// pas de collines à Paris : la palette sert seulement au dégradé des collines de bgSVG (draw.js)
-OUT.paris={sky:["#9fcfee","#f6e4ee"],hill:["#c9d89a","#b5c983"],cloud:"#fff"};
-function outsidePa(){
-  const f=n=>n.toFixed(1),l=(w=2.4)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
-  const defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fcfee"/><stop offset=".7" stop-color="#d9e9f4"/><stop offset="1" stop-color="#f6e4ee"/></linearGradient>`;
-  let st=`<rect x="0" y="0" width="600" height="200" fill="url(#sky)"/><circle cx="120" cy="50" r="16" fill="#fff6c8" ${l(2)}/>`,an="";
-  // la tour Eiffel, au loin entre deux toits
-  st+=`<path d="M420 150 Q432 112 436 70 L440 36 L442 24 L444 36 L448 70 Q452 112 464 150Z" fill="#c9a888" ${l(1.8)}/><path d="M425 128 H459 M434 84 H450 M437 54 H447" stroke="${INK}" stroke-width="1.6"/><path d="M432 150 Q442 132 452 150" fill="#d9e9f4" stroke="${INK}" stroke-width="1.4"/>`;
-  // les immeubles d'en face : pierre crème, toits de zinc et leurs lucarnes, balcons en fer forgé, boutiques en bas
-  const fac=(x,w,top,shop)=>{let g=`<path d="M${x-3} ${top} L${x+7} ${top-18} H${x+w-7} L${x+w+3} ${top}Z" fill="#a9b6c6" ${l(2)}/>`;
-    for(let i=0;i<Math.floor((w-12)/30);i++)g+=`<rect x="${x+12+i*30}" y="${top-14}" width="9" height="10" rx="3.5" fill="#e6eef6" ${l(1.4)}/>`;
-    g+=`<rect x="${x+w-20}" y="${top-28}" width="9" height="12" fill="#d98a6a" ${l(1.4)}/><rect x="${x}" y="${top}" width="${w}" height="${200-top}" fill="#f6e8d0" ${l(2)}/>`;
-    for(let i=0;i<Math.floor((w-6)/30);i++)for(let j=0;j<2;j++){const wx=x+10+i*30,wy=top+10+j*30;g+=`<rect x="${wx}" y="${wy}" width="13" height="20" rx="2" fill="#9fc0d8" ${l(1.6)}/>`;if(j===0)g+=`<path d="M${wx-3} ${wy+14} H${wx+16} M${wx} ${wy+14} V${wy+20} M${wx+6.5} ${wy+14} V${wy+20} M${wx+13} ${wy+14} V${wy+20}" stroke="${INK}" stroke-width="1.3"/>`}
-    g+=`<rect x="${x+4}" y="174" width="${w-8}" height="12" fill="${shop}" ${l(1.6)}/>`+Array.from({length:Math.floor((w-8)/12)},(_,i)=>`<path d="M${x+4+i*12} 174 h6 v5 h-6Z" fill="#fff"/>`).join("");return g};
-  st+=fac(40,140,96,"#c0485a")+fac(180,110,112,"#3f7a5a")+fac(290,120,100,"#5f7fb0")+fac(470,120,108,"#d98a6a");
-  // un platane, une colonne Morris, le trottoir
-  st+=`<rect x="0" y="184" width="600" height="16" fill="#e3d6c2" ${l(2)}/>`;
-  st+=`<rect x="257" y="150" width="6" height="34" fill="#a8825a" ${l(1.6)}/><circle cx="260" cy="140" r="20" fill="#8cc47a" ${l(1.8)}/><circle cx="252" cy="133" r="6" fill="#a6d690"/>`;
-  st+=`<rect x="402" y="146" width="20" height="38" fill="#4f8a6a" ${l(1.8)}/><rect x="405" y="152" width="6" height="10" fill="#f49ab0" ${l(1.2)}/><rect x="413" y="154" width="6" height="8" fill="#ffe08a" ${l(1.2)}/><path d="M399 146 H425 Q421 134 412 132 Q403 134 399 146Z" fill="#4f8a6a" ${l(1.8)}/>`;
-  // des pigeons qui passent, des nuages
-  an+=`<g><animateTransform attributeName="transform" type="translate" values="-80 0;560 -12" dur="22s" repeatCount="indefinite"/>${[[150,64],[166,58],[180,66]].map(([x,y])=>`<path d="M${x-6} ${y} q3 -4 6 0 q3 -4 6 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join("")}</g>`;
-  const cloud=(x,y,k,dur)=>`<g><animateTransform attributeName="transform" type="translate" values="0 0;18 0;0 0" dur="${dur}s" repeatCount="indefinite"/>${[[x-14*k,y,11*k],[x+2*k,y-7*k,15*k],[x+18*k,y,10*k]].map(([cx,cy,r])=>`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="#fff"/>`).join("")}</g>`;
-  an+=cloud(300,50,1,24)+cloud(540,40,.7,29);
-  return {defs,st,an};
-}
+// dehors, derrière la vitre : voir vitres.js (outsidePa, refait le 28/11/2026)
 
 /* ---------- la carte du quartier : de l'entrée en bas au Café Frimousse en haut, chaque lieu une fois ---------- */
 // la rue (jours 1-5), la Seine et Notre-Dame (entre 5 et 6), le Champ-de-Mars et la tour Eiffel (7-12), Montmartre (13-18), le café (19-20)
@@ -321,6 +296,7 @@ const paBakeryAt=(x,y)=>{const L=x-42,R=x+42;let g=shadow(x,y,50);
   // la jardinière
   g+=paPlanter(L-14,y+6);
   return g};
+const PA_SIGN={x:100,du:-100};
 function paArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#a9b6c6" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Paris</text>`}
 function paMapSVG(L){
   const {P,way,H,cafe,Z,V}=L,Y=u=>H-u,hz=Y(cafe.u)+40;
@@ -395,7 +371,7 @@ function paMapSVG(L){
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=paArchSVG(200,Y(60))+paCafeSVG(cafe.x,Y(cafe.u));
   // le panneau vers Kyoto (kyoto.js), au-dessus du café à droite, une fois les 30 journées réussies
-  if(typeof kyOpen==="function"&&kyOpen()){const px=cafe.x+128,py=Y(cafe.u+136);s+=`<rect x="${px-4}" y="${py-6}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${px-44} ${py-30} H${px+34} L${px+46} ${py-18} L${px+34} ${py-6} H${px-44}Z" fill="#fffaf2" ${BO}/><text x="${px}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">Kyoto</text>`}
+  if(typeof kyOpen==="function"&&kyOpen())s+=wSign(PA_SIGN.x,Y(cafe.u+PA_SIGN.du),"Kyoto");
   s+=`<rect width="400" height="${H}" fill="url(#pa-vig)" pointer-events="none"/>`;
   return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}</defs>${s}</svg>`;
 }
@@ -492,7 +468,7 @@ WORLDS.paris={id:"paris",name:"Paris",cafe:"Café Frimousse",short:"Café",sv:()
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.ana.x,L.ana.u)}" data-act="anatole" type="button" aria-label="Anatole">${foxSVG(FOX.anatole,{pose:"happy"})}<em>Anatole</em></button>`
     +`<button class="mguest${S.pa.peace?" ok":""}" style="${pc(L.cafe.x+142,L.cafe.u-36)}" data-act="finale" type="button" aria-label="Firmin">${foxSVG(FOX.firmin,{pose:S.pa.peace?"happy":"sit"})}<em>Firmin</em></button>`
     +`<button class="mnext" style="${pc(200,52)}" data-act="italie" type="button" aria-label="Retour en Petite Italie"></button>`
-    +(typeof kyOpen==="function"&&kyOpen()?`<button class="mnext" style="${pc(L.cafe.x+128,L.cafe.u+150)}" data-act="kyoto" type="button" aria-label="Kyoto"></button>`:""),
+    +(typeof kyOpen==="function"&&kyOpen()?`<button class="mnext" style="${pc(PA_SIGN.x,L.cafe.u+PA_SIGN.du+52)}" data-act="kyoto" type="button" aria-label="Kyoto"></button>`:""),
   arrive:()=>{if(!S.pa.intro)anatoleIntro();else paStory()},
   scenes:done=>paScenes(done),
   news:(d,st,prev,news,e)=>{

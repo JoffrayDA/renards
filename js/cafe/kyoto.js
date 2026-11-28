@@ -139,30 +139,7 @@ Object.assign(ICON,{"croissant@kyoto":KY_ALT.onigiri,"cookie@kyoto":KY_ALT.tempu
 // les recettes propres au quartier ont aussi un dessin hors de Kyoto (planches, carnet)
 Object.assign(ICON,{taiyaki:ICON["taiyaki@kyoto"],mochi:ICON["mochi@kyoto"],dango:ICON["dango@kyoto"]});
 
-/* ---------- dehors, derrière la vitre : la rue de maisons en bois, la pagode au loin, un cerisier ---------- */
-OUT.kyoto={sky:["#f6c6b4","#fde9d6"],hill:["#a9c79a","#93b585"],cloud:"#fff"};
-function outsideKy(){
-  const f=n=>n.toFixed(1),l=(w=2.4)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
-  const defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2b4a6"/><stop offset=".6" stop-color="#fbd9c6"/><stop offset="1" stop-color="#fdeedd"/></linearGradient>`;
-  let st=`<rect x="0" y="0" width="600" height="200" fill="url(#sky)"/><circle cx="470" cy="56" r="18" fill="#fff2c8" ${l(2)}/>`,an="";
-  // les collines de Higashiyama, la pagode au loin
-  st+=`<path d="M0 132 Q90 92 190 118 Q280 84 380 112 Q470 88 600 110 V200 H0Z" fill="#a9c79a" ${l(2)}/>`;
-  const px=330,py=120;st+=`<rect x="${px-3}" y="${py-96}" width="6" height="14" fill="#e0b860" ${l(1.4)}/>`;
-  for(let i=0;i<5;i++){const y=py-i*16,w=26-i*3;st+=`<rect x="${px-w*.55}" y="${y-10}" width="${w*1.1}" height="10" fill="#c96a4a" ${l(1.4)}/><path d="M${px-w-6} ${y-10} Q${px} ${y-17} ${px+w+6} ${y-10} L${px+w} ${y-14} H${px-w}Z" fill="#4c5a70" ${l(1.4)}/>`}
-  // les maisons d'en face : bois sombre, treillis, toits de tuiles, lanternes rouges
-  const mach=(x,w,top)=>{let g=`<path d="M${x-8} ${top} Q${x+w/2} ${top-6} ${x+w+8} ${top} L${x+w} ${top-16} H${x}Z" fill="#5f6f86" ${l(2)}/><rect x="${x}" y="${top}" width="${w}" height="${200-top}" fill="#8a5a3a" ${l(2)}/>`;
-    for(let i=0;i<Math.floor(w/7);i++)g+=`<path d="M${x+4+i*7} ${top+16} V176" stroke="#5e3a26" stroke-width="2"/>`;
-    g+=`<rect x="${x+w/2-12}" y="${top+26}" width="24" height="${168-top-26}" fill="#3d4e7a" ${l(1.6)}/><path d="M${x+w/2} ${top+26} V${168}" stroke="#2a3558" stroke-width="1.4"/><circle cx="${x+w/2}" cy="${top+40}" r="5" fill="#fff" ${l(1.2)}/>`;
-    return g+`<ellipse cx="${x+8}" cy="${top+12}" rx="6" ry="8" fill="#e0503c" ${l(1.4)}/><path d="M${x+3} ${top+6} H${x+13} M${x+3} ${top+18} H${x+13}" stroke="${INK}" stroke-width="2"/>`};
-  st+=mach(30,130,112)+mach(176,120,120)+mach(410,150,108);
-  st+=`<rect x="0" y="184" width="600" height="16" fill="#d9cdb6" ${l(2)}/>`;
-  // le cerisier, et ses pétales qui tombent
-  st+=`<path d="M318 184 Q322 160 314 142 M316 158 Q330 150 340 142" fill="none" stroke="#8a5a4a" stroke-width="6" stroke-linecap="round"/>${[[300,132,20],[326,124,24],[350,136,18],[318,146,16]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#f9c4d2" ${l(1.8)}/>`).join("")}${[[306,124],[332,116],[346,132],[320,138]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3" fill="#fff"/>`).join("")}`;
-  an+=[[280,20,7],[360,60,9],[230,90,8],[420,30,10],[160,50,11]].map(([x,y,d],i)=>`<g><animateTransform attributeName="transform" type="translate" values="0 0;-60 150" dur="${d}s" begin="${-i*1.7}s" repeatCount="indefinite"/><path d="M${x} ${y} q3 -3 6 0 q-3 3 -6 0Z" fill="#f6a8be"/></g>`).join("");
-  const cloud=(x,y,k,dur)=>`<g><animateTransform attributeName="transform" type="translate" values="0 0;18 0;0 0" dur="${dur}s" repeatCount="indefinite"/>${[[x-14*k,y,11*k],[x+2*k,y-7*k,15*k],[x+18*k,y,10*k]].map(([cx,cy,r])=>`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="#fff"/>`).join("")}</g>`;
-  an+=cloud(140,46,1,26)+cloud(560,34,.7,30);
-  return {defs,st,an};
-}
+// dehors, derrière la vitre : voir vitres.js (outsideKy, refait le 28/11/2026)
 
 /* ---------- la carte du quartier : de la grande porte en bas au Kitsune Shokudō en haut ---------- */
 // la rue de Gion (jours 1-6), la rivière Kamo et ses pierres de gué (entre 6 et 7), les bambous et le pavillon d'or (8-14),

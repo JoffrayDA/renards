@@ -70,7 +70,7 @@ WORLDS.italie={id:"italie",name:"Petite Italie",title:"Italie",cafe:"Caffè Frim
   mapExtra:(L,pc)=>`<button class="mguest ok" style="${pc(L.lor.x,L.lor.u)}" data-act="lorenzo" type="button" aria-label="Lorenzo">${foxSVG(FOX.lorenzo,{pose:"happy"})}<em>Lorenzo</em></button>`
     +(S.it.nonno?`<button class="mguest ok" style="${pc(L.cafe.x>200?L.cafe.x-110:L.cafe.x+110,L.cafe.u-30)}" data-act="nonno" type="button" aria-label="Nonno">${foxSVG(FOX.nonno,{pose:"sit"})}<em>Nonno</em></button>`:"")
     +`<button class="mnext" style="${pc(200,52)}" data-act="monde1" type="button" aria-label="Retour au premier café"></button>`
-    +(typeof paOpen==="function"&&paOpen()?`<button class="mnext" style="${pc(L.cafe.x+128,L.cafe.u+34)}" data-act="paris" type="button" aria-label="Paris"></button>`:""),
+    +(typeof paOpen==="function"&&paOpen()?`<button class="mnext" style="${pc(IT_SIGN.x,L.cafe.u+IT_SIGN.du+52)}" data-act="paris" type="button" aria-label="Paris"></button>`:""),
   arrive:()=>{if(!S.it.intro)lorenzoIntro();else itStory()},
   scenes:done=>itScenes(done),
   news:(d,st,prev,news)=>{
@@ -92,35 +92,7 @@ Object.assign(ICON,{
 });
 OPTPOS.choco="translate(0 2)";
 
-/* ---------- dehors, derrière la vitre : la rue, les collines et la tour qui penche ---------- */
-OUT.italie={sky:["#8fcdef","#fde7cf"],hill:["#c9d89a","#b5c983"],cloud:"#fff"};
-function outsideIt(){
-  const f=n=>n.toFixed(1),l=(w=2.4)=>`stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`,H=OUT.italie.hill;
-  const defs=`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc4ec"/><stop offset=".65" stop-color="#cfe9f4"/><stop offset="1" stop-color="#fde7cf"/></linearGradient>
-    <radialGradient id="pSun"><stop offset="0" stop-color="#fffbe8" stop-opacity=".95"/><stop offset=".45" stop-color="#fff3cf" stop-opacity=".35"/><stop offset="1" stop-color="#fff3cf" stop-opacity="0"/></radialGradient>`;
-  let st=`<rect x="0" y="0" width="600" height="200" fill="url(#sky)"/><circle cx="470" cy="54" r="80" fill="url(#pSun)"/><circle cx="470" cy="54" r="17" fill="#fff6c8" ${l(2)}/>`,an="";
-  // collines de Toscane et leurs cyprès
-  st+=`<path d="M0 118 Q90 92 190 110 Q300 88 400 106 Q500 90 600 104 V200 H0Z" fill="${H[0]}"/>`;
-  st+=[[120,108],[134,110],[300,100],[312,103],[520,98],[534,101],[548,104]].map(([x,y])=>`<path d="M${x} ${y-26} Q${x+6} ${y-12} ${x+4} ${y} H${x-4} Q${x-6} ${y-12} ${x} ${y-26}Z" fill="#6aa676" ${l(1.6)}/>`).join("");
-  st+=`<path d="M0 132 Q120 116 260 128 Q400 114 600 126 V200 H0Z" fill="${H[1]}" ${l(2)}/>`;
-  st+=[0,1,2,3,4,5].map(i=>`<path d="M${400+i*14} 124 q4 8 2 18" fill="none" stroke="#8aa85a" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4"/>`).join("");
-  // la tour qui penche, au loin
-  st+=`<g transform="rotate(5 236 132)">${[0,1,2,3,4,5].map(i=>`<rect x="226" y="${f(124-i*9)}" width="20" height="9" fill="#fbf4e6" ${l(1.6)}/>${[0,1,2].map(j=>`<path d="M${229+j*6} ${f(133-i*9)} v-5 a1.6 1.6 0 0 1 3.2 0 v5" fill="none" stroke="#c9b8a0" stroke-width="1"/>`).join("")}`).join("")}<rect x="229" y="62" width="14" height="8" fill="#fbf4e6" ${l(1.6)}/></g>`;
-  // les façades d'en face : ocre, rose, jaune, volets verts, tuiles, linge
-  const fac=(x,w,top,col)=>{let g=`<rect x="${x}" y="${top}" width="${w}" height="${200-top}" fill="${col}" ${l(2)}/><path d="M${x-3} ${top} H${x+w+3}" stroke="#d9774e" stroke-width="7" stroke-linecap="round"/><path d="M${x-3} ${top} H${x+w+3}" stroke="${INK}" stroke-width="1.4" opacity=".4"/>`;
-    for(let i=0;i<Math.floor((w-6)/34);i++)for(let j=0;j<2;j++){const wx=x+14+i*34,wy=top+14+j*36;g+=`<rect x="${wx}" y="${wy}" width="13" height="19" rx="5" fill="#8fbcd4" ${l(1.6)}/><rect x="${wx-7}" y="${wy}" width="7" height="19" rx="1" fill="#7fb48a" ${l(1.4)}/><rect x="${wx+13}" y="${wy}" width="7" height="19" rx="1" fill="#7fb48a" ${l(1.4)}/><rect x="${wx-4}" y="${wy+19}" width="21" height="5" rx="2" fill="#c98a5a" ${l(1.2)}/><circle cx="${wx+1}" cy="${wy+19}" r="2.4" fill="#f47f9a"/><circle cx="${wx+7}" cy="${wy+18}" r="2.4" fill="#ffd36a"/><circle cx="${wx+13}" cy="${wy+19}" r="2.4" fill="#f47f9a"/>`}return g};
-  st+=fac(60,130,118,"#f7c99a")+fac(190,96,132,"#f6b7a8")+fac(286,140,112,"#fbe0a0")+fac(426,120,126,"#f7c99a");
-  st+=`<path d="M190 136 Q238 152 286 132" fill="none" stroke="${INK}" stroke-width="1.4"/>`+[["#f9b8c6",206],["#fff",224],["#bfe1f0",244],["#ffe08a",264]].map(([c,x])=>`<rect x="${x-6}" y="${f(140+Math.sin((x-190)/96*Math.PI)*8)}" width="12" height="13" rx="2" fill="${c}" ${l(1.4)}/>`).join("");
-  // le trottoir, un citronnier en pot et un scooter garé
-  st+=`<rect x="0" y="184" width="600" height="16" fill="#e8d6bc" ${l(2)}/>`;
-  st+=`<path d="M152 186 L155 172 H169 L172 186Z" fill="#d9774e" ${l(1.8)}/><circle cx="162" cy="160" r="13" fill="#8cc47a" ${l(1.8)}/>${[[-6,-4],[5,-6],[1,4],[-7,5]].map(([a,b])=>`<ellipse cx="${162+a}" cy="${160+b}" rx="2.8" ry="2.2" fill="#ffe36a" stroke="${INK}" stroke-width="1"/>`).join("")}`;
-  st+=`<g transform="translate(372 186)"><circle cx="-14" cy="-2" r="6" fill="#6a5560" ${l(1.8)}/><circle cx="14" cy="-2" r="6" fill="#6a5560" ${l(1.8)}/><path d="M-20 -5 Q-20 -18 -4 -18 H6 L12 -30 M6 -18 Q20 -16 20 -5Z" fill="#9fd8c4" ${l(1.8)}/><path d="M8 -30 H18" ${l(1.8)}/><rect x="-14" y="-24" width="14" height="5" rx="2.5" fill="#a8664a" ${l(1.4)}/></g>`;
-  // des hirondelles qui passent, des nuages
-  an+=`<g><animateTransform attributeName="transform" type="translate" values="-80 0;520 -16" dur="20s" repeatCount="indefinite"/>${[[150,70],[166,62],[180,72]].map(([x,y])=>`<path d="M${x-6} ${y} q3 -4 6 0 q3 -4 6 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join("")}</g>`;
-  const cloud=(x,y,k,dur)=>`<g><animateTransform attributeName="transform" type="translate" values="0 0;18 0;0 0" dur="${dur}s" repeatCount="indefinite"/>${[[x-14*k,y,11*k],[x+2*k,y-7*k,15*k],[x+18*k,y,10*k]].map(([cx,cy,r])=>`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="#fff"/>`).join("")}</g>`;
-  an+=cloud(250,60,1,22)+cloud(380,42,.7,27);
-  return {defs,st,an};
-}
+// dehors, derrière la vitre : voir vitres.js (outsideIt, refait le 28/11/2026)
 
 /* ---------- la carte du quartier : 30 journées, de l'arche d'entrée au Caffè Frimousse, la tour au milieu ---------- */
 const ITW=400;
@@ -235,6 +207,13 @@ function itCafeSVG(x,y){
   s+=shadow(x,y+46,10)+`<path d="M${x-8} ${y+44} L${x-6} ${y+18} M${x+8} ${y+44} L${x+6} ${y+18}" stroke="#7a4a2a" stroke-width="2.4" stroke-linecap="round"/><rect x="${x-10}" y="${y+16}" width="20" height="20" rx="2" fill="#3a3a44" stroke="#a8703e" stroke-width="2.2"/><path d="M${x-5} ${y+22} h10 M${x-5} ${y+27} h7 M${x-5} ${y+31} h9" stroke="#f2ece0" stroke-width="1.3" stroke-linecap="round"/>`;
   return s;
 }
+// panneau vers le quartier suivant, planté par terre au bord du chemin (28/11/2026, Joffray : il était caché par Nonno, ou dans le ciel à Paris)
+// gx = pied du poteau, gy = sol (en coordonnées de l'image) ; la flèche pointe vers la gauche, le bouton .mnext est posé sur la planche
+const IT_SIGN={x:100,du:-100};
+function wSign(gx,gy,txt){const B=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`,py=gy-34;
+  return `<ellipse cx="${gx}" cy="${gy+1}" rx="16" ry="4" fill="#000" opacity=".12"/><rect x="${gx-4}" y="${py-6}" width="8" height="40" rx="2" fill="#c8946a" ${B}/>`
+    +`<path d="M${gx+44} ${py-31} H${gx-34} L${gx-47} ${py-18} L${gx-34} ${py-5} H${gx+44}Z" fill="#fffaf2" ${B}/><path d="M${gx+38} ${py-26} V${py-10}" stroke="#e8dcc8" stroke-width="2"/>`
+    +`<text x="${gx+2}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">${txt}</text>`}
 function itArchSVG(x,y){return `<path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M${x-62} ${y+24} V${y-6} Q${x} ${y-56} ${x+62} ${y-6} V${y+24}" fill="none" stroke="#f7c99a" stroke-width="11" stroke-linecap="round"/><rect x="${x-56}" y="${y-48}" width="112" height="24" rx="9" fill="#fffaf2" ${BO}/><text x="${x}" y="${y-31}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">Petite Italie</text>`}
 const IT_ROSE=`<radialGradient id="it-rose"><stop offset="0" stop-color="#ffe08a"/><stop offset=".4" stop-color="#f49ab0"/><stop offset=".8" stop-color="#7fa6dc"/><stop offset="1" stop-color="#5a6fae"/></radialGradient>`;
 function itMapSVG(L){
@@ -285,7 +264,7 @@ function itMapSVG(L){
   it.sort((a,b)=>b.u-a.u).forEach(e=>s+=e.f(+e.x.toFixed(1),+Y(e.u).toFixed(1)));
   s+=itArchSVG(200,Y(60))+itCafeSVG(cafe.x,Y(cafe.u));
   // le panneau vers Paris, à droite du Caffè, une fois le quartier fini (paris.js)
-  if(typeof paOpen==="function"&&paOpen()){const px=cafe.x+128,py=Y(cafe.u+20);s+=`<rect x="${px-4}" y="${py-6}" width="8" height="40" fill="#c8946a" ${BO}/><path d="M${px-44} ${py-30} H${px+34} L${px+46} ${py-18} L${px+34} ${py-6} H${px-44}Z" fill="#fffaf2" ${BO}/><text x="${px}" y="${py-13}" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="13" fill="${INK}">Paris</text>`}
+  if(typeof paOpen==="function"&&paOpen())s+=wSign(IT_SIGN.x,Y(cafe.u+IT_SIGN.du),"Paris");
   return `<svg viewBox="0 0 ${ITW} ${H}" aria-hidden="true"><defs>${defs}${IT_ROSE}</defs>${s}</svg>`;
 }
 const WLAY={};
