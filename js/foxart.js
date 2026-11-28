@@ -436,6 +436,18 @@ function foxArt(f,o={}){
     +(wr&&wr.s?tenScarf(f.id,N,W):"")+(wr&&wr.h?tenHat(f.id,T,geo.hw):"")
     +(f.bauble&&!sil?`<circle cx="60" cy="${(geo.top-11).toFixed(1)}" r="4.4" fill="none" stroke="#c9952f" stroke-width="2.6"/><rect x="52" y="${(geo.top-7).toFixed(1)}" width="16" height="9" rx="2.4" fill="#f2c45a"/><path d="M55 ${(geo.top-6).toFixed(1)} v7 M60 ${(geo.top-6).toFixed(1)} v7 M65 ${(geo.top-6).toFixed(1)} v7" stroke="#c9952f" stroke-width="1.4"/>`:"");
   const fxG=fx?`<g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${fx}</g>`:"";
+  // o.spy : lunettes noires et journal à l'envers jusque sous les lunettes (Firmin qui espionne, Paris jour 9, 28/11/2026)
+  // o.spy==="r" : portrait retourné en miroir par le CSS (.vn-who.r), le titre est pré-retourné pour rester à l'envers et lisible
+  if(o.spy&&!sil){
+    const flip=o.spy==="r"?"scale(1 -1)":"rotate(180)",cy=80;
+    body+=`<g stroke-width="2.4"><path d="M38 ${Y-6} H82" stroke-width="2.6"/><rect x="38" y="${Y-6}" width="19" height="13" rx="5" fill="#2e2430"/><rect x="63" y="${Y-6}" width="19" height="13" rx="5" fill="#2e2430"/><path d="M57 ${Y-3} Q60 ${Y-5} 63 ${Y-3}" fill="none"/><path d="M41 ${Y-3} l4 0 M66 ${Y-3} l4 0" stroke="#fff" stroke-width="2" opacity=".7"/></g>`
+      +`<g transform="rotate(-2 60 ${cy})"><path d="M20 ${Y+8} H100 V112 H20Z" fill="#f4efe2"/><path d="M60 ${Y+8} V112" stroke-width="1.4" opacity=".45"/>`
+      +`<g transform="translate(60 ${Y+21}) ${flip}" stroke="none"><text x="0" y="3" text-anchor="middle" font-family="Mochiy Pop One,sans-serif" font-size="9.5" fill="${INK}">LE MATIN</text></g>`
+      +`<path d="M24 ${Y+26} H96" stroke-width="1.6"/>`
+      +[0,1,2,3].map(i=>`<path d="M26 ${Y+31+i*5} H${i===3?44:55} M65 ${Y+31+i*5} H${i===1?84:94}" stroke-width="1.5" opacity=".5"/>`).join("")
+      +`<rect x="26" y="${Y+12}" width="13" height="9" rx="1.5" fill="#d9cdb4" stroke-width="1.4"/></g>`
+      +`<ellipse cx="22" cy="${Y+24}" rx="6.5" ry="8" fill="${c.s}"/><ellipse cx="98" cy="${Y+22}" rx="6.5" ry="8" fill="${c.s}"/>`;
+  }
   const zz=pose==="sleep"?`<text class="zz" x="70" y="42" font-family="Mochiy Pop One,sans-serif" font-size="12" fill="${INK}">z</text><text class="zz" style="animation-delay:1.2s" x="80" y="32" font-family="Mochiy Pop One,sans-serif" font-size="9" fill="${INK}">z</text>`:"";
   const wd=f.wide||1; // les sumos de Kyoto : plus larges que hauts (09/11/2026, Joffray : « un peu plus gros »)
   if(o.portrait)return `<svg viewBox="8 -8 104 104" class="${o.cls||""}"${f.tail==="neuf"||f.wide?' style="overflow:visible"':""} aria-hidden="true"><g transform="translate(${60-60*sc*wd} ${92-92*sc}) scale(${sc*wd} ${sc})"><g stroke="${st}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#wobble)">${body}</g>${fxG}</g></svg>`;

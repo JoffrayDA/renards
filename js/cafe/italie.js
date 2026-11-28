@@ -332,8 +332,8 @@ const pageSVG=`<svg viewBox="0 0 120 120"><g transform="rotate(-6 60 60)"><path 
 function itTalk(lines,done){
   closeSheet();let i=0;const vn=document.createElement("div");vn.className="vn";document.body.appendChild(vn);
   const first=lines[0][0];
-  const show=()=>{const [who,expr,txt]=lines[i],end=i===lines.length-1,pg=who==="page",f=FOX[pg?"lorenzo":who],right=!pg&&who!==first;
-    vn.innerHTML=`<div class="vn-who${right?" r":""}" aria-hidden="true">${pg?pageSVG:foxArt(f,{expr,portrait:1})}</div>
+  const show=()=>{const [who,expr,txt,xo]=lines[i],end=i===lines.length-1,pg=who==="page",f=FOX[pg?"lorenzo":who],right=!pg&&who!==first;
+    vn.innerHTML=`<div class="vn-who${right?" r":""}" aria-hidden="true">${pg?pageSVG:foxArt(f,{expr,portrait:1,spy:xo&&xo.spy?(right?"r":1):0})}</div>
     <div class="vn-box"><b class="vn-name${right?" r":""}">${pg?"Le carnet de Nonno":f.name}</b><p>${pg?`<i>« ${txt} »</i>`:txt}</p><small>${end?"Touche pour fermer":"Touche pour continuer"} <span>▼</span></small></div>`;
     vn.querySelector(".vn-who").classList.add("in")};
   vn.onclick=()=>{if(++i<lines.length)show();else{vn.remove();if(done)done()}};

@@ -414,7 +414,7 @@ const PA_SCENES={
   5:[["firmin","surprise","Quoi ?! Plus de pièces que moi ?"],["firmin","open","C'était un échauffement. Au prochain défi, je sors le grand jeu."],
      ["anatole","joy","Premier défi gagné ! Regarde sa tête…"]],
   8:[["bobine","joy","Clic ! Ton café liégeois est trop photogénique."],["anatole","open","Bobine prend tout le quartier en photo. Son album est plus gros que lui."]],
-  9:[["anatole","surprise","Tu as vu le monsieur en lunettes noires, derrière son journal ?"],["firmin","shy","Je… lis le journal. À l'envers. C'est la mode."],
+  9:[["anatole","surprise","Tu as vu le monsieur en lunettes noires, derrière son journal ?"],["firmin","shy","Je… lis le journal. À l'envers. C'est la mode.",{spy:1}],
      ["anatole","joy","Il espionne ! C'est bon signe : il a peur."]],
   13:[["anatole","joy","Les macarons ! Chaque client veut sa boîte dans son ordre à lui : framboise, violette, caramel…"],
      ["anatole","open","On les pose de gauche à droite. Raté ? Touche la boîte pour la vider, et recommence."]],
